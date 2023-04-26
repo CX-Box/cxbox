@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>cxbox-all</artifactId>
+    <packaging>pom</packaging>
+    <version>3.0.5-SNAPSHOT</version>
+    <name>IO Cxbox - All</name>
+
+    <parent>
+        <groupId>org.cxbox</groupId>
+        <artifactId>cxbox-base</artifactId>
+        <version>3.0.5-SNAPSHOT</version>
+        <relativePath>../cxbox-base/pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <!-- build settings -->
+        <skip.checkstyle>false</skip.checkstyle>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.cxbox</groupId>
+                <artifactId>cxbox-bom</artifactId>
+                <type>import</type>
+                <version>3.0.5-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-bom</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-constgen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-model-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-model-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-crudma</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-testing</artifactId>
+            <classifier>tests</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-dictionary-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-dictionary-links-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-starter-quartz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-starter-sqlbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-starter-notifications-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.cxbox</groupId>
+            <artifactId>cxbox-starter-notifications</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

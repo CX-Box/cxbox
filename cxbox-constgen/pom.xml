@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>cxbox-constgen</artifactId>
+  <packaging>jar</packaging>
+  <version>3.0.5-SNAPSHOT</version>
+  <name>IO Cxbox - DTO Constant Generator</name>
+
+  <parent>
+    <groupId>org.cxbox</groupId>
+    <artifactId>cxbox-base</artifactId>
+    <version>3.0.5-SNAPSHOT</version>
+    <relativePath>../cxbox-base/pom.xml</relativePath>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.squareup</groupId>
+      <artifactId>javapoet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.auto.service</groupId>
+      <artifactId>auto-service</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.testing.compile</groupId>
+      <artifactId>compile-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>${commons-text.version}</version>
+    </dependency>
+  </dependencies>
+
+</project>

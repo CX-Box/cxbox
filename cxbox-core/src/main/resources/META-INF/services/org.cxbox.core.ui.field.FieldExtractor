@@ -1,0 +1,9 @@
+org.cxbox.core.ui.field.AssocListFieldExtractor
+org.cxbox.core.ui.field.ChartFieldExtractor
+org.cxbox.core.ui.field.SimpleFormFieldExtractor
+org.cxbox.core.ui.field.FormFieldExtractor
+org.cxbox.core.ui.field.HeaderFieldExtractor
+org.cxbox.core.ui.field.ListFieldExtractor
+org.cxbox.core.ui.field.PivotFieldExtractor
+org.cxbox.core.ui.field.ShowConditionFieldExtractor
+org.cxbox.core.ui.field.HierarchyFieldExtractor

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>cxbox-starter-workflow-core</artifactId>
+  <packaging>jar</packaging>
+  <version>3.0.5-SNAPSHOT</version>
+  <name>IO Cxbox - Workflow Impl</name>
+
+  <parent>
+    <groupId>org.cxbox</groupId>
+    <artifactId>cxbox-base</artifactId>
+    <version>3.0.5-SNAPSHOT</version>
+    <relativePath>../../../cxbox-base/pom.xml</relativePath>
+  </parent>
+
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.cxbox</groupId>
+      <artifactId>cxbox-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.cxbox</groupId>
+      <artifactId>cxbox-starter-workflow-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>

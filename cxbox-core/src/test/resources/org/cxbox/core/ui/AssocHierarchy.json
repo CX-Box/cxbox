@@ -1,0 +1,29 @@
+{
+  "hierarchy": [
+    {
+      "bcName": "riskResponse",
+      "assocValueKey": "name",
+      "fields": [
+        {
+          "key": "name",
+          "title": "Name",
+          "type": "input"
+        }
+      ]
+    },
+    {
+      "bcName": "deeplyNestedBc",
+      "assocValueKey": "someValueField",
+      "fields": [
+        {
+          "key": "anotherName",
+          "title": "Name",
+          "type": "input"
+        }
+      ]
+    }
+  ]
+}
+
+
+

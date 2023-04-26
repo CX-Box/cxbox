@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>cxbox-dictionary-links</artifactId>
+  <packaging>pom</packaging>
+  <version>3.0.5-SNAPSHOT</version>
+  <name>IO Cxbox - Plugins</name>
+
+  <parent>
+    <groupId>org.cxbox</groupId>
+    <artifactId>cxbox-base</artifactId>
+    <version>3.0.5-SNAPSHOT</version>
+    <relativePath>../cxbox-base/pom.xml</relativePath>
+  </parent>
+
+  <modules>
+    <module>cxbox-dictionary-links-model</module>
+    <module>cxbox-dictionary-links-crudma</module>
+    <module>cxbox-dictionary-links-engine</module>
+    <module>cxbox-dictionary-links-all</module>
+  </modules>
+
+</project>
