@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -295,7 +294,7 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	@SneakyThrows
 	private Stream<PropertyDescriptor> getPropertyDescriptors(Object object) {
 		return Stream.of(Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors())
-				.filter(pd -> pd.getWriteMethod() != null && pd.getWriteMethod() != null);
+				.filter(pd -> pd.getWriteMethod() != null);
 	}
 
 }
