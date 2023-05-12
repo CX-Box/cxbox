@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -33,9 +32,9 @@ public class ServiceUtils {
 		serviceLoaders.add(ServiceLoader.load(cls));
 		serviceLoaders.add(ServiceLoader.load(cls, ClassLoader.getSystemClassLoader()));
 		if (caller != null) {
-			Class callerClass;
+			Class<?> callerClass;
 			if (caller instanceof Class) {
-				callerClass = (Class) caller;
+				callerClass = (Class<?>) caller;
 			} else {
 				callerClass = caller.getClass();
 			}
@@ -55,10 +54,7 @@ public class ServiceUtils {
 	}
 
 	public static <T> T getService(Class<T> cls, Object caller) {
-		for (T service : loadServices(cls, caller)) {
-			return service;
-		}
-		return null;
+		return loadServices(cls, caller).stream().findFirst().orElse(null);
 	}
 
 }

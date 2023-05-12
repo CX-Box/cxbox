@@ -1,4 +1,8 @@
 <h2 align="center">CXBOX CORE</h2>
+<div align="center">
+<a href="https://sonarcloud.io/project/overview?id=CX-Box_cxbox"><img src="https://sonarcloud.io/api/project_badges/measure?project=CX-Box_cxbox&metric=alert_status" alt="sonar" title="">
+</a>
+</div>
 
 <blockquote>
 <div> 
@@ -47,9 +51,8 @@ widgets, fields, layouts (views), navigation (screens).
 </ul>
 </blockquote>
 
-
-
 # CXBOX CORE
+
 ## Building From Source
 
 - Checkout the repository:
@@ -73,10 +76,10 @@ The following databases are currently supported:
 - Postgresql 9.6.15 and later
 - Oracle 11g and later
 
-
 ## Contributing
 
 Please check ours [contributing guide](./CONTRIBUTING.md)
 
 ## License
+
 CXBOX is an open-source project with the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) license.
