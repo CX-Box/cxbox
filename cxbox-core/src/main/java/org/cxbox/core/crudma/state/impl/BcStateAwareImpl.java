@@ -77,7 +77,7 @@ public class BcStateAwareImpl implements BcStateAware {
 
 	private Map<BcKey, BcState> getState(ClientStorage storage) {
 		HttpServletRequest request = WebHelper.getCurrentRequest().orElse(null);
-		if (storage == null) {
+		if (storage == null || request == null) {
 			return null;
 		}
 		return storage.getClientState(getClientId(request));
@@ -135,7 +135,7 @@ public class BcStateAwareImpl implements BcStateAware {
 
 	static class ClientStorage implements Serializable {
 
-		Map<String, Map<BcKey, BcState>> storage = new ConcurrentHashMap<>();
+		ConcurrentHashMap<String, ConcurrentHashMap<BcKey, BcState>> storage = new ConcurrentHashMap<>();
 
 		private Map<BcKey, BcState> getClientState(String clientId) {
 			return storage.computeIfAbsent(clientId, s -> new ConcurrentHashMap<>());
