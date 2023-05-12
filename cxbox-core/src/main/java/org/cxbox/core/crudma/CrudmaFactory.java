@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -17,6 +16,7 @@
 
 package org.cxbox.core.crudma;
 
+import java.util.Optional;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import java.util.List;
 import java.util.Objects;
@@ -45,8 +45,18 @@ public class CrudmaFactory {
 	private boolean applyFilter(Crudma crudma, BcDescription bcDescription) {
 		if (AopUtils.isAopProxy(crudma)) {
 			Advised advised = (Advised) crudma;
-			return ClassUtils
-					.isAssignable(advised.getTargetSource().getTarget().getClass(), bcDescription.getCrudmaService());
+			Class<?> aClass = Optional.of(advised)
+					.map(Advised::getTargetSource)
+					.map(src -> {
+						try {
+							return src.getTarget();
+						} catch (Exception ex) {
+							throw new IllegalStateException(ex);
+						}
+					})
+					.map(Object::getClass)
+					.orElse(null);
+			return ClassUtils.isAssignable(aClass, bcDescription.getCrudmaService());
 		} else {
 			return Objects.equals(crudma.getClass(), bcDescription.getCrudmaService());
 		}
