@@ -1,3 +1,4 @@
+<h2 align="center">CXBOX CORE</h2>
 <h4 align="center">CXBOX - Rapid Enterprise Level Application Development Platform</h4>
 
 <p align="center">
@@ -30,8 +31,7 @@ To get started,
 
 - [download Demo](https://github.com/CX-Box/cxbox-demo) and follow [README.md](https://github.com/CX-Box/cxbox-demo#readme) instructions. Feel free to use demo as template project to start your own projects
 
-
-## Building From Source
+## Building CXBOX CORE From Source
 
 - Checkout the repository:
 
