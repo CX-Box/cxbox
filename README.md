@@ -1,7 +1,24 @@
-Cxbox
-=========
-Cxbox is a framework that allows you to quickly develop applications using the full power of existing enterprise Java solutions.
----
+<h4 align="center">CXBOX - Rapid Enterprise Level Application Development Platform</h4>
+
+<p align="center">
+<a href="http://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat" alt="license" title=""></a>
+</p>
+
+
+<div align="center">
+  <h3>
+    <a href="https://www.cxbox.org/" target="_blank">
+      Website
+    </a>
+    <span> | </span>
+    <a href="https://www.cxbox.org/demo/" target="_blank">
+      Demo
+    </a>
+    <span> | </span>
+    <a href="https://www.cxbox.org/doc/" target="_blank">
+      Documentation
+    </a>
+  </h3>
 
 ## Core features
 
