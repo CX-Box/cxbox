@@ -30,8 +30,9 @@ To get started,
 - [download Intellij Plugin](https://plugins.jetbrains.com/plugin/19523-tesler-helper). [Intellij Plugin](https://plugins.jetbrains.com/plugin/19523-tesler-helper) adds platform specific autocomplete, inspection, navigation and code generation features.
 
 - [download Demo](https://github.com/CX-Box/cxbox-demo) and follow [README.md](https://github.com/CX-Box/cxbox-demo#readme) instructions. Feel free to use demo as template project to start your own projects
-
-## Building CXBOX CORE From Source
+- 
+# CXBOX CORE
+## Building From Source
 
 - Checkout the repository:
 
