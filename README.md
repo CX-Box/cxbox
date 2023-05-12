@@ -19,27 +19,33 @@
       Documentation
     </a>
   </h3>
+</div>
 
-## Core features
+## Description
+CXBOX main purpose is to speed up development of typical Enterprise Level Application based on Spring Boot. A fixed contract with a user interface called [Cxbox-UI](https://github.com/CX-Box/cxbox-ui) allows backend developer to create typical interfaces providing just Json meta files. Full set of typical Enterprise Level UI components included - widgets, fields, layouts (views), navigation (screens) available. 
 
-Cxbox includes:
+## Using CXBOX
+To get started, 
+- [download Intellij Plugin](https://plugins.jetbrains.com/plugin/19523-tesler-helper). [Intellij Plugin](https://plugins.jetbrains.com/plugin/19523-tesler-helper) adds platform specific autocomplete, inspection, navigation and code generation features.
 
-- Abstraction of a business component to simplify access to data;
-- A fixed contract with a user interface called [Cxbox-UI](https://github.com/CX-Box/cxbox-ui), which allows you to create typical interface elements in the form of Json files;
-- A single DAO layer, simplifying work with JPA;
-- The SQL engine that allows you to quickly generate typical business components in the application;
-- Abstraction of the task scheduler to create background tasks;
-- Built-in BPM - an engine that allows you to create business processes.
+- [download Demo](https://github.com/CX-Box/cxbox-demo) and follow [README.md](https://github.com/CX-Box/cxbox-demo#readme) instructions. Feel free to use demo as template project as starting point of your own projects
 
-## Projects
 
-Cxbox is based on the following opensource projects:
+## Building From Source
 
-- Spring 5.x and Spring Boot 2.x;
-- Hibernate as a JPA implementaton;
-- Liquibase for database migration;
-- Quartz for planning tasks;
-- Etc.
+- Checkout the repository:
+
+```bash
+git clone https://github.com/CX-Box/cxbox.git
+```
+
+- Install JDK 11.
+
+- Build and publish the framework modules to the local Maven:
+
+```bash
+mvn clean install
+```
 
 ## Database support
 
@@ -48,12 +54,10 @@ The following databases are currently supported:
 - Postgresql 9.6.15 and later
 - Oracle 11g and later
 
-## Versioning
-
-Cxbox follows [semver](https://semver.org/), e.g. MAJOR.MINOR.PATCH
-All significant changes are documented in our [changelog file](./CHANGELOG.md).  
-Backwards incompatible changes are denoted with `[BREAKING CHANGE]` mark
 
 ## Contributing
 
 Please check ours [contributing guide](./CONTRIBUTING.md)
+
+## License
+CXBOX is an open-source project with the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) license.
