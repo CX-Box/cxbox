@@ -22,7 +22,7 @@
 </div>
 
 ## Description
-CXBOX main purpose is to speed up development of typical Enterprise Level Application based on Spring Boot. A fixed contract with a user interface called [Cxbox-UI](https://github.com/CX-Box/cxbox-ui) allows backend developer to create typical interfaces providing just Json meta files. Full set of typical Enterprise Level UI components included - widgets, fields, layouts (views), navigation (screens) available. 
+CXBOX main purpose is to speed up development of typical Enterprise Level Application based on Spring Boot. A fixed contract with a user interface called [Cxbox-UI](https://github.com/CX-Box/cxbox-ui) allows backend developer to create typical interfaces providing just Json meta files. Full set of typical Enterprise Level UI components included - widgets, fields, layouts (views), navigation (screens). 
 
 ## Using CXBOX
 To get started, 
