@@ -28,7 +28,7 @@ CXBOX main purpose is to speed up development of typical Enterprise Level Applic
 To get started, 
 - [download Intellij Plugin](https://plugins.jetbrains.com/plugin/19523-tesler-helper). [Intellij Plugin](https://plugins.jetbrains.com/plugin/19523-tesler-helper) adds platform specific autocomplete, inspection, navigation and code generation features.
 
-- [download Demo](https://github.com/CX-Box/cxbox-demo) and follow [README.md](https://github.com/CX-Box/cxbox-demo#readme) instructions. Feel free to use demo as template project as starting point of your own projects
+- [download Demo](https://github.com/CX-Box/cxbox-demo) and follow [README.md](https://github.com/CX-Box/cxbox-demo#readme) instructions. Feel free to use demo as template project to start your own projects
 
 
 ## Building From Source
@@ -41,7 +41,7 @@ git clone https://github.com/CX-Box/cxbox.git
 
 - Install JDK 11.
 
-- Build and publish the framework modules to the local Maven:
+- Build framework modules to the local Maven:
 
 ```bash
 mvn clean install
