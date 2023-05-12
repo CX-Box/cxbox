@@ -15,11 +15,11 @@
       Website
     </a>
     <span> | </span>
-    <a href="https://www.cxbox.org/demo/" target="_blank">
+    <a href="https://www.demo.cxbox.org/" target="_blank">
       Demo
     </a>
     <span> | </span>
-    <a href="https://www.cxbox.org/doc/" target="_blank">
+    <a href="https://www.doc.cxbox.org/" target="_blank">
       Documentation
     </a>
   </h3>
