@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -33,11 +32,17 @@ import java.time.LocalDateTime;
 public class TZAwareLDTContextualDeserializer extends JsonDeserializer<LocalDateTime> implements
 		ContextualDeserializer {
 
+	/**
+	 *
+	 * @param parser Parsed used for reading JSON content
+	 * @param ctx Context that can be used to access information about
+	 *   this deserialization activity.
+	 *
+	 * @return LDTDeserializer.INSTANCE.deserialize(parser, ctx). One can override this method and return TZAwareLDTDeserializer.INSTANCE.deserialize(parser, ctx) or for TimeZoneAware Deserialization
+	 * @throws IOException
+	 */
 	@Override
 	public LocalDateTime deserialize(JsonParser parser, DeserializationContext ctx) throws IOException {
-		if (isTZAware(ctx)) {
-			return TZAwareLDTDeserializer.INSTANCE.deserialize(parser, ctx);
-		}
 		return LDTDeserializer.INSTANCE.deserialize(parser, ctx);
 	}
 
@@ -47,10 +52,6 @@ public class TZAwareLDTContextualDeserializer extends JsonDeserializer<LocalDate
 			return TZAwareLDTDeserializer.INSTANCE;
 		}
 		return LDTDeserializer.INSTANCE;
-	}
-
-	private boolean isTZAware(DeserializationContext ctx) {
-		return false;
 	}
 
 }
