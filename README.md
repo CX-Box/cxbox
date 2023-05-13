@@ -1,5 +1,7 @@
 <h2 align="center">CXBOX CORE</h2>
 <div align="center">
+<a href="https://github.com/CX-Box/cxbox/actions/workflows/build.yml"><img src="https://github.com/CX-Box/cxbox/actions/workflows/build.yml/badge.svg" title="">
+</a>
 <a href="https://sonarcloud.io/project/overview?id=CX-Box_cxbox"><img src="https://sonarcloud.io/api/project_badges/measure?project=CX-Box_cxbox&metric=alert_status" alt="sonar" title="">
 </a>
 </div>
