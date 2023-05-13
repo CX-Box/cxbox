@@ -31,11 +31,7 @@ public class I18NAwareStringContextualSerializer extends JsonSerializer<String> 
 
 	@Override
 	public void serialize(String value, JsonGenerator gen, SerializerProvider prov) throws IOException {
-		if (isLocaleAware(gen)) {
 			I18NAwareStringSerializer.INSTANCE.serialize(value, gen, prov);
-		} else {
-			I18NAwareStringSerializer.DELEGATE.serialize(value, gen, prov);
-		}
 	}
 
 	@Override
@@ -44,10 +40,6 @@ public class I18NAwareStringContextualSerializer extends JsonSerializer<String> 
 			return I18NAwareStringSerializer.INSTANCE;
 		}
 		return this;
-	}
-
-	private boolean isLocaleAware(JsonGenerator gen) {
-		return false;
 	}
 
 	private boolean isLocaleAware(BeanProperty property) {
