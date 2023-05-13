@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -47,7 +46,7 @@ public final class PivotFieldExtractor implements FieldExtractor {
 	}
 
 	private Set<BcField> extract(final Widget widget, final TableColRow tableColRow) {
-		final Set<BcField> fields = new HashSet<>(LinkFieldExtractor.extract(widget, tableColRow));
+		final Set<BcField> fields = LinkFieldExtractor.extract(widget, tableColRow);
 		if (tableColRow.getChildren() != null) {
 			tableColRow.getChildren().forEach(child -> fields.addAll(extract(widget, child)));
 		}
