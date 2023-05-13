@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -115,38 +114,40 @@ public final class ChartFieldExtractor implements FieldExtractor {
 		final JsonNode jsonNode = JsonUtils.readTree(widget.getChart());
 		if (jsonNode.isArray()) {
 			for (final JsonNode chart : jsonNode) {
-				final JsonNode xAxisNode = getJsonNode(chart, "meta", "xAxis");
-				if (xAxisNode != null) {
-					fields.addAll(extractField(widget, xAxisNode, "categories"));
-				}
-				final JsonNode seriesNode = getJsonNode(chart, "meta", "series");
-				if (seriesNode != null) {
-					final JsonNode engineNode = getJsonNode(chart, "engine");
-					final String engine = engineNode == null ? null : engineNode.textValue();
+				if (chart != null) {
+					final JsonNode xAxisNode = getJsonNode(chart, "meta", "xAxis");
+					if (xAxisNode != null) {
+						fields.addAll(extractField(widget, xAxisNode, "categories"));
+					}
+					final JsonNode seriesNode = getJsonNode(chart, "meta", "series");
+					if (seriesNode != null) {
+						final JsonNode engineNode = getJsonNode(chart, "engine");
+						final String engine = engineNode == null ? null : engineNode.textValue();
 
-					final JsonNode chartTypeNode = getJsonNode(chart, "meta", "chart", "type");
-					final String chartType = chartTypeNode == null ? null : chartTypeNode.textValue();
+						final JsonNode chartTypeNode = getJsonNode(chart, "meta", "chart", "type");
+						final String chartType = chartTypeNode == null ? null : chartTypeNode.textValue();
 
-					if ("List".equals(widget.getType()) || "DataGrid".equals(widget.getType())) {
-						if (ChartMetaItem.Engine.HIGHCHARTS.getValue().equals(engine)) {
-							if (chartType == null) {
-								fields.addAll(extractFromObject(widget, seriesNode));
-							} else if ("pie".equals(chartType) || "pie-donut".equals(chartType)) {
+						if ("List".equals(widget.getType()) || "DataGrid".equals(widget.getType())) {
+							if (ChartMetaItem.Engine.HIGHCHARTS.getValue().equals(engine)) {
+								if (chartType == null) {
+									fields.addAll(extractFromObject(widget, seriesNode));
+								} else if ("pie".equals(chartType) || "pie-donut".equals(chartType)) {
+									fields.addAll(extractFromObjectArray(widget, seriesNode));
+								} else {
+									fields.addAll(extractFromStringArray(widget, seriesNode));
+								}
+							} else if (ChartMetaItem.Engine.HIGHMAPS.getValue().equals(engine)) {
 								fields.addAll(extractFromObjectArray(widget, seriesNode));
-							} else {
-								fields.addAll(extractFromStringArray(widget, seriesNode));
 							}
-						} else if (ChartMetaItem.Engine.HIGHMAPS.getValue().equals(engine)) {
-							fields.addAll(extractFromObjectArray(widget, seriesNode));
-						}
-					} else if ("Pivot".equals(widget.getType())) {
-						if (ChartMetaItem.Engine.HIGHCHARTS.getValue().equals(engine)) {
-							if (chartType == null) {
-								fields.addAll(extractFromObject(widget, seriesNode));
-							} else if ("pie".equals(chartType) || "pie-donut".equals(chartType)) {
-								fields.addAll(extractFromObjectArray(widget, seriesNode));
-							} else {
-								fields.addAll(extractFromObject(widget, seriesNode));
+						} else if ("Pivot".equals(widget.getType())) {
+							if (ChartMetaItem.Engine.HIGHCHARTS.getValue().equals(engine)) {
+								if (chartType == null) {
+									fields.addAll(extractFromObject(widget, seriesNode));
+								} else if ("pie".equals(chartType) || "pie-donut".equals(chartType)) {
+									fields.addAll(extractFromObjectArray(widget, seriesNode));
+								} else {
+									fields.addAll(extractFromObject(widget, seriesNode));
+								}
 							}
 						}
 					}
