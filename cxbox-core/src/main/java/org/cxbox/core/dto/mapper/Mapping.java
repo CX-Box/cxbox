@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -38,13 +37,11 @@ public class Mapping<E extends BaseEntity, D extends DataResponseDTO> {
 
 	private final E entity;
 
-	@SuppressWarnings({"OptionalAssignedToNull", "unchecked"})
 	public <V> Optional<V> get(final ValueSupplier<? super E, ? super D, V> valueSupplier) {
-		Optional<?> value = cache.get(valueSupplier);
-		if (value == null) {
-			value = Optional.ofNullable(valueSupplier.get(this, entity));
-			cache.put(valueSupplier, value);
-		}
+		Optional<?> value = cache.computeIfAbsent(
+				valueSupplier,
+				key -> Optional.ofNullable(valueSupplier.get(this, entity))
+		);
 		return (Optional<V>) value;
 	}
 
