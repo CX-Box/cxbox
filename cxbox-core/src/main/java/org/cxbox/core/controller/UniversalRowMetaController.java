@@ -49,6 +49,7 @@ public class UniversalRowMetaController {
 
 	private final CrudmaActionHolder crudmaActionHolder;
 
+	@SuppressWarnings("java:S3752")
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = "row-meta-new/**")
 	public ResponseDTO rowMetaNew(
 			HttpServletRequest request,

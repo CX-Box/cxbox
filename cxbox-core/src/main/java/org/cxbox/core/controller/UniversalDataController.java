@@ -123,6 +123,7 @@ public class UniversalDataController {
 		return ResponseBuilder.build(crudmaGateway.delete(crudmaAction));
 	}
 
+	@SuppressWarnings("java:S3752")
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = {"count/**"})
 	public ResponseDTO count(
 			HttpServletRequest request,
