@@ -67,6 +67,7 @@ public class APIConfig implements WebMvcConfigurer {
 		converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
 	}
 
+	@SuppressWarnings("java:S5693")
 	@Bean
 	@ConditionalOnProperty(value = "cxbox.bean.multipart-resolver.enabled", matchIfMissing = true)
 	public MultipartResolver multipartResolver() {
