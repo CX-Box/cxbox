@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -92,8 +91,8 @@ public class TaskChildBcServiceImpl extends AbstractResponseService<AdminBcDto, 
 			return adminBcDto;
 		}).filter(dto -> filterByQueryParams(dto, params.getFilter()))
 				.collect(Collectors.toList());
-		resultList = resultList.stream().skip(params.getPageNumber() * params.getPageSize())
-				.limit(params.getPageSize() + 1).collect(Collectors.toList());
+		resultList = resultList.stream().skip(((long) params.getPageNumber()) * params.getPageSize())
+				.limit(((long)params.getPageSize()) + 1).collect(Collectors.toList());
 		return dtoListToResultPage(resultList, params.getPageSize());
 	}
 
@@ -150,7 +149,7 @@ public class TaskChildBcServiceImpl extends AbstractResponseService<AdminBcDto, 
 					return Objects.equals(parameter.getStringValue(), dto.getName());
 				}
 				if (parameter.getOperation() == SPECIFIED) {
-					if (parameter.getBooleanValue()) {
+					if (Boolean.TRUE.equals(parameter.getBooleanValue())) {
 						return dto.getName() != null;
 					} else {
 						return dto.getName() == null;
@@ -185,7 +184,7 @@ public class TaskChildBcServiceImpl extends AbstractResponseService<AdminBcDto, 
 					return Objects.equals(parameter.getStringValue(), dto.getAffectedWidgets());
 				}
 				if (parameter.getOperation() == SPECIFIED) {
-					if (parameter.getBooleanValue()) {
+					if (Boolean.TRUE.equals(parameter.getBooleanValue())) {
 						return dto.getAffectedWidgets() != null;
 					} else {
 						return dto.getAffectedWidgets() == null;
