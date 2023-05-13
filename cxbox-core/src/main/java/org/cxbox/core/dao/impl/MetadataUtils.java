@@ -279,7 +279,7 @@ public class MetadataUtils {
 					orderList.add(builder.desc(order));
 				}
 			} catch (Exception e) {
-				log.warn("Не удалось распарсить параметр сортировки для класса " + dtoClazz.getName(), e);
+				log.warn("Не удалось распарсить параметр сортировки " + Optional.ofNullable(dtoClazz).map(c -> "для класса " + c.getName()).orElse(""), e);
 			}
 		}
 		if (BaseEntity.class.isAssignableFrom(root.getJavaType())) {
