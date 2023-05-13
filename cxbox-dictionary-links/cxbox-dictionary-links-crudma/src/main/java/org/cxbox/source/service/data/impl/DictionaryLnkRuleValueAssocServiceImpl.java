@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -70,8 +69,8 @@ public class DictionaryLnkRuleValueAssocServiceImpl extends
 					return dto;
 				})
 				.filter(dto -> filterByQueryParams(dto, params.getFilter()))
-				.skip(params.getPageNumber() * params.getPageSize())
-				.limit(params.getPageSize() + 1)
+				.skip(((long) params.getPageNumber()) * params.getPageSize())
+				.limit(((long) params.getPageSize()) + 1)
 				.collect(Collectors.toList());
 		return dtoListToResultPage(result, params.getPageSize());
 	}
