@@ -1,4 +1,3 @@
-
 /*
  * © OOO "SI IKS LAB", 2022-2023
  *
@@ -17,9 +16,13 @@
 
 package org.cxbox.core.ui.field;
 
+import java.util.HashMap;
+import javax.naming.OperationNotSupportedException;
+import lombok.experimental.UtilityClass;
 import org.cxbox.api.util.ServiceUtils;
 import org.cxbox.core.ui.model.BcField;
 import org.cxbox.core.ui.model.BcField.Attribute;
+import org.cxbox.core.ui.model.json.PivotMeta.TableColRow;
 import org.cxbox.core.ui.model.json.field.FieldMeta.FieldMetaBase;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +31,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import lombok.SneakyThrows;
 
+@UtilityClass
 public class CustomFieldExtractor {
 
 	@SneakyThrows
@@ -37,8 +41,13 @@ public class CustomFieldExtractor {
 		if (service == null) {
 			return fields;
 		}
-
-		Map<String, String> custom = ((FieldMetaBase) meta).getCustomFields();
+		Map<String, String> custom = new HashMap<>();
+		if (meta instanceof FieldMetaBase) {
+			custom = ((FieldMetaBase) meta).getCustomFields();
+		} else if (meta instanceof TableColRow) {
+			//TODO>>remove exception and write mapper if PivotMeta support needed
+			throw new OperationNotSupportedException("meta type PivotMeta is not supported");
+		}
 		List<String> fieldNames = service.getFieldNames();
 
 		for (Entry<String, String> entry : custom.entrySet()) {
