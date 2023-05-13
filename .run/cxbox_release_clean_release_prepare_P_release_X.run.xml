@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="cxbox [clean,deploy,-DskipTests]" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+  <configuration default="false" name="cxbox_release_clean_release_prepare_P_release_X" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -11,8 +11,11 @@
           <option name="goals">
             <list>
               <option value="clean" />
-              <option value="deploy" />
-              <option value="-DskipTests" />
+              <option value="release:clean" />
+              <option value="release:prepare" />
+              <option value="-P" />
+              <option value="release" />
+              <option value="-X" />
             </list>
           </option>
           <option name="pomFileName" />

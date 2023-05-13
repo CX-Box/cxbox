@@ -14,10 +14,8 @@
   ~ limitations under the License.
   -->
 
-
-
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="cxbox [release:perform -P release]" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="cxbox_clean_install_DskipTests_T1C" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -28,9 +26,10 @@
           </option>
           <option name="goals">
             <list>
-              <option value="release:perform" />
-              <option value="-P" />
-              <option value="release" />
+              <option value="clean" />
+              <option value="install" />
+              <option value="-DskipTests" />
+              <option value="-T1C" />
             </list>
           </option>
           <option name="pomFileName" />
@@ -42,6 +41,11 @@
         </MavenRunnerParameters>
       </option>
     </MavenSettings>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
     <method v="2" />
   </configuration>
 </component>

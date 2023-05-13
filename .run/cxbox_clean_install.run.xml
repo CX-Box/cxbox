@@ -14,10 +14,8 @@
   ~ limitations under the License.
   -->
 
-
-
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="cxbox [release:clean release:prepare -P release -X]" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="cxbox_clean_install" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -29,11 +27,7 @@
           <option name="goals">
             <list>
               <option value="clean" />
-              <option value="release:clean" />
-              <option value="release:prepare" />
-              <option value="-P" />
-              <option value="release" />
-              <option value="-X" />
+              <option value="install" />
             </list>
           </option>
           <option name="pomFileName" />
@@ -45,6 +39,11 @@
         </MavenRunnerParameters>
       </option>
     </MavenSettings>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
     <method v="2" />
   </configuration>
 </component>
