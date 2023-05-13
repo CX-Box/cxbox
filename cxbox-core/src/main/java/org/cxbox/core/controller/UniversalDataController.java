@@ -52,6 +52,7 @@ public class UniversalDataController {
 	@Autowired
 	private CrudmaActionHolder crudmaActionHolder;
 
+	@SuppressWarnings("java:S3752")
 	@RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, value = {"data/**"})
 	public ResponseDTO find(
 			HttpServletRequest request,
