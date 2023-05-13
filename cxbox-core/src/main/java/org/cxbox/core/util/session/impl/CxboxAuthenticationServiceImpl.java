@@ -29,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class CxboxAuthenticationServiceImpl implements CxboxAuthenticationService {
@@ -42,6 +43,7 @@ public class CxboxAuthenticationServiceImpl implements CxboxAuthenticationServic
 		return loadUserByUsername(username, null);
 	}
 
+	@SuppressWarnings("java:S5804")
 	@Override
 	public UserDetails loadUserByUsername(final String username, final LOV userRole) throws UsernameNotFoundException {
 		final User user = userService.getUserByLogin(username);
