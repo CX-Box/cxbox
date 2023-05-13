@@ -37,6 +37,7 @@ public class CxboxFileServiceSimple implements CxboxFileService {
 
 	private final Path fileFolder;
 
+	@SuppressWarnings("java:S5443")
 	@SneakyThrows
 	public CxboxFileServiceSimple(String fileFolder) {
 		if (StringUtils.isEmpty(fileFolder)) {
