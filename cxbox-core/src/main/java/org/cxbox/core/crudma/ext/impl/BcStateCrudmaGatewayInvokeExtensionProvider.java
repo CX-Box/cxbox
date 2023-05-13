@@ -122,11 +122,11 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 
 		if (!bcStateAware.isPersisted(bc)) {
 			if (CrudmaActionType.META.equals(crudmaAction.getActionType())) {
-				MetaDTO meta = castToMetaDTOtOrElseThrow(invokeResult, crudmaAction.getActionType());
+				MetaDTO meta = castToMetaDTOOrElseThrow(invokeResult, crudmaAction.getActionType());
 				addActionCancel(bc, meta.getRow().getActions());
 				meta.getRow().getFields().get(DataResponseDTO_.vstamp.getName()).setCurrentValue(-1L);
 			} else if (CrudmaActionType.GET.equals(crudmaAction.getActionType())) {
-				DataResponseDTO result = (DataResponseDTO) invokeResult;
+				DataResponseDTO result = castToDataResponseDTOOrElseThrow(invokeResult, crudmaAction.getActionType());
 				if (result != null) {
 					result.setVstamp(-1L);
 				}
@@ -134,7 +134,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 		} else {
 			final CrudmaActionType actionType = crudmaAction.getActionType();
 			if (CrudmaActionType.META.equals(actionType) && bcStateAware.getState(bc) != null && bcStateAware.getState(bc).getDto() != null) {
-				MetaDTO meta = castToMetaDTOtOrElseThrow(invokeResult, crudmaAction.getActionType());
+				MetaDTO meta = castToMetaDTOOrElseThrow(invokeResult, crudmaAction.getActionType());
 				final FieldDTO vstampField = meta.getRow().getFields().get(DataResponseDTO_.vstamp.getName());
 				if (vstampField != null && bcStateAware.getState(bc).getDto().getVstamp() < Long.parseLong(vstampField.getCurrentValue().toString())) {
 					vstampField.setCurrentValue(bcStateAware.getState(bc).getDto().getVstamp());
@@ -150,7 +150,14 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
 	}
 
-	private static MetaDTO castToMetaDTOtOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+	private static DataResponseDTO castToDataResponseDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+		if (invokeResult instanceof DataResponseDTO) {
+			return (DataResponseDTO) invokeResult;
+		}
+		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for DataResponseDTO = " + actionType);
+	}
+
+	private static MetaDTO castToMetaDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
 		if (invokeResult instanceof MetaDTO) {
 			return (MetaDTO) invokeResult;
 		}
