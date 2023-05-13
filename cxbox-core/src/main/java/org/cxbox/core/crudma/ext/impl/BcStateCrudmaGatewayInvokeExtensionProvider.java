@@ -93,7 +93,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 			bcStateAware.clear();
 		}
 		if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.CREATE) && readOnly) {
-			InterimResult result = (InterimResult) invokeResult;
+			InterimResult result = castToInterimResultOrElseThrow(invokeResult, crudmaAction.getActionType());
 			result.setBc(getBcForState(
 					bc.withId(result.getDto().getId()),
 					result.getMeta().getPostActions()
@@ -105,7 +105,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 			addActionCancel(bc, result.getMeta().getRow().getActions());
 		}
 		if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.PREVIEW) && readOnly) {
-			InterimResult result = (InterimResult) invokeResult;
+			InterimResult result = castToInterimResultOrElseThrow(invokeResult, crudmaAction.getActionType());
 			boolean isRecordPersisted = bcStateAware.isPersisted(bc);
 			bcStateAware.clear();
 			bcStateAware.set(result.getBc(),
@@ -122,7 +122,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 
 		if (!bcStateAware.isPersisted(bc)) {
 			if (CrudmaActionType.META.equals(crudmaAction.getActionType())) {
-				MetaDTO meta = (MetaDTO) invokeResult;
+				MetaDTO meta = castToMetaDTOtOrElseThrow(invokeResult, crudmaAction.getActionType());
 				addActionCancel(bc, meta.getRow().getActions());
 				meta.getRow().getFields().get(DataResponseDTO_.vstamp.getName()).setCurrentValue(-1L);
 			} else if (CrudmaActionType.GET.equals(crudmaAction.getActionType())) {
@@ -134,13 +134,27 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 		} else {
 			final CrudmaActionType actionType = crudmaAction.getActionType();
 			if (CrudmaActionType.META.equals(actionType) && bcStateAware.getState(bc) != null && bcStateAware.getState(bc).getDto() != null) {
-				MetaDTO meta = (MetaDTO) invokeResult;
+				MetaDTO meta = castToMetaDTOtOrElseThrow(invokeResult, crudmaAction.getActionType());
 				final FieldDTO vstampField = meta.getRow().getFields().get(DataResponseDTO_.vstamp.getName());
 				if (vstampField != null && bcStateAware.getState(bc).getDto().getVstamp() < Long.parseLong(vstampField.getCurrentValue().toString())) {
 					vstampField.setCurrentValue(bcStateAware.getState(bc).getDto().getVstamp());
 				}
 			}
 		}
+	}
+
+	private static InterimResult castToInterimResultOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+		if (invokeResult instanceof InterimResult) {
+			return (InterimResult) invokeResult;
+		}
+		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
+	}
+
+	private static MetaDTO castToMetaDTOtOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+		if (invokeResult instanceof MetaDTO) {
+			return (MetaDTO) invokeResult;
+		}
+		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
 	}
 
 	private BusinessComponent getBcForState(final BusinessComponent bc, final List<PostAction> postActions) {
