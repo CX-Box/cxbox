@@ -17,15 +17,15 @@
 
 <div align="center">
   <h3>
-    <a href="https://www.cxbox.org/" target="_blank">
+    <a href="https://cxbox.org/" target="_blank">
       Website
     </a>
     <span> | </span>
-    <a href="https://www.demo.cxbox.org/" target="_blank">
+    <a href="http://demo.cxbox.org/" target="_blank">
       Demo
     </a>
     <span> | </span>
-    <a href="https://www.doc.cxbox.org/" target="_blank">
+    <a href="https://doc.cxbox.org/" target="_blank">
       Documentation
     </a>
   </h3>
