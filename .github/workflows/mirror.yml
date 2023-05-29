@@ -1,0 +1,20 @@
+name: Mirroring
+
+on:
+  push:
+
+jobs:
+  to_gitflic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            git@gitflic.ru:cxbox/cxbox.git
+          ssh_private_key:
+            ${{ secrets.GITFLIC_SSH_PRIVATE_KEY }}
+          ssh_username:
+            ${{ secrets.GITFLIC_SSH_USERNAME }}
