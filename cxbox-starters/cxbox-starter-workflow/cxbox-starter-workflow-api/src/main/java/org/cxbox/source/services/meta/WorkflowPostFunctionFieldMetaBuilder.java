@@ -16,7 +16,7 @@
 
 package org.cxbox.source.services.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.source.dto.WorkflowPostFunctionDto;
@@ -30,12 +30,12 @@ public class WorkflowPostFunctionFieldMetaBuilder extends
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowPostFunctionDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		super.buildRowDependentMeta(fields, bcDescription, rowId, parRowId);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowPostFunctionDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowPostFunctionDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 		super.buildIndependentMeta(fields, bcDescription, parRowId);
 	}

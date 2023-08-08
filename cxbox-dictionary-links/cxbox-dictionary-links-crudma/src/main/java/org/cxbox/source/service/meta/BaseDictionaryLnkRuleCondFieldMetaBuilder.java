@@ -24,9 +24,12 @@ import static org.cxbox.api.data.dictionary.CoreDictionaries.DictionaryTermType.
 import static org.cxbox.api.data.dictionary.CoreDictionaries.DictionaryTermType.TEXT_FIELD;
 import static org.cxbox.api.data.dictionary.DictionaryType.DICTIONARY_TERM_TYPE;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.DTOUtils;
 import org.cxbox.core.dto.LovUtils;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
@@ -36,9 +39,6 @@ import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto_;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +55,7 @@ public abstract class BaseDictionaryLnkRuleCondFieldMetaBuilder<R extends Dictio
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<R> fields,
-			InnerBcDescription bcDescription, Long id,
+			BcDescription bcDescription, Long id,
 			Long parentId) {
 		fields.setEnabled(DictionaryLnkRuleCondDto_.type, DictionaryLnkRuleCondDto_.ruleInversionFlg);
 		if (id == null) {
@@ -125,7 +125,7 @@ public abstract class BaseDictionaryLnkRuleCondFieldMetaBuilder<R extends Dictio
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<R> fields, InnerBcDescription bcDescription, Long parentId) {
+	public void buildIndependentMeta(FieldsMeta<R> fields, BcDescription bcDescription, Long parentId) {
 		fields.enableFilter(DictionaryLnkRuleCondDto_.type, DictionaryLnkRuleCondDto_.fieldName);
 		fields.setForceActive(
 				DictionaryLnkRuleCondDto_.type,

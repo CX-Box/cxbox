@@ -21,7 +21,7 @@ import static org.cxbox.source.dto.WorkflowVersionDto_.autoClosedStepName;
 import static org.cxbox.source.dto.WorkflowVersionDto_.description;
 import static org.cxbox.source.dto.WorkflowVersionDto_.firstStepName;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -38,7 +38,7 @@ public class WorkflowVersionFieldMetaBuilder extends FieldMetaBuilder<WorkflowVe
 	private final JpaDao jpaDao;
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowVersionDto> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowVersionDto> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		if (migrationWfVersion.isNotBc(bcDescription) && jpaDao.findById(WorkflowVersion.class, rowId).isDraft()) {
 			fields.setEnabled(description, firstStepName, autoClosedStepName);
@@ -46,7 +46,7 @@ public class WorkflowVersionFieldMetaBuilder extends FieldMetaBuilder<WorkflowVe
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowVersionDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowVersionDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 	}
 

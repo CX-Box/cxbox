@@ -17,7 +17,7 @@
 package org.cxbox.notifications.crudma.meta;
 
 import org.cxbox.api.data.dictionary.DictionaryType;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -31,7 +31,7 @@ public class NotificationTemplateFieldMetaBuilder extends FieldMetaBuilder<Notif
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<NotificationTemplateDTO> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		fields.setEnabled(
 				eventName,
 				mimeType,
@@ -51,7 +51,7 @@ public class NotificationTemplateFieldMetaBuilder extends FieldMetaBuilder<Notif
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<NotificationTemplateDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<NotificationTemplateDTO> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(eventName, mimeType);
 		fields.setEphemeral(taskId, taskName, cntrpId, cntrpName);

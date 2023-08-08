@@ -16,7 +16,7 @@
 
 package org.cxbox.source.services.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -30,13 +30,13 @@ public class WorkflowTaskChildBcAvailabilityFieldMetaBuilder extends
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowTaskChildBcAvailabilityDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		fields.setEnabled(WorkflowTaskChildBcAvailabilityDto_.bcName);
 	}
 
 	@Override
 	public void buildIndependentMeta(FieldsMeta<WorkflowTaskChildBcAvailabilityDto> fields,
-			InnerBcDescription bcDescription, Long parRowId) {
+			BcDescription bcDescription, Long parRowId) {
 
 	}
 

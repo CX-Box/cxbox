@@ -16,7 +16,7 @@
 
 package org.cxbox.crudma.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.data.view.ScreenDTO;
 import org.cxbox.core.dto.data.view.ScreenDTO_;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
@@ -29,14 +29,14 @@ import org.springframework.stereotype.Service;
 public class ScreenFieldMetaBuilder extends FieldMetaBuilder<ScreenDTO> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<ScreenDTO> fields, InnerBcDescription bcDescription, Long id,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<ScreenDTO> fields, BcDescription bcDescription, Long id,
 			Long parentId) {
 		fields.setEnabled(ScreenDTO_.name, ScreenDTO_.title, ScreenDTO_.primary, ScreenDTO_.primaries);
 		fields.setRequired(ScreenDTO_.name);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<ScreenDTO> fields, InnerBcDescription bcDescription, Long parentId) {
+	public void buildIndependentMeta(FieldsMeta<ScreenDTO> fields, BcDescription bcDescription, Long parentId) {
 		fields.enableFilter(ScreenDTO_.name, ScreenDTO_.title);
 	}
 

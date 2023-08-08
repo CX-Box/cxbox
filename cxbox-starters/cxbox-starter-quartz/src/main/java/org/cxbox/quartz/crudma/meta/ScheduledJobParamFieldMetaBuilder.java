@@ -17,7 +17,7 @@
 package org.cxbox.quartz.crudma.meta;
 
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -32,7 +32,7 @@ public class ScheduledJobParamFieldMetaBuilder extends FieldMetaBuilder<Schedule
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<ScheduledJobParamDTO> fields,
-			InnerBcDescription bcDescription,
+			BcDescription bcDescription,
 			Long id,
 			Long parentId) {
 		fields.setEnabled(ScheduledJobParamDTO_.paramValue);
@@ -40,7 +40,7 @@ public class ScheduledJobParamFieldMetaBuilder extends FieldMetaBuilder<Schedule
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<ScheduledJobParamDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<ScheduledJobParamDTO> fields, BcDescription bcDescription,
 			Long parentId) {
 	}
 

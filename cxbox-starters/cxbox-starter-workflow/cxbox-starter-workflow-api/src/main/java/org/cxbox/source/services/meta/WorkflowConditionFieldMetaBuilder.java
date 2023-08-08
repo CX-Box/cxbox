@@ -16,7 +16,7 @@
 
 package org.cxbox.source.services.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.source.dto.WorkflowConditionDto;
@@ -29,12 +29,12 @@ public class WorkflowConditionFieldMetaBuilder extends BaseWorkflowConditionFiel
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowConditionDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		super.buildRowDependentMeta(fields, bcDescription, rowId, parRowId);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowConditionDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowConditionDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 		super.buildIndependentMeta(fields, bcDescription, parRowId);
 	}

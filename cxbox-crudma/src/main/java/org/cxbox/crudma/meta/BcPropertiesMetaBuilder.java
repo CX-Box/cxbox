@@ -21,7 +21,7 @@ import static org.cxbox.crudma.dto.BcPropertiesDTO_.limit;
 import static org.cxbox.crudma.dto.BcPropertiesDTO_.reportPeriod;
 import static org.cxbox.crudma.dto.BcPropertiesDTO_.sort;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 public class BcPropertiesMetaBuilder extends FieldMetaBuilder<BcPropertiesDTO> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<BcPropertiesDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<BcPropertiesDTO> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(
 				reportPeriod,
@@ -44,7 +44,7 @@ public class BcPropertiesMetaBuilder extends FieldMetaBuilder<BcPropertiesDTO> {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta fields, BcDescription bcDescription, Long parRowId) {
 	}
 
 }

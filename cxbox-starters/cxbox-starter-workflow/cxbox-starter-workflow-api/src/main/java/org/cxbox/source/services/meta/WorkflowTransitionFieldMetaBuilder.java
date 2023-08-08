@@ -24,7 +24,7 @@ import static org.cxbox.source.dto.WorkflowTransitionDto_.workflowDestStepName;
 import static org.cxbox.source.dto.WorkflowTransitionDto_.workflowGroupDescription;
 import static org.cxbox.source.dto.WorkflowTransitionDto_.workflowGroupNameButtonYet;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -36,7 +36,7 @@ public class WorkflowTransitionFieldMetaBuilder extends FieldMetaBuilder<Workflo
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowTransitionDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		fields.setEnabled(
 				name,
 				workflowDestStepId,
@@ -49,7 +49,7 @@ public class WorkflowTransitionFieldMetaBuilder extends FieldMetaBuilder<Workflo
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowTransitionDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowTransitionDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(workflowDestStepName, name, workflowDestStepId);
 	}

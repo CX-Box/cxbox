@@ -20,7 +20,7 @@ import static org.cxbox.core.dto.rowmeta.FilterGroupDTO_.bc;
 import static org.cxbox.core.dto.rowmeta.FilterGroupDTO_.filters;
 import static org.cxbox.core.dto.rowmeta.FilterGroupDTO_.name;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.FilterGroupDTO;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 public class FilterGroupMetaBuilder extends FieldMetaBuilder<FilterGroupDTO> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<FilterGroupDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<FilterGroupDTO> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(
 				name,
@@ -46,7 +46,7 @@ public class FilterGroupMetaBuilder extends FieldMetaBuilder<FilterGroupDTO> {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<FilterGroupDTO> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<FilterGroupDTO> fields, BcDescription bcDescription, Long parRowId) {
 	}
 
 }

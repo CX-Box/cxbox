@@ -16,7 +16,7 @@
 
 package org.cxbox.crudma.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.data.view.WidgetDTO;
 import org.cxbox.core.dto.data.view.WidgetDTO_;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 public class WidgetFieldMetaBuilder extends FieldMetaBuilder<WidgetDTO> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<WidgetDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<WidgetDTO> fields, BcDescription bcDescription,
 			Long id, Long parentId) {
 		fields.setEnabled(
 				WidgetDTO_.name, WidgetDTO_.bcName, WidgetDTO_.showCondition, WidgetDTO_.fields,
@@ -39,7 +39,7 @@ public class WidgetFieldMetaBuilder extends FieldMetaBuilder<WidgetDTO> {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WidgetDTO> fields, InnerBcDescription bcDescription, Long parentId) {
+	public void buildIndependentMeta(FieldsMeta<WidgetDTO> fields, BcDescription bcDescription, Long parentId) {
 		fields.enableFilter(WidgetDTO_.name, WidgetDTO_.bcName, WidgetDTO_.title);
 	}
 

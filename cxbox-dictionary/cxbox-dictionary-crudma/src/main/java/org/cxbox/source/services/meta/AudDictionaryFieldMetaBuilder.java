@@ -16,7 +16,7 @@
 
 package org.cxbox.source.services.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -29,13 +29,13 @@ import org.springframework.stereotype.Service;
 public class AudDictionaryFieldMetaBuilder extends FieldMetaBuilder<AudDictionaryDto> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<AudDictionaryDto> fields, InnerBcDescription bc,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<AudDictionaryDto> fields, BcDescription bc,
 			Long id, Long parentId) {
 
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<AudDictionaryDto> fields, InnerBcDescription bc,
+	public void buildIndependentMeta(FieldsMeta<AudDictionaryDto> fields, BcDescription bc,
 			Long parentId) {
 
 	}

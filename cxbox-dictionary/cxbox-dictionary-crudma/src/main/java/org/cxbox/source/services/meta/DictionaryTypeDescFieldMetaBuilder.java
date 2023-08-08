@@ -17,7 +17,7 @@
 package org.cxbox.source.services.meta;
 
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -32,7 +32,7 @@ public class DictionaryTypeDescFieldMetaBuilder extends FieldMetaBuilder<Diction
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<DictionaryTypeDescDTO> fields,
-			InnerBcDescription bcDescription,
+			BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(
 				DictionaryTypeDescDTO_.type, DictionaryTypeDescDTO_.typeDesc
@@ -40,7 +40,7 @@ public class DictionaryTypeDescFieldMetaBuilder extends FieldMetaBuilder<Diction
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<DictionaryTypeDescDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<DictionaryTypeDescDTO> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(
 				DictionaryTypeDescDTO_.type,

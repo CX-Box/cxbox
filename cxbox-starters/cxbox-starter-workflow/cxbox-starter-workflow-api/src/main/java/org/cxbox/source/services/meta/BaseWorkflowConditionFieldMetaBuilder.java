@@ -20,7 +20,7 @@ import static org.cxbox.source.dto.WorkflowConditionDto_.condCd;
 import static org.cxbox.source.dto.WorkflowConditionDto_.dmn;
 import static org.cxbox.source.dto.WorkflowConditionDto_.seq;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dict.WorkflowDictionaryType;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -32,14 +32,14 @@ public abstract class BaseWorkflowConditionFieldMetaBuilder<D extends WorkflowCo
 		FieldMetaBuilder<D> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, InnerBcDescription bcDescription, Long rowId,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, BcDescription bcDescription, Long rowId,
 			Long parRowId) {
 		fields.setEnabled(seq, condCd, dmn);
 		fields.setDictionaryTypeWithAllValues(condCd, WorkflowDictionaryType.WF_COND);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<D> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<D> fields, BcDescription bcDescription, Long parRowId) {
 	}
 
 }

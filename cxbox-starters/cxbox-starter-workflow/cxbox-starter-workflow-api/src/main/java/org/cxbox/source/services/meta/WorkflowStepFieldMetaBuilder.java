@@ -20,7 +20,7 @@ import static org.cxbox.source.dto.WorkflowStepDto_.linkedStatusValue;
 import static org.cxbox.source.dto.WorkflowStepDto_.name;
 import static org.cxbox.source.dto.WorkflowStepDto_.overdueTransitionName;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -31,13 +31,13 @@ import org.springframework.stereotype.Service;
 public class WorkflowStepFieldMetaBuilder extends FieldMetaBuilder<WorkflowStepDto> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowStepDto> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowStepDto> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(name, linkedStatusValue, overdueTransitionName);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowStepDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowStepDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(name, linkedStatusValue);
 	}

@@ -16,10 +16,15 @@
 
 package org.cxbox.source.service.meta;
 
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.exception.ServerException;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.LovUtils;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -28,11 +33,6 @@ import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService;
 import org.cxbox.source.dto.DictionaryLnkRuleDto;
 import org.cxbox.source.dto.DictionaryLnkRuleDto_;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.reflections.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -46,11 +46,11 @@ public class DictionaryLnkRuleFieldMetaBuilder extends FieldMetaBuilder<Dictiona
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<DictionaryLnkRuleDto> fields,
-			InnerBcDescription bcDescription, Long id, Long parentId) {
+			BcDescription bcDescription, Long id, Long parentId) {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<DictionaryLnkRuleDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<DictionaryLnkRuleDto> fields, BcDescription bcDescription,
 			Long parentId) {
 		fields.setEnabled(
 				DictionaryLnkRuleDto_.allValues,

@@ -18,6 +18,7 @@ package org.cxbox.source.service.meta;
 
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.core.crudma.bc.BcRegistry;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -43,7 +44,7 @@ public class CustomizableResponseServiceFieldMetaBuilder extends FieldMetaBuilde
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<CustomizableResponseServiceDto> fields,
-			InnerBcDescription bcDescription, Long id,
+			BcDescription bcDescription, Long id,
 			Long parentId) {
 		fields.setEnabled(CustomizableResponseServiceDto_.serviceName);
 		List<String> alreadyCustomizableServices = jpaDao.getList(CustomizableResponseService.class).stream()
@@ -58,7 +59,7 @@ public class CustomizableResponseServiceFieldMetaBuilder extends FieldMetaBuilde
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<CustomizableResponseServiceDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<CustomizableResponseServiceDto> fields, BcDescription bcDescription,
 			Long parentId) {
 		fields.enableFilter(CustomizableResponseServiceDto_.serviceName);
 		List<SimpleDictionary> filterServices = bcRegistry.select(InnerBcDescription.class)

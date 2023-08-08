@@ -17,7 +17,7 @@
 package org.cxbox.crudma.meta;
 
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -30,13 +30,13 @@ import org.springframework.stereotype.Service;
 public class DeptFieldMetaBuilder extends FieldMetaBuilder<DepartmentDTO> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<DepartmentDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<DepartmentDTO> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(DepartmentDTO_.fullName);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<DepartmentDTO> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<DepartmentDTO> fields, BcDescription bcDescription, Long parRowId) {
 		fields.enableFilter(DepartmentDTO_.shortName);
 	}
 

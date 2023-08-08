@@ -20,13 +20,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-dictionary-links-crudma</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.5-SNAPSHOT</version>
+  <version>3.0.5-GPN-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary Links Implementation</name>
 
   <parent>
     <artifactId>cxbox-dictionary-links</artifactId>
     <groupId>org.cxbox</groupId>
-    <version>3.0.5-SNAPSHOT</version>
+    <version>3.0.5-GPN-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 

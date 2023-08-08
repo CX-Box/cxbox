@@ -20,7 +20,7 @@ package org.cxbox.crudma.meta;
 import static org.cxbox.core.dto.data.SystemSettingDTO_.key;
 import static org.cxbox.core.dto.data.SystemSettingDTO_.value;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.data.SystemSettingDTO;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -37,7 +37,7 @@ public class SystemSettingFieldMetaBuilder extends FieldMetaBuilder<SystemSettin
 	private final JpaDao jpaDao;
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<SystemSettingDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<SystemSettingDTO> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(
 				key,
@@ -52,7 +52,7 @@ public class SystemSettingFieldMetaBuilder extends FieldMetaBuilder<SystemSettin
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<SystemSettingDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<SystemSettingDTO> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(
 				value,

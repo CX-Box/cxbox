@@ -20,7 +20,7 @@ import static org.cxbox.source.dto.WorkflowAssigneeRecommendationDto_.condAssign
 import static org.cxbox.source.dto.WorkflowAssigneeRecommendationDto_.department;
 import static org.cxbox.source.dto.WorkflowAssigneeRecommendationDto_.description;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dict.WorkflowDictionaryType;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -32,13 +32,13 @@ public abstract class BaseWorkflowAssigneeRecommendationFieldMetaBuilder<D exten
 		FieldMetaBuilder<D> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, InnerBcDescription bcDescription, Long rowId,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, BcDescription bcDescription, Long rowId,
 			Long parRowId) {
 		fields.setEnabled(condAssigneeCd, department, description);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<D> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<D> fields, BcDescription bcDescription, Long parRowId) {
 		fields.setDictionaryTypeWithAllValues(condAssigneeCd, WorkflowDictionaryType.WF_COND_ASSIGNEE);
 	}
 

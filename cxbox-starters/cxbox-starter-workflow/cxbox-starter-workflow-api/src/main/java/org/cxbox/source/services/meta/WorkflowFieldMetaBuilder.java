@@ -24,7 +24,7 @@ import static org.cxbox.source.dto.WorkflowDto_.taskTypeCd;
 
 import org.cxbox.WorkflowServiceAssociation;
 import org.cxbox.api.data.dictionary.DictionaryType;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -35,12 +35,12 @@ import org.springframework.stereotype.Service;
 public class WorkflowFieldMetaBuilder extends FieldMetaBuilder<WorkflowDto> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowDto> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowDto> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowDto> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<WorkflowDto> fields, BcDescription bcDescription, Long parRowId) {
 		if (WorkflowServiceAssociation.migrationWf.isNotBc(bcDescription)) {
 			fields.setEnabled(name, description, taskTypeCd, activeVersion, deptShortName);
 			fields.enableFilter(name, description, taskTypeCd, deptShortName);

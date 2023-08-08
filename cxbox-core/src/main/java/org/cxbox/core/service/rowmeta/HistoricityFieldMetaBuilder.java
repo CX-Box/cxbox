@@ -17,8 +17,7 @@
 package org.cxbox.core.service.rowmeta;
 
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.crudma.bc.impl.ExtremeBcDescription;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.data.HistoricityDto;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -56,15 +55,16 @@ public abstract class HistoricityFieldMetaBuilder<T extends HistoricityDto> exte
 	@Override
 	public final void buildExtremeRowDependentMeta(
 			final RowDependentFieldsMeta<T> fields,
-			final ExtremeBcDescription bcDescription,
+			final BcDescription bcDescription,
 			final Long id,
 			final Long parentId) {
 		super.buildExtremeRowDependentMeta(fields, bcDescription, id, parentId);
 	}
 
+	@Override
 	public final void buildRowDependentMeta(
 			final RowDependentFieldsMeta<T> fields,
-			final InnerBcDescription bcDescription,
+			final BcDescription bcDescription,
 			final Long id,
 			final Long parentId) {
 		dependentMeta(fields, bcDescription, id, parentId);
@@ -72,7 +72,7 @@ public abstract class HistoricityFieldMetaBuilder<T extends HistoricityDto> exte
 
 	public final void buildIndependentMeta(
 			final FieldsMeta<T> fields,
-			final InnerBcDescription bcDescription,
+			final BcDescription bcDescription,
 			final Long parentId) {
 		independentMeta(fields, bcDescription, parentId);
 		for (final KeyAttribute<?, T, ?> attribute : getHistoricityKey().getAttributes()) {
@@ -82,13 +82,13 @@ public abstract class HistoricityFieldMetaBuilder<T extends HistoricityDto> exte
 
 	protected abstract void dependentMeta(
 			final RowDependentFieldsMeta<T> fields,
-			final InnerBcDescription bcDescription,
+			final BcDescription bcDescription,
 			final Long id,
 			final Long parentId);
 
 	protected abstract void independentMeta(
 			final FieldsMeta<T> fields,
-			final InnerBcDescription bcDescription,
+			final BcDescription bcDescription,
 			final Long parentId);
 
 }

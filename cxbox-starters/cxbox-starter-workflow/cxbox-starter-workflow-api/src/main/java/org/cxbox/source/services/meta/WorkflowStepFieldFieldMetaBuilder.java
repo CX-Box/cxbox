@@ -19,7 +19,7 @@ package org.cxbox.source.services.meta;
 import static org.cxbox.source.dto.WorkflowStepFieldDto_.field;
 import static org.cxbox.source.dto.WorkflowStepFieldDto_.fieldId;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -31,12 +31,12 @@ public class WorkflowStepFieldFieldMetaBuilder extends FieldMetaBuilder<Workflow
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowStepFieldDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		fields.setEnabled(fieldId, field);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowStepFieldDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowStepFieldDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 	}
 

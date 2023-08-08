@@ -20,7 +20,7 @@ import static org.cxbox.source.dto.WorkflowPostFunctionDto_.actionCd;
 import static org.cxbox.source.dto.WorkflowPostFunctionDto_.seq;
 import static org.cxbox.source.dto.WorkflowPostFunctionDto_.stepTerm;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dict.WorkflowDictionaryType;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -32,12 +32,12 @@ public abstract class BaseWorkflowPostFunctionFieldMetaBuilder<D extends Workflo
 		FieldMetaBuilder<D> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, InnerBcDescription bcDescription, Long id,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, BcDescription bcDescription, Long id,
 			Long parentId) {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<D> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<D> fields, BcDescription bcDescription, Long parRowId) {
 		fields.setForceActive(actionCd);
 		fields.setDictionaryTypeWithAllValues(actionCd, WorkflowDictionaryType.WF_TRN_ACT);
 		fields.setEnabled(seq, actionCd, stepTerm);

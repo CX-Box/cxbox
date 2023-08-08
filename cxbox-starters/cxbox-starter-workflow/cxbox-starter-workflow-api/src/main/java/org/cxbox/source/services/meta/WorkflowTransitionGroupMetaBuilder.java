@@ -20,7 +20,7 @@ import static org.cxbox.source.dto.WorkflowTransitionGroupDto_.description;
 import static org.cxbox.source.dto.WorkflowTransitionGroupDto_.maxShowButtonsInGroup;
 import static org.cxbox.source.dto.WorkflowTransitionGroupDto_.nameButtonYet;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -32,12 +32,12 @@ public class WorkflowTransitionGroupMetaBuilder extends FieldMetaBuilder<Workflo
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowTransitionGroupDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		fields.setEnabled(description, maxShowButtonsInGroup, nameButtonYet);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowTransitionGroupDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowTransitionGroupDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 	}
 

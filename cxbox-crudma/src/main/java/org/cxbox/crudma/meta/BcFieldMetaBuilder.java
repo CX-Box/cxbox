@@ -16,7 +16,7 @@
 
 package org.cxbox.crudma.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.data.view.BcDTO;
 import org.cxbox.core.dto.data.view.BcDTO_;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 public class BcFieldMetaBuilder extends FieldMetaBuilder<BcDTO> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<BcDTO> fields, InnerBcDescription bcDescription, Long id,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<BcDTO> fields, BcDescription bcDescription, Long id,
 			Long parentId) {
 		fields.setEnabled(
 				BcDTO_.name, BcDTO_.parentName, BcDTO_.query, BcDTO_.defaultOrder, BcDTO_.reportDateField,
@@ -39,7 +39,7 @@ public class BcFieldMetaBuilder extends FieldMetaBuilder<BcDTO> {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<BcDTO> fields, InnerBcDescription bcDescription, Long parentId) {
+	public void buildIndependentMeta(FieldsMeta<BcDTO> fields, BcDescription bcDescription, Long parentId) {
 		fields.enableFilter(BcDTO_.name, BcDTO_.parentName);
 	}
 

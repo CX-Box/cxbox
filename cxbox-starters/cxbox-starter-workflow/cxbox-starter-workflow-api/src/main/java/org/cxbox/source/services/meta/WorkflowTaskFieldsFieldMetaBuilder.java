@@ -19,7 +19,7 @@ package org.cxbox.source.services.meta;
 import static org.cxbox.source.dto.WorkflowTaskFieldDto_.key;
 import static org.cxbox.source.dto.WorkflowTaskFieldDto_.title;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -31,11 +31,11 @@ public class WorkflowTaskFieldsFieldMetaBuilder extends FieldMetaBuilder<Workflo
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowTaskFieldDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowTaskFieldDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowTaskFieldDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.setEnabled(title);
 		fields.enableFilter(key, title);

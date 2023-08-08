@@ -16,7 +16,7 @@
 
 package org.cxbox.source.services.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -34,14 +34,14 @@ public class WorkflowTaskMigrationFieldMetaBuilder extends FieldMetaBuilder<Work
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<WorkflowTaskMigrationDto> fields,
-			InnerBcDescription bcDescription, Long rowId, Long parRowId) {
+			BcDescription bcDescription, Long rowId, Long parRowId) {
 		if (workflowableTaskDao.getTask(rowId).getAutomaticTransitionName() != null) {
 			fields.setRequired(WorkflowTaskMigrationDto_.newAutomaticTransitionName);
 		}
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<WorkflowTaskMigrationDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<WorkflowTaskMigrationDto> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.setEnabled(WorkflowTaskMigrationDto_.newStepName, WorkflowTaskMigrationDto_.newAutomaticTransitionName);
 		fields.setRequired(WorkflowTaskMigrationDto_.newStepName);

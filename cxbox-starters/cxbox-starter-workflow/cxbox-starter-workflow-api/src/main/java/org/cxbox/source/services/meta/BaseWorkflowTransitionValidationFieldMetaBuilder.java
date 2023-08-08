@@ -24,7 +24,7 @@ import static org.cxbox.source.dto.WorkflowTransitionValidationDto_.seq;
 import static org.cxbox.source.dto.WorkflowTransitionValidationDto_.validCd;
 import static org.cxbox.source.dto.WorkflowTransitionValidationDto_.validCdKey;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dict.WorkflowDictionaryType;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
@@ -37,7 +37,7 @@ public abstract class BaseWorkflowTransitionValidationFieldMetaBuilder<D extends
 		FieldMetaBuilder<D> {
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, InnerBcDescription bcDescription, Long rowId,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<D> fields, BcDescription bcDescription, Long rowId,
 			Long parRowId) {
 		fields.setEnabled(
 				seq,
@@ -55,7 +55,7 @@ public abstract class BaseWorkflowTransitionValidationFieldMetaBuilder<D extends
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<D> fields, InnerBcDescription bcDescription, Long parRowId) {
+	public void buildIndependentMeta(FieldsMeta<D> fields, BcDescription bcDescription, Long parRowId) {
 	}
 
 }

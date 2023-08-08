@@ -16,7 +16,7 @@
 
 package org.cxbox.source.service.meta;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -29,12 +29,12 @@ public class DictionaryLnkRuleValueFieldMetaBuilder extends FieldMetaBuilder<Dic
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<DictionaryLnkRuleValueDto> fields,
-			InnerBcDescription bcDescription, Long id,
+			BcDescription bcDescription, Long id,
 			Long parentId) {
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<DictionaryLnkRuleValueDto> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<DictionaryLnkRuleValueDto> fields, BcDescription bcDescription,
 			Long parentId) {
 		fields.enableFilter(DictionaryLnkRuleValueDto_.value, DictionaryLnkRuleValueDto_.valueCd);
 	}

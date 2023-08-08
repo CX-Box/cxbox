@@ -20,7 +20,7 @@ package org.cxbox.notifications.crudma.meta;
 
 import org.cxbox.api.data.dictionary.DictionaryType;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -35,7 +35,7 @@ public class NotificationRecipientFieldMetaBuilder extends FieldMetaBuilder<Noti
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<NotificationRecipientDTO> fields,
-			InnerBcDescription bcDescription, Long id, Long parentId) {
+			BcDescription bcDescription, Long id, Long parentId) {
 		if (NotificationServiceAssociation.notificationRecipients.isBc(bcDescription)) {
 			fields.setEnabled(NotificationRecipientDTO_.recipientType);
 			fields.setEnabled(NotificationRecipientDTO_.sameDeptOnly);
@@ -51,7 +51,7 @@ public class NotificationRecipientFieldMetaBuilder extends FieldMetaBuilder<Noti
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<NotificationRecipientDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<NotificationRecipientDTO> fields, BcDescription bcDescription,
 			Long parentId) {
 
 	}

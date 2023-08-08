@@ -24,7 +24,7 @@ import static org.cxbox.source.dto.DictionaryItemDTO_.key;
 import static org.cxbox.source.dto.DictionaryItemDTO_.type;
 import static org.cxbox.source.dto.DictionaryItemDTO_.value;
 
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -41,7 +41,7 @@ public class DictionaryItemsFieldMetaBuilder extends FieldMetaBuilder<Dictionary
 	private final JpaDao jpaDao;
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<DictionaryItemDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<DictionaryItemDTO> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		fields.setEnabled(
 				key,
@@ -62,7 +62,7 @@ public class DictionaryItemsFieldMetaBuilder extends FieldMetaBuilder<Dictionary
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<DictionaryItemDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<DictionaryItemDTO> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(
 				active,

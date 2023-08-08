@@ -17,21 +17,20 @@
 package org.cxbox.quartz.crudma.meta;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.cxbox.api.data.dictionary.CoreDictionaries.LaunchStatus;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.DictionaryType;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.model.core.dao.JpaDao;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.cxbox.quartz.crudma.dto.ScheduledJobDTO;
 import org.cxbox.quartz.crudma.dto.ScheduledJobDTO_;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,20 +45,20 @@ public class ScheduledJobFieldMetaBuilder extends FieldMetaBuilder<ScheduledJobD
 	JpaDao jpaDao;
 
 	@Override
-	public void buildRowDependentMeta(RowDependentFieldsMeta<ScheduledJobDTO> fields, InnerBcDescription bcDescription,
+	public void buildRowDependentMeta(RowDependentFieldsMeta<ScheduledJobDTO> fields, BcDescription bcDescription,
 			Long rowId, Long parRowId) {
 		buildRowDependentCommonMeta(fields, bcDescription, parRowId);
 	}
 
 	private void buildRowDependentCommonMeta(RowDependentFieldsMeta<ScheduledJobDTO> fields,
-			InnerBcDescription bcDescription, Long parRowId) {
+			BcDescription bcDescription, Long parRowId) {
 		fields.setEnabled(ScheduledJobDTO_.serviceName, ScheduledJobDTO_.cronExpression, ScheduledJobDTO_.active);
 		fields.setRequired(ScheduledJobDTO_.serviceName, ScheduledJobDTO_.cronExpression);
 		fields.setDictionaryTypeWithAllValues(ScheduledJobDTO_.serviceName, DictionaryType.SCHEDULED_SERVICES);
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<ScheduledJobDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<ScheduledJobDTO> fields, BcDescription bcDescription,
 			Long parRowId) {
 		fields.enableFilter(ScheduledJobDTO_.serviceName, ScheduledJobDTO_.active, ScheduledJobDTO_.lastLaunchDate, ScheduledJobDTO_.launchStatusCd);
 		fields.setAllFilterValuesByLovType(ScheduledJobDTO_.serviceName, DictionaryType.SCHEDULED_SERVICES);

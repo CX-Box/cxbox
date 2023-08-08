@@ -17,13 +17,11 @@
 package org.cxbox.notifications.crudma.meta;
 
 
-
-import org.cxbox.api.data.dictionary.DictionaryType;
-import org.cxbox.constgen.DtoField;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.cxbox.api.data.dictionary.DictionaryType;
+import org.cxbox.constgen.DtoField;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
@@ -49,7 +47,7 @@ public class NotificationSettingsFieldMetaBuilder extends FieldMetaBuilder<Notif
 
 	@Override
 	public void buildRowDependentMeta(RowDependentFieldsMeta<NotificationSettingsDTO> fields,
-			InnerBcDescription bcDescription, Long id, Long parentId) {
+			BcDescription bcDescription, Long id, Long parentId) {
 		fields.setDictionaryTypeWithAllValues(NotificationSettingsDTO_.eventName, DictionaryType.DATABASE_EVENT);
 		fields.setRequired(NotificationSettingsDTO_.eventName);
 		getEnabledFields().forEach(fields::setEnabled);
@@ -67,7 +65,7 @@ public class NotificationSettingsFieldMetaBuilder extends FieldMetaBuilder<Notif
 	}
 
 	@Override
-	public void buildIndependentMeta(FieldsMeta<NotificationSettingsDTO> fields, InnerBcDescription bcDescription,
+	public void buildIndependentMeta(FieldsMeta<NotificationSettingsDTO> fields, BcDescription bcDescription,
 			Long parentId) {
 		fields.enableFilter(NotificationSettingsDTO_.eventName);
 		fields.setAllFilterValuesByLovType(NotificationSettingsDTO_.eventName, DictionaryType.DATABASE_EVENT);
