@@ -136,7 +136,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param mapper converts the saving value into the corresponding entity field type
 	 */
 	public final <D, V> void setMappedIfChanged(
-			final T dto, final DtoField<T, D> dtoField,
+			final T dto, final DtoField<? super T, D> dtoField,
 			final Consumer<V> entitySetter, final Supplier<D> dtoGetter, final Function<D, V> mapper) {
 		if (dto.isFieldChanged(dtoField)) {
 			entitySetter.accept(mapper.apply(dtoGetter.get()));
@@ -153,7 +153,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoGetter method for retrieving a value (when it changes) from the DTO
 	 */
 	public final <V> void setIfChanged(
-			final T dto, final DtoField<T, V> dtoField,
+			final T dto, final DtoField<? super T, V> dtoField,
 			final Consumer<V> entitySetter, final Supplier<V> dtoGetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, dtoGetter, Function.identity());
 	}
@@ -169,7 +169,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param mapper converts the saving value into the corresponding entity field type
 	 */
 	public final <D, V> void setMappedIfChanged(
-			final T dto, final DtoField<T, D> dtoField,
+			final T dto, final DtoField<? super T, D> dtoField,
 			final Consumer<V> entitySetter, final Function<D, V> mapper) {
 		setMappedIfChanged(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
 	}
@@ -182,7 +182,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param entitySetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChanged(final T dto, final DtoField<T, V> dtoField, final Consumer<V> entitySetter) {
+	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField, final Consumer<V> entitySetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
 	}
 
