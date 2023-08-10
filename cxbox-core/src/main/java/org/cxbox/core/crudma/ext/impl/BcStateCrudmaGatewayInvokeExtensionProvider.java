@@ -16,6 +16,7 @@
 
 package org.cxbox.core.crudma.ext.impl;
 
+import org.cxbox.api.config.CxboxBcStateProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
@@ -66,29 +67,39 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 
 	private final BcStateAware bcStateAware;
 
+	private final CxboxBcStateProperties cxboxBcStateProperties;
+
 	@Override
-	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker, boolean readOnly) {
-		return () -> {
-			BusinessComponent bc = crudmaAction.getBc();
-			CrudmaActionType action = crudmaAction.getActionType();
-			if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.INVOKE) &&
-					Objects.equals(ActionType.CANCEL_CREATE.getType(), crudmaAction.getName())
-			) {
-				bcStateAware.clear();
-				BcDescription description = bc.getDescription();
-				if (description instanceof InnerBcDescription) {
-					return (T) getResponseService(bc).onCancel(bc);
+	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker,
+			boolean readOnly) {
+		if (cxboxBcStateProperties != null && cxboxBcStateProperties.getUseStandardBcStateForInnerBcOnly() && !(crudmaAction.getBc().getDescription() instanceof InnerBcDescription)) {
+			return invoker;
+		} else {
+			return () -> {
+
+				BusinessComponent bc = crudmaAction.getBc();
+				CrudmaActionType action = crudmaAction.getActionType();
+				if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.INVOKE) &&
+						Objects.equals(ActionType.CANCEL_CREATE.getType(), crudmaAction.getName())
+				) {
+					bcStateAware.clear();
+					BcDescription description = bc.getDescription();
+					if (description instanceof InnerBcDescription) {
+						return (T) getResponseService(bc).onCancel(bc);
+					}
+					return (T) new ActionResultDTO().setAction(PostAction.postDelete());
 				}
-				return (T) new ActionResultDTO().setAction(PostAction.postDelete());
-			}
-			restoreBcState(bc, action);
-			T invokeResult = invoker.invoke();
-			afterInvoke(crudmaAction, readOnly, bc, action, invokeResult);
-			return invokeResult;
-		};
+				restoreBcState(bc, action);
+				T invokeResult = invoker.invoke();
+				afterInvoke(crudmaAction, readOnly, bc, action, invokeResult);
+				return invokeResult;
+			};
+		}
 	}
 
-	private void afterInvoke(CrudmaAction crudmaAction, boolean readOnly, BusinessComponent bc, CrudmaActionType action, Object invokeResult) {
+	private void afterInvoke(CrudmaAction crudmaAction, boolean readOnly, BusinessComponent bc, CrudmaActionType action,
+			Object invokeResult) {
+
 		if (action != null && !readOnly) {
 			bcStateAware.clear();
 		}
@@ -98,7 +109,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 					bc.withId(result.getDto().getId()),
 					result.getMeta().getPostActions()
 			));
-			BcState bcState = new BcState(null,false,
+			BcState bcState = new BcState(null, false,
 					Optional.ofNullable(crudmaAction.getOriginalActionType()).orElse(ActionType.CREATE.getType())
 			);
 			bcStateAware.set(result.getBc(), bcState);
@@ -108,18 +119,21 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 			InterimResult result = castToInterimResultOrElseThrow(invokeResult, crudmaAction.getActionType());
 			boolean isRecordPersisted = bcStateAware.isPersisted(bc);
 			bcStateAware.clear();
-			bcStateAware.set(result.getBc(),
+			bcStateAware.set(
+					result.getBc(),
 					new BcState(
 							result.getDto(),
 							isRecordPersisted,
 							Optional.ofNullable(result.getBc()).map(BusinessComponent::getParameters)
 									.map(par -> par.getParameter("_action")).orElse((ActionType.CREATE.getType()))
-					));
+					)
+			);
 			if (!bcStateAware.isPersisted(bc)) {
 				addActionCancel(bc, result.getMeta().getRow().getActions());
 			}
 		}
 
+		//TODO>>!bcStateAware.isPersisted(bc) и bcStateAware.getState(bc) != null && bcStateAware.getState(bc).getDto() != null равзве не одно и тоже?
 		if (!bcStateAware.isPersisted(bc)) {
 			if (CrudmaActionType.META.equals(crudmaAction.getActionType())) {
 				MetaDTO meta = castToMetaDTOOrElseThrow(invokeResult, crudmaAction.getActionType());
@@ -133,10 +147,13 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 			}
 		} else {
 			final CrudmaActionType actionType = crudmaAction.getActionType();
-			if (CrudmaActionType.META.equals(actionType) && bcStateAware.getState(bc) != null && bcStateAware.getState(bc).getDto() != null) {
+			if (CrudmaActionType.META.equals(actionType) && bcStateAware.getState(bc) != null
+					&& bcStateAware.getState(bc).getDto() != null) {
 				MetaDTO meta = castToMetaDTOOrElseThrow(invokeResult, crudmaAction.getActionType());
 				final FieldDTO vstampField = meta.getRow().getFields().get(DataResponseDTO_.vstamp.getName());
-				if (vstampField != null && bcStateAware.getState(bc).getDto().getVstamp() < Long.parseLong(vstampField.getCurrentValue().toString())) {
+				if (vstampField != null
+						&& bcStateAware.getState(bc).getDto().getVstamp() < Long.parseLong(vstampField.getCurrentValue()
+						.toString())) {
 					vstampField.setCurrentValue(bcStateAware.getState(bc).getDto().getVstamp());
 				}
 			}
@@ -147,21 +164,24 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 		if (invokeResult instanceof InterimResult) {
 			return (InterimResult) invokeResult;
 		}
-		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
+		throw new IllegalArgumentException(
+				"invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
 	}
 
 	private static DataResponseDTO castToDataResponseDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
 		if (invokeResult instanceof DataResponseDTO) {
 			return (DataResponseDTO) invokeResult;
 		}
-		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for DataResponseDTO = " + actionType);
+		throw new IllegalArgumentException(
+				"invokeResult is expected to be InterimResult for DataResponseDTO = " + actionType);
 	}
 
 	private static MetaDTO castToMetaDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
 		if (invokeResult instanceof MetaDTO) {
 			return (MetaDTO) invokeResult;
 		}
-		throw new IllegalArgumentException("invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
+		throw new IllegalArgumentException(
+				"invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
 	}
 
 	private BusinessComponent getBcForState(final BusinessComponent bc, final List<PostAction> postActions) {
