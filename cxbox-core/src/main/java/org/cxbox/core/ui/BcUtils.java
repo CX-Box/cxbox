@@ -16,6 +16,7 @@
 
 package org.cxbox.core.ui;
 
+import lombok.Getter;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.bc.InnerBcTypeAware;
@@ -51,6 +52,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
+@Getter
 @RequiredArgsConstructor
 public class BcUtils {
 

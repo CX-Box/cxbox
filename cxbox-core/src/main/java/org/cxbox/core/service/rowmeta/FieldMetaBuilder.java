@@ -19,6 +19,7 @@ package org.cxbox.core.service.rowmeta;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
+import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
 import org.cxbox.core.crudma.bc.impl.ExtremeBcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
@@ -29,6 +30,8 @@ public abstract class FieldMetaBuilder<T extends DataResponseDTO> {
 
 	public void buildRowDependentMeta(RowDependentFieldsMeta<T> fields, BusinessComponent bc) {
 		if (bc.getDescription() instanceof InnerBcDescription) {
+			buildRowDependentMeta(fields, bc.getDescription(), bc.getIdAsLong(), bc.getParentIdAsLong());
+		} else if (bc.getDescription() instanceof ExternalBcDescription) {
 			buildRowDependentMeta(fields, bc.getDescription(), bc.getIdAsLong(), bc.getParentIdAsLong());
 		} else if (bc.getDescription() instanceof ExtremeBcDescription) {
 			buildExtremeRowDependentMeta(fields, bc.getDescription(), bc.getIdAsLong(), bc.getParentIdAsLong());

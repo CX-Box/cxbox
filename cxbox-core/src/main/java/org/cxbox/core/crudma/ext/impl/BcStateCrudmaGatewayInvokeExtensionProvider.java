@@ -16,7 +16,7 @@
 
 package org.cxbox.core.crudma.ext.impl;
 
-import org.cxbox.api.config.CxboxBcStateProperties;
+import org.cxbox.api.config.CxboxExternalProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
@@ -67,7 +67,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 
 	private final BcStateAware bcStateAware;
 
-	private final CxboxBcStateProperties cxboxBcStateProperties;
+	private final CxboxExternalProperties cxboxBcStateProperties;
 
 	@Override
 	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker,

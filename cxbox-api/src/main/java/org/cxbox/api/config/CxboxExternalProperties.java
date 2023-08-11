@@ -24,12 +24,11 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @Validated
-@ConfigurationProperties(prefix = "cxbox.bcstate")
-public class CxboxBcStateProperties {
+@ConfigurationProperties(prefix = "cxbox.external")
+public class CxboxExternalProperties {
 
 	/**
 	 * In BcStateCrudmaGatewayInvokeExtensionProvider we set bcState for any bc type, but use this cache only for InnerBcDescription. When this property = TRUE, then it turns off bcState for non InnerBcDescription - so you can implement your own BcStateCrudmaGatewayInvokeExtensionProvider for other bc types
 	 */
 	private Boolean useStandardBcStateForInnerBcOnly = Boolean.FALSE;
-
 }

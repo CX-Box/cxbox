@@ -18,8 +18,10 @@ package org.cxbox.core.crudma.bc;
 
 import org.cxbox.core.crudma.Crudma;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
+import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
 import org.cxbox.core.crudma.bc.impl.ExtremeBcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
+import org.cxbox.core.service.ExternalResponseServiceMarker;
 import org.cxbox.core.service.ResponseService;
 import lombok.experimental.UtilityClass;
 
@@ -40,6 +42,13 @@ public class BcDescriptionBuilder {
 					name,
 					parentName,
 					(Class<? extends Crudma>) serviceClass,
+					refresh
+			);
+		} else if (ExternalResponseServiceMarker.class.isAssignableFrom(serviceClass)) {
+			return new ExternalBcDescription(
+					name,
+					parentName,
+					(Class<? extends ExternalResponseServiceMarker>) serviceClass,
 					refresh
 			);
 		} else {

@@ -16,7 +16,7 @@
 
 package org.cxbox.core.config;
 
-import org.cxbox.api.config.CxboxBcStateProperties;
+import org.cxbox.api.config.CxboxExternalProperties;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.file.conf.CxboxFileConfiguration;
 import org.cxbox.core.metahotreload.conf.MetaHotReloadConfiguration;
@@ -41,7 +41,7 @@ import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 		MetaHotReloadConfiguration.class,
 		CxboxFileConfiguration.class
 })
-@EnableConfigurationProperties({CxboxBeanProperties.class, CxboxBcStateProperties.class})
+@EnableConfigurationProperties({CxboxBeanProperties.class, CxboxExternalProperties.class})
 public class CoreApplicationConfig {
 
 	@Bean
