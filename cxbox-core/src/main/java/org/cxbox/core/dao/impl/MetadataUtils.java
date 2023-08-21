@@ -16,6 +16,39 @@
 
 package org.cxbox.core.dao.impl;
 
+import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+import static org.cxbox.core.controller.param.SortType.ASC;
+import static org.cxbox.core.controller.param.SortType.DESC;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.persistence.ElementCollection;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.FetchParent;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.Bindable;
+import javax.persistence.metamodel.Bindable.BindableType;
+import javax.persistence.metamodel.ManagedType;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.cxbox.api.data.Period;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
@@ -31,23 +64,7 @@ import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.util.ReflectionUtils;
-
-import javax.persistence.criteria.*;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.ManagedType;
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
-import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.controller.param.SortType.ASC;
-import static org.cxbox.core.controller.param.SortType.DESC;
 
 
 @Slf4j
@@ -77,7 +94,12 @@ public class MetadataUtils {
 							providers.stream().filter(p -> p.getClass().equals(multisourceParameter.provider()))
 									.findFirst()
 									.ifPresent(
-											dataProvider -> result.addAll(dataProvider.getClassifyDataParameters(dtoField, filterParam, null, providers))
+											dataProvider -> result.addAll(dataProvider.getClassifyDataParameters(
+													dtoField,
+													filterParam,
+													null,
+													providers
+											))
 									);
 						} else {
 							SearchParameter searchParam = Optional.ofNullable(dtoField.getDeclaredAnnotation(SearchParameter.class))
@@ -92,7 +114,12 @@ public class MetadataUtils {
 							providers.stream().filter(p -> p.getClass().equals(searchParam.provider()))
 									.findFirst()
 									.ifPresent(
-											dataProvider -> result.addAll(dataProvider.getClassifyDataParameters(dtoField, filterParam, searchParam, providers))
+											dataProvider -> result.addAll(dataProvider.getClassifyDataParameters(
+													dtoField,
+													filterParam,
+													searchParam,
+													providers
+											))
 									);
 						}
 					} catch (Exception e) {
@@ -164,19 +191,20 @@ public class MetadataUtils {
 		return from.join(attrName, getJoinType(from, attrName));
 	}
 
-	public static Path getFieldPath(String field, Root<?> root) {
+	public static Path getFieldPath(String fieldName, Root<?> root) {
 		Path result;
-		if (field.contains(".")) {
-			String[] fieldArr = field.split("\\.");
+		if (fieldName.contains(".")) {
+			String[] fieldArr = fieldName.split("\\.");
 			From partialFrom = root;
 			for (int i = 0; i < fieldArr.length - 1; i++) {
 				partialFrom = joinEntity(partialFrom, fieldArr[i]);
 			}
-			result = partialFrom.get(fieldArr[fieldArr.length - 1]);
-		} else {
-			result = root.get(field);
+			return partialFrom.get(fieldArr[fieldArr.length - 1]);
 		}
-		return result;
+		if (isElementCollectionField(root, fieldName)) {
+			return root.join(fieldName);
+		}
+		return root.get(fieldName);
 	}
 
 	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb) {
@@ -277,8 +305,12 @@ public class MetadataUtils {
 				} else if (DESC.equals(p.getType())) {
 					orderList.add(builder.desc(order));
 				}
-			} catch (Exception e) {
-				log.warn("Не удалось распарсить параметр сортировки " + Optional.ofNullable(dtoClazz).map(c -> "для класса " + c.getName()).orElse(""), e);
+			} catch (Exception exception) {
+				log.warn(
+						"Couldn't parse sorting parameter {}",
+						Optional.ofNullable(dtoClazz).map(c -> "for class " + c.getName()).orElse(""),
+						exception
+				);
 			}
 		}
 		if (BaseEntity.class.isAssignableFrom(root.getJavaType())) {
@@ -295,7 +327,7 @@ public class MetadataUtils {
 			Field dtoField = ReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
-						"Не найдено поле " + parameter.getName() + " в классе " + dtoClazz.getName());
+						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
 			}
 			SearchParameter fieldParameter = dtoField.getDeclaredAnnotation(org.cxbox.core.util.filter.SearchParameter.class);
 			if (fieldParameter != null && !"".equals(fieldParameter.name())) {
@@ -312,7 +344,7 @@ public class MetadataUtils {
 			Field dtoField = ReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
-						"Не найдено поле " + parameter.getName() + " в классе " + dtoClazz.getName());
+						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
 			}
 			return LovUtils.getType(dtoField);
 		}
@@ -363,6 +395,24 @@ public class MetadataUtils {
 		} else {
 			return createPredicate(root, criteria, cb);
 		}
+	}
+
+	private boolean isElementCollectionField(Root<?> root, String fieldName) {
+		Class<?> rootClass = root.getModel().getJavaType();
+		Field field = org.springframework.data.util.ReflectionUtils.findField(
+				rootClass,
+				fld -> fieldName.equals(fld.getName())
+		);
+		return Optional.ofNullable(field)
+				.map(fld -> fld.isAnnotationPresent(ElementCollection.class))
+				.orElseThrow(() -> new IllegalArgumentException(
+								String.format(
+										"Couldn't find field %s in entity %s",
+										fieldName,
+										rootClass.getName()
+								)
+						)
+				);
 	}
 
 }

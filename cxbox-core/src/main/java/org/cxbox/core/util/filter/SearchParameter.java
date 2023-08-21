@@ -16,21 +16,40 @@
 
 package org.cxbox.core.util.filter;
 
-import org.cxbox.core.util.filter.provider.impl.LongValueProvider;
-import org.cxbox.core.util.filter.provider.impl.StringValueProvider;
-import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.cxbox.core.util.filter.provider.impl.LongValueProvider;
+import org.cxbox.core.util.filter.provider.impl.StringValueProvider;
 
+/**
+ * Enables filtration by the annotated field of {@link org.cxbox.api.data.dto.DataResponseDTO DataResponseDTO}.
+ * Configures the rules and parameters for filtering by field.
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SearchParameter {
 
+	/**
+	 * A path to the field on a JPA entity on which filtering will be performed.
+	 * For collections annotated with {@link javax.persistence.ElementCollection ElementCollection}
+	 * provide a path to the collection field itself.
+	 * For collections annotated with {@link javax.persistence.OneToMany OneToMany}
+	 * provide a path to the association entity field.
+	 *
+	 * @return Dot notation path e.g. entityField.associationField.
+	 */
 	String name() default "";
 
+	/**
+	 * Whether to filter by datetime as-is. If not strict, datetime filtering will be done by the value
+	 * at the beginning or end of the day for the LESS THAN and GREATER THAN operators, respectively.
+	 * If strict, filtering will be done by the actual filter value.
+	 *
+	 * @return Whether to apply strict filtering or not.
+	 */
 	boolean strict() default false;
 
 	/**
@@ -43,13 +62,18 @@ public @interface SearchParameter {
 	boolean suppressProcess() default false;
 
 	/**
-	 * In case of multi-field value use as the key
-	 * @return ClassifyDataProvider
+	 * Used only for fields of {@link org.cxbox.core.dto.multivalue.MultivalueField MultivalueField} type
+	 * and is necessary to correctly type string representation of filtering parameter.
+	 *
+	 * @return ClassifyDataProvider which could be applied to the key(id) of {@link org.cxbox.core.dto.multivalue.MultivalueFieldSingleValue MultivalueFieldSingleValue}.
+	 * E.g. the key is stringified date, then we should use {@link org.cxbox.core.util.filter.provider.impl.DateValueProvider DateValueProvider}
 	 */
 	Class<? extends ClassifyDataProvider> multiFieldKey() default LongValueProvider.class;
 
 	/**
-	 * Get a provider for defining of classify data parameter in sorting or searching cases
+	 * Get a provider for defining of classify data parameter in sorting or searching cases.
+	 * Necessary to correctly type string representation of filtering parameter.
+	 *
 	 * @return ClassifyDataProvider
 	 */
 	Class<? extends ClassifyDataProvider> provider() default StringValueProvider.class;
