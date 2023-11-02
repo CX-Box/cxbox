@@ -20,13 +20,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-dictionary</artifactId>
   <packaging>pom</packaging>
-  <version>3.0.5</version>
+  <version>3.0.6-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>3.0.5</version>
+    <version>3.0.6-SNAPSHOT</version>
     <relativePath>../cxbox-base/pom.xml</relativePath>
   </parent>
 
