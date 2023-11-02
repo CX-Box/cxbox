@@ -213,6 +213,9 @@
               <goals>
                 <goal>sign</goal>
               </goals>
+              <configuration>
+                <keyname>${gpg.key}</keyname>
+              </configuration>
             </execution>
           </executions>
         </plugin>
