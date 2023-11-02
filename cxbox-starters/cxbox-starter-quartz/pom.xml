@@ -19,13 +19,13 @@
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>3.0.5-SNAPSHOT</version>
+    <version>3.0.5</version>
     <relativePath>../../cxbox-base/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-starter-quartz</artifactId>
   <packaging>jar</packaging>
-  <version>3.0.5-SNAPSHOT</version>
+  <version>3.0.5</version>
   <name>IO Cxbox Starter - Quartz extension</name>
 
   <properties>
