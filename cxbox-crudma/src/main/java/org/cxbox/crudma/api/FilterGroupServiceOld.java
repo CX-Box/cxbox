@@ -21,6 +21,6 @@ import org.cxbox.core.service.ResponseService;
 import org.cxbox.model.ui.entity.FilterGroup;
 
 
-public interface FilterGroupService extends ResponseService<FilterGroupDTO, FilterGroup> {
+public interface FilterGroupServiceOld extends ResponseService<FilterGroupDTO, FilterGroup> {
 
 }

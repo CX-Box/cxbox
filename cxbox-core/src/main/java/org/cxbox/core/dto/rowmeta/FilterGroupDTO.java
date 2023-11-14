@@ -16,19 +16,22 @@
 
 package org.cxbox.core.dto.rowmeta;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.model.ui.entity.FilterGroup;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.model.ui.entity.FilterGroup;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FilterGroupDTO extends DataResponseDTO {
+
+	private Boolean personal;
 
 	private String name;
 
@@ -38,6 +41,7 @@ public class FilterGroupDTO extends DataResponseDTO {
 
 	@Builder
 	public FilterGroupDTO(FilterGroup entity) {
+		this.personal = !Objects.isNull(entity.getUser());
 		this.id = entity.getId().toString();
 		this.name = entity.getName();
 		this.filters = entity.getFilters();

@@ -16,6 +16,8 @@
 
 package org.cxbox.model.ui.entity;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import org.cxbox.model.core.entity.BaseEntity;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -23,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cxbox.model.core.entity.User;
 
 @Entity
 @Getter
@@ -31,6 +34,10 @@ import lombok.experimental.Accessors;
 @Table(name = "BC_FILTER_GROUPS")
 @Accessors(chain = true)
 public class FilterGroup extends BaseEntity {
+
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
 	private String name;
 
