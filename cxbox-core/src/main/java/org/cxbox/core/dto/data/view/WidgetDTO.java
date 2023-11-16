@@ -16,13 +16,6 @@
 
 package org.cxbox.core.dto.data.view;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.LocaleAware;
-import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
-import org.cxbox.api.util.jackson.ser.contextaware.I18NAwareRawStringSerializer;
-import org.cxbox.core.util.filter.SearchParameter;
-import org.cxbox.model.ui.entity.ViewWidgets;
-import org.cxbox.model.ui.entity.Widget;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,6 +24,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.LocaleAware;
+import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
+import org.cxbox.api.util.jackson.ser.contextaware.I18NAwareRawStringSerializer;
+import org.cxbox.core.dto.rowmeta.AdditionalFieldsDTO;
+import org.cxbox.core.util.filter.SearchParameter;
+import org.cxbox.model.ui.entity.ViewWidgets;
+import org.cxbox.model.ui.entity.Widget;
 
 @Slf4j
 @NoArgsConstructor
@@ -59,6 +60,8 @@ public class WidgetDTO extends DataResponseDTO implements BcSource {
 	private String type;
 
 	private String url;
+
+	private AdditionalFieldsDTO personalFields;
 
 	@SearchParameter(name = "bc")
 	private String bcName;
