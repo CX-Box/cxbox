@@ -1,0 +1,4 @@
+fail_on_severity: 'critical'
+allow_licenses:
+  - 'Apache-2.0'
+  - 'MIT'
