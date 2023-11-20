@@ -95,13 +95,11 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 		List<WidgetSourceDTO> widgetDtos = metaResourceReaderService.getWidgets();
 		List<ViewSourceDTO> viewDtos = metaResourceReaderService.getViews();
 
-		authzService.loginAs(authzService.createAuthentication(VANILLA));
-
 		txService.invokeInTx(() -> {
 			metaLockService.createLockRowIfNotExist();
 			metaLockService.updateLock(LockStatusType.LOCK);
 
-			loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);   //??????
+			loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
 			deleteAllMeta(jpaDao);
 			bcUtil.process(bcDtos);
 			Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
@@ -110,9 +108,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 			responsibilitiesProcess(screenDtos, viewDtos);
 			loadMetaAfterProcess();
 
-			metaLockService.doCreate();
 			metaLockService.updateLock(LockStatusType.UNLOCK);
-
 			return null;
 		});
 
@@ -122,13 +118,10 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 		authzService.loginAs(authzService.createAuthentication(VANILLA));
 		metaLockService.createLockRowIfNotExist();
 
-		boolean waitingResult = true;
 		if (metaLockService.isLock()) {
-			waitingResult = waitUnLock();
+			 waitUnLock();
 		}
-		if (!metaLockService.isCreate() || !waitingResult) {
 			loadMeta();
-		}
 	}
 
 
@@ -219,17 +212,16 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	}
 
 	@SneakyThrows
-	private boolean waitUnLock() {
+	private void waitUnLock() {
 		LockStatus lockStatus = metaLockService.getLockEntity();
 
 		while (lockStatus.getStatus().equals(LockStatusType.LOCK)) {
 			if (lockStatus.getLockTime().plusSeconds(config.getBaseLockTimer()).isBefore(LocalDateTime.now())) {
-				return false;
+				break;
 			}
 			Thread.sleep(config.getCheckLockInterval());
 			lockStatus = jpaDao.findById(LockStatus.class, 1L);
 		}
-		return true;
 	}
 
 }

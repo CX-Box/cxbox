@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import javax.transaction.Transactional;
 import javax.transaction.Transactional.TxType;
 import lombok.AllArgsConstructor;
-import org.cxbox.core.dto.rowmeta.CreateStatusType;
 import org.cxbox.core.dto.rowmeta.LockStatus;
 import org.cxbox.core.dto.rowmeta.LockStatusType;
 import org.cxbox.core.dto.rowmeta.LockStatus_;
@@ -30,33 +29,11 @@ public class MetaMetaLockServiceImpl implements MetaLockService {
 	}
 
 	@Override
-	public boolean isCreate() {
-		return jpaDao.findById(LockStatus.class, 1L).getCreateStatus().equals(CreateStatusType.CREATED);
-	}
-
-	@Override
-	@Transactional(TxType.REQUIRES_NEW)
-	public void doCreate() {
-		LockStatus lockStatus = getLockEntity();
-		if (!lockStatus.getCreateStatus().equals(CreateStatusType.CREATED)) {
-			jpaDao.update(
-					LockStatus.class, (root, cq, cb) -> cb.and(
-							cb.equal(root.get(LockStatus_.id), 1L)
-					),
-					(update, root, cb) -> update.set(
-							root.get(LockStatus_.createStatus),
-							cb.literal(CreateStatusType.CREATED)
-					)
-			);
-		}
-	}
-
-	@Override
 	@Transactional(TxType.REQUIRES_NEW)
 	public void createLockRowIfNotExist() {
 		boolean exists = jpaDao.exists(LockStatus.class, (root, cq, cb) -> cb.equal(root.get(LockStatus_.id), 1L));
 		if (!exists) {
-			LockStatus lockStatus = new LockStatus(LockStatusType.UNLOCK, CreateStatusType.NOT_CREATED);
+			LockStatus lockStatus = new LockStatus(LockStatusType.UNLOCK);
 			lockStatus.setId(1L);
 			jpaDao.save(lockStatus);
 		}

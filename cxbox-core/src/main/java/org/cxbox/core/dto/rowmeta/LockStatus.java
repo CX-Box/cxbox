@@ -22,16 +22,12 @@ public class LockStatus extends BaseEntity {
 	@Enumerated(value = EnumType.STRING)
 	private LockStatusType status;
 
-	@Enumerated(value = EnumType.STRING)
-	private CreateStatusType createStatus;
-
 	@CreationTimestamp
 	@Column(name = "lock_date", nullable = false)
 	private LocalDateTime lockTime;
 
-	public LockStatus(LockStatusType status, CreateStatusType createStatus) {
+	public LockStatus(LockStatusType status) {
 		this.status = status;
-		this.createStatus = createStatus;
 	}
 
 }

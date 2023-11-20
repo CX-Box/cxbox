@@ -10,10 +10,6 @@ public interface MetaLockService {
 
 	boolean isLock();
 
-	boolean isCreate();
-
-	void doCreate();
-
 	void createLockRowIfNotExist();
 
 	void updateLockTime(LocalDateTime lockTime);
