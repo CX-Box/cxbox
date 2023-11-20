@@ -76,7 +76,7 @@ public class CxboxCacheAutoConfiguration {
 
 	@Bean
 	public CacheResolver cxboxCacheResolver(MetaHotReloadService metaHotReloadService) {
-		metaHotReloadService.loadMeta();
+		metaHotReloadService.loadMetaWithCheckBlock();
 		if (CacheType.NONE.equals(cacheProperties.getType())) {
 			return new CacheManagerBasedCacheResolver(new NoOpCacheManager());
 		}

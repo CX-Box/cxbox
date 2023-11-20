@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.metahotreload.MetaHotReloadService;
+import org.cxbox.core.metahotreload.MetaLockService;
 import org.cxbox.core.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.core.metahotreload.service.*;
 import org.cxbox.model.core.dao.JpaDao;
@@ -51,7 +52,8 @@ public class MetaHotReloadConfiguration {
 			WidgetUtil widgetUtil,
 			ViewAndViewWidgetUtil viewAndViewWidgetUtil,
 			ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil,
-			BcUtil bcUtil) {
+			BcUtil bcUtil,
+			MetaLockService metaLockService) {
 		return new MetaHotReloadServiceImpl(
 				config,
 				metaResourceReaderService,
@@ -61,6 +63,7 @@ public class MetaHotReloadConfiguration {
 				widgetUtil,
 				viewAndViewWidgetUtil,
 				screenAndNavigationGroupAndNavigationViewUtil,
-				bcUtil);
+				bcUtil,
+				metaLockService);
 	}
 }
