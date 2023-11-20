@@ -16,37 +16,42 @@
 
 package org.cxbox.core.metahotreload.service;
 
+import static org.cxbox.api.service.session.InternalAuthorizationService.VANILLA;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.core.metahotreload.CxboxSharedLock;
 import org.cxbox.core.metahotreload.MetaHotReloadService;
 import org.cxbox.core.metahotreload.conf.properties.MetaConfigurationProperties;
-import org.cxbox.core.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.core.metahotreload.dto.BcSourceDTO;
+import org.cxbox.core.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.core.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.core.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.core.entity.Responsibilities;
 import org.cxbox.model.core.entity.Responsibilities.ResponsibilityType;
-import org.cxbox.model.ui.entity.*;
+import org.cxbox.model.ui.entity.Bc;
+import org.cxbox.model.ui.entity.Screen;
+import org.cxbox.model.ui.entity.View;
+import org.cxbox.model.ui.entity.ViewWidgets;
+import org.cxbox.model.ui.entity.Widget;
 import org.cxbox.model.ui.navigation.NavigationGroup;
 import org.cxbox.model.ui.navigation.NavigationView;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-
-import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Map;
-
-import static org.cxbox.api.service.session.InternalAuthorizationService.VANILLA;
 
 @RequiredArgsConstructor
 public class MetaHotReloadServiceImpl implements MetaHotReloadService {
@@ -69,6 +74,8 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected final BcUtil bcUtil;
 
+	protected final Optional<CxboxSharedLock> cxboxSharedLock;
+
 	private static void deleteAllMeta(@NotNull JpaDao jpaDao) {
 		jpaDao.delete(NavigationView.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(NavigationGroup.class, (root, query, cb) -> cb.and());
@@ -88,16 +95,27 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 		authzService.loginAs(authzService.createAuthentication(VANILLA));
 
 		txService.invokeInTx(() -> {
-			loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
-			deleteAllMeta(jpaDao);
-			bcUtil.process(bcDtos);
-			Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
-			viewAndViewWidgetUtil.process(viewDtos, nameToWidget);
-			screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
-			responsibilitiesProcess(screenDtos, viewDtos);
-			loadMetaAfterProcess();
+
+			Runnable loadMeta = () -> {
+				loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
+				deleteAllMeta(jpaDao);
+				bcUtil.process(bcDtos);
+				Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
+				viewAndViewWidgetUtil.process(viewDtos, nameToWidget);
+				screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
+				responsibilitiesProcess(screenDtos, viewDtos);
+				loadMetaAfterProcess();
+			};
+
+			if (cxboxSharedLock.isEmpty()) {
+				loadMeta.run();
+			} else {
+				cxboxSharedLock.get().acquireAndExecute(loadMeta);
+			}
+
 			return null;
 		});
+
 	}
 
 	//TODO>>Draft. Refactor
