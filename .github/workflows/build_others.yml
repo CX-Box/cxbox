@@ -8,6 +8,10 @@ on:
     branches-ignore:
       - 'main'
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   build8:
     runs-on: ubuntu-latest

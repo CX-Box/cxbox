@@ -4,3 +4,4 @@ allow_licenses:
   - 'BSD-3-Clause'
   - 'Apache-2.0'
   - 'MIT'
+comment-summary-in-pr: always
