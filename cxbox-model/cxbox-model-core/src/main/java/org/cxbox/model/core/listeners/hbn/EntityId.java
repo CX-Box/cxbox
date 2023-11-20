@@ -16,7 +16,6 @@
 
 package org.cxbox.model.core.listeners.hbn;
 
-import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode
 public class EntityId {
 
-	private final Serializable id;
+	private final Object id;
 
 	private final String name;
 

@@ -16,10 +16,11 @@
 
 package org.cxbox.model.ui.entity;
 
+import jakarta.persistence.Convert;
 import org.cxbox.model.core.entity.BaseEntity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import org.cxbox.model.core.hbn.ExtSequenceGenerator;
 import lombok.AllArgsConstructor;
@@ -28,8 +29,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-import org.hibernate.id.enhanced.OptimizerFactory;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 @Entity
@@ -44,7 +43,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
 				@Parameter(name = SequenceStyleGenerator.INITIAL_PARAM, value = "1"),
 				@Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "100"),
-				@Parameter(name = SequenceStyleGenerator.OPT_PARAM, value = OptimizerFactory.POOL_LO)
+				@Parameter(name = SequenceStyleGenerator.OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
 		}
 )
 public class View extends BaseEntity {
@@ -58,13 +57,13 @@ public class View extends BaseEntity {
 
 	private String url;
 
-	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean customizable;
 
-	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean editable;
 
-	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean ignoreHistory;
 
 	private String options;

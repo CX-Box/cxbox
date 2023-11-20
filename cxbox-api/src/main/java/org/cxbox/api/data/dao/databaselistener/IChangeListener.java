@@ -17,7 +17,7 @@
 package org.cxbox.api.data.dao.databaselistener;
 
 import org.cxbox.api.data.dictionary.LOV;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import org.springframework.core.Ordered;
 
 

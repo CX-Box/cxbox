@@ -20,21 +20,21 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
 import org.hibernate.annotations.common.reflection.AnnotationReader;
+import org.hibernate.boot.model.internal.JPAXMLOverriddenMetadataProvider;
+import org.hibernate.boot.model.internal.XMLContext;
 import org.hibernate.boot.spi.BootstrapContext;
-import org.hibernate.cfg.annotations.reflection.JPAMetadataProvider;
-import org.hibernate.cfg.annotations.reflection.XMLContext;
 
 /**
  * Decorator base JPAMetadataProvider, inheritance is used because
  * HBN uses explicit conversions to JPAMetadataProvider
  */
-public class PropagateMetadataProvider extends JPAMetadataProvider {
+public class PropagateMetadataProvider extends JPAXMLOverriddenMetadataProvider {
 
-	private final JPAMetadataProvider delegate;
+	private final JPAXMLOverriddenMetadataProvider delegate;
 
 	private Map<AnnotatedElement, AnnotationReader> cache = new HashMap<>(100);
 
-	public PropagateMetadataProvider(BootstrapContext bootstrapContext, JPAMetadataProvider delegate) {
+	public PropagateMetadataProvider(BootstrapContext bootstrapContext, JPAXMLOverriddenMetadataProvider delegate) {
 		super(bootstrapContext);
 		this.delegate = delegate;
 	}

@@ -29,7 +29,7 @@ import org.cxbox.model.ui.navigation.NavigationView;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

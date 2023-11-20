@@ -29,7 +29,7 @@ import org.cxbox.model.core.entity.BaseEntity;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

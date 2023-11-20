@@ -20,7 +20,7 @@ import org.cxbox.api.data.dictionary.LOV;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 
 
 public interface IChangeVector {

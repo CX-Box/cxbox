@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -80,6 +80,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	}
 
 	public void loadMeta() {
+		//TODO>>new metalock
 		List<BcSourceDTO> bcDtos = metaResourceReaderService.getBcs();
 		List<ScreenSourceDto> screenDtos = metaResourceReaderService.getScreens();
 		List<WidgetSourceDTO> widgetDtos = metaResourceReaderService.getWidgets();

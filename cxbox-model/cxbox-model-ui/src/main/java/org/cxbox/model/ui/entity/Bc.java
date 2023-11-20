@@ -16,15 +16,16 @@
 
 package org.cxbox.model.ui.entity;
 
+import java.sql.Types;
 import org.cxbox.model.core.entity.BaseEntity;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 
 
 @Getter
@@ -41,7 +42,7 @@ public class Bc extends BaseEntity {
 	private String parentName;
 
 	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@JdbcTypeCode(Types.LONGVARCHAR)
 	@Column(name = "query")
 	private String query;
 

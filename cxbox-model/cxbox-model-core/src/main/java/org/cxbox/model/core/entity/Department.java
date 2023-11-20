@@ -17,13 +17,13 @@
 package org.cxbox.model.core.entity;
 
 import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
 
-@Audited
+
+/*@Audited* is not audited by default in 4.0.0 cxbox major. Please audit on project level*/
 @Entity
 @Getter
 @Setter

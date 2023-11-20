@@ -16,16 +16,16 @@
 
 package org.cxbox.model.ui.navigation;
 
+import jakarta.persistence.Convert;
 import org.cxbox.api.data.dictionary.LOV;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.hibernate.annotations.Type;
 
 /**
  * Entity that represent groups in navigation tree.
@@ -91,7 +91,7 @@ public class NavigationGroup {
 	 * is group hidden on navigation bars
 	 */
 	@Column(name = "HIDDEN")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean hidden;
 
 }

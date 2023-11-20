@@ -17,8 +17,8 @@
 package org.cxbox.model.ui.entity;
 
 import org.cxbox.model.core.entity.BaseEntity;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

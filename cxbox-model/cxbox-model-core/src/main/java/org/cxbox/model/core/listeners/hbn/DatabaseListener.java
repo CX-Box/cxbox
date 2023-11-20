@@ -26,8 +26,8 @@ import static org.hibernate.event.spi.EventType.POST_UPDATE;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.model.core.listeners.hbn.change.ChangeInterceptor;
 import org.cxbox.model.core.listeners.hbn.flush.FlushInterceptor;
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.EventListenerRegistry;
@@ -67,10 +67,7 @@ public class DatabaseListener implements
 	@Autowired
 	private FlushInterceptor flushInterceptor;
 
-	@Override
-	public boolean requiresPostCommitHanding(EntityPersister persister) {
-		return false;
-	}
+
 
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
@@ -126,6 +123,11 @@ public class DatabaseListener implements
 
 	private <T> void appendListener(EventType<T> eventType, T listener) {
 		getRegistry().getEventListenerGroup(eventType).appendListener(listener);
+	}
+
+	@Override
+	public boolean requiresPostCommitHandling(EntityPersister entityPersister) {
+		return false;
 	}
 
 }

@@ -22,7 +22,7 @@ import org.cxbox.core.dto.data.HistoricityDto;
 import org.cxbox.model.core.entity.HistoricityEntity;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.Getter;
 
 @Getter

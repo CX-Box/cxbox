@@ -16,7 +16,6 @@
 
 package org.cxbox.model.core.hbn;
 
-import java.io.Serializable;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
@@ -56,8 +55,8 @@ public class ExtSequenceStyleGenerator extends SequenceStyleGenerator {
 	}
 
 	@Override
-	public Serializable generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
-		final Serializable currentId = session.getEntityPersister(null, object)
+	public Object generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
+		final Object currentId = session.getEntityPersister(null, object)
 				.getClassMetadata()
 				.getIdentifier(object, session);
 		if (currentId != null) {

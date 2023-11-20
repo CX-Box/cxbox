@@ -28,7 +28,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+/*import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;*/
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -45,8 +45,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 				@Filter(value = {AutoConfiguration.class}, type = FilterType.ANNOTATION),
 				@Filter(value = {Controller.class, ControllerAdvice.class}, type = FilterType.ANNOTATION),
 				@Filter(value = {
-						WebMvcConfigurer.class,
-						WebSecurityConfigurerAdapter.class
+						WebMvcConfigurer.class/*,
+						WebSecurityConfigurerAdapter.class spring boot 3*/
 				}, type = FilterType.ASSIGNABLE_TYPE),
 				@Filter(value = ServiceBasedComponentExcludeFilter.class, type = FilterType.CUSTOM),
 		}

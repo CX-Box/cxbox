@@ -22,7 +22,7 @@ import org.cxbox.api.data.dictionary.LOV;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute;
 import org.hibernate.event.spi.AbstractEvent;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.event.spi.PostInsertEvent;

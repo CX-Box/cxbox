@@ -24,7 +24,7 @@ import org.cxbox.core.controller.param.resolvers.LocaleParameterArgumentResolver
 import org.cxbox.core.controller.param.resolvers.PageParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.QueryParametersResolver;
 import org.cxbox.core.controller.param.resolvers.TimeZoneParameterArgumentResolver;
-import java.nio.charset.StandardCharsets;
+/*import java.nio.charset.StandardCharsets;*/
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,7 +37,8 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+/*import org.springframework.web.multipart.commons.CommonsMultipartResolver;*/
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -71,9 +72,9 @@ public class APIConfig implements WebMvcConfigurer {
 	@Bean
 	@ConditionalOnProperty(value = "cxbox.bean.multipart-resolver.enabled", matchIfMissing = true)
 	public MultipartResolver multipartResolver() {
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setMaxUploadSize(268435456L);
-		resolver.setDefaultEncoding(StandardCharsets.UTF_8.name());
+		StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
+		/*resolver.setMaxUploadSize(268435456L);
+		resolver.setDefaultEncoding(StandardCharsets.UTF_8.name());*/
 		return resolver;
 	}
 

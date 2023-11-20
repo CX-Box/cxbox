@@ -18,8 +18,8 @@ package org.cxbox.core.dao.hbn;
 
 import org.cxbox.api.util.ServiceUtils;
 import org.cxbox.core.util.tx.ITransactionProvider;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.UserTransaction;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
 import org.springframework.context.ApplicationContext;

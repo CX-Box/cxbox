@@ -17,9 +17,9 @@
 package org.cxbox.model.core.entity;
 
 import org.cxbox.model.core.listeners.jpa.AbstractEntityListener;
-import javax.persistence.EntityListeners;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 

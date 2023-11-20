@@ -18,7 +18,7 @@ package org.cxbox.model.ui.entity;
 
 import org.cxbox.model.core.api.EmbeddedKeyable;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.cxbox.model.core.hbn.ExtSequenceGenerator;
 import lombok.AllArgsConstructor;
@@ -27,8 +27,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-import org.hibernate.id.enhanced.OptimizerFactory;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 /**
@@ -45,7 +43,7 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
 				@Parameter(name = SequenceStyleGenerator.INITIAL_PARAM, value = "1"),
 				@Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "100"),
-				@Parameter(name = SequenceStyleGenerator.OPT_PARAM, value = OptimizerFactory.POOL_LO)
+				@Parameter(name = SequenceStyleGenerator.OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
 		}
 )
 public class ViewWidgets implements EmbeddedKeyable, Serializable {
@@ -72,11 +70,11 @@ public class ViewWidgets implements EmbeddedKeyable, Serializable {
 	private Long gridBreak;
 
 	@Column(name = "HIDE_BY_DEFAULT")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean hide;
 
 	@Column(name = "SHOW_EXPORT_STAMP")
-	@Type(type = "org.hibernate.type.NumericBooleanType")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean showExportStamp;
 
 	@Column(name = "view_name", nullable = false, updatable = false, insertable = false)

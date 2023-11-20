@@ -16,7 +16,7 @@
 
 package org.cxbox.core.util.session;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 
 public interface ISessionUserProvider<T extends SessionUser> {

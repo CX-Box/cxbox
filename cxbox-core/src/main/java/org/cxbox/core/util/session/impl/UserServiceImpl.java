@@ -26,7 +26,7 @@ import org.cxbox.model.core.entity.User_;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

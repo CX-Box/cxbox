@@ -23,7 +23,7 @@ import org.cxbox.api.system.ISystemSettingChangeEventListener;
 import org.cxbox.api.system.SystemSettingChangedEvent;
 import org.cxbox.api.system.SystemSettings;
 import org.cxbox.core.exception.ExceptionHandlerSettings;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

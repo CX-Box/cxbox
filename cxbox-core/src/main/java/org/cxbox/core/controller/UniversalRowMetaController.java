@@ -29,7 +29,7 @@ import org.cxbox.core.dto.ResponseDTO;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.ResponseBuilder;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;

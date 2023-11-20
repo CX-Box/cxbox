@@ -16,20 +16,21 @@
 
 package org.cxbox.model.core.entity;
 
+import java.sql.Types;
 import org.cxbox.api.data.dictionary.LOV;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Formula;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Getter
@@ -57,7 +58,7 @@ public class Responsibilities extends BaseEntity {
 	private boolean readOnly;
 
 	@Lob
-	@Type(type = "org.hibernate.type.TextType")
+	@JdbcTypeCode(Types.LONGVARCHAR)
 	private String screens;
 
 	@Formula("(SELECT views.TITLE FROM views WHERE views.NAME = RESPONSIBILITIES)")

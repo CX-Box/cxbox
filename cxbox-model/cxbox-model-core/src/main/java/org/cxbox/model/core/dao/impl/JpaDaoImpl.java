@@ -39,34 +39,34 @@ import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.persistence.AttributeNode;
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.LockModeType;
-import javax.persistence.Subgraph;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.FetchParent;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.AttributeNode;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.Subgraph;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.FetchParent;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.Bindable.BindableType;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
-import org.hibernate.jpa.AvailableSettings;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.query.Query;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
@@ -308,7 +308,7 @@ public class JpaDaoImpl implements JpaDao {
 			return;
 		}
 		Map<String, Object> options = new HashMap<>();
-		options.put(AvailableSettings.LOCK_TIMEOUT, timeout);
+		options.put(AvailableSettings.JAKARTA_LOCK_TIMEOUT, timeout);
 		getSupportedEntityManager(Hibernate.getClass(entity).getName()).lock(entity, lockMode, options);
 	}
 
@@ -318,7 +318,7 @@ public class JpaDaoImpl implements JpaDao {
 			return;
 		}
 		Map<String, Object> options = new HashMap<>();
-		options.put(AvailableSettings.LOCK_TIMEOUT, timeout);
+		options.put(AvailableSettings.JAKARTA_LOCK_TIMEOUT, timeout);
 		getSupportedEntityManager(Hibernate.getClass(entity).getName()).lock(entity, LockModeType.PESSIMISTIC_READ, options);
 		getSupportedEntityManager(Hibernate.getClass(entity).getName()).refresh(entity);
 	}
@@ -337,7 +337,7 @@ public class JpaDaoImpl implements JpaDao {
 
 	@Override
 	public <T> List<T> selectNativeQuery(Class<T> entityClazz, String sql, Map<String, Object> params) {
-		final javax.persistence.Query query = getSupportedEntityManager(entityClazz.getName())
+		final jakarta.persistence.Query query = getSupportedEntityManager(entityClazz.getName())
 				.createNativeQuery(sql, entityClazz);
 		for (final Entry<String, Object> entry : params.entrySet()) {
 			query.setParameter(entry.getKey(), entry.getValue());
@@ -454,8 +454,8 @@ public class JpaDaoImpl implements JpaDao {
 	}
 
 	protected <T> Stream<T> asStream(TypedQuery<T> query) {
-		Query hibernateQuery = query.unwrap(Query.class);
-		ScrollableResults results = hibernateQuery.scroll(ScrollMode.FORWARD_ONLY);
+		Query<Object[]> hibernateQuery = query.unwrap(Query.class);
+		ScrollableResults<Object[]> results = hibernateQuery.scroll(ScrollMode.FORWARD_ONLY);
 		ScrollableResultsIterator<T> iterator = new ScrollableResultsIterator<>(results);
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, Spliterator.NONNULL);
 		Stream<T> stream = StreamSupport.stream(spliterator, false);

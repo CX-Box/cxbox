@@ -18,7 +18,7 @@ package org.cxbox.model.ui.entity;
 
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.model.core.entity.BaseEntity;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

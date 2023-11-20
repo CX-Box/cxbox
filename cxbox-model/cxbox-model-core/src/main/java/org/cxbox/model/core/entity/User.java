@@ -21,23 +21,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 /**
  * User
  */
-@Audited
+/*@Audited* is not audited by default in 4.0.0 cxbox major. Please audit on project level*/
 @Entity
 @Table(name = "users") // users, а не user, т.к. это служебное слово oracle
 @Getter

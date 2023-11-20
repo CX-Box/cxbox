@@ -28,6 +28,7 @@ import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfoSource;
 import org.hibernate.persister.entity.Lockable;
 
+@SuppressWarnings("removal")
 public class EnhancedDialectFactoryImpl extends DialectFactoryImpl {
 
 	@Override

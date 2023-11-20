@@ -42,7 +42,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjuster;
 import java.util.Collections;
 import java.util.Optional;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Predicate;
 import lombok.SneakyThrows;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.BeanUtils;

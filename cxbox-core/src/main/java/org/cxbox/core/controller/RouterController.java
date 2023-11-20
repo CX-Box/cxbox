@@ -21,8 +21,8 @@ import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL
 import org.cxbox.core.controller.http.AJAXRedirectStrategy;
 import org.cxbox.core.service.RouterService;
 import java.io.IOException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

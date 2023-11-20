@@ -16,8 +16,8 @@
 
 package org.cxbox.core.util.tx;
 
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.UserTransaction;
 
 
 public interface ITransactionProvider {

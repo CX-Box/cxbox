@@ -24,13 +24,13 @@ import org.hibernate.ScrollableResults;
 
 class ScrollableResultsIterator<T> implements Iterator<T>, Closeable {
 
-	private final ScrollableResults scrollableResults;
+	private final ScrollableResults<Object[]> scrollableResults;
 
 	private T next;
 
 	private boolean closed;
 
-	ScrollableResultsIterator(ScrollableResults scrollableResults) {
+	ScrollableResultsIterator(ScrollableResults<Object[]> scrollableResults) {
 		this.scrollableResults = scrollableResults;
 	}
 

@@ -19,7 +19,7 @@ package org.cxbox.core.controller;
 import org.cxbox.core.crudma.bc.BcHierarchy;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.RequestScope;
 
