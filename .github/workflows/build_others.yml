@@ -71,4 +71,4 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
         with:
-          config-file: './.github/dependency-review-config.yml'
+          config-file: './.github/workflows/dependency-review-config.yml'
