@@ -83,7 +83,7 @@
     <auto-service.version>1.0-rc4</auto-service.version>
 
     <!--Test-->
-    <compile-testing.version>0.15</compile-testing.version>
+    <compile-testing.version>0.21.0</compile-testing.version>
     <javax.el.version>3.0.0</javax.el.version>
   </properties>
 
@@ -259,6 +259,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven-surefire-plugin.version}</version>
+          <configuration>
+            <argLine>
+              --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+              --add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+              --add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+            </argLine>
+          </configuration>
         </plugin>
 
         <plugin>
