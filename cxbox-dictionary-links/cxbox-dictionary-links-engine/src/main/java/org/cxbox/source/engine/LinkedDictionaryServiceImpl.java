@@ -57,6 +57,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @Transactional
+@SuppressWarnings("java:S3516")
 public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 
 	private final Map<LOV, LinkedDictionaryConditionChecker> conditions;
@@ -259,7 +260,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 
 		@CacheEvict(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, value = CacheConfig.LINKED_DICTIONARY_RULES, allEntries = true)
 		public void evictRules() {
-
+			//add custom eviction policy on project level
 		}
 
 	}
