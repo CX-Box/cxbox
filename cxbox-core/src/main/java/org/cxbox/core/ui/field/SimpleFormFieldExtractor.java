@@ -16,7 +16,7 @@
 
 package org.cxbox.core.ui.field;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import org.cxbox.core.ui.model.BcField;
 import org.cxbox.core.ui.model.json.field.FieldMeta;
 import org.cxbox.core.util.JsonUtils;
@@ -39,9 +39,9 @@ public final class SimpleFormFieldExtractor extends BaseFieldExtractor {
 
 	@Override
 	public List<String> getSupportedTypes() {
-		return Lists.newArrayList(
-				"Form"
-		);
+		ArrayList<String> strings = new ArrayList<>();
+		strings.add("Form");
+		return strings;
 	}
 
 	@Override

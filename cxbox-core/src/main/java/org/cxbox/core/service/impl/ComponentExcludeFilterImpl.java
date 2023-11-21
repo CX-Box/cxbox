@@ -18,7 +18,6 @@ package org.cxbox.core.service.impl;
 
 import org.cxbox.api.util.spring.AbstractComponentExcludeFilter;
 //import org.cxbox.acl.service.BaseAccessService;
-import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -28,9 +27,6 @@ import lombok.Getter;
 public class ComponentExcludeFilterImpl extends AbstractComponentExcludeFilter {
 
 	@Getter
-	private final Set<String> classes = ImmutableSet.<String>builder()
-			//.add(BaseAccessService.class.getName())
-			//.add(BaseNotificationSettingsProvider.class.getName())
-			.build();
+	private final Set<String> classes = Set.of();
 
 }

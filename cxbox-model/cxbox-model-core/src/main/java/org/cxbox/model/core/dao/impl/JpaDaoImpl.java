@@ -16,7 +16,7 @@
 
 package org.cxbox.model.core.dao.impl;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 import org.cxbox.api.data.PageSpecification;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dao.Selector;
@@ -98,8 +98,8 @@ public class JpaDaoImpl implements JpaDao {
 		List<EntityManager> supportedEntityManagers = entityManagers.stream().filter(
 				entityManager -> entityManager.getMetamodel().getEntities().stream().anyMatch(
 						//todo: delete check simpleName in next major release
-						entityType -> Objects.equal(entityType.getBindableJavaType().getSimpleName(), entityClazz)
-								|| Objects.equal(entityType.getBindableJavaType().getName(), entityClazz)
+						entityType -> Objects.equals(entityType.getBindableJavaType().getSimpleName(), entityClazz)
+								|| Objects.equals(entityType.getBindableJavaType().getName(), entityClazz)
 				)
 		).collect(Collectors.toList());
 		if (supportedEntityManagers.size() == 1) {

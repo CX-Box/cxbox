@@ -16,7 +16,6 @@
 
 package org.cxbox.core.autoconfigure.cache;
 
-import com.google.common.collect.ImmutableList;
 import org.cxbox.core.autoconfigure.AutoConfiguration;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.config.cache.CacheManagerBasedCacheResolver;
@@ -108,7 +107,7 @@ public class CxboxCacheAutoConfiguration {
 	protected CacheManager buildRequestAwareCacheManager(String cacheName) {
 		SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
 		simpleCacheManager.setCaches(
-				ImmutableList.of(new RequestAwareCacheDecorator(cacheName))
+				List.of(new RequestAwareCacheDecorator(cacheName))
 		);
 		simpleCacheManager.initializeCaches();
 		return simpleCacheManager;

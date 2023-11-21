@@ -23,8 +23,6 @@ import org.cxbox.api.system.SystemSettings;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.core.entity.SystemSetting;
 import org.cxbox.model.core.entity.SystemSetting_;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,14 +108,8 @@ public class SystemSettingsImpl implements SystemSettings {
 	}
 
 	private Map<LOV, String> loadSettings() {
-		Builder<LOV, String> builder = ImmutableMap.builder();
-		jpaDao.getList(
-				SystemSetting.class,
-				(root, cq, cb) -> cb.isNotNull(root.get(SystemSetting_.key))
-		).forEach(setting -> builder.put(
-				new LOV(setting.getKey()), setting.getValue()
-		));
-		return builder.build();
+		return jpaDao.getList(SystemSetting.class, (root, cq, cb) -> cb.isNotNull(root.get(SystemSetting_.key))).stream()
+				.collect(Collectors.toMap(setting -> new LOV(setting.getKey()), SystemSetting::getValue));
 	}
 
 	public Stream<? extends Pair<String, String>> select(Predicate<String> predicate) {

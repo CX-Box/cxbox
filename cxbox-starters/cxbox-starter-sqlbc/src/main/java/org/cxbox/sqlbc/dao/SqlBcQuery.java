@@ -16,8 +16,8 @@
 
 package org.cxbox.sqlbc.dao;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import static java.util.Map.entry;
+
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.util.tz.TimeZoneUtil;
 import org.cxbox.core.controller.param.BindParameter;
@@ -63,46 +63,45 @@ public final class SqlBcQuery {
 
 	public static final String FIELD_ID = "id";
 
-	public static final Map<String, SqlFieldType> EXTRA_FIELDS = new ImmutableMap.Builder<String, SqlFieldType>()
-			.put(SqlBcEditFieldDTO_.edit_string1.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string2.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string3.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string4.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string5.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string6.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string7.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string8.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string9.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_string10.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_lov1.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_lov2.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_lov3.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_lov4.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_lov5.getName(), SqlFieldType.STRING)
-			.put(SqlBcEditFieldDTO_.edit_number1.getName(), SqlFieldType.BIG_DECIMAL)
-			.put(SqlBcEditFieldDTO_.edit_number2.getName(), SqlFieldType.BIG_DECIMAL)
-			.put(SqlBcEditFieldDTO_.edit_number3.getName(), SqlFieldType.BIG_DECIMAL)
-			.put(SqlBcEditFieldDTO_.edit_number4.getName(), SqlFieldType.BIG_DECIMAL)
-			.put(SqlBcEditFieldDTO_.edit_number5.getName(), SqlFieldType.BIG_DECIMAL)
-			.put(SqlBcEditFieldDTO_.edit_date1.getName(), SqlFieldType.TIME)
-			.put(SqlBcEditFieldDTO_.edit_date2.getName(), SqlFieldType.TIME)
-			.put(SqlBcEditFieldDTO_.edit_date3.getName(), SqlFieldType.TIME)
-			.put(SqlBcEditFieldDTO_.edit_date4.getName(), SqlFieldType.TIME)
-			.put(SqlBcEditFieldDTO_.edit_date5.getName(), SqlFieldType.TIME)
-			.build();
+	public static final Map<String, SqlFieldType> EXTRA_FIELDS = Map.ofEntries(
+			entry(SqlBcEditFieldDTO_.edit_string1.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string2.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string3.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string4.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string5.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string6.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string7.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string8.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string9.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_string10.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_lov1.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_lov2.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_lov3.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_lov4.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_lov5.getName(), SqlFieldType.STRING),
+			entry(SqlBcEditFieldDTO_.edit_number1.getName(), SqlFieldType.BIG_DECIMAL),
+			entry(SqlBcEditFieldDTO_.edit_number2.getName(), SqlFieldType.BIG_DECIMAL),
+			entry(SqlBcEditFieldDTO_.edit_number3.getName(), SqlFieldType.BIG_DECIMAL),
+			entry(SqlBcEditFieldDTO_.edit_number4.getName(), SqlFieldType.BIG_DECIMAL),
+			entry(SqlBcEditFieldDTO_.edit_number5.getName(), SqlFieldType.BIG_DECIMAL),
+			entry(SqlBcEditFieldDTO_.edit_date1.getName(), SqlFieldType.TIME),
+			entry(SqlBcEditFieldDTO_.edit_date2.getName(), SqlFieldType.TIME),
+			entry(SqlBcEditFieldDTO_.edit_date3.getName(), SqlFieldType.TIME),
+			entry(SqlBcEditFieldDTO_.edit_date4.getName(), SqlFieldType.TIME),
+			entry(SqlBcEditFieldDTO_.edit_date5.getName(), SqlFieldType.TIME));
 
-	private static final Map<Database, String> PAGING_QUERY_MAP = new ImmutableMap.Builder<Database, String>()
-			.put(Database.POSTGRESQL, "select row_.*, ROW_NUMBER() OVER () rownum_ from ("
+	private static final Map<Database, String> PAGING_QUERY_MAP = Map.ofEntries(
+			entry(Database.POSTGRESQL, "select row_.*, ROW_NUMBER() OVER () rownum_ from ("
 					+ "select * from (%s) as q1 %s"
-					+ ") row_ %s LIMIT :to OFFSET :from")
-			.put(Database.ORACLE, "select s.* from (select row_.*, rownum rownum_ from ("
+					+ ") row_ %s LIMIT :to OFFSET :from"),
+			entry(Database.ORACLE, "select s.* from (select row_.*, rownum rownum_ from ("
 					+ "select * from (%s)%s"
 					+ ") row_ where rownum <= :to %s) s where rownum_ > :from")
-			.build();
+	);
 
-	private static final Set<String> BOOLEAN_FILTER_TRUE_VALUES = Sets.newHashSet("TRUE", "T", "YES", "Y", "ON");
+	private static final Set<String> BOOLEAN_FILTER_TRUE_VALUES =  Set.of("TRUE", "T", "YES", "Y", "ON");
 
-	private static final Set<String> BOOLEAN_FILTER_FALSE_VALUES = Sets.newHashSet("FALSE", "F", "NO", "N", "OFF");
+	private static final Set<String> BOOLEAN_FILTER_FALSE_VALUES = Set.of("FALSE", "F", "NO", "N", "OFF");
 
 	private final String query;
 
@@ -231,7 +230,10 @@ public final class SqlBcQuery {
 					.addValue("parentid", parentId)
 					.addValue("datefrom", Timestamp.valueOf(queryParameters.getDateFrom()))
 					.addValue("dateto", Timestamp.valueOf(queryParameters.getDateTo()))
-					.addValue("datefrom_tzware", Timestamp.valueOf(queryParameters.getDateFrom().with(DateTimeUtil.fromSession())))
+					.addValue(
+							"datefrom_tzware",
+							Timestamp.valueOf(queryParameters.getDateFrom().with(DateTimeUtil.fromSession()))
+					)
 					.addValue("dateto_tzware", Timestamp.valueOf(queryParameters.getDateTo().with(DateTimeUtil.fromSession())))
 					.addValue("timezone", TimeZoneUtil.getSessionZoneId())
 					.addValue("language", LocaleContextHolder.getLocale().getLanguage())

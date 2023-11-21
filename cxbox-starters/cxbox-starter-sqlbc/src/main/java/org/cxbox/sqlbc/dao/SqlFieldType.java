@@ -16,7 +16,7 @@
 
 package org.cxbox.sqlbc.dao;
 
-import com.google.common.collect.ImmutableMap;
+import static java.util.Map.entry;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -51,25 +51,24 @@ public enum SqlFieldType {
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class Holder {
 
-		private static final Map<Integer, SqlFieldType> TYPES = ImmutableMap.<Integer, SqlFieldType>builder()
-				.put(Types.CHAR, STRING)
-				.put(Types.VARCHAR, STRING)
-				.put(Types.CLOB, CLOB)
-				.put(Types.LONGVARCHAR, STRING)
-				.put(Types.NUMERIC, BIG_DECIMAL)
-				.put(Types.DECIMAL, BIG_DECIMAL)
-				.put(Types.BIT, BOOLEAN)
-				.put(Types.TINYINT, BYTE)
-				.put(Types.SMALLINT, SHORT)
-				.put(Types.INTEGER, INTEGER)
-				.put(Types.BIGINT, LONG)
-				.put(Types.REAL, FLOAT)
-				.put(Types.FLOAT, FLOAT)
-				.put(Types.DOUBLE, DOUBLE)
-				.put(Types.DATE, DATE)
-				.put(Types.TIME, TIME)
-				.put(Types.TIMESTAMP, TIMESTAMP)
-				.build();
+		private static final Map<Integer, SqlFieldType> TYPES = Map.ofEntries(
+				entry(Types.CHAR, STRING),
+				entry(Types.VARCHAR, STRING),
+				entry(Types.CLOB, CLOB),
+				entry(Types.LONGVARCHAR, STRING),
+				entry(Types.NUMERIC, BIG_DECIMAL),
+				entry(Types.DECIMAL, BIG_DECIMAL),
+				entry(Types.BIT, BOOLEAN),
+				entry(Types.TINYINT, BYTE),
+				entry(Types.SMALLINT, SHORT),
+				entry(Types.INTEGER, INTEGER),
+				entry(Types.BIGINT, LONG),
+				entry(Types.REAL, FLOAT),
+				entry(Types.FLOAT, FLOAT),
+				entry(Types.DOUBLE, DOUBLE),
+				entry(Types.DATE, DATE),
+				entry(Types.TIME, TIME),
+				entry(Types.TIMESTAMP, TIMESTAMP));
 
 		public static SqlFieldType getFromSqlType(int sqlType) {
 			if (!TYPES.containsKey(sqlType)) {

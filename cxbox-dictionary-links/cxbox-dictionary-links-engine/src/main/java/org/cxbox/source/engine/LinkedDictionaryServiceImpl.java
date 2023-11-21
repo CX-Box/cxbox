@@ -32,8 +32,6 @@ import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule_;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -72,13 +70,9 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 	private BcUtils bcUtils;
 
 	public LinkedDictionaryServiceImpl(Optional<List<LinkedDictionaryConditionChecker>> conditionCheckers) {
-		final Builder<LOV, LinkedDictionaryConditionChecker> builder = ImmutableMap.builder();
-		conditionCheckers.ifPresent(checkers -> {
-			for (final LinkedDictionaryConditionChecker checker : checkers) {
-				builder.put(checker.getType(), checker);
-			}
-		});
-		this.conditions = builder.build();
+		this.conditions = conditionCheckers
+				.map(checkers -> checkers.stream().collect(Collectors.toMap(LinkedDictionaryConditionChecker::getType, checker -> checker)))
+				.orElse(Map.of());
 	}
 
 	@Override

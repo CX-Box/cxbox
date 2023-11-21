@@ -16,13 +16,13 @@
 
 package org.cxbox.source.service.specification;
 
+import java.util.Map;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.service.spec.LinkSpecificationHolder;
 import org.cxbox.core.service.spec.SpecificationHeader;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule_;
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +31,13 @@ public class DictionaryLnkRuleValueLinkSpecifications extends LinkSpecificationH
 
 	public DictionaryLnkRuleValueLinkSpecifications() {
 		specificationHeader = SpecificationName.class;
-		map = ImmutableMap.<SpecificationHeader<DictionaryLnkRuleValue>, ParentSpecification<DictionaryLnkRuleValue>>builder()
-				.put(SpecificationName.LINK_SS_1, (bcDescription, parentId) -> (root, cq, cb) ->
+		map = Map.of(
+				SpecificationName.LINK_SS_1, (bcDescription, parentId) -> (root, cq, cb) ->
 						cb.equal(
 								root.get(DictionaryLnkRuleValue_.dictionaryLnkRule).get(DictionaryLnkRule_.id),
 								NumberUtils.createLong(parentId)
 						)
-				).build();
+				);
 	}
 
 	public enum SpecificationName implements SpecificationHeader<DictionaryLnkRuleValue> {

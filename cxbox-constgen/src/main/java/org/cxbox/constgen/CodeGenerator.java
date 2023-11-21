@@ -16,7 +16,6 @@
 
 package org.cxbox.constgen;
 
-import com.google.common.collect.ImmutableMap;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -27,6 +26,7 @@ import com.squareup.javapoet.TypeSpec.Builder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -127,14 +127,14 @@ class CodeGenerator {
 				.anyMatch(method -> Objects.equals(TypeName.get(method.getReturnType()), TypeName.get(field.asType())));
 		return StringSubstitutor.replace(
 				"new DtoField<>($S${getter})",
-				ImmutableMap.of("getter", getterExist ? ", " + methodReference(getterName) : "")
+				Map.of("getter", getterExist ? ", " + methodReference(getterName) : "")
 		);
 	}
 
 	private String methodReference(final String getterName) {
 		return StringSubstitutor.replace(
 				"${class}::${getter}",
-				ImmutableMap.of(
+				Map.of(
 						"class", TypeName.get(typeElement.asType()),
 						"getter", getterName
 				)
@@ -144,7 +144,7 @@ class CodeGenerator {
 	private String getterName(final Element field) {
 		return StringSubstitutor.replace(
 				"${prefix}${name}",
-				ImmutableMap.of(
+				Map.of(
 						"prefix", (field.asType().getKind().isPrimitive() && TypeName.BOOLEAN.equals(TypeName.get(field.asType()))) ? "is" : "get",
 						"name", StringUtils.capitalize(field.getSimpleName().toString())
 				)

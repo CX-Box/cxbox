@@ -16,7 +16,6 @@
 
 package org.cxbox.core.crudma.bc.impl;
 
-import com.google.common.collect.Lists;
 import org.cxbox.api.service.tx.DeploymentTransactionSupport;
 import org.cxbox.core.crudma.bc.BcDescriptionBuilder;
 import org.cxbox.core.crudma.bc.BcIdentifier;
@@ -121,8 +120,9 @@ public class BcRegistryImpl implements BcRegistry {
 			bcDescription = getBcDescription(bcDescription.getParentName());
 			reverseHierarchy.add(bcDescription);
 		}
-
-		return Lists.reverse(reverseHierarchy);
+		List<BcDescription> shallowCopy = reverseHierarchy.subList(0, reverseHierarchy.size());
+		Collections.reverse(shallowCopy);
+		return shallowCopy;
 	}
 
 	private void overrideBc(

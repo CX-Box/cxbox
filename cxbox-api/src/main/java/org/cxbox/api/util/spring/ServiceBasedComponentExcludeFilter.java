@@ -16,8 +16,8 @@
 
 package org.cxbox.api.util.spring;
 
+import java.util.HashSet;
 import org.cxbox.api.util.ServiceUtils;
-import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.util.Set;
 import lombok.EqualsAndHashCode;
@@ -32,9 +32,9 @@ public class ServiceBasedComponentExcludeFilter implements TypeFilter {
 	private final Set<TypeFilter> filters;
 
 	public ServiceBasedComponentExcludeFilter() {
-		filters = ImmutableSet.<TypeFilter>builder().addAll(
+		filters = new HashSet<>(
 				ServiceUtils.loadServices(ComponentExcludeFilter.class, this)
-		).build();
+		);
 	}
 
 	@Override

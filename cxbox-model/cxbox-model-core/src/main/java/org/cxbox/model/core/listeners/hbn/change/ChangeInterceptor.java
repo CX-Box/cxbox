@@ -70,7 +70,7 @@ public class ChangeInterceptor implements ApplicationListener<EntitySerializatio
 	private EntityManager getSupportedEntityManager(String entityClazz) {
 		List<EntityManager> supportedEntityManagers = entityManagers.stream().filter(
 				entityManager -> entityManager.getMetamodel().getEntities().stream().anyMatch(
-						entityType -> com.google.common.base.Objects.equal(entityType.getBindableJavaType().getName(), entityClazz)
+						entityType -> Objects.equals(entityType.getBindableJavaType().getName(), entityClazz)
 				)
 		).collect(Collectors.toList());
 		if (supportedEntityManagers.size() == 1) {

@@ -21,7 +21,6 @@ import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.BcHierarchy;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -39,7 +38,7 @@ public class BCFactory {
 
 	private final APIProperties apiProperties;
 
-	private final Set<String> operations = ImmutableSet.of(
+	private final Set<String> operations = Set.of(
 			"data", "count", "custom-action", "associate", "row-meta-new", "row-meta-empty", "row-meta"
 	);
 

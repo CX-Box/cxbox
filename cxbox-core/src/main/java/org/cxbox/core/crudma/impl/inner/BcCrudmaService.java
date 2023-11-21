@@ -24,7 +24,6 @@ import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.data.BcDto;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.util.ListPaging;
-import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,10 +34,9 @@ public class BcCrudmaService extends AbstractCrudmaService {
 
 	private final List<BcDto> bcList;
 
-	private final List<FieldDTO> fieldDtoList = ImmutableList.<FieldDTO>builder()
-			.add(FieldDTO.disabledFilterableField("id"))
-			.add(FieldDTO.disabledFilterableField("name"))
-			.build();
+	private final List<FieldDTO> fieldDtoList = List.of(
+			FieldDTO.disabledFilterableField("id"),
+			FieldDTO.disabledFilterableField("name"));
 
 	public BcCrudmaService(final BcRegistry bcRegistry) {
 		bcList = bcRegistry.getAllBcNames().stream().map(BcDto::new).collect(Collectors.toList());
