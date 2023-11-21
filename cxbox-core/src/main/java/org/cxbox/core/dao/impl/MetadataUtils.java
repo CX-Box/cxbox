@@ -58,13 +58,13 @@ import org.cxbox.core.controller.param.SortParameter;
 import org.cxbox.core.controller.param.SortParameters;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.dto.LovUtils;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.core.util.filter.MultisourceSearchParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.springframework.util.ReflectionUtils;
 
 
 @Slf4j
@@ -78,7 +78,7 @@ public class MetadataUtils {
 
 		filterParameters.forEach(filterParam -> {
 					try {
-						Field dtoField = Optional.ofNullable(ReflectionUtils.findField(dtoClazz, filterParam.getName()))
+						Field dtoField = Optional.ofNullable(InstrumentationAwareReflectionUtils.findField(dtoClazz, filterParam.getName()))
 								.orElseThrow(
 										() -> new IllegalArgumentException(
 												errorMessage(
@@ -324,7 +324,7 @@ public class MetadataUtils {
 		if (dtoClazz == null) {
 			field = parameter.getName();
 		} else {
-			Field dtoField = ReflectionUtils.findField(dtoClazz, parameter.getName());
+			Field dtoField = InstrumentationAwareReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
 						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
@@ -341,7 +341,7 @@ public class MetadataUtils {
 
 	private static IDictionaryType getLovType(Class dtoClazz, SortParameter parameter) {
 		if (dtoClazz != null) {
-			Field dtoField = ReflectionUtils.findField(dtoClazz, parameter.getName());
+			Field dtoField = InstrumentationAwareReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
 						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
@@ -399,9 +399,9 @@ public class MetadataUtils {
 
 	private boolean isElementCollectionField(Root<?> root, String fieldName) {
 		Class<?> rootClass = root.getModel().getJavaType();
-		Field field = org.springframework.data.util.ReflectionUtils.findField(
+		Field field = InstrumentationAwareReflectionUtils.findField(
 				rootClass,
-				fld -> fieldName.equals(fld.getName())
+				fieldName
 		);
 		return Optional.ofNullable(field)
 				.map(fld -> fld.isAnnotationPresent(ElementCollection.class))

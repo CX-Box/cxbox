@@ -28,6 +28,7 @@ import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.impl.MetadataUtils;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.test.util.TestResponseDto;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
@@ -38,7 +39,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.util.ReflectionUtils;
 
 import java.util.*;
 
@@ -95,7 +95,7 @@ class SearchSpecificationTest {
 		FilterParameters fp = FilterParameters.fromMap(exceptionMap);
 		fp.forEach(
 				filterParameter -> {
-					Field field = ReflectionUtils.findField(TestResponseDto.class, filterParameter.getName());
+					Field field = InstrumentationAwareReflectionUtils.findField(TestResponseDto.class, filterParameter.getName());
 					assert field != null;
 					SearchParameter searchParam = field.getDeclaredAnnotation(SearchParameter.class);
 					assert searchParam != null;

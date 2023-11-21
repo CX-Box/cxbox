@@ -16,6 +16,7 @@
 
 package org.cxbox.core.util;
 
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
@@ -35,10 +36,27 @@ public final class InstrumentationAwareReflectionUtils {
 	 * @return an array of Fields (possibly empty).
 	 * @throws IllegalArgumentException if the class is {@code null}
 	 */
+	@SuppressWarnings("java:S3011")
 	public static List<Field> getAllNonSyntheticFieldsList(final Class<?> cls) {
-		return FieldUtils.getAllFieldsList(cls)
+		List<Field> result = FieldUtils.getAllFieldsList(cls)
 				.stream()
 				.filter(field -> !field.isSynthetic())
 				.collect(Collectors.toList());
+		result.forEach(f ->  f.setAccessible(true));
+		return result;
 	}
+
+	public static List<Field> getFields(final Class<?> cls) {
+		return getAllNonSyntheticFieldsList(cls);
+	}
+
+	@SneakyThrows
+	public static Class<?> forName(final String cls) {
+		return Class.forName(cls);
+	}
+
+	public static Field findField(Class<?> dtoClazz, String name) {
+		return FieldUtils.getField(dtoClazz, name, true);
+	}
+
 }

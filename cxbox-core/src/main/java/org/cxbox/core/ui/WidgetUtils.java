@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.collections4.CollectionUtils;
 
 
 public final class WidgetUtils {
@@ -66,7 +65,7 @@ public final class WidgetUtils {
 	public static Set<BcField> extractPickListFields(final Widget widget) {
 		return extractFields(widget).stream()
 				.map(field -> field.<Set<BcField>>getAttribute(Attribute.PICK_LIST_FIELDS))
-				.filter(CollectionUtils::isNotEmpty)
+				.filter(e -> e != null && !e.isEmpty())
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
 	}
@@ -96,7 +95,7 @@ public final class WidgetUtils {
 		fields.addAll(
 				fields.stream()
 						.map(field -> field.<Set<BcField>>getAttribute(Attribute.PICK_LIST_FIELDS))
-						.filter(CollectionUtils::isNotEmpty)
+						.filter(e -> e != null && !e.isEmpty())
 						.flatMap(Collection::stream)
 						.collect(Collectors.toSet())
 		);

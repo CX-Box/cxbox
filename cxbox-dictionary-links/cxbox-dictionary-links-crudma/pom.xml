@@ -43,10 +43,6 @@
       <groupId>org.cxbox</groupId>
       <artifactId>cxbox-dictionary-links-engine</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-    </dependency>
   </dependencies>
 
 

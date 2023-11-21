@@ -18,6 +18,7 @@ package org.cxbox.source.service.data.impl;
 
 import static org.cxbox.api.data.dictionary.CoreDictionaries.DictionaryTermType.DICTIONARY_FIELD;
 
+import lombok.SneakyThrows;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.DictionaryType;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -34,7 +35,6 @@ import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto_;
 import jakarta.persistence.metamodel.SingularAttribute;
-import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,11 +79,12 @@ public abstract class BaseDictionaryLnkRuleCondServiceImpl<D extends DictionaryL
 	}
 
 
+	@SneakyThrows
 	protected ActionResultDTO<D> doUpdateEntity(E entity, D data, boolean isSqlService, BusinessComponent bc) {
 		if (data.hasChangedFields()) {
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.fieldName)) {
 				entity.setFieldName(data.getFieldName());
-				Class<?> dtoClass = ReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
+				Class<?> dtoClass = Class.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
 				if (DICTIONARY_FIELD.equals(entity.getType()) && !isSqlService) {
 					entity.setFieldType(DTOUtils.getDictionaryType(dtoClass, data.getFieldName()));
 				}

@@ -25,6 +25,7 @@ import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.service.action.Actions;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
@@ -36,7 +37,6 @@ import org.cxbox.source.dto.DictionaryLnkRuleDto_;
 import org.cxbox.source.service.data.DictionaryLnkRuleService;
 import org.cxbox.source.service.meta.DictionaryLnkRuleFieldMetaBuilder;
 import org.cxbox.source.service.specification.DictionaryLnkRuleLinkSpecifications;
-import org.reflections.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -80,7 +80,7 @@ public class DictionaryLnkRuleServiceImpl extends
 							.addPopup(errorMessage("error.cant_modify_rule_field_values_exist"));
 				}
 				entity.setField(data.getField());
-				Class<?> dtoClass = ReflectionUtils.forName(entity.getService().getDtoClass());
+				Class<?> dtoClass = InstrumentationAwareReflectionUtils.forName(entity.getService().getDtoClass());
 				if (!isSqlService) {
 					entity.setType(DTOUtils.getDictionaryType(dtoClass, data.getField()));
 				}

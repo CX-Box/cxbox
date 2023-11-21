@@ -32,6 +32,7 @@ import org.cxbox.core.dto.LovUtils;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto;
@@ -39,7 +40,6 @@ import org.cxbox.source.dto.DictionaryLnkRuleCondDto_;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.reflections.ReflectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,14 +70,14 @@ public abstract class BaseDictionaryLnkRuleCondFieldMetaBuilder<R extends Dictio
 		if (DEPT.equals(entity.getType())) {
 			fields.setEnabled(DictionaryLnkRuleCondDto_.department);
 		} else if (FIELD_IS_EMPTY.equals(entity.getType())) {
-			Class<?> dtoClass = ReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
-			List<SimpleDictionary> dictDTOList = ReflectionUtils.getFields(dtoClass).stream()
+			Class<?> dtoClass = InstrumentationAwareReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
+			List<SimpleDictionary> dictDTOList = InstrumentationAwareReflectionUtils.getFields(dtoClass).stream()
 					.map(Field::getName).map(field -> new SimpleDictionary(field, field)).collect(Collectors.toList());
 			fields.setConcreteValues(DictionaryLnkRuleCondDto_.fieldName, dictDTOList);
 			fields.setEnabled(DictionaryLnkRuleCondDto_.fieldName);
 		} else if (TEXT_FIELD.equals(entity.getType())) {
-			Class<?> dtoClass = ReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
-			List<SimpleDictionary> dictDTOList = ReflectionUtils.getFields(dtoClass).stream()
+			Class<?> dtoClass = InstrumentationAwareReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
+			List<SimpleDictionary> dictDTOList = InstrumentationAwareReflectionUtils.getFields(dtoClass).stream()
 					.filter(field -> (LovUtils.getType(field) == null && field.getType().equals(String.class)) && !field
 							.getName().contains("edit_lov"))
 					.map(Field::getName).map(field -> new SimpleDictionary(field, field)).collect(Collectors.toList());
@@ -99,8 +99,8 @@ public abstract class BaseDictionaryLnkRuleCondFieldMetaBuilder<R extends Dictio
 					);
 				}
 			}
-			Class<?> dtoClass = ReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
-			List<SimpleDictionary> dictDTOList = ReflectionUtils.getFields(dtoClass).stream()
+			Class<?> dtoClass = InstrumentationAwareReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
+			List<SimpleDictionary> dictDTOList = InstrumentationAwareReflectionUtils.getFields(dtoClass).stream()
 					.filter(field -> (LovUtils.getType(field) != null && field.getType().equals(String.class)) || (
 							isSqlService && field.getName().contains("edit_lov")))
 					.map(Field::getName).map(field -> new SimpleDictionary(field, field)).collect(Collectors.toList());
@@ -113,8 +113,8 @@ public abstract class BaseDictionaryLnkRuleCondFieldMetaBuilder<R extends Dictio
 				}
 			}
 		} else if (BOOLEAN_FIELD.equals(entity.getType())) {
-			Class<?> dtoClass = ReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
-			List<SimpleDictionary> dictDTOList = ReflectionUtils.getFields(dtoClass).stream()
+			Class<?> dtoClass = InstrumentationAwareReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
+			List<SimpleDictionary> dictDTOList = InstrumentationAwareReflectionUtils.getFields(dtoClass).stream()
 					.filter(field -> field.getType().equals(Boolean.class) || field.getType().equals(boolean.class))
 					.map(Field::getName).map(field -> new SimpleDictionary(field, field)).collect(Collectors.toList());
 			fields.setConcreteValues(DictionaryLnkRuleCondDto_.fieldName, dictDTOList);

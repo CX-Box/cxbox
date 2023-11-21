@@ -16,6 +16,7 @@
 
 package org.cxbox.model.core.service;
 
+import java.util.Set;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.tx.DeploymentTransactionSupport;
 import org.cxbox.api.system.SystemSettingChangedEvent;
@@ -32,7 +33,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -100,11 +100,16 @@ public class SystemSettingsImpl implements SystemSettings {
 			Map<LOV, String> current = settings.get();
 			Map<LOV, String> pending = loadSettings();
 			settings.set(pending);
-			CollectionUtils.disjunction(current.entrySet(), pending.entrySet())
-					.stream().map(Map.Entry::getKey)
+			disjunction(current.entrySet(), pending.entrySet())
+					.stream()
+					.map(Map.Entry::getKey)
 					.distinct().map(lov -> new SystemSettingChangedEvent(lov, this))
 					.forEach(eventPublisher::publishEvent);
 		}
+	}
+
+	private static <T> Set<T> disjunction(Set<T> entries1, Set<T> entries2) {
+		return entries1.stream().filter(e -> !entries2.contains(e)).collect(Collectors.toSet());
 	}
 
 	private Map<LOV, String> loadSettings() {

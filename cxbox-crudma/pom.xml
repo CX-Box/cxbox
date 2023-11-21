@@ -34,11 +34,6 @@
       <groupId>org.cxbox</groupId>
       <artifactId>cxbox-core</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>org.reflections</groupId>
-      <artifactId>reflections</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
