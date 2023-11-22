@@ -1,4 +1,4 @@
-package org.cxbox.core.metahotreload.service;
+package org.cxbox.service.impl;
 
 
 import java.time.LocalDateTime;
@@ -8,13 +8,13 @@ import lombok.AllArgsConstructor;
 import org.cxbox.core.dto.rowmeta.LockStatus;
 import org.cxbox.core.dto.rowmeta.LockStatusType;
 import org.cxbox.core.dto.rowmeta.LockStatus_;
-import org.cxbox.core.metahotreload.MetaLockService;
 import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.service.MetaLockService;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class MetaMetaLockServiceImpl implements MetaLockService {
+public class MetaLockServiceImpl implements MetaLockService {
 
 	private final JpaDao jpaDao;
 
@@ -42,10 +42,10 @@ public class MetaMetaLockServiceImpl implements MetaLockService {
 
 	@Override
 	@Transactional(TxType.REQUIRES_NEW)
-	public void updateLock(LockStatusType status) {
+	public int updateLock(LockStatusType status) {
 		LockStatusType currentStatus = getLockEntity().getStatus();
 		if (!currentStatus.equals(status)) {
-			jpaDao.update(
+			int updateResult = jpaDao.update(
 					LockStatus.class, (root, cq, cb) -> cb.and(
 							cb.equal(root.get(LockStatus_.id), 1L)
 					),
@@ -54,10 +54,12 @@ public class MetaMetaLockServiceImpl implements MetaLockService {
 							cb.literal(status)
 					)
 			);
-			if (status.equals(LockStatusType.LOCK)) {
+			if (updateResult == 1 && status.equals(LockStatusType.LOCK)) {
 				updateLockTime(LocalDateTime.now());
 			}
+			return updateResult;
 		}
+		return 0;
 	}
 
 	@Override

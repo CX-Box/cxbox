@@ -18,7 +18,6 @@ package org.cxbox.core.metahotreload.service;
 
 import static org.cxbox.api.service.session.InternalAuthorizationService.VANILLA;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,20 +25,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
-import org.cxbox.core.dto.rowmeta.LockStatus;
-import org.cxbox.core.dto.rowmeta.LockStatusType;
+import org.cxbox.core.metahotreload.CxboxSharedLock;
 import org.cxbox.core.metahotreload.MetaHotReloadService;
-import org.cxbox.core.metahotreload.MetaLockService;
 import org.cxbox.core.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.core.metahotreload.dto.BcSourceDTO;
 import org.cxbox.core.metahotreload.dto.ScreenSourceDto;
@@ -77,7 +74,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected final BcUtil bcUtil;
 
-	protected final MetaLockService metaLockService;
+	protected final Optional<CxboxSharedLock> cxboxSharedLock;
 
 	private static void deleteAllMeta(@NotNull JpaDao jpaDao) {
 		jpaDao.delete(NavigationView.class, (root, query, cb) -> cb.and());
@@ -95,35 +92,31 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 		List<WidgetSourceDTO> widgetDtos = metaResourceReaderService.getWidgets();
 		List<ViewSourceDTO> viewDtos = metaResourceReaderService.getViews();
 
+		authzService.loginAs(authzService.createAuthentication(VANILLA));
+
 		txService.invokeInTx(() -> {
-			metaLockService.createLockRowIfNotExist();
-			metaLockService.updateLock(LockStatusType.LOCK);
 
-			loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
-			deleteAllMeta(jpaDao);
-			bcUtil.process(bcDtos);
-			Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
-			viewAndViewWidgetUtil.process(viewDtos, nameToWidget);
-			screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
-			responsibilitiesProcess(screenDtos, viewDtos);
-			loadMetaAfterProcess();
+			Runnable loadMeta = () -> {
+				loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
+				deleteAllMeta(jpaDao);
+				bcUtil.process(bcDtos);
+				Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
+				viewAndViewWidgetUtil.process(viewDtos, nameToWidget);
+				screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
+				responsibilitiesProcess(screenDtos, viewDtos);
+				loadMetaAfterProcess();
+			};
 
-			metaLockService.updateLock(LockStatusType.UNLOCK);
+			if (cxboxSharedLock.isEmpty()) {
+				loadMeta.run();
+			} else {
+				cxboxSharedLock.get().acquireAndExecute(loadMeta);
+			}
+
 			return null;
 		});
 
 	}
-
-	public void loadMetaWithCheckBlock() {
-		authzService.loginAs(authzService.createAuthentication(VANILLA));
-		metaLockService.createLockRowIfNotExist();
-
-		if (metaLockService.isLock()) {
-			 waitUnLock();
-		}
-			loadMeta();
-	}
-
 
 	//TODO>>Draft. Refactor
 	private void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
@@ -209,19 +202,6 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected void loadMetaAfterProcess() {
 
-	}
-
-	@SneakyThrows
-	private void waitUnLock() {
-		LockStatus lockStatus = metaLockService.getLockEntity();
-
-		while (lockStatus.getStatus().equals(LockStatusType.LOCK)) {
-			if (lockStatus.getLockTime().plusSeconds(config.getBaseLockTimer()).isBefore(LocalDateTime.now())) {
-				break;
-			}
-			Thread.sleep(config.getCheckLockInterval());
-			lockStatus = jpaDao.findById(LockStatus.class, 1L);
-		}
 	}
 
 }

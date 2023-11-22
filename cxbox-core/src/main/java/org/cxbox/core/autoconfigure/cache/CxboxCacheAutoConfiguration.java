@@ -17,17 +17,17 @@
 package org.cxbox.core.autoconfigure.cache;
 
 import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.cxbox.core.autoconfigure.AutoConfiguration;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.config.cache.CacheManagerBasedCacheResolver;
 import org.cxbox.core.config.cache.CxboxCaches;
 import org.cxbox.core.config.cache.CxboxRequestAwareCacheHolder;
 import org.cxbox.core.metahotreload.MetaHotReloadService;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import javax.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
@@ -76,7 +76,7 @@ public class CxboxCacheAutoConfiguration {
 
 	@Bean
 	public CacheResolver cxboxCacheResolver(MetaHotReloadService metaHotReloadService) {
-		metaHotReloadService.loadMetaWithCheckBlock();
+		metaHotReloadService.loadMeta();
 		if (CacheType.NONE.equals(cacheProperties.getType())) {
 			return new CacheManagerBasedCacheResolver(new NoOpCacheManager());
 		}

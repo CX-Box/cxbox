@@ -17,12 +17,18 @@
 package org.cxbox.core.metahotreload.conf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.core.metahotreload.CxboxSharedLock;
 import org.cxbox.core.metahotreload.MetaHotReloadService;
-import org.cxbox.core.metahotreload.MetaLockService;
 import org.cxbox.core.metahotreload.conf.properties.MetaConfigurationProperties;
-import org.cxbox.core.metahotreload.service.*;
+import org.cxbox.core.metahotreload.service.BcUtil;
+import org.cxbox.core.metahotreload.service.MetaHotReloadServiceImpl;
+import org.cxbox.core.metahotreload.service.MetaResourceReaderService;
+import org.cxbox.core.metahotreload.service.ScreenAndNavigationGroupAndNavigationViewUtil;
+import org.cxbox.core.metahotreload.service.ViewAndViewWidgetUtil;
+import org.cxbox.core.metahotreload.service.WidgetUtil;
 import org.cxbox.model.core.dao.JpaDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -53,7 +59,7 @@ public class MetaHotReloadConfiguration {
 			ViewAndViewWidgetUtil viewAndViewWidgetUtil,
 			ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil,
 			BcUtil bcUtil,
-			MetaLockService metaLockService) {
+			Optional<CxboxSharedLock> cxboxSharedLock) {
 		return new MetaHotReloadServiceImpl(
 				config,
 				metaResourceReaderService,
@@ -64,6 +70,8 @@ public class MetaHotReloadConfiguration {
 				viewAndViewWidgetUtil,
 				screenAndNavigationGroupAndNavigationViewUtil,
 				bcUtil,
-				metaLockService);
+				cxboxSharedLock
+		);
 	}
+
 }

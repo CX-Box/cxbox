@@ -21,5 +21,4 @@ public interface MetaHotReloadService {
 
 	void loadMeta();
 
-	void loadMetaWithCheckBlock();
 }

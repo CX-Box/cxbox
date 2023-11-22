@@ -1,4 +1,4 @@
-package org.cxbox.core.metahotreload;
+package org.cxbox.service;
 
 import java.time.LocalDateTime;
 import org.cxbox.core.dto.rowmeta.LockStatus;
@@ -6,14 +6,14 @@ import org.cxbox.core.dto.rowmeta.LockStatusType;
 
 public interface MetaLockService {
 
-	void updateLock(LockStatusType status);
+	LockStatus getLockEntity();
 
 	boolean isLock();
 
 	void createLockRowIfNotExist();
 
-	void updateLockTime(LocalDateTime lockTime);
+	int updateLock(LockStatusType status);
 
-	LockStatus getLockEntity();
+	void updateLockTime(LocalDateTime lockTime);
 
 }
