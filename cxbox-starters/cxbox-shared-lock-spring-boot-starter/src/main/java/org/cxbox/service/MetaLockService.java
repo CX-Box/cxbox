@@ -1,10 +1,10 @@
 package org.cxbox.service;
 
-import java.time.LocalDateTime;
-import org.cxbox.core.dto.rowmeta.LockStatus;
-import org.cxbox.core.dto.rowmeta.LockStatusType;
+import org.cxbox.model.LockStatus;
+import org.cxbox.model.LockStatusType;
 
 public interface MetaLockService {
+
 
 	LockStatus getLockEntity();
 
@@ -13,7 +13,5 @@ public interface MetaLockService {
 	void createLockRowIfNotExist();
 
 	int updateLock(LockStatusType status);
-
-	void updateLockTime(LocalDateTime lockTime);
 
 }

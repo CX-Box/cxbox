@@ -1,25 +1,21 @@
-package org.cxbox;
+package org.cxbox.service;
 
 import java.time.LocalDateTime;
-import org.cxbox.core.dto.rowmeta.LockStatus;
-import org.cxbox.core.dto.rowmeta.LockStatusType;
+import org.cxbox.config.SharedLockConfigurationProperties;
+import org.cxbox.model.LockStatus;
+import org.cxbox.model.LockStatusType;
 import org.cxbox.core.metahotreload.CxboxSharedLock;
-import org.cxbox.core.metahotreload.conf.properties.MetaConfigurationProperties;
-import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.service.MetaLockService;
 
 public class StandardCxboxSharedLock implements CxboxSharedLock {
 
-	private final MetaConfigurationProperties config;
+	private final SharedLockConfigurationProperties config;
 
 	private final MetaLockService metaLockService;
 
-	private final JpaDao jpaDao;
-
-	public StandardCxboxSharedLock(MetaConfigurationProperties config, MetaLockService metaLockService, JpaDao jpaDao) {
+	public StandardCxboxSharedLock(SharedLockConfigurationProperties config,
+			MetaLockService metaLockService) {
 		this.config = config;
 		this.metaLockService = metaLockService;
-		this.jpaDao = jpaDao;
 	}
 
 	@Override
@@ -35,7 +31,6 @@ public class StandardCxboxSharedLock implements CxboxSharedLock {
 				waitForLock();
 				updateResult = metaLockService.updateLock(LockStatusType.LOCK);
 			}
-			;
 			runnable.run();
 		} finally {
 			metaLockService.updateLock(LockStatusType.UNLOCK);
@@ -55,7 +50,7 @@ public class StandardCxboxSharedLock implements CxboxSharedLock {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-			lockStatus = jpaDao.findById(LockStatus.class, 1L);
+			lockStatus = metaLockService.getLockEntity();
 		}
 	}
 

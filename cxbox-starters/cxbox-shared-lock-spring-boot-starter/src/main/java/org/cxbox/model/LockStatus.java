@@ -1,4 +1,4 @@
-package org.cxbox.core.dto.rowmeta;
+package org.cxbox.model;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
