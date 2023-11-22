@@ -85,9 +85,9 @@ public class DictionaryLnkRuleCondDto extends DataResponseDTO {
 			this.fieldDictValue = dictionary().lookupValue(entity.getFieldDictValue(), entity.getFieldType());
 		}
 		if (entity.getDictionaryLnkRule() != null) {
-			defaultRuleFlg = entity.getDictionaryLnkRule().isDefaultRuleFlg();
+			defaultRuleFlg = entity.getDictionaryLnkRule().getDefaultRuleFlg();
 		}
-		this.ruleInversionFlg = entity.isRuleInversionFlg();
+		this.ruleInversionFlg = entity.getRuleInversionFlg();
 	}
 
 }

@@ -16,6 +16,7 @@
 
 package org.cxbox.model.dictionary.links.entity;
 
+import jakarta.persistence.Convert;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.entity.Department;
@@ -42,13 +43,15 @@ public class DictionaryLnkRuleCond extends BaseEntity {
 
 	private String fieldTextValue;
 
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean fieldBooleanValue;
 
 	private LOV fieldDictValue;
 
 	private String fieldType;
 
-	private boolean ruleInversionFlg;
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private Boolean ruleInversionFlg;
 
 	@ManyToOne
 	@JoinColumn(name = "DEPT_ID")

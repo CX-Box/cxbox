@@ -16,6 +16,7 @@
 
 package org.cxbox.model.dictionary.links.entity;
 
+import jakarta.persistence.Convert;
 import org.cxbox.model.core.entity.BaseEntity;
 import java.util.Set;
 import jakarta.persistence.CascadeType;
@@ -43,11 +44,14 @@ public class DictionaryLnkRule extends BaseEntity {
 
 	private String type;
 
-	private boolean allValues;
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private Boolean allValues;
 
-	private boolean filterableField;
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private Boolean filterableField;
 
-	private boolean defaultRuleFlg;
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private Boolean defaultRuleFlg;
 
 	@ManyToOne
 	@JoinColumn(name = "SERVICE_ID")

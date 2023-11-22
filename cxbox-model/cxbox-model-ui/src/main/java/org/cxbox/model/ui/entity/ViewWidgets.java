@@ -26,8 +26,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.hibernate.type.SqlTypes;
 
 /**
  * View widgets with position and limit
@@ -51,6 +53,8 @@ public class ViewWidgets implements EmbeddedKeyable, Serializable {
 	@EmbeddedId
 	private ViewWidgetsPK pk;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
+	@Column()
 	private Long positon;
 
 	@Column(name = "DESCRIPTION_TITLE")
@@ -60,12 +64,15 @@ public class ViewWidgets implements EmbeddedKeyable, Serializable {
 
 	private String snippet;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "PAGE_LIMIT")
 	private Long limit;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "GRID_WIDTH")
 	private Long gridWidth;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "GRID_BREAK")
 	private Long gridBreak;
 

@@ -16,6 +16,8 @@
 
 package org.cxbox.model.core.entity;
 
+import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
+
 import org.cxbox.model.core.hbn.PropagateAnnotations;
 import org.cxbox.model.core.listeners.jpa.DelegatingBaseEntityListener;
 import java.io.Serializable;
@@ -33,10 +35,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DiscriminatorOptions;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 
 @Audited
@@ -53,12 +57,14 @@ public abstract class BaseEntity extends AbstractEntity implements Serializable 
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "extSequenceGenerator")
 	@GenericGenerator(
 			name = "extSequenceGenerator",
-			strategy = "org.cxbox.model.core.hbn.ExtSequenceStyleGenerator",
+			type = org.cxbox.model.core.hbn.ExtSequenceStyleGenerator.class,
 			parameters = {
 					@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "app_seq"),
-					@Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "1"),
+					@Parameter(name = INCREMENT_PARAM, value = "1"),
 			}
 	)
+	@JdbcTypeCode(SqlTypes.NUMERIC)
+	@Column()
 	protected Long id;
 
 	@Version
@@ -73,9 +79,11 @@ public abstract class BaseEntity extends AbstractEntity implements Serializable 
 	@Column(name = "updated_date", nullable = false)
 	private LocalDateTime updatedDate;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "CREATED_BY_USER_ID", nullable = false)
 	private Long createdBy;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "LAST_UPD_BY_USER_ID", nullable = false)
 	private Long lastUpdBy;
 

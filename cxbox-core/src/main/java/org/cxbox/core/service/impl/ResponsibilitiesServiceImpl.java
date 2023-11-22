@@ -17,6 +17,7 @@
 package org.cxbox.core.service.impl;
 
 import org.cxbox.api.data.dictionary.LOV;
+import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.core.entity.Department;
@@ -31,6 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 
 @RequiredArgsConstructor
 public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
@@ -49,6 +51,8 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 		);
 	}
 
+	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
+			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
 	public Map<String, Boolean> getListRespByUser(User user, LOV userRole) {
 		return getListByUserList(user, userRole, ResponsibilityType.VIEW)
 				.stream()

@@ -31,6 +31,8 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.NotAudited;
 
 /**
@@ -45,9 +47,9 @@ public class User extends BaseEntity {
 
 	private String login;
 
-	private String firstName;   // имя
+	private String firstName;
 
-	private String lastName;    // фамилия
+	private String lastName;
 
 	private String patronymic;
 
@@ -77,14 +79,10 @@ public class User extends BaseEntity {
 	@Column(name = "DN")
 	private String dn;
 
-	@NotAudited
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id", insertable = false, updatable = false)
-	private UserDivisions userDivisions;
-
 	private String origDeptCode;
 
 	@ManyToOne
+	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "dept_id")
 	private Department department;
 
@@ -106,6 +104,7 @@ public class User extends BaseEntity {
 	private String userPrincipalName;
 
 	@Column(name = "active")
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean active;
 
 	public String getFullName() {

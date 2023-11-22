@@ -16,6 +16,10 @@
 
 package org.cxbox.model.ui.entity;
 
+import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
+import static org.hibernate.id.OptimizableGenerator.INITIAL_PARAM;
+import static org.hibernate.id.OptimizableGenerator.OPT_PARAM;
+
 import org.cxbox.model.core.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,9 +38,9 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 @ExtSequenceGenerator(
 		parameters = {
 				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
-				@Parameter(name = SequenceStyleGenerator.INITIAL_PARAM, value = "1"),
-				@Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "100"),
-				@Parameter(name = SequenceStyleGenerator.OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
+				@Parameter(name = INITIAL_PARAM, value = "1"),
+				@Parameter(name = INCREMENT_PARAM, value = "100"),
+				@Parameter(name = OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
 		}
 )
 public class Screen extends BaseEntity {

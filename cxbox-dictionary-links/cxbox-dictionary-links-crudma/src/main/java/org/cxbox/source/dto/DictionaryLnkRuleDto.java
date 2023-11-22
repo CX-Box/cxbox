@@ -54,9 +54,9 @@ public class DictionaryLnkRuleDto extends DataResponseDTO {
 		this.name = entity.getName();
 		this.field = entity.getField();
 		this.type = entity.getType();
-		this.allValues = entity.isAllValues();
-		this.filterableField = entity.isFilterableField();
-		this.defaultRuleFlg = entity.isDefaultRuleFlg();
+		this.allValues = entity.getAllValues();
+		this.filterableField = entity.getFilterableField();
+		this.defaultRuleFlg = entity.getDefaultRuleFlg();
 	}
 
 }

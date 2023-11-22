@@ -48,9 +48,11 @@ public class UserRole extends BaseEntity {
 	private LOV internalRoleCd;
 
 	@Column
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean active;
 
 	@Column
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean main;
 
 }

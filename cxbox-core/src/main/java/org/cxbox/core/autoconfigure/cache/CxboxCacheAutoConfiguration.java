@@ -46,6 +46,7 @@ import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -74,6 +75,7 @@ public class CxboxCacheAutoConfiguration {
 	private final CacheProperties cacheProperties;
 
 	@Bean
+	@Lazy(value = false)
 	public CacheResolver cxboxCacheResolver(MetaHotReloadService metaHotReloadService) {
 		metaHotReloadService.loadMeta();
 		if (CacheType.NONE.equals(cacheProperties.getType())) {

@@ -58,7 +58,7 @@ public class SessionServiceImpl implements SessionService {
 
 	private final UIService uiService;
 
-	private final Optional<List<UserExternalService>> userExternalServices;
+	private final Optional<List<UserExternalService<?>>> userExternalServices;
 
 	private final UserService userService;
 
@@ -71,9 +71,8 @@ public class SessionServiceImpl implements SessionService {
 	private final BcHierarchyAware bcHierarchyAware;
 
 	private final UserCache userCache;
+	
 
-	// если у нас транзакции нет, то здесь будут происходить
-	// постоянные запросы к СУБД, поэтому кешируем
 	@Override
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "#root.methodName")
 	public User getSessionUser() {
@@ -84,10 +83,7 @@ public class SessionServiceImpl implements SessionService {
 		return user;
 	}
 
-	@Override
-	public Department getSessionUserDepartment() {
-		return getSessionUser().getDepartment();
-	}
+
 
 	@Override
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "#root.methodName")
@@ -103,11 +99,9 @@ public class SessionServiceImpl implements SessionService {
 	private LOV calculateUserRole(HttpServletRequest request, CxboxUserDetailsInterface userDetails) {
 		LOV mainRole = userDetails.getUserRole();
 		String requestedRole = request.getHeader("RequestedUserRole");
-		// в заголовке ничего не указано - возвращаем main
 		if (StringUtils.isBlank(requestedRole)) {
 			return mainRole;
 		}
-		// оптимизация: в заголовке совпадает с сессией - возвращаем main
 		if (mainRole != null && requestedRole.equals(mainRole.getKey())) {
 			return mainRole;
 		}
@@ -157,7 +151,7 @@ public class SessionServiceImpl implements SessionService {
 		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 		try {
 			if (attrs.getRequest().getHeader(forwardedFor) == null
-					|| attrs.getRequest().getHeader(forwardedFor).trim().length() == 0) {
+					|| attrs.getRequest().getHeader(forwardedFor).trim().isEmpty()) {
 				return attrs.getRequest().getRemoteAddr();
 			} else {
 				return attrs.getRequest().getHeader(forwardedFor);
@@ -166,6 +160,11 @@ public class SessionServiceImpl implements SessionService {
 			log.warn("Cannot get user ip", e);
 			return "";
 		}
+	}
+
+	@Override
+	public Department getSessionUserDepartment() {
+		return getSessionUser().getDepartment();
 	}
 
 	@Override

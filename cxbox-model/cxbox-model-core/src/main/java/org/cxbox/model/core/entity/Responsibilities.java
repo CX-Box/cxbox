@@ -16,6 +16,10 @@
 
 package org.cxbox.model.core.entity;
 
+import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
+import static org.hibernate.id.OptimizableGenerator.INITIAL_PARAM;
+import static org.hibernate.id.OptimizableGenerator.OPT_PARAM;
+
 import java.sql.Types;
 import org.cxbox.api.data.dictionary.LOV;
 import jakarta.persistence.Column;
@@ -29,8 +33,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cxbox.model.core.hbn.ExtSequenceGenerator;
 import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -39,11 +47,20 @@ import org.hibernate.annotations.JdbcTypeCode;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Table(name = "RESPONSIBILITIES")
+@ExtSequenceGenerator(
+		parameters = {
+				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
+				@Parameter(name = INITIAL_PARAM, value = "1"),
+				@Parameter(name = INCREMENT_PARAM, value = "100"),
+				@Parameter(name = OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
+		}
+)
 public class Responsibilities extends BaseEntity {
 
 	@Column(name = "INTERNAL_ROLE_CD")
 	private LOV internalRoleCD;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "DEPT_ID")
 	private Long departmentId;
 
@@ -55,6 +72,7 @@ public class Responsibilities extends BaseEntity {
 	private ResponsibilityType responsibilityType;
 
 	@Column(name = "READ_ONLY")
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private boolean readOnly;
 
 	@Lob

@@ -16,6 +16,7 @@
 
 package org.cxbox.model.dictionary.entity;
 
+import jakarta.persistence.Convert;
 import org.cxbox.model.core.api.Translatable;
 import org.cxbox.model.core.entity.BaseEntity;
 import java.io.Serializable;
@@ -56,6 +57,7 @@ public class DictionaryItem extends BaseEntity implements Translatable<Dictionar
 	private String key;
 
 	@Column
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private boolean active;
 
 	@Column
@@ -65,7 +67,8 @@ public class DictionaryItem extends BaseEntity implements Translatable<Dictionar
 	private String description;
 
 	@Column(name = "ADDITION_FLG")
-	private boolean additionFlg;
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private Boolean additionFlg;
 
 	@ManyToOne
 	@JoinColumn(name = "DICTIONARY_TYPE_ID", nullable = false)

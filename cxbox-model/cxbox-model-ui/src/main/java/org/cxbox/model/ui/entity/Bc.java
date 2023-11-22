@@ -16,6 +16,7 @@
 
 package org.cxbox.model.ui.entity;
 
+import jakarta.persistence.Convert;
 import java.sql.Types;
 import org.cxbox.model.core.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -26,6 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 
 @Getter
@@ -55,12 +57,15 @@ public class Bc extends BaseEntity {
 	@Column(name = "report_date_field")
 	private String reportDateField;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "page_limit")
 	private Long pageLimit;
 
 	@Column(name = "editable")
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean editable;
 
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	@Column(name = "refresh")
 	private Boolean refresh;
 

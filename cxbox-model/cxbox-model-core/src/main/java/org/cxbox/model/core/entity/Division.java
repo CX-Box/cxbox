@@ -16,6 +16,7 @@
 
 package org.cxbox.model.core.entity;
 
+import jakarta.persistence.Convert;
 import org.cxbox.api.data.dictionary.LOV;
 import java.io.Serializable;
 import java.util.Objects;
@@ -37,6 +38,7 @@ public class Division extends BaseEntity implements Serializable {
 
 	private String fullName;
 
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean active;
 
 	private LOV levelCd;
@@ -53,6 +55,7 @@ public class Division extends BaseEntity implements Serializable {
 	@JoinColumn(name = "HEAD_USER_ROLE_ID")
 	private UserRole divisionHead;
 
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean checkGuFlg;
 
 	private LOV headOfficeCd;

@@ -70,7 +70,7 @@ public class DictionaryLnkRuleServiceImpl extends
 			}
 			if (data.isFieldChanged(DictionaryLnkRuleDto_.allValues)) {
 				entity.setAllValues(data.getAllValues());
-				if (entity.isAllValues()) {
+				if (entity.getAllValues()) {
 					needChildDeletion = true;
 				}
 			}
@@ -87,7 +87,7 @@ public class DictionaryLnkRuleServiceImpl extends
 			}
 			if (data.isFieldChanged(DictionaryLnkRuleDto_.defaultRuleFlg)) {
 				entity.setDefaultRuleFlg(data.getDefaultRuleFlg());
-				if (entity.isDefaultRuleFlg()) {
+				if (entity.getDefaultRuleFlg()) {
 					needChildDeletion = true;
 				}
 			}

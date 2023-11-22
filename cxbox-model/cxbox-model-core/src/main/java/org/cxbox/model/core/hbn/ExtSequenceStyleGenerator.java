@@ -57,7 +57,6 @@ public class ExtSequenceStyleGenerator extends SequenceStyleGenerator {
 	@Override
 	public Object generate(SharedSessionContractImplementor session, Object object) throws HibernateException {
 		final Object currentId = session.getEntityPersister(null, object)
-				.getClassMetadata()
 				.getIdentifier(object, session);
 		if (currentId != null) {
 			return currentId;

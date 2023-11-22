@@ -95,8 +95,8 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 		// Разделение списка правил на 4 группы по значению полей 'Правило по-умолчанию' и 'Правило фильтра'
 		Map<Boolean, Map<Boolean, List<DictionaryLnkRule>>> ruleMap = rules.stream()
 				.collect(Collectors.partitioningBy(
-						DictionaryLnkRule::isDefaultRuleFlg,
-						Collectors.partitioningBy(DictionaryLnkRule::isFilterableField)
+						DictionaryLnkRule::getDefaultRuleFlg,
+						Collectors.partitioningBy(DictionaryLnkRule::getFilterableField)
 				));
 		// ruleMap.get(значение флага defaultRuleFlg).get(значение флага filterableField)
 		// возвращает список правил с учетом флагов defaultRuleFlg и filterableField
@@ -121,15 +121,15 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 		String serviceName = bc.<InnerBcDescription>getDescription().getServiceClass().getSimpleName();
 		List<DictionaryLnkRule> rules = linkedDictionaryCache.getRules(serviceName)
 				.getOrDefault(field.getName(), Collections.emptyList())
-				.stream().filter(rule -> filterValues == rule.isFilterableField())
+				.stream().filter(rule -> filterValues == rule.getFilterableField())
 				.collect(Collectors.toList());
 		Set<LOV> result = new HashSet<>();
 		long ruleMatchCount = rules.stream()
-				.filter(rule -> !rule.isDefaultRuleFlg() && processRule(rule, result, bc))
+				.filter(rule -> !rule.getDefaultRuleFlg() && processRule(rule, result, bc))
 				.count();
 		if (ruleMatchCount < 1) {
 			rules.stream()
-					.filter(DictionaryLnkRule::isDefaultRuleFlg)
+					.filter(DictionaryLnkRule::getDefaultRuleFlg)
 					.findFirst()
 					.ifPresent(rule -> processRule(rule, result, bc));
 		}
@@ -152,7 +152,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 
 		String type = rules.get(0).getType();
 		String field = rules.get(0).getField();
-		boolean isFilterableField = rules.get(0).isFilterableField();
+		boolean isFilterableField = rules.get(0).getFilterableField();
 
 		boolean anyApplied = false;
 		Set<LOV> allLovs = new HashSet<>();
@@ -190,7 +190,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 			return false;
 		}
 
-		if (rule.isAllValues()) {
+		if (rule.getAllValues()) {
 			dictionaryCache.getAll(rule.getType()).stream()
 					.map(SimpleDictionary::getKey)
 					.map(LOV::new).forEach(lovs::add);
@@ -217,7 +217,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 				return false;
 			}
 			boolean result = conditionChecker.check(conditionChecker.prepare(ruleCondition, bc), ruleCondition);
-			if (ruleCondition.isRuleInversionFlg()) {
+			if (ruleCondition.getRuleInversionFlg()) {
 				result = !result;
 			}
 			return result;

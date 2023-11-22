@@ -24,6 +24,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -37,6 +39,7 @@ public class BcProperties extends BaseEntity {
 
 	String filter;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "PAGE_LIMIT")
 	Long limit;
 
