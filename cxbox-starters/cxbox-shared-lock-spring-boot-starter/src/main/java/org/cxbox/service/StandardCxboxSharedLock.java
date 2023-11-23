@@ -2,9 +2,9 @@ package org.cxbox.service;
 
 import java.time.LocalDateTime;
 import org.cxbox.config.SharedLockConfigurationProperties;
+import org.cxbox.core.metahotreload.CxboxSharedLock;
 import org.cxbox.model.LockStatus;
 import org.cxbox.model.LockStatusType;
-import org.cxbox.core.metahotreload.CxboxSharedLock;
 
 public class StandardCxboxSharedLock implements CxboxSharedLock {
 
@@ -42,7 +42,9 @@ public class StandardCxboxSharedLock implements CxboxSharedLock {
 		LockStatus lockStatus = metaLockService.getLockEntity();
 
 		while (lockStatus.getStatus().equals(LockStatusType.LOCK)) {
-			if (lockStatus.getLockTime().plusSeconds(config.getBaseLockTimer()).isBefore(LocalDateTime.now())) {
+
+			if (LocalDateTime.now().isAfter(lockStatus.getLockTime().plusSeconds(config.getBaseLockTimer()))) {
+				metaLockService.updateLock(LockStatusType.UNLOCK);
 				break;
 			}
 			try {
