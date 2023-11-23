@@ -18,11 +18,8 @@ package org.cxbox.core.util.session.impl;
 
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.CxboxAuthenticationService;
-import org.cxbox.api.service.session.CxboxUserDetails;
-import org.cxbox.api.service.session.CxboxUserDetailsInterface;
 import org.cxbox.core.service.impl.UserRoleService;
 import org.cxbox.core.util.session.UserService;
-import org.cxbox.model.core.entity.User;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,28 +43,36 @@ public class CxboxAuthenticationServiceImpl implements CxboxAuthenticationServic
 	@SuppressWarnings("java:S5804")
 	@Override
 	public UserDetails loadUserByUsername(final String username, final LOV userRole) throws UsernameNotFoundException {
-		final User user = userService.getUserByLogin(username);
+		final Long user = userService.getUserByLogin(username);
 		if (user == null) {
 			throw new UsernameNotFoundException(username);
 		}
-		return createUserDetails(
-				user,
-				userRole == null
-						? userRoleService.getMainUserRoleKey(user)
-						: userRole
-		);
+		return user;
+
 	}
 
-	private CxboxUserDetailsInterface createUserDetails(final User user, final LOV userRole) {
-		return CxboxUserDetails.builder()
-				.id(user.getId())
-				.username(user.getLogin())
-				.password(user.getPassword())
-				.userRole(userRole)
-				.timezone(user.getTimezone())
-				.localeCd(user.getLocale())
-				.authorities(Collections.emptySet())
-				.build();
-	}
+	/**
+	 * return createUserDetails(
+	 * 				user,
+	 * 				userRole == null
+	 * 						? userRoleService.getMainUserRoleKey(user)
+	 * 						: userRole
+	 * 		);
+	 *
+	 * 	private CxboxUserDetailsInterface createUserDetails(final User user, final LOV userRole) {
+	 * 		return CxboxUserDetails.builder()
+	 * 				.id(user.getId())
+	 * 				.departmentId(user.getDepartment().getId())
+	 * 				.username(user.getLogin())
+	 * 				.password(user.getPassword())
+	 * 				.userRole(userRole)
+	 * 				.timezone(user.getTimezone())
+	 * 				.localeCd(user.getLocale())
+	 * 				.authorities(Collections.emptySet())
+	 * 				.build();
+	 *    }
+	 */
+
+
 
 }

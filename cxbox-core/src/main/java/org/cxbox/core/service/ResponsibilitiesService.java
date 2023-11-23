@@ -16,22 +16,21 @@
 
 package org.cxbox.core.service;
 
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.core.entity.User;
 import java.util.Map;
 import java.util.Set;
+import org.cxbox.api.data.dictionary.LOV;
+import org.cxbox.model.core.entity.IUser;
 
 /**
  * Service that defines access rights to screens and views
  */
 public interface ResponsibilitiesService {
 
-	Map<String, Boolean> getListRespByUser(User user, LOV userRole);
+	Map<String, Boolean> getListRespByUser(IUser<Long> user, LOV userRole);
 
-	String getListScreensByUser(User user, LOV userRole);
+	String getListScreensByUser(IUser<Long> user, LOV userRole);
 
 	@Deprecated
-	Set<String> getViewResponsibilities(Department department);
+	Set<String> getViewResponsibilities(Long departmentId);
 
 }

@@ -20,28 +20,24 @@ import static org.cxbox.api.service.session.InternalAuthorizationService.VANILLA
 
 import org.cxbox.api.service.session.CoreSessionService;
 import org.cxbox.api.service.session.CxboxUserDetailsInterface;
-import org.cxbox.core.util.session.SessionUser;
 import org.cxbox.core.util.session.UserExternalService;
 import org.cxbox.core.util.session.UserService;
 import org.cxbox.model.core.api.EffectiveUserAware;
-import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.User;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.model.core.entity.IUser;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
 
 @RequiredArgsConstructor
 @Service
-public class EffectiveUserAwareImpl implements EffectiveUserAware<User>  {
+public class EffectiveUserAwareImpl implements EffectiveUserAware<Long>  {
 
 	private final Optional<List<UserExternalService>> userExternalServices;
 
 	private final UserService userService;
-
-	private final JpaDao jpaDao;
 
 	private final CoreSessionService coreSessionService;
 
@@ -51,12 +47,12 @@ public class EffectiveUserAwareImpl implements EffectiveUserAware<User>  {
 	 * @param fallbackToSystem - if enabled, empty authenticated user replaced with system VANILLA user
 	 * @return User entity
 	 */
-	private User getSessionUserInternal(boolean fallbackToSystem) {
+	private Long getSessionUserInternal(boolean fallbackToSystem) {
 		CxboxUserDetailsInterface details = coreSessionService.getSessionUserDetails(false);
 		if (details != null) {
-			return getUserFromDetails(details);
+			return details.getId();
 		}
-		SessionUser sessionUser = null;
+		IUser<Long> sessionUser = null;
 		if (userExternalServices.isPresent()) {
 			for (UserExternalService userExternalService : userExternalServices.get()) {
 				sessionUser = userExternalService.getSessionUser();
@@ -68,23 +64,17 @@ public class EffectiveUserAwareImpl implements EffectiveUserAware<User>  {
 		if (sessionUser == null) {
 			throw new SessionAuthenticationException("Not authorized");
 		}
-		User user = userService.getUserByLogin(sessionUser.getId());
+		var user = sessionUser.getId();
 		if (user == null && fallbackToSystem) {
 			// here the user has already authenticated
 			// therefore it seems normal to replace it with a system user
-			user = new User();
-			user.setId(VANILLA.getId());
+			return VANILLA.getId();
 		}
 		return user;
 	}
 
 	@Override
-	public User getEffectiveSessionUser() {
+	public Long getEffectiveSessionUser() {
 		return getSessionUserInternal(true);
 	}
-
-	private User getUserFromDetails(final CxboxUserDetailsInterface userDetails) {
-		return jpaDao.findById(User.class, userDetails.getId());
-	}
-
 }

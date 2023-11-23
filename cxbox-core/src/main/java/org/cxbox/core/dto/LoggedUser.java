@@ -18,7 +18,7 @@ package org.cxbox.core.dto;
 
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.core.dto.data.view.ScreenResponsibility;
-import org.cxbox.model.core.entity.User;
+import org.cxbox.model.core.entity.IUser;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.List;
@@ -91,7 +91,7 @@ public class LoggedUser {
 			return this;
 		}
 
-		public Builder user(User user) {
+		public Builder user(IUser<Long> user) {
 
 			LoggedUser.this.userId = user.getId();
 			LoggedUser.this.login = user.getLogin();

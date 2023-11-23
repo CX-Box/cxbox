@@ -21,8 +21,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.core.entity.User;
+import org.cxbox.model.core.entity.IUser;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +47,11 @@ public abstract class DtoConstructor<E extends BaseEntity, D extends DataRespons
 	@Autowired
 	private SessionService sessionService;
 
-	protected RequestValueSupplier<BaseEntity, DataResponseDTO, Department> currentUserDept = new RequestValueSupplier<>(
-			(mapping, entity) -> sessionService.getSessionUserDepartment()
+	protected RequestValueSupplier<BaseEntity, DataResponseDTO, Long> currentUserDeptId = new RequestValueSupplier<>(
+			(mapping, entity) -> sessionService.getSessionUserDepartmentId()
 	);
 
-	protected RequestValueSupplier<BaseEntity, DataResponseDTO, User> currentUser = new RequestValueSupplier<>(
+	protected RequestValueSupplier<BaseEntity, DataResponseDTO, IUser<Long>> currentUser = new RequestValueSupplier<>(
 			(mapping, entity) -> sessionService.getSessionUser()
 	);
 

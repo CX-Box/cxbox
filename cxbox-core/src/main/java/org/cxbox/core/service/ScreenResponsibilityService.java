@@ -18,10 +18,10 @@ package org.cxbox.core.service;
 
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.dto.data.view.ScreenResponsibility;
-import org.cxbox.model.core.entity.User;
+import org.cxbox.model.core.entity.IUser;
 
 import java.util.List;
 
 public interface ScreenResponsibilityService {
-	List<ScreenResponsibility> getScreens(User user, LOV userRole);
+	List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole);
 }

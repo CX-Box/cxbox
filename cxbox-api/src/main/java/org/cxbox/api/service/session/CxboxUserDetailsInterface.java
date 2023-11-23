@@ -26,6 +26,8 @@ public interface CxboxUserDetailsInterface extends UserDetails {
 
 	Long getId();
 
+	Long getDepartmentId();
+
 	String getUsername();
 
 	String getPassword();

@@ -17,10 +17,7 @@
 package org.cxbox.core.util.session;
 
 import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.core.entity.Division;
-import org.cxbox.model.core.entity.User;
-import org.cxbox.model.core.entity.UserRole;
+import org.cxbox.model.core.entity.IUser;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,31 +25,19 @@ import java.util.Map;
 
 public interface SessionService {
 
-	User getSessionUser();
+	IUser<Long> getSessionUser();
 
-	Department getSessionUserDepartment();
+	Long getSessionUserDepartmentId();
 
 	LOV getSessionUserRole();
 
-	void setSessionUserTimezone(LOV timezone);
-
-	void setSessionUserLocale(LOV locale);
-
 	void setSessionUserInternalRole(String role);
-
-	String getSessionIpAddress();
 
 	Map<String, Boolean> getResponsibilities();
 
-	String getFirstViewFromResponsibilities(String... views);
-
 	String getSessionId();
 
-	Division getSessionUserDivision(LOV levelCd);
-
-	Division getSessionUserDivision();
-
-	List<UserRole> getSessionUserRoles();
+	List<LOV> getSessionUserRoles();
 
 	Collection<String> getCurrentScreenViews();
 

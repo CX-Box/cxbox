@@ -16,22 +16,8 @@
 
 package org.cxbox.core.util.session;
 
-import org.cxbox.api.data.PageSpecification;
-import org.cxbox.api.data.ResultPage;
-import org.cxbox.core.controller.UserController.UserDto;
-import org.cxbox.model.core.entity.User;
-
 
 public interface UserService {
-
-	/**
-	 * Get user mentioned by name or login
-	 *
-	 * @param mention search
-	 * @param page request parameters
-	 * @return ResultPage
-	 */
-	ResultPage<UserDto> getByMention(String mention, PageSpecification page);
 
 	/**
 	 * Get user by login
@@ -39,6 +25,8 @@ public interface UserService {
 	 * @param login login
 	 * @return User
 	 */
-	User getUserByLogin(String login);
+	Long getUserByLogin(String login);
+
+
 
 }

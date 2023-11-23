@@ -24,7 +24,7 @@ import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.service.ScreenResponsibilityService;
 import org.cxbox.core.service.UIService;
 import org.cxbox.core.service.ViewService;
-import org.cxbox.model.core.entity.User;
+import org.cxbox.model.core.entity.IUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -59,7 +59,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	 * @return JsonNode Available screens
 	 */
 	@Override
-	public List<ScreenResponsibility> getScreens(User user, LOV userRole) {
+	public List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole) {
 		List<ScreenResponsibility> result = new ArrayList<>();
 		try {
 			String screens = respService.getListScreensByUser(user, userRole);

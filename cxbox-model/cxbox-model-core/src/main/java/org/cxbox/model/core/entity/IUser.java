@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.dto.data.entity;
+package org.cxbox.model.core.entity;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
-import lombok.Getter;
-import lombok.Setter;
+public interface IUser<T> {
 
+	T getId();
 
-@Getter
-@Setter
-public class EntityTypeDTO extends DataResponseDTO {
+	T getDepartmentId();
 
 }

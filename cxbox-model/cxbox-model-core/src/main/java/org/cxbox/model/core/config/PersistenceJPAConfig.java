@@ -19,7 +19,6 @@ package org.cxbox.model.core.config;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.model.core.api.CurrentUserAware;
 import org.cxbox.model.core.api.EffectiveUserAware;
-import org.cxbox.model.core.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +47,8 @@ public class PersistenceJPAConfig {
 
 	@Bean
 	@TransactionScope
-	public CurrentUserAware<User> auditorAware(TransactionService txService, EffectiveUserAware<User> effectiveUserAware) {
-		User effectiveUser = txService.woAutoFlush(effectiveUserAware::getEffectiveSessionUser);
+	public CurrentUserAware<Long> auditorAware(TransactionService txService, EffectiveUserAware<Long> effectiveUserAware) {
+		Long effectiveUser = txService.woAutoFlush(effectiveUserAware::getEffectiveSessionUser);
 		return () -> effectiveUser;
 	}
 

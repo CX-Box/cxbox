@@ -17,9 +17,10 @@
 package org.cxbox.core.util.session;
 
 import jakarta.servlet.http.Cookie;
+import org.cxbox.model.core.entity.IUser;
 
 
-public interface ISessionUserProvider<T extends SessionUser> {
+public interface ISessionUserProvider<T extends IUser<Long>> {
 
 	T getSessionUser();
 

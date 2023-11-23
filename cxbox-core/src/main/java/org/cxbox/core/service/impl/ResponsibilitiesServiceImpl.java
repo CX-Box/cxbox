@@ -16,15 +16,6 @@
 
 package org.cxbox.core.service.impl;
 
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.core.config.cache.CacheConfig;
-import org.cxbox.core.service.ResponsibilitiesService;
-import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.core.entity.Responsibilities;
-import org.cxbox.model.core.entity.Responsibilities.ResponsibilityType;
-import org.cxbox.model.core.entity.Responsibilities_;
-import org.cxbox.model.core.entity.User;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +23,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.cxbox.api.data.dictionary.LOV;
+import org.cxbox.core.config.cache.CacheConfig;
+import org.cxbox.core.service.ResponsibilitiesService;
+import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.model.core.entity.IUser;
+import org.cxbox.model.core.entity.Responsibilities;
+import org.cxbox.model.core.entity.Responsibilities.ResponsibilityType;
+import org.cxbox.model.core.entity.Responsibilities_;
 import org.springframework.cache.annotation.Cacheable;
 
 @RequiredArgsConstructor
@@ -39,12 +38,12 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 
 	private final JpaDao jpaDao;
 
-	private List<Responsibilities> getListByUserList(User user, LOV userRole, ResponsibilityType responsibilityType) {
+	private List<Responsibilities> getListByUserList(IUser<Long> user, LOV userRole, ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
 		return jpaDao.getList(
 				Responsibilities.class,
 				(root, cq, cb) -> cb.and(
-						cb.equal(root.get(Responsibilities_.departmentId), user.getDepartment().getId()),
+						cb.equal(root.get(Responsibilities_.departmentId), user.getDepartmentId()),
 						cb.equal(root.get(Responsibilities_.internalRoleCD), userRole),
 						cb.equal(root.get(Responsibilities_.responsibilityType), responsibilityType)
 				)
@@ -53,7 +52,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
-	public Map<String, Boolean> getListRespByUser(User user, LOV userRole) {
+	public Map<String, Boolean> getListRespByUser(IUser<Long> user, LOV userRole) {
 		return getListByUserList(user, userRole, ResponsibilityType.VIEW)
 				.stream()
 				.collect(
@@ -65,7 +64,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 				);
 	}
 
-	public String getListScreensByUser(User user, LOV userRole) {
+	public String getListScreensByUser(IUser<Long> user, LOV userRole) {
 		return getListByUserList(user, userRole, ResponsibilityType.SCREEN)
 				.stream()
 				.map(Responsibilities::getScreens)
@@ -74,14 +73,14 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 				.orElse(null);
 	}
 
-	public Set<String> getViewResponsibilities(final Department department) {
+	public Set<String> getViewResponsibilities(final Long departmentId) {
 		return new HashSet<>(
 				jpaDao.getList(
 						Responsibilities.class,
 						String.class,
 						(root, cb) -> root.get(Responsibilities_.view),
 						(root, cq, cb) -> cb.and(
-								cb.equal(root.get(Responsibilities_.departmentId), department.getId()),
+								cb.equal(root.get(Responsibilities_.departmentId), departmentId),
 								cb.equal(root.get(Responsibilities_.responsibilityType), ResponsibilityType.VIEW)
 						)
 				)

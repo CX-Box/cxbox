@@ -16,6 +16,14 @@
 
 package org.cxbox.core.util.session.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.CoreSessionService;
 import org.cxbox.api.service.session.CxboxUserDetailsInterface;
@@ -28,25 +36,11 @@ import org.cxbox.core.util.session.UserExternalService;
 import org.cxbox.core.util.session.UserService;
 import org.cxbox.core.util.session.WebHelper;
 import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.core.entity.Division;
-import org.cxbox.model.core.entity.User;
-import org.cxbox.model.core.entity.UserRole;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.cxbox.model.core.entity.IUser;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Вспомогательный класс для получения данных о текущем пользователе (имя, логин, роли и т.п)
@@ -75,8 +69,8 @@ public class SessionServiceImpl implements SessionService {
 
 	@Override
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "#root.methodName")
-	public User getSessionUser() {
-		User user = getUserFromDetails(coreSessionService.getSessionUserDetails(true));
+	public IUser<Long> getSessionUser() {
+		IUser<Long> user = getUserFromDetails(coreSessionService.getSessionUserDetails(true));
 		if (user == null) {
 			throw new SessionAuthenticationException("Not authorized");
 		}
@@ -112,23 +106,7 @@ public class SessionServiceImpl implements SessionService {
 		return currentRole;
 	}
 
-	@Override
-	public void setSessionUserTimezone(LOV timezone) {
-		CxboxUserDetailsInterface userDetails = coreSessionService.getSessionUserDetails(true);
-		if (timezone == null || userDetails == null) {
-			return;
-		}
-		userDetails.setTimezone(timezone);
-	}
 
-	@Override
-	public void setSessionUserLocale(LOV locale) {
-		CxboxUserDetailsInterface userDetails = coreSessionService.getSessionUserDetails(true);
-		if (locale == null || userDetails == null) {
-			return;
-		}
-		userDetails.setLocaleCd(locale);
-	}
 
 	@Override
 	public void setSessionUserInternalRole(String role) {
@@ -136,7 +114,7 @@ public class SessionServiceImpl implements SessionService {
 		if (role == null || role.isEmpty() || userDetails == null) {
 			return;
 		}
-		User user = getUserFromDetails(userDetails);
+		IUser<Long> user = getUserFromDetails(userDetails);
 		LOV matchedRole = userRoleService.getMatchedRole(user, role);
 		if (matchedRole == null) {
 			return;
@@ -145,40 +123,25 @@ public class SessionServiceImpl implements SessionService {
 		userRoleService.updateMainUserRole(user, matchedRole);
 	}
 
-	@Override
-	public String getSessionIpAddress() {
-		String forwardedFor = "X-Forwarded-For";
-		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-		try {
-			if (attrs.getRequest().getHeader(forwardedFor) == null
-					|| attrs.getRequest().getHeader(forwardedFor).trim().isEmpty()) {
-				return attrs.getRequest().getRemoteAddr();
-			} else {
-				return attrs.getRequest().getHeader(forwardedFor);
-			}
-		} catch (Exception e) {
-			log.warn("Cannot get user ip", e);
-			return "";
-		}
-	}
-
-	@Override
-	public Department getSessionUserDepartment() {
-		return getSessionUser().getDepartment();
-	}
 
 	@Override
 	public Map<String, Boolean> getResponsibilities() {
 		return userCache.getResponsibilities(getSessionUser(), getSessionUserRole());
 	}
 
-	@Override
-	public String getFirstViewFromResponsibilities(String... views) {
-		return uiService.getFirstViewFromResponsibilities(getSessionUser(), getSessionUserRole(), views);
-	}
 
-	private User getUserFromDetails(final CxboxUserDetailsInterface userDetails) {
-		return jpaDao.findById(User.class, userDetails.getId());
+	private IUser<Long> getUserFromDetails(final CxboxUserDetailsInterface userDetails) {
+		return new IUser<Long>() {
+			@Override
+			public Long getId() {
+				return userDetails.getId();
+			}
+
+			@Override
+			public Long getDepartmentId() {
+				return userDetails.getDepartmentId();
+			}
+		};
 	}
 
 	@Override
@@ -186,26 +149,10 @@ public class SessionServiceImpl implements SessionService {
 		return coreSessionService.getSessionId();
 	}
 
-	@Override
-	public Division getSessionUserDivision(LOV levelCd) {
-		return getSessionUserRoles().stream()
-				.filter(userRole -> Objects.equals(getSessionUserRole(), userRole.getInternalRoleCd()))
-				.findFirst()
-				.map(UserRole::getDivision)
-				.map(division -> division.getParentByLevelCode(levelCd)).orElse(null);
-	}
+
 
 	@Override
-	public Division getSessionUserDivision() {
-		return getSessionUserRoles().stream()
-				.filter(userRole -> Objects.equals(getSessionUserRole(), userRole.getInternalRoleCd()))
-				.findFirst()
-				.map(UserRole::getDivision)
-				.orElse(null);
-	}
-
-	@Override
-	public List<UserRole> getSessionUserRoles() {
+	public List<LOV> getSessionUserRoles() {
 		return getSessionUser().getUserRoleList();
 	}
 
@@ -234,7 +181,7 @@ public class SessionServiceImpl implements SessionService {
 				cacheNames = {CacheConfig.USER_CACHE},
 				key = "{#root.methodName, #user.id, #userRole}"
 		)
-		public Map<String, Boolean> getResponsibilities(final User user, final LOV userRole) {
+		public Map<String, Boolean> getResponsibilities(final IUser<Long> user, final LOV userRole) {
 			return uiService.getResponsibilities(
 					user,
 					userRole
@@ -245,7 +192,7 @@ public class SessionServiceImpl implements SessionService {
 				cacheNames = {CacheConfig.USER_CACHE},
 				key = "{#root.methodName, #screenName, #user.id, #userRole}"
 		)
-		public List<String> getViews(final String screenName, final User user, final LOV userRole) {
+		public List<String> getViews(final String screenName, final IUser<Long> user, final LOV userRole) {
 			return uiService.getViews(
 					screenName,
 					user,

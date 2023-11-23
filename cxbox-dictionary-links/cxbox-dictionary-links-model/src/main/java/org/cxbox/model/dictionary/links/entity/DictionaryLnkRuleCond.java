@@ -16,10 +16,10 @@
 
 package org.cxbox.model.dictionary.links.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.Department;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -53,9 +53,8 @@ public class DictionaryLnkRuleCond extends BaseEntity {
 	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private Boolean ruleInversionFlg;
 
-	@ManyToOne
-	@JoinColumn(name = "DEPT_ID")
-	private Department department;
+	@Column(name = "DEPT_ID")
+	private Long departmentId;
 
 	private String bcName;
 

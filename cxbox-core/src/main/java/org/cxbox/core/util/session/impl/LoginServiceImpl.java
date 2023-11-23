@@ -28,7 +28,7 @@ import org.cxbox.core.service.UIService;
 import org.cxbox.core.service.impl.UserRoleService;
 import org.cxbox.core.util.session.LoginService;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.model.core.entity.User;
+import org.cxbox.model.core.entity.IUser;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +68,7 @@ public class LoginServiceImpl implements LoginService {
 
 		sessionService.setSessionUserInternalRole(role);
 
-		User user = sessionService.getSessionUser();
+		IUser<Long> user = sessionService.getSessionUser();
 		LOV activeUserRole = sessionService.getSessionUserRole();
 
 		return LoggedUser.builder()
@@ -96,7 +96,7 @@ public class LoginServiceImpl implements LoginService {
 	 * @return JsonNode Available screens
 	 */
 	@Deprecated
-	private List<ScreenResponsibility> getScreens(User user, LOV userRole) {
+	private List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole) {
 		return screenResponsibilityService.getScreens(user, userRole);
 	}
 

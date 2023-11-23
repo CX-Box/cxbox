@@ -116,9 +116,6 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	@Autowired
 	private SearchSpecDao ssDao;
 
-	@Autowired
-	@Lazy
-	private Optional<IOutwardReportEngineService> outwardReportEngineService;
 
 	public static <T> T cast(Object o, Class<T> clazz) {
 		return clazz.isInstance(o) ? clazz.cast(o) : null;
@@ -413,31 +410,11 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	public Actions<T> getActions() {
 		return Actions.<T>builder()
-				.action("drillDown", "Посмотреть форму")
-				.available(this::isDrillDownActionAvailable).invoker(this::actionOpenUrl).add(false)
 				.build();
 	}
 
 	protected List<PreActionEvent> getPreActionsForSave() {
 		return Collections.emptyList();
-	}
-
-	private boolean isDrillDownActionAvailable(BusinessComponent bc) {
-		return outwardReportEngineService.map(service -> service.isOutwardsReportAvailable(bc)).orElse(false);
-	}
-
-	private ActionResultDTO<T> actionOpenUrl(final BusinessComponent bc, final T data) {
-		final ActionResultDTO<T> result = new ActionResultDTO<>(data);
-		outwardReportEngineService.ifPresent(service ->
-				result.setAction(
-						PostAction.drillDown(
-								DrillDownType.RELATIVE_NEW,
-								service.getOutwardReportFormattedUrl(bc, bc.getParameters()),
-								service.getOutwardReportName(bc)
-						)
-				)
-		);
-		return result;
 	}
 
 	protected ResultPage<T> entitiesToDtos(BusinessComponent bc, ResultPage<E> entities) {

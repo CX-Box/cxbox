@@ -33,7 +33,7 @@ import org.cxbox.core.dto.data.view.ScreenResponsibility;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.service.UIService;
 import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.User;
+import org.cxbox.model.core.entity.IUser;
 import org.cxbox.model.ui.entity.BcProperties;
 import org.cxbox.model.ui.entity.BcProperties_;
 import org.cxbox.model.ui.entity.FilterGroup;
@@ -128,12 +128,12 @@ public class UIServiceImpl implements UIService {
 	}
 
 	@Override
-	public Map<String, Boolean> getResponsibilities(User user, LOV userRole) {
+	public Map<String, Boolean> getResponsibilities(IUser<Long> user, LOV userRole) {
 		return responsibilitiesService.getListRespByUser(user, userRole);
 	}
 
 	@Override
-	public String getFirstViewFromResponsibilities(User user, LOV userRole, String... views) {
+	public String getFirstViewFromResponsibilities(IUser<Long> user, LOV userRole, String... views) {
 		Set<String> responsibilities = getResponsibilities(user, userRole).keySet();
 		if (responsibilities.isEmpty() && views.length > 0) {
 			return views[0];
@@ -147,12 +147,12 @@ public class UIServiceImpl implements UIService {
 	}
 
 	@Override
-	public String getFirstViewFromResponsibilities(User user, String... views) {
+	public String getFirstViewFromResponsibilities(IUser<Long> user, String... views) {
 		return getFirstViewFromResponsibilities(user, userRoleService.getMainUserRoleKey(user), views);
 	}
 
 	@Override
-	public List<String> getViews(final String screenName, final User user, final LOV userRole) {
+	public List<String> getViews(final String screenName, final IUser<Long> user, final LOV userRole) {
 		final Set<String> responsibilities = getResponsibilities(user, userRole).keySet();
 		final boolean getAll = Objects.equals(userRole, CoreDictionaries.InternalRole.ADMIN) || isCommonScreen(screenName);
 		return jpaDao.getList(NavigationView.class, (root, query, cb) -> cb.and(

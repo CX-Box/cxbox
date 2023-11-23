@@ -29,7 +29,6 @@ import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.Department;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto;
@@ -66,7 +65,7 @@ public abstract class BaseDictionaryLnkRuleCondServiceImpl<D extends DictionaryL
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.type)) {
 				entity.setType(DictionaryType.DICTIONARY_TERM_TYPE.lookupName(data.getType()));
 				entity.setFieldName(null);
-				entity.setDepartment(null);
+				entity.setDepartmentId(null);
 				entity.setFieldTextValue(null);
 				entity.setBcName(null);
 				entity.setFieldDictValue(null);
@@ -93,8 +92,7 @@ public abstract class BaseDictionaryLnkRuleCondServiceImpl<D extends DictionaryL
 				entity.setBcName(data.getBcName());
 			}
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.departmentId)) {
-				entity.setDepartment(data.getDepartmentId() == null ? null
-						: baseDAO.findById(Department.class, Long.valueOf(data.getDepartmentId())));
+				entity.setDepartmentId(Long.valueOf(data.getDepartmentId()));
 			}
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.fieldTextValue)) {
 				entity.setFieldTextValue(data.getFieldTextValue());

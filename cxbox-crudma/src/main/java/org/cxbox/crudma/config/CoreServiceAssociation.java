@@ -22,7 +22,6 @@ import org.cxbox.core.crudma.bc.impl.AbstractEnumBcSupplier;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.crudma.api.BcPropertiesService;
 import org.cxbox.crudma.api.BcService;
-import org.cxbox.crudma.api.DeptService;
 import org.cxbox.crudma.api.FilterGroupService;
 import org.cxbox.crudma.api.ScreenService;
 import org.cxbox.crudma.api.WidgetService;
@@ -34,8 +33,6 @@ import org.springframework.stereotype.Component;
 public enum CoreServiceAssociation implements EnumBcIdentifier {
 
 	// @formatter:off
-
-	department(DeptService.class),
 
 	filterGroup(FilterGroupService.class),
 

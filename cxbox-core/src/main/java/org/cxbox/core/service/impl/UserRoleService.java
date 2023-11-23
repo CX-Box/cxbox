@@ -23,6 +23,7 @@ import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.model.core.entity.IUser;
 import org.cxbox.model.core.entity.User;
 import org.cxbox.model.core.entity.UserRole;
 import org.cxbox.model.core.entity.UserRole_;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.model.core.entity.User_;
 import org.hibernate.LockOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +54,7 @@ public class UserRoleService {
 	 * @param user User
 	 * @return LOV
 	 */
-	public LOV getMainUserRoleKey(User user) {
+	public LOV getMainUserRoleKey(IUser<Long> user) {
 		List<UserRole> userRoleList = getListByUser(user);
 		return userRoleList != null ? userRoleList.stream()
 				.filter(UserRole::getMain)
@@ -101,7 +103,7 @@ public class UserRoleService {
 	 * @param user User
 	 * @return List
 	 */
-	public List<SimpleDictionary> getUserRoles(User user) {
+	public List<SimpleDictionary> getUserRoles(IUser<Long> user) {
 
 		Map<String, String> dictRoleMap = dictionaryCache.getAll("INTERNAL_ROLE").stream()
 				.collect(Collectors.toMap(SimpleDictionary::getKey, SimpleDictionary::getValue));
@@ -127,7 +129,7 @@ public class UserRoleService {
 	 * @param user user
 	 * @param mainUserRole main role
 	 */
-	public void updateMainUserRole(User user, LOV mainUserRole) {
+	public void updateMainUserRole(IUser<Long> user, LOV mainUserRole) {
 		user.setInternalRole(mainUserRole);
 		List<UserRole> userRoleList = getListByUser(user);
 		if (userRoleList != null && mainUserRole != null) {
@@ -142,7 +144,7 @@ public class UserRoleService {
 		}
 	}
 
-	public LOV getMatchedRole(User user, String roleName) {
+	public LOV getMatchedRole(IUser<Long> user, String roleName) {
 		List<UserRole> userRoleList = getListByUser(user);
 		if (userRoleList.stream().anyMatch(ur -> ur.getActive() && ur.getInternalRoleCd().getKey().equals(roleName))) {
 			return new LOV(roleName);
@@ -157,7 +159,7 @@ public class UserRoleService {
 	 * @param intUserRoleKeyList list of role codes from ESK
 	 * @return List
 	 */
-	private List<UserRole> updateUserRoles(User user, List<String> intUserRoleKeyList) {
+	private List<UserRole> updateUserRoles(IUser<Long> user, List<String> intUserRoleKeyList) {
 		List<UserRole> userRoleList = getListByUser(user);
 		List<UserRole> activeUserRoleList = new ArrayList<>();
 		for (UserRole userRole : userRoleList) {
@@ -191,7 +193,7 @@ public class UserRoleService {
 		return activeUserRoleList;
 	}
 
-	private UserRole createUserRole(User user, final LOV internalRoleCd) {
+	private UserRole createUserRole(IUser<Long> user, final LOV internalRoleCd) {
 		jpaDao.lockAndRefresh(user, LockOptions.WAIT_FOREVER);
 		UserRole userRole = jpaDao.getSingleResultOrNull(UserRole.class, (root, query, cb) -> cb.and(
 				cb.equal(root.get(UserRole_.user), user),
@@ -214,8 +216,8 @@ public class UserRoleService {
 	 * @param user user
 	 * @return List
 	 */
-	private List<UserRole> getListByUser(User user) {
-		return jpaDao.getList(UserRole.class, (root, query, cb) -> cb.equal(root.get(UserRole_.user), user));
+	private List<UserRole> getListByUser(IUser<Long> user) {
+		return jpaDao.getList(UserRole.class, (root, query, cb) -> cb.equal(root.get(UserRole_.user).get(User_.ID), user.getId()));
 	}
 
 }
