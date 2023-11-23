@@ -21,7 +21,7 @@ public class MetaLockServiceImpl implements MetaLockService {
 
 	private final EntityManager entityManager;
 
-	public final static long ROW_LOCK_INDEX = 1L;
+	public final long ROW_LOCK_INDEX = 1L;
 
 	@Override
 	public LockStatus getLockEntity() {
