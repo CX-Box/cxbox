@@ -8,10 +8,10 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @Validated
-@ConfigurationProperties(prefix = "cxbox.meta")
+@ConfigurationProperties(prefix = "cxbox.shared-lock")
 public class SharedLockConfigurationProperties {
 
-	private int baseLockTimer = 1800;
+	private long timeout = 1_800_000;
 
-	private long checkLockInterval = 1000;
+	private long checkInterval = 1000;
 }

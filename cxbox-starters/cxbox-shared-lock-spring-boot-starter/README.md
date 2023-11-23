@@ -25,23 +25,15 @@ In your pom.xml add
     <artifactId>cxbox-shared-lock-spring-boot-starter</artifactId>
 </dependency>
 ```
-### Liquibase migrations
-
-In your application.yaml change log check following line is disabled:
-
-```
-  liquibase:
-    drop-first: true
-```
 
 ### (Optional) Shared lock setting
 You can set optional parameters in your application.yaml
 
 ```
 cxbox:
-  meta:
-    base-lock-timer :    - timer until the lock is released in seconds (default: 1800 sec)
-    check-lock-interval: - the interval between the lock check in milliseconds (default: 1000 ms)
+  shared-lock:
+    timeout :    - timer until the lock is released in milliseconds (default: 1_800_000 ms)
+    check-interval: - the interval between the lock check in milliseconds (default: 1000 ms)
 ```
 
 ## Algorithms

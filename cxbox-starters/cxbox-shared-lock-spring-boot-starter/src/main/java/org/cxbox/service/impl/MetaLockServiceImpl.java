@@ -25,7 +25,8 @@ public class MetaLockServiceImpl implements MetaLockService {
 
 	@Override
 	public LockStatus getLockEntity() {
-		return entityManager.find(LockStatus.class, ROW_LOCK_INDEX);
+		entityManager.refresh(repository.getById(ROW_LOCK_INDEX));
+		return repository.getById(ROW_LOCK_INDEX);
 	}
 
 	@Override

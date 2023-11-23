@@ -1,10 +1,13 @@
 package org.cxbox.service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import org.cxbox.config.SharedLockConfigurationProperties;
 import org.cxbox.core.metahotreload.CxboxSharedLock;
 import org.cxbox.model.LockStatus;
 import org.cxbox.model.LockStatusType;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class StandardCxboxSharedLock implements CxboxSharedLock {
 
@@ -19,6 +22,7 @@ public class StandardCxboxSharedLock implements CxboxSharedLock {
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void acquireAndExecute(Runnable runnable) {
 		try {
 			metaLockService.createLockRowIfNotExist();
@@ -43,12 +47,13 @@ public class StandardCxboxSharedLock implements CxboxSharedLock {
 
 		while (lockStatus.getStatus().equals(LockStatusType.LOCK)) {
 
-			if (LocalDateTime.now().isAfter(lockStatus.getLockTime().plusSeconds(config.getBaseLockTimer()))) {
+			if (LocalDateTime.now().isAfter(lockStatus.getLockTime()
+					.plus(config.getTimeout(), ChronoUnit.MILLIS))) {
 				metaLockService.updateLock(LockStatusType.UNLOCK);
 				break;
 			}
 			try {
-				Thread.sleep(config.getCheckLockInterval());
+				Thread.sleep(config.getCheckInterval());
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
