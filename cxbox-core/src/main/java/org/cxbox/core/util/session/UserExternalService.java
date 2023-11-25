@@ -17,7 +17,7 @@
 package org.cxbox.core.util.session;
 
 
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 
 public interface UserExternalService<T extends IUser<Long>> {
 

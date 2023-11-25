@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.util.tx;
+package org.cxbox.api.service.session;
 
-import jakarta.transaction.TransactionManager;
-import jakarta.transaction.UserTransaction;
+public interface IUser<T> {
 
+	T getId();
 
-public interface ITransactionProvider {
-
-	TransactionManager locateTransactionManager();
-
-	UserTransaction locateUserTransaction();
+	T getDepartmentId();
 
 }

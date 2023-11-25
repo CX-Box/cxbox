@@ -24,7 +24,7 @@ import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.service.ScreenResponsibilityService;
 import org.cxbox.core.service.UIService;
 import org.cxbox.core.service.ViewService;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

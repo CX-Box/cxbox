@@ -41,7 +41,7 @@ public class UserDepartmentLinkedDictionaryConditionChecker implements LinkedDic
 
 	@Override
 	public boolean check(Long object, DictionaryLnkRuleCond ruleCond) {
-		return Objects.equals(object, ruleCond.getDepartment());
+		return Objects.equals(object, ruleCond.getDepartmentId());
 	}
 
 	@Override

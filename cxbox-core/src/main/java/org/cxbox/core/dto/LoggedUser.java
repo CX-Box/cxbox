@@ -18,7 +18,7 @@ package org.cxbox.core.dto;
 
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.core.dto.data.view.ScreenResponsibility;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.List;
@@ -53,10 +53,6 @@ public class LoggedUser {
 
 	private List<SimpleDictionary> roles;
 
-	/**
-	 * @deprecated TODO: Remove in 3.0 in favor of separate ScreenController endpoint
-	 */
-	@Deprecated
 	private List<ScreenResponsibility> screens;
 
 	private JsonNode userSettingsVersion;
@@ -93,14 +89,15 @@ public class LoggedUser {
 
 		public Builder user(IUser<Long> user) {
 
+			//TODO>>4.0.0
 			LoggedUser.this.userId = user.getId();
-			LoggedUser.this.login = user.getLogin();
+			/*LoggedUser.this.login = user.getLogin();
 			LoggedUser.this.lastName = user.getLastName();
 			LoggedUser.this.firstName = user.getFirstName();
 			LoggedUser.this.patronymic = user.getPatronymic();
 			LoggedUser.this.fullName = user.getFullName();
 			LoggedUser.this.principalName = user.getUserPrincipalName();
-			LoggedUser.this.phone = user.getPhone();
+			LoggedUser.this.phone = user.getPhone();*/
 
 			return this;
 		}

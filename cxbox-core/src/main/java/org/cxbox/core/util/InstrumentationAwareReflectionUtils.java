@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public final class InstrumentationAwareReflectionUtils {
 
 	/**
-	 * Gets all non synthetic fields of the given class and its parents (if any).
+	 * Gets all non-synthetic fields of the given class and its parents (if any).
 	 * Frameworks like jacoco add synthetic fields for internal usage.
 	 * This method can be used instead of FieldUtils.getAllFieldsList to avoid clashes with such fields
 	 *

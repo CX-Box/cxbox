@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,15 +29,10 @@ import org.cxbox.api.service.session.CxboxUserDetailsInterface;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.controller.BcHierarchyAware;
 import org.cxbox.core.service.UIService;
-import org.cxbox.core.service.impl.UserRoleService;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.core.util.session.UserExternalService;
-import org.cxbox.core.util.session.UserService;
 import org.cxbox.core.util.session.WebHelper;
-import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -50,16 +44,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
 
-	private final UIService uiService;
-
-	private final Optional<List<UserExternalService<?>>> userExternalServices;
-
-	private final UserService userService;
-
-	private final UserRoleService userRoleService;
-
-	private final JpaDao jpaDao;
-
 	private final CoreSessionService coreSessionService;
 
 	private final BcHierarchyAware bcHierarchyAware;
@@ -70,13 +54,13 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "#root.methodName")
 	public IUser<Long> getSessionUser() {
-		IUser<Long> user = getUserFromDetails(coreSessionService.getSessionUserDetails(true));
-		if (user == null) {
-			throw new SessionAuthenticationException("Not authorized");
-		}
-		return user;
+		return coreSessionService.getSessionUserDetails(true);
 	}
 
+	@Override
+	public Long getSessionUserDepartmentId() {
+		return getSessionUser().getDepartmentId();
+	}
 
 
 	@Override
@@ -99,28 +83,11 @@ public class SessionServiceImpl implements SessionService {
 		if (mainRole != null && requestedRole.equals(mainRole.getKey())) {
 			return mainRole;
 		}
-		LOV currentRole = userRoleService.getMatchedRole(getUserFromDetails(userDetails), requestedRole);
+	/*	LOV currentRole = userRoleService.getMatchedRole(getUserFromDetails(userDetails), requestedRole);
 		if (currentRole == null) {
 			currentRole = userDetails.getUserRole();
-		}
-		return currentRole;
-	}
-
-
-
-	@Override
-	public void setSessionUserInternalRole(String role) {
-		CxboxUserDetailsInterface userDetails = coreSessionService.getSessionUserDetails(true);
-		if (role == null || role.isEmpty() || userDetails == null) {
-			return;
-		}
-		IUser<Long> user = getUserFromDetails(userDetails);
-		LOV matchedRole = userRoleService.getMatchedRole(user, role);
-		if (matchedRole == null) {
-			return;
-		}
-		userDetails.setUserRole(matchedRole);
-		userRoleService.updateMainUserRole(user, matchedRole);
+		}*/
+		return  new LOV(requestedRole);
 	}
 
 
@@ -129,31 +96,9 @@ public class SessionServiceImpl implements SessionService {
 		return userCache.getResponsibilities(getSessionUser(), getSessionUserRole());
 	}
 
-
-	private IUser<Long> getUserFromDetails(final CxboxUserDetailsInterface userDetails) {
-		return new IUser<Long>() {
-			@Override
-			public Long getId() {
-				return userDetails.getId();
-			}
-
-			@Override
-			public Long getDepartmentId() {
-				return userDetails.getDepartmentId();
-			}
-		};
-	}
-
 	@Override
 	public String getSessionId() {
 		return coreSessionService.getSessionId();
-	}
-
-
-
-	@Override
-	public List<LOV> getSessionUserRoles() {
-		return getSessionUser().getUserRoleList();
 	}
 
 	/**

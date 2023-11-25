@@ -17,7 +17,7 @@
 package org.cxbox.core.util.session;
 
 import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +31,9 @@ public interface SessionService {
 
 	LOV getSessionUserRole();
 
-	void setSessionUserInternalRole(String role);
-
 	Map<String, Boolean> getResponsibilities();
 
 	String getSessionId();
-
-	List<LOV> getSessionUserRoles();
 
 	Collection<String> getCurrentScreenViews();
 

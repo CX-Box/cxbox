@@ -27,7 +27,7 @@ import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import org.cxbox.model.core.entity.Responsibilities;
 import org.cxbox.model.core.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.model.core.entity.Responsibilities_;

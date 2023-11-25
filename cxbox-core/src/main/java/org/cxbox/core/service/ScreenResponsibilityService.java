@@ -18,7 +18,7 @@ package org.cxbox.core.service;
 
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.dto.data.view.ScreenResponsibility;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 
 import java.util.List;
 

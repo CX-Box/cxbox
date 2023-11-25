@@ -22,7 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
-public interface CxboxUserDetailsInterface extends UserDetails {
+public interface CxboxUserDetailsInterface extends UserDetails, IUser<Long> {
 
 	Long getId();
 

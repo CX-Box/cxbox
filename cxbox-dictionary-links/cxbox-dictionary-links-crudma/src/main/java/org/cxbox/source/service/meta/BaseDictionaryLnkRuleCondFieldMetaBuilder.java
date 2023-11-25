@@ -68,7 +68,7 @@ public abstract class BaseDictionaryLnkRuleCondFieldMetaBuilder<R extends Dictio
 		boolean isSqlService = "SqlCrudmaService"
 				.equals(entity.getDictionaryLnkRule().getService().getServiceName());
 		if (DEPT.equals(entity.getType())) {
-			fields.setEnabled(DictionaryLnkRuleCondDto_.department);
+			fields.setEnabled(DictionaryLnkRuleCondDto_.departmentId);
 		} else if (FIELD_IS_EMPTY.equals(entity.getType())) {
 			Class<?> dtoClass = InstrumentationAwareReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
 			List<SimpleDictionary> dictDTOList = InstrumentationAwareReflectionUtils.getFields(dtoClass).stream()

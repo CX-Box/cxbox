@@ -20,7 +20,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.core.dao.impl.ViewDAO;
 import org.cxbox.core.dto.data.view.BcSourceBaseDTO;
 import org.cxbox.core.dto.data.view.BusinessComponentDTO;
 import org.cxbox.core.dto.data.view.BusinessObjectDTO;
@@ -64,8 +63,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ViewServiceImpl implements ViewService {
 
 	private final JpaDao jpaDao;
-
-	private final ViewDAO viewDAO;
 
 	private final BcRegistry bcRegistry;
 

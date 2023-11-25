@@ -19,7 +19,7 @@ package org.cxbox.core.service;
 import java.util.Map;
 import java.util.Set;
 import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 
 /**
  * Service that defines access rights to screens and views

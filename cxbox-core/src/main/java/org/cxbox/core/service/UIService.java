@@ -20,7 +20,7 @@ import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.dto.data.view.BusinessObjectDTO;
 import org.cxbox.core.dto.data.view.ScreenNavigation;
 import org.cxbox.core.dto.data.view.ScreenResponsibility;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import org.cxbox.model.ui.entity.BcProperties;
 import org.cxbox.model.ui.entity.FilterGroup;
 import org.cxbox.model.ui.entity.Screen;
@@ -41,13 +41,7 @@ public interface UIService {
 
 	Map<String, Boolean> getResponsibilities(IUser<Long> user, LOV userRole);
 
-	String getFirstViewFromResponsibilities(IUser<Long> user, LOV userRole, String... views);
-
-	String getFirstViewFromResponsibilities(IUser<Long> user, String... views);
-
 	List<String> getViews(String screenName, IUser<Long> user, LOV userRole);
-
-	Screen findScreenByName(String name);
 
 	ScreenNavigation getScreenNavigation(final Screen screen);
 

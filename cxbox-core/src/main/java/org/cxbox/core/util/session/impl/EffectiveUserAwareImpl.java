@@ -21,12 +21,11 @@ import static org.cxbox.api.service.session.InternalAuthorizationService.VANILLA
 import org.cxbox.api.service.session.CoreSessionService;
 import org.cxbox.api.service.session.CxboxUserDetailsInterface;
 import org.cxbox.core.util.session.UserExternalService;
-import org.cxbox.core.util.session.UserService;
 import org.cxbox.model.core.api.EffectiveUserAware;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +35,6 @@ import org.springframework.stereotype.Service;
 public class EffectiveUserAwareImpl implements EffectiveUserAware<Long>  {
 
 	private final Optional<List<UserExternalService>> userExternalServices;
-
-	private final UserService userService;
 
 	private final CoreSessionService coreSessionService;
 

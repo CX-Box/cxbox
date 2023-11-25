@@ -33,7 +33,7 @@ import org.cxbox.core.dto.data.view.ScreenResponsibility;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.service.UIService;
 import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.entity.IUser;
+import org.cxbox.api.service.session.IUser;
 import org.cxbox.model.ui.entity.BcProperties;
 import org.cxbox.model.ui.entity.BcProperties_;
 import org.cxbox.model.ui.entity.FilterGroup;
@@ -71,8 +71,6 @@ public class UIServiceImpl implements UIService {
 	private final ObjectMapper objectMapper;
 
 	private final ResponsibilitiesService responsibilitiesService;
-
-	private final UserRoleService userRoleService;
 
 	private final JpaDao jpaDao;
 
@@ -130,25 +128,6 @@ public class UIServiceImpl implements UIService {
 	@Override
 	public Map<String, Boolean> getResponsibilities(IUser<Long> user, LOV userRole) {
 		return responsibilitiesService.getListRespByUser(user, userRole);
-	}
-
-	@Override
-	public String getFirstViewFromResponsibilities(IUser<Long> user, LOV userRole, String... views) {
-		Set<String> responsibilities = getResponsibilities(user, userRole).keySet();
-		if (responsibilities.isEmpty() && views.length > 0) {
-			return views[0];
-		}
-		for (String view : views) {
-			if (responsibilities.contains(view)) {
-				return view;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public String getFirstViewFromResponsibilities(IUser<Long> user, String... views) {
-		return getFirstViewFromResponsibilities(user, userRoleService.getMainUserRoleKey(user), views);
 	}
 
 	@Override
