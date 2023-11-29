@@ -18,7 +18,7 @@ package org.cxbox.core.crudma.bc.impl;
 
 import org.cxbox.api.service.tx.DeploymentTransactionSupport;
 import org.cxbox.core.crudma.bc.BcDescriptionBuilder;
-import org.cxbox.core.crudma.bc.BcIdentifier;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BcOverrider;
 import org.cxbox.core.crudma.bc.BcOverrider.BcOverride;
 import org.cxbox.core.crudma.bc.BcRegistry;

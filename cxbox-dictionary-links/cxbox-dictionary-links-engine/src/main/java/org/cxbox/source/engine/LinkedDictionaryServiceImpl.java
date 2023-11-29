@@ -16,16 +16,21 @@
 
 package org.cxbox.source.engine;
 
+import java.lang.reflect.Field;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.EngineFieldsMeta;
+
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
-import org.cxbox.core.ui.BcUtils;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
@@ -67,18 +72,45 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 	private LinkedDictionaryCache linkedDictionaryCache;
 
 	@Autowired
-	private BcUtils bcUtils;
+	private Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	public LinkedDictionaryServiceImpl(Optional<List<LinkedDictionaryConditionChecker>> conditionCheckers) {
 		this.conditions = conditionCheckers
-				.map(checkers -> checkers.stream().collect(Collectors.toMap(LinkedDictionaryConditionChecker::getType, checker -> checker)))
+				.map(checkers -> checkers.stream()
+						.collect(Collectors.toMap(LinkedDictionaryConditionChecker::getType, checker -> checker)))
 				.orElse(Map.of());
 	}
 
+	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
+		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
+			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
+		}
+		return InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
+				.map(Field::getName).collect(Collectors.toSet());
+	}
+
 	@Override
-	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, boolean filterValues) {
+	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, DataResponseDTO dataDTO,
+			boolean filterValues) {
+		
+		final Set<String> requiredFields = getFields(bc, dataDTO, true);
 		final String serviceName = getServiceName(bc);
-		final Set<String> requiredFields = bcUtils.getBcFieldsForCurrentScreen(bc);
+		Map<String, List<DictionaryLnkRule>> rulesByField = linkedDictionaryCache.getRules(serviceName);
+		rulesByField.forEach((field, fieldRules) -> {
+			if (requiredFields.contains(field)) {
+				processRules(meta, bc, fieldRules, filterValues);
+			}
+		});
+	}
+
+	@Override
+	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, Set<String> requiredFields, boolean filterValues) {
+		fillRowMetaWithLinkedDictionaries(meta, bc, filterValues, requiredFields);
+	}
+
+	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, boolean filterValues,
+			Set<String> requiredFields) {
+		final String serviceName = getServiceName(bc);
 		Map<String, List<DictionaryLnkRule>> rulesByField = linkedDictionaryCache.getRules(serviceName);
 		rulesByField.forEach((field, fieldRules) -> {
 			if (requiredFields.contains(field)) {

@@ -18,6 +18,7 @@ package org.cxbox.source.service.data.impl;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.impl.VersionAwareResponseService;
 import org.cxbox.core.dto.DTOUtils;
@@ -27,16 +28,18 @@ import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService;
+import org.cxbox.model.dictionary.links.entity.CustomizableResponseService_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue_;
+import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule_;
 import org.cxbox.source.dto.DictionaryLnkRuleDto;
 import org.cxbox.source.dto.DictionaryLnkRuleDto_;
 import org.cxbox.source.service.data.DictionaryLnkRuleService;
 import org.cxbox.source.service.meta.DictionaryLnkRuleFieldMetaBuilder;
-import org.cxbox.source.service.specification.DictionaryLnkRuleLinkSpecifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,8 +48,17 @@ public class DictionaryLnkRuleServiceImpl extends
 
 	public DictionaryLnkRuleServiceImpl() {
 		super(DictionaryLnkRuleDto.class, DictionaryLnkRule.class, null, DictionaryLnkRuleFieldMetaBuilder.class);
-		this.linkSpecificationHolder = DictionaryLnkRuleLinkSpecifications.class;
 	}
+
+	@Override
+	protected Specification<DictionaryLnkRule> getSpecification(BusinessComponent bc) {
+		return (root, cq, cb) ->
+				cb.equal(
+						root.get(DictionaryLnkRule_.service).get(CustomizableResponseService_.id),
+						NumberUtils.createLong(bc.getParentId())
+				);
+	}
+
 
 	@Override
 	protected CreateResult<DictionaryLnkRuleDto> doCreateEntity(final DictionaryLnkRule entity,

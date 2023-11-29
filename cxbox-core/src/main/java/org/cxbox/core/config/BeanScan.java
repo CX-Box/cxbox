@@ -16,7 +16,6 @@
 
 package org.cxbox.core.config;
 
-import org.cxbox.api.util.spring.ServiceBasedComponentExcludeFilter;
 import org.cxbox.core.autoconfigure.AutoConfiguration;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -45,10 +44,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 				@Filter(value = {AutoConfiguration.class}, type = FilterType.ANNOTATION),
 				@Filter(value = {Controller.class, ControllerAdvice.class}, type = FilterType.ANNOTATION),
 				@Filter(value = {
-						WebMvcConfigurer.class/*,
-						WebSecurityConfigurerAdapter.class spring boot 3*/
-				}, type = FilterType.ASSIGNABLE_TYPE),
-				@Filter(value = ServiceBasedComponentExcludeFilter.class, type = FilterType.CUSTOM),
+						WebMvcConfigurer.class
+				}, type = FilterType.ASSIGNABLE_TYPE)
 		}
 )
 public @interface BeanScan {

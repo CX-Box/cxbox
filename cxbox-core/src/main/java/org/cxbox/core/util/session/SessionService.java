@@ -18,9 +18,6 @@ package org.cxbox.core.util.session;
 
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 
 public interface SessionService {
@@ -31,12 +28,6 @@ public interface SessionService {
 
 	LOV getSessionUserRole();
 
-	Map<String, Boolean> getResponsibilities();
-
 	String getSessionId();
-
-	Collection<String> getCurrentScreenViews();
-
-	List<String> getViews(String screenName);
 
 }

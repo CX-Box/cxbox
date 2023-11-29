@@ -16,6 +16,7 @@
 
 package org.cxbox.sqlbc.dto;
 
+import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.cxbox.sqlbc.dto.SqlBindMeta.SqlBindOperations;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -23,7 +24,6 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.cxbox.core.ui.model.json.field.FieldMeta;
 import java.io.IOException;
 import java.util.Arrays;
 

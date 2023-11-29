@@ -19,13 +19,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cxbox-all</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.2-SNAPSHOT</version>
     <name>IO Cxbox - All</name>
 
     <parent>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-base</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.2-SNAPSHOT</version>
         <relativePath>../cxbox-base/pom.xml</relativePath>
     </parent>
 
@@ -40,7 +40,7 @@
                 <groupId>org.cxbox</groupId>
                 <artifactId>cxbox-bom</artifactId>
                 <type>import</type>
-                <version>4.0.0-SNAPSHOT</version>
+                <version>4.0.2-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -63,17 +63,10 @@
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-model-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.cxbox</groupId>
-            <artifactId>cxbox-model-ui</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.cxbox</groupId>
-            <artifactId>cxbox-crudma</artifactId>
         </dependency>
 
         <dependency>

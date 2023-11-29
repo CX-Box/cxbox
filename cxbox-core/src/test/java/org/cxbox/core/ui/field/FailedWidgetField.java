@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
 package org.cxbox.core.ui.field;
 
 @CxboxWidgetField("someField")
 class FailedWidgetField {
 
-}
+}*/

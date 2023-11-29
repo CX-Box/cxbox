@@ -17,23 +17,17 @@
 package org.cxbox.core.util.session.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.CoreSessionService;
 import org.cxbox.api.service.session.CxboxUserDetailsInterface;
+import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
-import org.cxbox.core.controller.BcHierarchyAware;
-import org.cxbox.core.service.UIService;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.core.util.session.WebHelper;
-import org.cxbox.api.service.session.IUser;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,11 +39,6 @@ import org.springframework.stereotype.Service;
 public class SessionServiceImpl implements SessionService {
 
 	private final CoreSessionService coreSessionService;
-
-	private final BcHierarchyAware bcHierarchyAware;
-
-	private final UserCache userCache;
-	
 
 	@Override
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "#root.methodName")
@@ -83,68 +72,15 @@ public class SessionServiceImpl implements SessionService {
 		if (mainRole != null && requestedRole.equals(mainRole.getKey())) {
 			return mainRole;
 		}
-	/*	LOV currentRole = userRoleService.getMatchedRole(getUserFromDetails(userDetails), requestedRole);
-		if (currentRole == null) {
-			currentRole = userDetails.getUserRole();
-		}*/
 		return  new LOV(requestedRole);
 	}
 
-
-	@Override
-	public Map<String, Boolean> getResponsibilities() {
-		return userCache.getResponsibilities(getSessionUser(), getSessionUserRole());
-	}
 
 	@Override
 	public String getSessionId() {
 		return coreSessionService.getSessionId();
 	}
 
-	/**
-	 * Возвращает доступные вью текущего скрина
-	 */
-	@Override
-	public Collection<String> getCurrentScreenViews() {
-		return getViews(bcHierarchyAware.getScreenName());
-	}
 
-	@Override
-	public List<String> getViews(final String screenName) {
-		return userCache.getViews(screenName, getSessionUser(), getSessionUserRole());
-	}
-
-
-
-	@Component
-	@RequiredArgsConstructor
-	public static class UserCache {
-
-		private final UIService uiService;
-
-		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
-				cacheNames = {CacheConfig.USER_CACHE},
-				key = "{#root.methodName, #user.id, #userRole}"
-		)
-		public Map<String, Boolean> getResponsibilities(final IUser<Long> user, final LOV userRole) {
-			return uiService.getResponsibilities(
-					user,
-					userRole
-			);
-		}
-
-		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
-				cacheNames = {CacheConfig.USER_CACHE},
-				key = "{#root.methodName, #screenName, #user.id, #userRole}"
-		)
-		public List<String> getViews(final String screenName, final IUser<Long> user, final LOV userRole) {
-			return uiService.getViews(
-					screenName,
-					user,
-					userRole
-			);
-		}
-
-	}
 
 }

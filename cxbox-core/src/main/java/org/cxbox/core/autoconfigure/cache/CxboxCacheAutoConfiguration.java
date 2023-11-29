@@ -16,17 +16,18 @@
 
 package org.cxbox.core.autoconfigure.cache;
 
+import java.util.Optional;
 import org.cxbox.core.autoconfigure.AutoConfiguration;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.config.cache.CacheManagerBasedCacheResolver;
 import org.cxbox.core.config.cache.CxboxCaches;
 import org.cxbox.core.config.cache.CxboxRequestAwareCacheHolder;
-import org.cxbox.core.metahotreload.MetaHotReloadService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.api.MetaHotReloadService;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
@@ -76,8 +77,8 @@ public class CxboxCacheAutoConfiguration {
 
 	@Bean
 	@Lazy(value = false)
-	public CacheResolver cxboxCacheResolver(MetaHotReloadService metaHotReloadService) {
-		metaHotReloadService.loadMeta();
+	public CacheResolver cxboxCacheResolver(Optional<MetaHotReloadService> metaHotReloadService) {
+		metaHotReloadService.ifPresent(MetaHotReloadService::loadMeta);
 		if (CacheType.NONE.equals(cacheProperties.getType())) {
 			return new CacheManagerBasedCacheResolver(new NoOpCacheManager());
 		}

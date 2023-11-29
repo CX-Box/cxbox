@@ -17,7 +17,7 @@
 package org.cxbox.core.dto;
 
 import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.core.dto.data.view.ScreenResponsibility;
+import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.api.service.session.IUser;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;

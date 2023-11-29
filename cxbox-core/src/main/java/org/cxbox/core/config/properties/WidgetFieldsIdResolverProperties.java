@@ -25,7 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("cxbox.widget.fields")
 public class WidgetFieldsIdResolverProperties {
 
-	private String[] includePackages = {"org.cxbox.core.ui.model.json.field.subtypes"};
+	private String[] includePackages = {"org.cxbox.meta.ui.model.json.field.subtypes"};
 
 	private String[] excludeClasses = {};
 

@@ -19,6 +19,7 @@ package org.cxbox.core.crudma.bc;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
+import org.cxbox.api.data.BcIdentifier;
 
 
 public interface BcOverrider {

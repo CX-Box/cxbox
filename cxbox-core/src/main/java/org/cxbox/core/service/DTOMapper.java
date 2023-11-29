@@ -18,22 +18,23 @@ package org.cxbox.core.service;
 
 import static java.util.Collections.emptyMap;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.crudma.CrudmaActionHolder;
 import org.cxbox.core.crudma.CrudmaActionType;
-import org.cxbox.core.crudma.bc.BcIdentifier;
 import org.cxbox.core.dto.mapper.DtoConstructorService;
-import org.cxbox.core.ui.BcUtils;
 import org.cxbox.model.core.api.EntitySerializationEvent;
 import org.cxbox.model.core.entity.BaseEntity;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -49,22 +50,33 @@ public class DTOMapper {
 
 	private final TransactionService txService;
 
-	private final BcUtils bcUtils;
+	private final Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
+
+	private final DTOSecurityUtils dtoSecurityUtils;
 
 	/**
 	 * Creates a dto with the required set of fields for the current screen
 	 */
 	public <E extends BaseEntity, D extends DataResponseDTO> D entityToDto(BcIdentifier bc, E entity, Class<D> dtoClass,
 			boolean flushRequired, Map<String, Object> attributes) {
-		return entityToDto(entity, dtoClass, bcUtils.getDtoFieldsForCurrentScreen(bc), flushRequired, attributes);
+		return entityToDto(entity, dtoClass, getDtoFieldsAvailableOnCurrentScreen(bc, dtoClass, true), flushRequired, attributes);
 	}
+
+
 
 	/**
 	 * Creates a dto with the required set of fields for the current screen
 	 */
 	public <E extends BaseEntity, D extends DataResponseDTO> D entityToDto(BcIdentifier bc, E entity, Class<D> dtoClass,
 			boolean flushRequired) {
-		return entityToDto(entity, dtoClass, bcUtils.getDtoFieldsForCurrentScreen(bc), flushRequired, emptyMap());
+		return entityToDto(entity, dtoClass, getDtoFieldsAvailableOnCurrentScreen(bc, dtoClass, true), flushRequired, emptyMap());
+	}
+
+	private <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFieldsAvailableOnCurrentScreen(BcIdentifier bc, Class<D> dtoClass, boolean visibleOnly) {
+		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
+			return extendedDtoFieldLevelSecurityService.get().getDtoFieldsAvailableOnCurrentScreen(bc);
+		}
+		return dtoSecurityUtils.getDtoFields(dtoClass);
 	}
 
 	/**
@@ -86,7 +98,7 @@ public class DTOMapper {
 	 * Creates a dto with a complete set of fields
 	 */
 	public <E extends BaseEntity, D extends DataResponseDTO> D entityToDto(E entity, Class<D> dtoClass) {
-		return entityToDto(entity, dtoClass, bcUtils.getDtoFields(dtoClass), isFlushRequired(), emptyMap());
+		return entityToDto(entity, dtoClass, dtoSecurityUtils.getDtoFields(dtoClass), isFlushRequired(), emptyMap());
 	}
 
 	/**

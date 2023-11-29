@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.api.data.BcIdentifier;
 
 
 public final class BcIdentifiers implements Iterable<BcIdentifier> {

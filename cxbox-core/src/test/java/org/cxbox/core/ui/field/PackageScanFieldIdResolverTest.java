@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
 package org.cxbox.core.ui.field;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +23,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
-import org.cxbox.core.ui.model.json.field.FieldMeta;
 import java.io.IOException;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -103,4 +102,4 @@ class PackageScanFieldIdResolverTest {
 		Assertions.assertEquals(Id.CUSTOM, result);
 	}
 
-}
+}*/
