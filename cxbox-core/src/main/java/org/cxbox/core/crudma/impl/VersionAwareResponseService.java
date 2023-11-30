@@ -16,6 +16,14 @@
 
 package org.cxbox.core.crudma.impl;
 
+import java.util.Objects;
+import javax.persistence.LockModeType;
+import javax.persistence.LockTimeoutException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PessimisticLockException;
+import javax.persistence.metamodel.SingularAttribute;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dictionary.CoreDictionaries.SystemPref;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.system.SystemSettings;
@@ -26,15 +34,9 @@ import org.cxbox.core.exception.UnableToLockException;
 import org.cxbox.core.exception.VersionMismatchException;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.model.core.entity.BaseEntity;
-import java.util.Objects;
-import javax.persistence.LockModeType;
-import javax.persistence.LockTimeoutException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PessimisticLockException;
-import javax.persistence.metamodel.SingularAttribute;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -51,6 +53,7 @@ public abstract class VersionAwareResponseService<T extends DataResponseDTO, E e
 	}
 
 	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public CreateResult<T> createEntity(BusinessComponent bc) {
 		// todo: add a check that the service returns actual data
 		final E entity = create(bc);
