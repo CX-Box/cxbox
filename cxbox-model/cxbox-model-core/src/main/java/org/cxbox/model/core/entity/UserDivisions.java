@@ -21,11 +21,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Immutable;
 
 @Entity
 @Table(name = "USER_DIVISIONS")
 @Getter
 @Setter
+@Immutable
 public class UserDivisions {
 
 	@Id

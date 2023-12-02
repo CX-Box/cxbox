@@ -16,6 +16,8 @@
 
 package org.cxbox.model.core.entity;
 
+import javax.persistence.ConstraintMode;
+import javax.persistence.ForeignKey;
 import org.cxbox.api.data.dictionary.LOV;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.ZoneId;
@@ -80,7 +82,7 @@ public class User extends BaseEntity {
 
 	@NotAudited
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id", insertable = false, updatable = false)
+	@JoinColumn(name = "id", insertable = false, updatable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
 	private UserDivisions userDivisions;
 
 	private String origDeptCode;
