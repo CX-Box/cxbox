@@ -16,30 +16,24 @@
 
 package org.cxbox.meta.data;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
+import java.io.Serializable;
 import org.cxbox.core.util.filter.SearchParameter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.cxbox.meta.entity.SystemSetting;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SystemSettingDTO extends DataResponseDTO {
+public class SystemSettingDTO implements Serializable {
+	private String id;
 
 	@SearchParameter
 	private String key;
 
 	@SearchParameter
 	private String value;
-
-	public SystemSettingDTO(SystemSetting systemSetting) {
-		this.id = systemSetting.getId().toString();
-		this.key = systemSetting.getKey();
-		this.value = systemSetting.getValue();
-	}
 
 }

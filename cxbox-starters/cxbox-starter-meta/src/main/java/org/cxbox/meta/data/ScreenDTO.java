@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.crudma.dto;
+package org.cxbox.meta.data;
 
+import lombok.experimental.Accessors;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.LocaleAware;
+import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
 import org.cxbox.core.util.filter.SearchParameter;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,17 +32,27 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class SearchSpecServiceDto extends DataResponseDTO {
+@JsonFilter("")
+@Accessors(chain = true)
+public class ScreenDTO extends DataResponseDTO {
 
 	@SearchParameter
 	private String name;
 
-	private String docName;
+	@LocaleAware
+	@SearchParameter
+	private String title;
 
-	private String docUrl;
+	private String primary;
 
-	public SearchSpecServiceDto(Class serviceAssociationClass) {
-		this.id = this.name = serviceAssociationClass.getSimpleName();
-	}
+	private List<ViewDTO> views;
+
+	private BusinessObjectDTO bo;
+
+	private ScreenNavigation navigation;
+
+	@JsonRawValue
+	@JsonDeserialize(using = Raw2StringDeserializer.class)
+	private String primaries; // TODo Выпилить после показа CBR-1488
 
 }

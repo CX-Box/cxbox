@@ -20,26 +20,28 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 public class ScreenSourceDto {
 
 	/**
-	 * used only if cxbox.meta.view-allowed-roles-enabled=true (see {@link MetaConfigurationProperties#viewAllowedRolesEnabled})
+	 * used only if cxbox.meta.view-allowed-roles-enabled=true (see {@link MetaConfigurationProperties#isViewAllowedRolesEnabled()})
 	 */
 	private int order = 0;
 
 	/**
-	 * used only if cxbox.meta.view-allowed-roles-enabled=true (see {@link MetaConfigurationProperties#viewAllowedRolesEnabled})
+	 * used only if cxbox.meta.view-allowed-roles-enabled=true (see {@link MetaConfigurationProperties#isViewAllowedRolesEnabled()})
 	 */
 	private String icon;
 
 	private String name;
 
 	/**
-	 * used only if cxbox.meta.view-allowed-roles-enabled=true (see {@link MetaConfigurationProperties#viewAllowedRolesEnabled})
+	 * used only if cxbox.meta.view-allowed-roles-enabled=true (see {@link MetaConfigurationProperties#isViewAllowedRolesEnabled()})
 	 */
 	private String title;
 
@@ -51,12 +53,14 @@ public class ScreenSourceDto {
 
 	@Getter
 	@Setter
+	@Accessors(chain = true)
 	public static class ScreenNavigationSourceDto {
 
 		private List<MenuItemSourceDto> menu;
 
 		@Getter
 		@Setter
+		@Accessors(chain = true)
 		public static class MenuItemSourceDto {
 
 			private Boolean hidden;

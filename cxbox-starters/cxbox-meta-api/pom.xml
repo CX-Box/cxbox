@@ -26,7 +26,7 @@
   <artifactId>cxbox-meta-api</artifactId>
   <packaging>jar</packaging>
   <version>4.0.2-SNAPSHOT</version>
-  <name>IO Cxbox Starter - meta</name>
+  <name>IO Cxbox Starter - meta api</name>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>

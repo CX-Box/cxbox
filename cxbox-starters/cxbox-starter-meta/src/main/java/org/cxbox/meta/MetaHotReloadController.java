@@ -40,12 +40,6 @@ public class MetaHotReloadController {
 
 	final CxboxCachingService cachingService;
 
-	/*TODO>>test and uncomment
-	final BcUtils bcUtils;
-
-	final BcRegistry bcRegistry;
-	*/
-
 	@GetMapping("refresh-meta")
 	public void refresh() {
 		if (metaHotReloadService.isPresent()) {
@@ -55,9 +49,6 @@ public class MetaHotReloadController {
 					cachingService.evictUiCache();
 					cachingService.evictRequestCache();
 					cachingService.evictUserCache();
-					/*TODO>>test and uncomment
-					bcRegistry.refresh();
-					bcUtils.invalidateFieldCache();*/
 				}
 		));
 		}

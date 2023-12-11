@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.data.view;
+package org.cxbox.meta.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.experimental.Accessors;
 import org.cxbox.api.data.dto.LocaleAware;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,13 +32,15 @@ import java.util.List;
  */
 @Getter
 @Setter
-public final class ScreenNavigation implements Serializable {
+@Accessors(chain = true)
+public class ScreenNavigation implements Serializable {
 
 	private List<MenuItem> menu;
 
 	@Getter
 	@Setter
 	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Accessors(chain = true)
 	public abstract static class MenuItem implements Serializable {
 
 		private String id;
@@ -62,6 +65,7 @@ public final class ScreenNavigation implements Serializable {
 	@Getter
 	@Setter
 	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Accessors(chain = true)
 	public static class ViewGroup extends MenuItem {
 
 		/**
@@ -88,6 +92,7 @@ public final class ScreenNavigation implements Serializable {
 	@Getter
 	@Setter
 	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Accessors(chain = true)
 	public static class SingleView extends MenuItem {
 
 		/**

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.data.view;
+package org.cxbox.meta.data;
 
+import java.io.Serializable;
 import org.cxbox.meta.data.FilterGroupDTO;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.util.List;
@@ -28,7 +29,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name", "url"})
-public class BusinessComponentDTO {
+public class BusinessComponentDTO implements Serializable {
 
 	Long id;
 

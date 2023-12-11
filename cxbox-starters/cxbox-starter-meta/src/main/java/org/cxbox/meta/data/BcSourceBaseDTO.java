@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.crudma.api;
+package org.cxbox.meta.data;
 
-import org.cxbox.core.service.ResponseService;
-import org.cxbox.meta.crudma.dto.ViewsDTO;
-import org.cxbox.meta.entity.View;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class BcSourceBaseDTO implements BcSource {
 
-public interface ViewsService extends ResponseService<ViewsDTO, View> {
+	private String bcName;
+
+	private String url;
 
 }

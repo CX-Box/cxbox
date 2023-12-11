@@ -16,7 +16,8 @@
 
 package org.cxbox.meta.data;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
+import java.io.Serializable;
+import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FilterGroupDTO extends DataResponseDTO {
+public class FilterGroupDTO implements Serializable {
+
+	private String id;
 
 	private String name;
 

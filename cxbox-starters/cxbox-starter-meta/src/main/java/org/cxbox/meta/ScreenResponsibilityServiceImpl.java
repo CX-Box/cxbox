@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,8 @@ import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.dto.ScreenResponsibility;
-import org.cxbox.meta.data.view.ScreenDTO;
+import org.cxbox.meta.data.ScreenDTO;
+import org.cxbox.meta.metahotreload.mapper.UserMetaProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +46,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 
 	private final ResponsibilitiesService respService;
 
-	private final ViewService viewService;
+	private final UserMetaProvider userMetaProvider;
 
 	/**
 	 * Get all available screens with respect of user role
@@ -61,9 +63,10 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 			if (StringUtils.isNotBlank(screens)) {
 				result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
 			}
+			Map<String, ScreenDTO> allUserScreens = userMetaProvider.getScreens(user, userRole);
 			result.forEach(resp -> {
 				String screenName = resp.getName();
-				ScreenDTO screenDto = viewService.getScreen(screenName);
+				ScreenDTO screenDto = allUserScreens.get(screenName);
 				resp.setMeta(screenDto);
 			});
 			return result;

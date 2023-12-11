@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.data.view;
+package org.cxbox.meta.data;
 
+import java.io.Serializable;
+import lombok.experimental.Accessors;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.LocaleAware;
 import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
@@ -35,7 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @JsonFilter("")
-public class WidgetDTO extends DataResponseDTO implements BcSource {
+@Accessors(chain = true)
+public class WidgetDTO extends DataResponseDTO implements BcSource, Serializable {
 
 	@SearchParameter
 	private String name;

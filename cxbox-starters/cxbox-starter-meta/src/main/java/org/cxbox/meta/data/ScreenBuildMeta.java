@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.crudma.dto;
+package org.cxbox.meta.data;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.LocaleAware;
-import org.cxbox.meta.entity.Widget;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-public class CrudmaWidgetDto extends DataResponseDTO {
+public class ScreenBuildMeta {
 
-	private String name;
+	private final List<String> views;
 
-	@LocaleAware
-	private String title;
+	private final Map<String, Boolean> responsibilities;
 
-	private String bc;
-
-	public CrudmaWidgetDto(final Widget entity) {
-		this.id = entity.getId().toString();
-		this.name = entity.getName();
-		this.title = entity.getTitle();
-		this.bc = entity.getBc();
+	public ScreenBuildMeta(List<String> views, Map<String, Boolean> responsibilities) {
+		this.views = views;
+		this.responsibilities = responsibilities;
 	}
+
+	public void addResponsibility(String viewName, boolean readOnly) {
+		responsibilities.put(viewName, readOnly);
+	}
+
+	public void addView(String viewName) {
+		views.add(viewName);
+	}
+
 
 }

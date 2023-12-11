@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.crudma.api;
-
-import org.cxbox.meta.data.view.BcDTO;
-import org.cxbox.core.service.ResponseService;
-import org.cxbox.meta.entity.Bc;
+package org.cxbox.meta.data;
 
 
-public interface BcResponseService extends ResponseService<BcDTO, Bc> {
+public interface BcSource {
+
+	String getBcName();
+
+	String getUrl();
 
 }

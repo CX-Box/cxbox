@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.data.view;
+package org.cxbox.meta.data;
 
+import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BusinessObjectDTO {
+public class BusinessObjectDTO implements Serializable {
 
 	List<BusinessComponentDTO> bc;
 

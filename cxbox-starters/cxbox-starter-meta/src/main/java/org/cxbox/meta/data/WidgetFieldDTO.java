@@ -27,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WidgetFieldDTO {
+public class WidgetFieldDTO  {
+
+	private String id;
 
 	private String blockId;
 

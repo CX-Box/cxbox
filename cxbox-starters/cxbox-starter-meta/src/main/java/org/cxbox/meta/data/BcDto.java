@@ -16,17 +16,14 @@
 
 package org.cxbox.meta.data;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
+import java.io.Serializable;
 import lombok.Getter;
 
 @Getter
-public class BcDto extends DataResponseDTO {
+public class BcDto implements Serializable {
+
+	private String id;
 
 	private String name;
-
-	public BcDto(final String name) {
-		this.id = name;
-		this.name = name;
-	}
 
 }

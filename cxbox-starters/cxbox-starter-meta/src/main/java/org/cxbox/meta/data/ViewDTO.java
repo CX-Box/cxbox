@@ -14,39 +14,58 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.data.view;
+package org.cxbox.meta.data;
 
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
-import org.cxbox.core.util.filter.SearchParameter;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.cxbox.api.data.dto.LocaleAware;
+import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
+import org.cxbox.core.util.filter.SearchParameter;
 
-
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-public class BcDTO extends DataResponseDTO {
+@Accessors(chain = true)
+public class ViewDTO implements Serializable {
+
+	private Long id;
 
 	@SearchParameter
 	private String name;
 
-	@SearchParameter
-	private String parentName;
+	private String template;
 
-	private String query;
+	@LocaleAware
+	@SearchParameter
+	private String title;
+
+	@SearchParameter
+	private String url;
+
+	private Boolean customizable;
+
+	private Boolean editable;
+
+	private List<WidgetDTO> widgets;
+
+	private Integer columns;
+
+	private Integer rowHeight;
+
+	private Boolean readOnly;
+
+	private Boolean ignoreHistory;
 
 	@JsonRawValue
 	@JsonDeserialize(using = Raw2StringDeserializer.class)
-	private String binds;
+	private String options;
 
-	private String defaultOrder;
 
-	private String reportDateField;
-
-	private Long pageLimit;
 
 }
