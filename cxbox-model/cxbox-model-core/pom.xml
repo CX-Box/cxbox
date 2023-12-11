@@ -20,13 +20,13 @@
   <artifactId>cxbox-model-core</artifactId>
   <packaging>jar</packaging>
 
-  <version>4.0.0-M1</version>
+  <version>4.0.0-M2-SNAPSHOT</version>
   <name>IO Cxbox - Model Core</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-model-base</artifactId>
-    <version>4.0.0-M1</version>
+    <version>4.0.0-M2-SNAPSHOT</version>
     <relativePath>../cxbox-model-base/pom.xml</relativePath>
   </parent>
 
