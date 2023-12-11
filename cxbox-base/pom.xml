@@ -80,6 +80,10 @@
     <!--Test-->
     <compile-testing.version>0.21.0</compile-testing.version>
     <javax.el.version>3.0.0</javax.el.version>
+
+
+    <!--plugins-->
+    <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
   </properties>
 
   <dependencyManagement>
