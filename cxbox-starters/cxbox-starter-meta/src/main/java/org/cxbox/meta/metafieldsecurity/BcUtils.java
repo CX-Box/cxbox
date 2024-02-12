@@ -28,30 +28,30 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.bc.InnerBcTypeAware;
 import org.cxbox.core.config.cache.CacheConfig;
-import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.controller.BcHierarchyAware;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.service.DTOSecurityUtils;
-import org.cxbox.meta.UIServiceImpl.UserCache;
-import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.core.util.session.SessionService;
+import org.cxbox.meta.UIServiceImpl.UserCache;
+import org.cxbox.meta.entity.Widget;
+import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.entity.Widget;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
+@Getter
 public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 
 	private final InnerBcTypeAware innerBcTypeAware;
@@ -84,6 +84,21 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 			.newBuilder()
 			.build(new ViewFieldCacheLoader());
 
+	@java.beans.ConstructorProperties({"innerBcTypeAware", "metaRepository", "widgetUtils", "bcRegistry",
+			"dtoSecurityUtils", "bcHierarchyAware", "userCache", "sessionService", "requiredFieldsSuppliers"})
+	public BcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
+			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, UserCache userCache,
+			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliers) {
+		this.innerBcTypeAware = innerBcTypeAware;
+		this.metaRepository = metaRepository;
+		this.widgetUtils = widgetUtils;
+		this.bcRegistry = bcRegistry;
+		this.dtoSecurityUtils = dtoSecurityUtils;
+		this.bcHierarchyAware = bcHierarchyAware;
+		this.userCache = userCache;
+		this.sessionService = sessionService;
+		this.requiredFieldsSuppliers = requiredFieldsSuppliers;
+	}
 
 
 	public void invalidateFieldCache() {
@@ -110,7 +125,6 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	}
 
 
-
 	/**
 	 * @deprecated use {@link #invalidateFieldCache()} instead.
 	 */
@@ -123,7 +137,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	/**
 	 * Returns a set of dto fields ({@link DtoField}) for the given business component
 	 */
-	private <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFields(final BcIdentifier bcIdentifier) {
+	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFields(final BcIdentifier bcIdentifier) {
 		final BcDescription bcDescription = bcRegistry.getBcDescription(bcIdentifier.getName());
 		if (bcDescription instanceof InnerBcDescription) {
 			try {
@@ -141,7 +155,8 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	 * Returns a set of required fields for the given business component on the current screen
 	 */
 	@SneakyThrows
-	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
+	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
+			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
 	public Set<String> getBcFieldsForCurrentScreen(final BcIdentifier bc) {
 		final Set<String> viewFields = new HashSet<>();
 		for (final String viewName : getCurrentScreenViews()) {
@@ -164,7 +179,8 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	/**
 	 * Returns a set of required dto fields ({@link DtoField}) for the given business component on the current screen
 	 */
-	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
+	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
+			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFieldsAvailableOnCurrentScreen(final BcIdentifier bc) {
 		final Set<String> viewFields = getBcFieldsForCurrentScreen(bc);
 		return getDtoFields(bc).stream()
@@ -216,7 +232,6 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 		}
 
 	}
-
 
 
 }

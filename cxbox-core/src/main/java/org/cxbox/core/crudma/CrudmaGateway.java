@@ -172,7 +172,7 @@ public class CrudmaGateway {
 	 * @param action is current request action
 	 * @return should read only transaction begins
 	 */
-	private boolean isReadOnly(CrudmaAction action) {
+	public boolean isReadOnly(CrudmaAction action) {
 		CrudmaActionType actionType = action.getActionType();
 		BusinessComponent bc = action.getBc();
 		BcDescription description = bc.getDescription();
