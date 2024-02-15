@@ -19,6 +19,7 @@ package org.cxbox.core.service.impl;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import org.cxbox.core.dto.data.view.ScreenBuildMeta;
 import org.cxbox.core.dto.data.view.ScreenDTO;
 import org.cxbox.core.dto.data.view.ViewDTO;
 import org.cxbox.core.dto.data.view.WidgetDTO;
+import org.cxbox.core.dto.rowmeta.AdditionalFieldsDTO;
 import org.cxbox.core.dto.rowmeta.FilterGroupDTO;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.service.ViewService;
@@ -48,6 +50,8 @@ import org.cxbox.core.ui.model.json.WidgetOptions;
 import org.cxbox.core.util.JsonUtils;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.model.ui.entity.AdditionalFields;
+import org.cxbox.model.ui.entity.AdditionalFields_;
 import org.cxbox.model.ui.entity.BcProperties;
 import org.cxbox.model.ui.entity.FilterGroup;
 import org.cxbox.model.ui.entity.Screen;
@@ -73,6 +77,8 @@ public class ViewServiceImpl implements ViewService {
 
 	private final SessionService sessionService;
 
+	private final ObjectMapper objectMapper;
+
 	private ViewDTO buildViewDTO(View view,
 			Map<String, List<ViewWidgets>> allViewWidgets,
 			Map<String, Boolean> responsibilities) {
@@ -86,6 +92,12 @@ public class ViewServiceImpl implements ViewService {
 		List<WidgetDTO> list = new ArrayList<>();
 		for (ViewWidgets widgetWithPosition : viewWidgetsList) {
 			WidgetDTO widgetDTO = new WidgetDTO(widgetWithPosition, widgetIdCounter);
+
+			widgetDTO.setPersonalFields(getAdditionalFieldsDTO(
+					widgetWithPosition.getViewName(),
+					widgetDTO.getName()
+			));
+
 			widgetDTO.setUrl(bcRegistry.getUrlFromBc(widgetWithPosition.getWidget().getBc()));
 			list.add(widgetDTO);
 			widgetIdCounter++;
@@ -218,6 +230,30 @@ public class ViewServiceImpl implements ViewService {
 						}
 				));
 		return result;
+	}
+
+	private AdditionalFieldsDTO getAdditionalFieldsDTO(String viewName, String widgetName) {
+
+		return Optional.ofNullable(jpaDao.getSingleResultOrNull(
+				AdditionalFields.class,
+				(root, query, cb) ->
+						cb.and(
+								cb.equal(root.get(AdditionalFields_.user), sessionService.getSessionUser()),
+								cb.equal(root.get(AdditionalFields_.view.getName()), viewName),
+								cb.equal(root.get(AdditionalFields_.widget.getName()), widgetName)
+						)
+		)).map(field -> {
+			AdditionalFieldsDTO additionalFieldsDTO = new AdditionalFieldsDTO(field);
+			additionalFieldsDTO.setAddedToAdditionalFields(getListFromJson(field.getAddedToAdditionalFields()));
+			additionalFieldsDTO.setOrderFields(getListFromJson(field.getOrderFields()));
+			additionalFieldsDTO.setRemovedFromAdditionalFields(getListFromJson(field.getAddedToAdditionalFields()));
+			return additionalFieldsDTO;
+		}).orElse(null);
+	}
+
+	@SneakyThrows
+	private List<String> getListFromJson(String json) {
+		return objectMapper.readValue(json, List.class);
 	}
 
 }

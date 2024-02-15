@@ -24,7 +24,6 @@ import org.cxbox.core.dto.ResponseDTO;
 import org.cxbox.core.util.ResponseBuilder;
 import org.cxbox.core.util.session.SessionService;
 import java.util.List;
-
 import org.cxbox.notifications.dao.NotificationDAO;
 import org.cxbox.notifications.dto.MarkNotificationDTO;
 import org.cxbox.notifications.service.INotificationPollingService;
