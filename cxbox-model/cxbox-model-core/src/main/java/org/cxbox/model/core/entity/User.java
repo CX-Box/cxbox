@@ -171,5 +171,4 @@ public class User extends BaseEntity {
 				.map(t -> ZoneId.of(t.getKey()))
 				.orElseGet(ZoneId::systemDefault);
 	}
-
 }

@@ -23,7 +23,7 @@ import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.crudma.api.BcPropertiesService;
 import org.cxbox.crudma.api.BcService;
 import org.cxbox.crudma.api.DeptService;
-import org.cxbox.crudma.api.FilterGroupService;
+import org.cxbox.crudma.api.FilterGroupServiceOld;
 import org.cxbox.crudma.api.ScreenService;
 import org.cxbox.crudma.api.WidgetService;
 import lombok.Getter;
@@ -37,7 +37,7 @@ public enum CoreServiceAssociation implements EnumBcIdentifier {
 
 	department(DeptService.class),
 
-	filterGroup(FilterGroupService.class),
+	filterGroup(FilterGroupServiceOld.class),
 
 	bcProperties(BcPropertiesService.class),
 

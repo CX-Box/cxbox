@@ -23,17 +23,17 @@ import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.dto.rowmeta.FilterGroupDTO;
 import org.cxbox.core.dto.rowmeta.FilterGroupDTO_;
 import org.cxbox.core.service.action.Actions;
-import org.cxbox.crudma.api.FilterGroupService;
+import org.cxbox.crudma.api.FilterGroupServiceOld;
 import org.cxbox.crudma.config.CoreServiceAssociation;
 import org.cxbox.crudma.meta.FilterGroupMetaBuilder;
 import org.cxbox.model.ui.entity.FilterGroup;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FilterGroupServiceImpl extends VersionAwareResponseService<FilterGroupDTO, FilterGroup> implements
-		FilterGroupService {
+public class FilterGroupServiceImplOld extends VersionAwareResponseService<FilterGroupDTO, FilterGroup> implements
+		FilterGroupServiceOld {
 
-	protected FilterGroupServiceImpl() {
+	protected FilterGroupServiceImplOld() {
 		super(FilterGroupDTO.class, FilterGroup.class, null, FilterGroupMetaBuilder.class);
 	}
 

@@ -18,6 +18,21 @@ package org.cxbox.core.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dictionary.CoreDictionaries;
 import org.cxbox.api.data.dictionary.CoreDictionaries.ViewGroupType;
 import org.cxbox.api.data.dictionary.LOV;
@@ -48,13 +63,6 @@ import org.cxbox.model.ui.navigation.NavigationGroup;
 import org.cxbox.model.ui.navigation.NavigationGroup_;
 import org.cxbox.model.ui.navigation.NavigationView;
 import org.cxbox.model.ui.navigation.NavigationView_;
-import java.io.InputStream;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -65,6 +73,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UIServiceImpl implements UIService {
 
 	@Qualifier("cxboxObjectMapper")
@@ -178,9 +187,26 @@ public class UIServiceImpl implements UIService {
 	public Map<String, List<FilterGroup>> getFilterGroups(BusinessObjectDTO boDto) {
 		HashMap<String, List<FilterGroup>> result = new HashMap<>(boDto.getBc().size());
 		Map<String, List<FilterGroup>> all = uiCache.getFilterGroups();
-		boDto.getBc().forEach(bc -> result.put(bc.getName(), all.get(bc.getName())));
+		boDto.getBc().forEach(bc -> result.put(bc.getName(), Optional.ofNullable(all.get(bc.getName())).map(ArrayList::new).orElse(null)));
 		return result;
 	}
+
+	public Optional<Map<String, List<FilterGroup>>> getPersonalFilterGroups(BusinessObjectDTO boDto, User user) {
+		HashMap<String, List<FilterGroup>> result = new HashMap<>(boDto.getBc().size());
+
+		Map<String, List<FilterGroup>> all = jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
+				cb.and(
+						cb.isNotNull(root.get(FilterGroup_.bc)),
+						cb.equal(root.get(FilterGroup_.user), user)
+				)
+		).stream().collect(
+				Collectors.groupingBy(FilterGroup::getBc)
+		);
+
+		boDto.getBc().forEach(bc -> result.put(bc.getName(), all.get(bc.getName())));
+		return Optional.of(result);
+	}
+
 
 	public Map<String, List<ViewWidgets>> getAllWidgetsWithPositionByScreen(final List<String> views) {
 		HashMap<String, List<ViewWidgets>> result = new HashMap<>(views.size());
@@ -252,16 +278,21 @@ public class UIServiceImpl implements UIService {
 			).stream().collect(Collectors.toMap(BcProperties::getBc, Function.identity()));
 		}
 
+
 		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
 				cacheNames = CacheConfig.UI_CACHE,
 				key = "{#root.methodName}"
 		)
 		public Map<String, List<FilterGroup>> getFilterGroups() {
-			return jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
-					cb.isNotNull(root.get(FilterGroup_.bc))
-			).stream().collect(
+			Map<String, List<FilterGroup>> mapOfFilterGroup = jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
+					cb.and(
+							cb.isNotNull(root.get(FilterGroup_.bc)),
+							cb.isNull(root.get(FilterGroup_.user)
+							)
+					)).stream().collect(
 					Collectors.groupingBy(FilterGroup::getBc)
 			);
+			return mapOfFilterGroup;
 		}
 
 		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
@@ -362,5 +393,6 @@ public class UIServiceImpl implements UIService {
 			child.forEach(UIServiceImpl::recursiveSort);
 		}
 	}
+
 
 }

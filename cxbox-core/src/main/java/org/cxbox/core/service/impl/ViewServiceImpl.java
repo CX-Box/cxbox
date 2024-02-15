@@ -18,6 +18,19 @@ package org.cxbox.core.service.impl;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dao.impl.ViewDAO;
@@ -41,19 +54,6 @@ import org.cxbox.model.ui.entity.Screen;
 import org.cxbox.model.ui.entity.Screen_;
 import org.cxbox.model.ui.entity.View;
 import org.cxbox.model.ui.entity.ViewWidgets;
-import com.fasterxml.jackson.databind.JsonNode;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -178,6 +178,12 @@ public class ViewServiceImpl implements ViewService {
 
 	private void setFilterGroups(final BusinessObjectDTO boDto) {
 		Map<String, List<FilterGroup>> filterGroupMap = uiService.getFilterGroups(boDto);
+		uiService.getPersonalFilterGroups(boDto, sessionService.getSessionUser()).ifPresent(
+				map -> map.entrySet().stream()
+						.filter(entry -> Objects.nonNull(entry.getValue()))
+						.forEach(entry -> {
+							filterGroupMap.get(entry.getKey()).addAll(entry.getValue());
+						}));
 		boDto.getBc().forEach(dto -> {
 			List<FilterGroup> filterGroups = filterGroupMap.get(dto.getName());
 			if (filterGroups != null && !filterGroups.isEmpty()) {

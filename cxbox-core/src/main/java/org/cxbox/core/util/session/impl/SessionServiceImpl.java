@@ -16,6 +16,7 @@
 
 package org.cxbox.core.util.session.impl;
 
+import java.util.stream.Collectors;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.CoreSessionService;
 import org.cxbox.api.service.session.CxboxUserDetailsInterface;
@@ -41,6 +42,8 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.cxbox.model.ui.entity.FilterGroup;
+import org.cxbox.model.ui.entity.FilterGroup_;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Component;
@@ -231,6 +234,8 @@ public class SessionServiceImpl implements SessionService {
 
 		private final UIService uiService;
 
+		private final JpaDao jpaDao;
+
 		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
 				cacheNames = {CacheConfig.USER_CACHE},
 				key = "{#root.methodName, #user.id, #userRole}"
@@ -254,6 +259,20 @@ public class SessionServiceImpl implements SessionService {
 			);
 		}
 
+		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
+				cacheNames = CacheConfig.USER_CACHE,
+				key = "{#root.methodName, #user.id, #userRole}"
+		)
+		public Map<String, List<FilterGroup>> getPersonalFilterGroups(User user) {
+			return jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
+					cb.and(
+							cb.isNotNull(root.get(FilterGroup_.bc)),
+							cb.equal(root.get(FilterGroup_.user), user)
+					)
+			).stream().collect(
+					Collectors.groupingBy(FilterGroup::getBc)
+			);
+		}
 	}
 
 }
