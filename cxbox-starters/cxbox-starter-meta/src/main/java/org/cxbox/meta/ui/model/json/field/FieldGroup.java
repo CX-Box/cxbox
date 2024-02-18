@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.ui.model.json.field;
 
+import java.util.ArrayList;
 import org.cxbox.meta.ui.model.json.field.FieldMeta.FieldContainer;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
@@ -40,6 +41,6 @@ public final class FieldGroup implements FieldContainer {
 	private Boolean newRow;
 
 	@JsonProperty("fields")
-	private List<FieldMeta> children;
+	private List<FieldMeta> children = new ArrayList<>();
 
 }

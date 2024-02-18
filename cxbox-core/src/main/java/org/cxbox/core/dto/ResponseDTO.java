@@ -16,11 +16,13 @@
 
 package org.cxbox.core.dto;
 
+import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.ResultPage;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.ToString;
 
+@SuperBuilder()
 @Getter
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)

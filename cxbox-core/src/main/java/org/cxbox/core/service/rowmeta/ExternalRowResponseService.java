@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -64,8 +65,8 @@ public class ExternalRowResponseService extends RowResponseService {
 	}
 
 	public ExternalRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
-			Optional<LinkedDictionaryService> linkedDictionaryService, BcUtils bcUtils, ObjectMapper objectMapper) {
-		super(ctx, bcDisablers, linkedDictionaryService, bcUtils, objectMapper);
+			Optional<LinkedDictionaryService> linkedDictionaryService, Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService, ObjectMapper objectMapper) {
+		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, objectMapper);
 	}
 
 	public MetaDTO getExternalResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,

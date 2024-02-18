@@ -24,6 +24,7 @@ import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.entity.Widget;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.json.field.FieldGroup;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,8 +39,19 @@ public class InfoFieldExtractor extends BaseFieldExtractor {
 	@Override
 	public Set<BcField> extract(final Widget widget) {
 		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, widget.getTitle()));
-		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
-			widgetFields.addAll(extract(widget, field));
+		FieldMeta[] fieldMetas = JsonUtils.readValue(FieldMeta[].class, widget.getFields());
+		FieldGroup[] fieldGroups = JsonUtils.readValue(FieldGroup[].class, widget.getFields());
+		for (final FieldMeta field : fieldMetas) {
+			if (field.getKey() != null) {
+				widgetFields.addAll(extract(widget, field));
+			}
+		}
+		for (final FieldGroup group : fieldGroups) {
+			if (group.getChildren() != null) {
+				for (final FieldMeta field : group.getChildren()) {
+					widgetFields.addAll(extract(widget, field));
+				}
+			}
 		}
 		return widgetFields;
 	}

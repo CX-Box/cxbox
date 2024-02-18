@@ -105,7 +105,8 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 
 	@Override
 	public ExternalBaseDAO<E> getBaseDao() {
-		return externalBaseDAOs.stream().filter(dao -> externalBaseDAOClass.isAssignableFrom(dao.getClass())).findFirst().orElseThrow();
+		return externalBaseDAOs.stream().filter(dao -> externalBaseDAOClass.isAssignableFrom(dao.getClass())).findFirst()
+				.orElseThrow();
 	}
 
 	public static <T> T cast(Object o, Class<T> clazz) {
@@ -170,7 +171,8 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param entitySetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField, final Consumer<V> entitySetter) {
+	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField,
+			final Consumer<V> entitySetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
 	}
 
@@ -193,7 +195,7 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	}
 
 	@Override
-	public E getOneAsEntity(BusinessComponent bc){
+	public E getOneAsEntity(BusinessComponent bc) {
 		return getBaseDao().getById(bc);
 	}
 
@@ -218,7 +220,10 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	@Override
 	public ResultPage<T> getList(BusinessComponent bc) {
 		//TODO hasNext hardcode
-		return entitiesToDtos(bc, ResultPage.of(getBaseDao().getList(bc, bc.getParameters()).stream().collect(Collectors.toList()), false));
+		return entitiesToDtos(
+				bc,
+				ResultPage.of(getBaseDao().getList(bc, bc.getParameters()).stream().collect(Collectors.toList()), false)
+		);
 	}
 
 	@Override
@@ -261,7 +266,8 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	}
 
 
-	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data, AssociateDTO associateDTO) {
+	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data,
+			AssociateDTO associateDTO) {
 		List<String> preInvokeParameters = bc.getPreInvokeParameters();
 		List<PreInvokeEvent> preInvokeEvents = new ArrayList<>();
 		if (nonNull(preActionEvents)) {
@@ -317,7 +323,7 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	}
 
 	@Override
-	public long count(BusinessComponent bc){
+	public long count(BusinessComponent bc) {
 		return getBaseDao().count(bc);
 	}
 

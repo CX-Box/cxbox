@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.entity;
 
+import jakarta.persistence.Lob;
 import org.cxbox.model.core.entity.BaseEntity;
 import jakarta.persistence.Entity;
 
@@ -54,18 +55,24 @@ public class Widget extends BaseEntity {
 
 	private String title;
 
+	@Lob
 	private String fields;
 
+	@Lob
 	private String options;
 
+	@Lob
 	private String pivotFields;
 
+	@Lob
 	private String axisFields;
 
 	private String showCondition;
 
+	@Lob
 	private String chart;
 
+	@Lob
 	private String graph;
 
 }

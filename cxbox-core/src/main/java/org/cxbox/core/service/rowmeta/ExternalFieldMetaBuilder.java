@@ -25,7 +25,7 @@ import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 
-public abstract class ExternalA<T extends DataResponseDTO> {
+public abstract class ExternalFieldMetaBuilder<T extends DataResponseDTO> {
 
 	public void buildRowDependentMeta(RowDependentFieldsMeta<T> fields, BusinessComponent bc) {
 		if (bc.getDescription() instanceof InnerBcDescription) {
