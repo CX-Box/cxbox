@@ -19,7 +19,7 @@ package org.cxbox.sqlbc.crudma;
 import org.cxbox.api.util.tz.TimeZoneUtil;
 import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.model.ui.entity.Bc;
+import org.cxbox.meta.entity.Bc;
 import java.util.List;
 import java.util.Map;
 

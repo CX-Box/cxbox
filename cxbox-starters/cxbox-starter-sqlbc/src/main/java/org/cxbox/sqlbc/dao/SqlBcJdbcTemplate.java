@@ -16,6 +16,7 @@
 
 package org.cxbox.sqlbc.dao;
 
+import java.util.Optional;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.util.session.SessionService;
@@ -24,7 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.NoResultException;
+import jakarta.persistence.NoResultException;
 import javax.sql.DataSource;
 
 import org.cxbox.sqlbc.exception.BadSqlComponentException;
@@ -71,11 +72,11 @@ public final class SqlBcJdbcTemplate {
 	public long count(SqlBcDescription bcDescription, String parentId, QueryParameters queryParameters) {
 		SqlBcQuery query = SqlBcQuery.build(sessionService, bcDescription, null, parentId, queryParameters, database);
 		try {
-			return jdbcTemplate.queryForObject(
+			return Optional.ofNullable(jdbcTemplate.queryForObject(
 					query.countQuery(),
 					query.parameterSource(),
 					Long.class
-			);
+			)).orElse(0L);
 		} catch (BadSqlGrammarException e) {
 			throw new BadSqlComponentException(bcDescription.getName(), e);
 		}

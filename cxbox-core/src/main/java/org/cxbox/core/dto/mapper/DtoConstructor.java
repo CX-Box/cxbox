@@ -16,19 +16,14 @@
 
 package org.cxbox.core.dto.mapper;
 
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.constgen.DtoField;
-import org.cxbox.core.util.session.SessionService;
-import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.core.entity.User;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.constgen.DtoField;
+import org.cxbox.model.core.entity.BaseEntity;
 
 @Getter
 @RequiredArgsConstructor
@@ -44,21 +39,6 @@ public abstract class DtoConstructor<E extends BaseEntity, D extends DataRespons
 			return buildValueSuppliers();
 		}
 	};
-
-	@Autowired
-	private SessionService sessionService;
-
-	protected RequestValueSupplier<BaseEntity, DataResponseDTO, Department> currentUserDept = new RequestValueSupplier<>(
-			(mapping, entity) -> sessionService.getSessionUserDepartment()
-	);
-
-	protected RequestValueSupplier<BaseEntity, DataResponseDTO, User> currentUser = new RequestValueSupplier<>(
-			(mapping, entity) -> sessionService.getSessionUser()
-	);
-
-	protected RequestValueSupplier<BaseEntity, DataResponseDTO, LOV> currentUserRole = new RequestValueSupplier<>(
-			(mapping, entity) -> sessionService.getSessionUserRole()
-	);
 
 	protected abstract Map<DtoField<? super D, ?>, ValueSupplier<? super E, ? super D, ?>> buildValueSuppliers();
 

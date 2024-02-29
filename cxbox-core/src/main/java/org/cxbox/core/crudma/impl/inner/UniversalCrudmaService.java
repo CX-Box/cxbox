@@ -17,12 +17,14 @@
 package org.cxbox.core.crudma.impl.inner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.UniversalDTO;
 import org.cxbox.api.data.dto.UniversalDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
-import org.cxbox.core.crudma.bc.BcIdentifier;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
@@ -33,7 +35,6 @@ import org.cxbox.core.dto.rowmeta.RowMetaDTO;
 import org.cxbox.core.service.ResponseFactory;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.RowMetaType;
-import org.cxbox.core.ui.BcUtils;
 import org.cxbox.core.util.ListPaging;
 import org.cxbox.model.core.dao.JpaDao;
 import java.beans.Introspector;
@@ -50,8 +51,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.EntityType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	protected ResponseFactory responseFactory;
 
 	@Autowired
-	private BcUtils bcUtils;
+	private Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	@Autowired
 	@Qualifier("cxboxObjectMapper")
@@ -283,8 +284,8 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	@SneakyThrows
 	@SuppressWarnings("unchecked")
 	private Set<String> getBCFields(BcIdentifier bc, D dataDTO, boolean visibleOnly) {
-		if (visibleOnly) {
-			return bcUtils.getBcFieldsForCurrentScreen(bc);
+		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
+			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
 		}
 		return getPropertyDescriptors(dataDTO)
 				.map(PropertyDescriptor::getName)

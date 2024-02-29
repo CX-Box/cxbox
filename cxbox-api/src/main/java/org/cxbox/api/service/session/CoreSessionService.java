@@ -16,7 +16,6 @@
 
 package org.cxbox.api.service.session;
 
-import java.time.ZoneId;
 import java.util.Locale;
 import java.util.TimeZone;
 import org.springframework.security.core.Authentication;
@@ -32,13 +31,7 @@ public interface CoreSessionService {
 
 	CxboxUserDetailsInterface getAuthenticationDetails(Authentication authentication);
 
-	Long getSessionUserId();
-
-	String getSessionUserName();
-
 	TimeZone getTimeZone(TimeZone defaultValue);
-
-	ZoneId getZoneId(ZoneId defaultValue);
 
 	Locale getLocale(Locale defaultValue);
 

@@ -17,7 +17,7 @@
 package org.cxbox.model.core.tx;
 
 import org.cxbox.api.service.tx.DeploymentTransactionSupport;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;

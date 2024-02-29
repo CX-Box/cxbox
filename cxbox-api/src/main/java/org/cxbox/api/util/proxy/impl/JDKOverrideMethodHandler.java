@@ -16,12 +16,12 @@
 
 package org.cxbox.api.util.proxy.impl;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.cxbox.api.util.proxy.IDecorator;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import org.springframework.util.ReflectionUtils;
 
 
 class JDKOverrideMethodHandler<T> implements InvocationHandler {
@@ -48,16 +48,17 @@ class JDKOverrideMethodHandler<T> implements InvocationHandler {
 		return types.length == 1 && types[0] == Object.class;
 	}
 
+	@SuppressWarnings("java:S3011")
 	private static Method getMethod(final Object object,
 			final String name,
 			final Class<?>[] parameterTypes) {
-		Method result = ReflectionUtils.findMethod(
+		Method result = MethodUtils.getMatchingMethod(
 				object.getClass(),
 				name,
 				parameterTypes
 		);
 		if (result != null) {
-			ReflectionUtils.makeAccessible(result);
+			result.setAccessible(true);
 		}
 		return result;
 	}

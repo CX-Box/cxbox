@@ -20,7 +20,7 @@ import org.cxbox.api.service.LocaleService;
 import org.cxbox.api.service.session.CoreSessionService;
 import java.util.Locale;
 import java.util.TimeZone;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 public class EnhancedLocaleResolver extends CookieLocaleResolver {

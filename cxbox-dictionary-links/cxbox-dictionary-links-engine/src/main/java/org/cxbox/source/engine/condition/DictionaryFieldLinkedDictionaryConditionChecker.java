@@ -21,7 +21,7 @@ import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.service.spec.ResponseServiceExtractor;
+import org.cxbox.source.engine.ResponseServiceExtractor;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.engine.LinkedDictionaryConditionChecker;
 import java.util.Objects;

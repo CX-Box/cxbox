@@ -26,11 +26,11 @@ import org.cxbox.model.core.entity.BaseEntity;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import javax.persistence.EntityGraph;
-import javax.persistence.LockModeType;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.springframework.data.jpa.domain.Specification;
 
 

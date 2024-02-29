@@ -20,10 +20,10 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import org.cxbox.core.service.ValidatorsProvider;
 import java.util.Locale;
-import javax.validation.MessageInterpolator;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.springframework.stereotype.Component;
 
 

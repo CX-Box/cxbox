@@ -18,7 +18,7 @@ package org.cxbox.model.core.tx;
 
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.tx.ITransactionStatus;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.orm.jpa.JpaTransactionManager;

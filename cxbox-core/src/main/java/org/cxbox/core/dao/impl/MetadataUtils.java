@@ -30,22 +30,22 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.ElementCollection;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.FetchParent;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.ManagedType;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.FetchParent;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.Bindable.BindableType;
+import jakarta.persistence.metamodel.ManagedType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -58,13 +58,13 @@ import org.cxbox.core.controller.param.SortParameter;
 import org.cxbox.core.controller.param.SortParameters;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.dto.LovUtils;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.core.util.filter.MultisourceSearchParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.springframework.util.ReflectionUtils;
 
 
 @Slf4j
@@ -78,7 +78,7 @@ public class MetadataUtils {
 
 		filterParameters.forEach(filterParam -> {
 					try {
-						Field dtoField = Optional.ofNullable(ReflectionUtils.findField(dtoClazz, filterParam.getName()))
+						Field dtoField = Optional.ofNullable(InstrumentationAwareReflectionUtils.findField(dtoClazz, filterParam.getName()))
 								.orElseThrow(
 										() -> new IllegalArgumentException(
 												errorMessage(
@@ -324,7 +324,7 @@ public class MetadataUtils {
 		if (dtoClazz == null) {
 			field = parameter.getName();
 		} else {
-			Field dtoField = ReflectionUtils.findField(dtoClazz, parameter.getName());
+			Field dtoField = InstrumentationAwareReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
 						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
@@ -341,7 +341,7 @@ public class MetadataUtils {
 
 	private static IDictionaryType getLovType(Class dtoClazz, SortParameter parameter) {
 		if (dtoClazz != null) {
-			Field dtoField = ReflectionUtils.findField(dtoClazz, parameter.getName());
+			Field dtoField = InstrumentationAwareReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
 						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
@@ -399,9 +399,9 @@ public class MetadataUtils {
 
 	private boolean isElementCollectionField(Root<?> root, String fieldName) {
 		Class<?> rootClass = root.getModel().getJavaType();
-		Field field = org.springframework.data.util.ReflectionUtils.findField(
+		Field field = InstrumentationAwareReflectionUtils.findField(
 				rootClass,
-				fld -> fieldName.equals(fld.getName())
+				fieldName
 		);
 		return Optional.ofNullable(field)
 				.map(fld -> fld.isAnnotationPresent(ElementCollection.class))

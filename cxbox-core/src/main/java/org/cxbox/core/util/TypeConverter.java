@@ -16,8 +16,8 @@
 
 package org.cxbox.core.util;
 
+import static java.util.Map.entry;
 import org.cxbox.api.exception.ServerException;
-import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -28,23 +28,23 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class TypeConverter {
 
-	private static final Map<Class<?>, Function<String, Object>> VALUE_MAPPERS = ImmutableMap.<Class<?>, Function<String, Object>>builder()
-			.put(String.class, TypeConverter::toString)
-			.put(Boolean.class, TypeConverter::toBoolean)
-			.put(Boolean.TYPE, TypeConverter::toBoolean)
-			.put(Integer.class, TypeConverter::toInteger)
-			.put(Integer.TYPE, TypeConverter::toInteger)
-			.put(Long.class, TypeConverter::toLong)
-			.put(Long.TYPE, TypeConverter::toLong)
-			.put(Double.class, TypeConverter::toDouble)
-			.put(Double.TYPE, TypeConverter::toDouble)
-			.put(Float.class, TypeConverter::toFloat)
-			.put(BigDecimal.class, TypeConverter::toBigDecimal)
-			.put(Byte.class, TypeConverter::toByte)
-			.put(Short.class, TypeConverter::toShort)
-			.put(LocalDateTime.class, TypeConverter::toLocalDateTime)
-			.put(java.sql.Timestamp.class, TypeConverter::toSqlTimestamp)
-			.build();
+	private static final Map<Class<?>, Function<String, Object>> VALUE_MAPPERS = Map.ofEntries(
+			entry(String.class, TypeConverter::toString),
+			entry(Boolean.class, TypeConverter::toBoolean),
+			entry(Boolean.TYPE, TypeConverter::toBoolean),
+			entry(Integer.class, TypeConverter::toInteger),
+			entry(Integer.TYPE, TypeConverter::toInteger),
+			entry(Long.class, TypeConverter::toLong),
+			entry(Long.TYPE, TypeConverter::toLong),
+			entry(Double.class, TypeConverter::toDouble),
+			entry(Double.TYPE, TypeConverter::toDouble),
+			entry(Float.class, TypeConverter::toFloat),
+			entry(BigDecimal.class, TypeConverter::toBigDecimal),
+			entry(Byte.class, TypeConverter::toByte),
+			entry(Short.class, TypeConverter::toShort),
+			entry(LocalDateTime.class, TypeConverter::toLocalDateTime),
+			entry(java.sql.Timestamp.class, TypeConverter::toSqlTimestamp)
+	);
 
 	public static String toString(final String stringValue) {
 		return stringValue;

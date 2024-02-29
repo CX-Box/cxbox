@@ -16,8 +16,28 @@
 
 package org.cxbox.core.crudma.impl;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.cxbox.api.data.dao.SpecificationUtils.trueSpecification;
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.SingularAttribute;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.exception.ServerException;
@@ -25,55 +45,38 @@ import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dao.BaseDAO;
-import org.cxbox.core.dao.impl.SearchSpecDao;
-import org.cxbox.core.dto.DrillDownType;
 import org.cxbox.core.dto.PreInvokeEvent;
-import org.cxbox.core.dto.rowmeta.*;
+import org.cxbox.core.dto.rowmeta.ActionResultDTO;
+import org.cxbox.core.dto.rowmeta.ActionType;
+import org.cxbox.core.dto.rowmeta.ActionsDTO;
+import org.cxbox.core.dto.rowmeta.AssociateResultDTO;
+import org.cxbox.core.dto.rowmeta.CreateResult;
+import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.EntityNotFoundException;
 import org.cxbox.core.exception.UnconfirmedException;
 import org.cxbox.core.service.BcSpecificationBuilder;
 import org.cxbox.core.service.DTOMapper;
-import org.cxbox.core.service.IOutwardReportEngineService;
 import org.cxbox.core.service.ResponseService;
-import org.cxbox.core.service.action.*;
+import org.cxbox.core.service.action.ActionDescription;
+import org.cxbox.core.service.action.Actions;
+import org.cxbox.core.service.action.AssocPreActionEventParameters;
+import org.cxbox.core.service.action.DataResponsePreActionEventParameters;
+import org.cxbox.core.service.action.PreActionCondition;
+import org.cxbox.core.service.action.PreActionConditionHolderAssoc;
+import org.cxbox.core.service.action.PreActionConditionHolderDataResponse;
+import org.cxbox.core.service.action.PreActionEvent;
+import org.cxbox.core.service.action.PreActionEventChecker;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.core.service.rowmeta.RowMetaType;
-import org.cxbox.core.service.spec.BcSpecificationHolder;
-import org.cxbox.core.service.spec.LinkSpecificationHolder;
-import org.cxbox.core.service.spec.SecuritySpecificationHolder;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.entity.BaseEntity_;
-import org.cxbox.model.ui.entity.SearchSpec;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityGraph;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.SingularAttribute;
-import java.lang.reflect.Modifier;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.cxbox.api.data.dao.SpecificationUtils.*;
-import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Slf4j
 @Transactional
@@ -94,12 +97,6 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	@Autowired
 	private BcSpecificationBuilder specificationBuilder;
 
-	protected Class<? extends SecuritySpecificationHolder<E>> securitySpecificationHolder = null;
-
-	protected Class<? extends BcSpecificationHolder<E>> bcSpecificationHolder = null;
-
-	protected Class<? extends LinkSpecificationHolder<E>> linkSpecificationHolder = null;
-
 	protected Class<? extends PreActionConditionHolderDataResponse<T>> preActionConditionHolderDataResponse = null;
 
 	protected Class<? extends PreActionConditionHolderAssoc> preActionConditionHolderAssoc = null;
@@ -113,12 +110,6 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	@Autowired
 	private DTOMapper dtoMapper;
 
-	@Autowired
-	private SearchSpecDao ssDao;
-
-	@Autowired
-	@Lazy
-	private Optional<IOutwardReportEngineService> outwardReportEngineService;
 
 	public static <T> T cast(Object o, Class<T> clazz) {
 		return clazz.isInstance(o) ? clazz.cast(o) : null;
@@ -413,31 +404,11 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	public Actions<T> getActions() {
 		return Actions.<T>builder()
-				.action("drillDown", "Посмотреть форму")
-				.available(this::isDrillDownActionAvailable).invoker(this::actionOpenUrl).add(false)
 				.build();
 	}
 
 	protected List<PreActionEvent> getPreActionsForSave() {
 		return Collections.emptyList();
-	}
-
-	private boolean isDrillDownActionAvailable(BusinessComponent bc) {
-		return outwardReportEngineService.map(service -> service.isOutwardsReportAvailable(bc)).orElse(false);
-	}
-
-	private ActionResultDTO<T> actionOpenUrl(final BusinessComponent bc, final T data) {
-		final ActionResultDTO<T> result = new ActionResultDTO<>(data);
-		outwardReportEngineService.ifPresent(service ->
-				result.setAction(
-						PostAction.drillDown(
-								DrillDownType.RELATIVE_NEW,
-								service.getOutwardReportFormattedUrl(bc, bc.getParameters()),
-								service.getOutwardReportName(bc)
-						)
-				)
-		);
-		return result;
 	}
 
 	protected ResultPage<T> entitiesToDtos(BusinessComponent bc, ResultPage<E> entities) {
@@ -567,71 +538,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 	protected Specification<E> getSpecification(BusinessComponent bc) {
-		return and(
-				getSecuritySpecification(bc.getDescription()),
-				getBcSpecification(bc.getDescription()),
-				getLinkSpecification(bc)
-		);
-	}
-
-	protected Specification<E> getSecuritySpecification(InnerBcDescription bcDescription) {
-		if (securitySpecificationHolder == null) {
-			return trueSpecification();
-		}
-		SecuritySpecificationHolder<E> specificationHolder = applicationContext.getBean(securitySpecificationHolder);
-		List<SearchSpec> searchSpecs = ssDao.getSecuritySpecifications(bcDescription);
-		String ssNames = searchSpecs.stream().map(SearchSpec::getName)
-				.map(LOV::getKey).collect(Collectors.joining(", "));
-		log.info("Security specifications for " + bcDescription.getName() + " is " + ssNames);
-		return searchSpecs.stream().map(
-				searchSpec -> specificationHolder.get(specificationHolder.fromLov(searchSpec.getName()))
-		).filter(Objects::nonNull).reduce(or()).orElse(trueSpecification());
-	}
-
-	protected Specification<E> getBcSpecification(InnerBcDescription bcDescription) {
-		if (bcSpecificationHolder == null) {
-			return trueSpecification();
-		}
-		BcSpecificationHolder<E> specificationHolder = applicationContext.getBean(bcSpecificationHolder);
-		List<SearchSpec> searchSpecs = ssDao.getBcSpecifications(bcDescription);
-		String ssNames = searchSpecs.stream().map(SearchSpec::getName)
-				.map(LOV::getKey).collect(Collectors.joining(", "));
-		log.info("BC specifications for " + bcDescription.getName() + " is " + ssNames);
-		return searchSpecs.stream().map(
-				searchSpec -> specificationHolder.get(specificationHolder.fromLov(searchSpec.getName()))
-		).filter(Objects::nonNull).reduce(and()).orElse(trueSpecification());
-	}
-
-	protected Specification<E> getLinkSpecification(BusinessComponent bc) {
-		if (linkSpecificationHolder == null) {
-			return trueSpecification();
-		}
-		LinkSpecificationHolder<E> specificationHolder = applicationContext.getBean(linkSpecificationHolder);
-		List<SearchSpec> searchSpecs = ssDao.getLinkSpecifications(bc.getDescription());
-		String ssNames = searchSpecs.stream().map(SearchSpec::getName)
-				.map(LOV::getKey).collect(Collectors.joining(", "));
-		log.info("LINK specifications for " + bc.getDescription().getName() + " is " + ssNames);
-		return searchSpecs.stream().map(searchSpec -> specificationHolder.get(
-				specificationHolder.fromLov(searchSpec.getName()), bc.getDescription(), bc.getParentId()
-		)).filter(Objects::nonNull).reduce(and()).orElse(trueSpecification());
-	}
-
-	@SneakyThrows
-	public List<String> getAssociatedSsNames() {
-		List<String> result = new ArrayList<>();
-		if (securitySpecificationHolder != null) {
-			SecuritySpecificationHolder<E> specificationHolder = securitySpecificationHolder.newInstance();
-			result.addAll(specificationHolder.allValues().stream().map(Object::toString).collect(Collectors.toList()));
-		}
-		if (bcSpecificationHolder != null) {
-			BcSpecificationHolder<E> specificationHolder = bcSpecificationHolder.newInstance();
-			result.addAll(specificationHolder.allValues().stream().map(Object::toString).collect(Collectors.toList()));
-		}
-		if (linkSpecificationHolder != null) {
-			LinkSpecificationHolder<E> specificationHolder = linkSpecificationHolder.newInstance();
-			result.addAll(specificationHolder.allValues().stream().map(Object::toString).collect(Collectors.toList()));
-		}
-		return result;
+		return trueSpecification();
 	}
 
 }

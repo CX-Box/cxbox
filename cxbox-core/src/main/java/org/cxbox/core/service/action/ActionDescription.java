@@ -18,11 +18,13 @@ package org.cxbox.core.service.action;
 
 import static java.util.Objects.nonNull;
 
+import java.util.Arrays;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
 import org.cxbox.api.data.dto.rowmeta.PreActionDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
+import org.cxbox.core.dto.rowmeta.ActionType;
 import org.cxbox.core.dto.rowmeta.PreAction;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,9 @@ public final class ActionDescription<T extends DataResponseDTO> {
 	}
 
 	public boolean isAvailable(BusinessComponent bc) {
+		if (Arrays.stream(ActionType.values()).noneMatch(e -> e.getType().equals(this.key)) && ActionScope.RECORD.equals(this.actionScope)) {
+			return ActionAvailableChecker.and(ActionAvailableChecker.NOT_NULL_ID, actionAvailableChecker).isAvailable(bc);
+		}
 		return actionAvailableChecker.isAvailable(bc);
 	}
 

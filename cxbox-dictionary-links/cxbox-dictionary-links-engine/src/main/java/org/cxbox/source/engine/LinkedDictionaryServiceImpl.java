@@ -16,24 +16,27 @@
 
 package org.cxbox.source.engine;
 
+import java.lang.reflect.Field;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.EngineFieldsMeta;
+
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
-import org.cxbox.core.ui.BcUtils;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule_;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -44,7 +47,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +60,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @Transactional
+@SuppressWarnings("java:S3516")
 public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 
 	private final Map<LOV, LinkedDictionaryConditionChecker> conditions;
@@ -68,22 +72,45 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 	private LinkedDictionaryCache linkedDictionaryCache;
 
 	@Autowired
-	private BcUtils bcUtils;
+	private Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	public LinkedDictionaryServiceImpl(Optional<List<LinkedDictionaryConditionChecker>> conditionCheckers) {
-		final Builder<LOV, LinkedDictionaryConditionChecker> builder = ImmutableMap.builder();
-		conditionCheckers.ifPresent(checkers -> {
-			for (final LinkedDictionaryConditionChecker checker : checkers) {
-				builder.put(checker.getType(), checker);
-			}
-		});
-		this.conditions = builder.build();
+		this.conditions = conditionCheckers
+				.map(checkers -> checkers.stream()
+						.collect(Collectors.toMap(LinkedDictionaryConditionChecker::getType, checker -> checker)))
+				.orElse(Map.of());
+	}
+
+	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
+		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
+			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
+		}
+		return InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
+				.map(Field::getName).collect(Collectors.toSet());
 	}
 
 	@Override
-	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, boolean filterValues) {
+	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, DataResponseDTO dataDTO,
+			boolean filterValues) {
+		
+		final Set<String> requiredFields = getFields(bc, dataDTO, true);
 		final String serviceName = getServiceName(bc);
-		final Set<String> requiredFields = bcUtils.getBcFieldsForCurrentScreen(bc);
+		Map<String, List<DictionaryLnkRule>> rulesByField = linkedDictionaryCache.getRules(serviceName);
+		rulesByField.forEach((field, fieldRules) -> {
+			if (requiredFields.contains(field)) {
+				processRules(meta, bc, fieldRules, filterValues);
+			}
+		});
+	}
+
+	@Override
+	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, Set<String> requiredFields, boolean filterValues) {
+		fillRowMetaWithLinkedDictionaries(meta, bc, filterValues, requiredFields);
+	}
+
+	public void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, boolean filterValues,
+			Set<String> requiredFields) {
+		final String serviceName = getServiceName(bc);
 		Map<String, List<DictionaryLnkRule>> rulesByField = linkedDictionaryCache.getRules(serviceName);
 		rulesByField.forEach((field, fieldRules) -> {
 			if (requiredFields.contains(field)) {
@@ -100,8 +127,8 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 		// Разделение списка правил на 4 группы по значению полей 'Правило по-умолчанию' и 'Правило фильтра'
 		Map<Boolean, Map<Boolean, List<DictionaryLnkRule>>> ruleMap = rules.stream()
 				.collect(Collectors.partitioningBy(
-						DictionaryLnkRule::isDefaultRuleFlg,
-						Collectors.partitioningBy(DictionaryLnkRule::isFilterableField)
+						DictionaryLnkRule::getDefaultRuleFlg,
+						Collectors.partitioningBy(DictionaryLnkRule::getFilterableField)
 				));
 		// ruleMap.get(значение флага defaultRuleFlg).get(значение флага filterableField)
 		// возвращает список правил с учетом флагов defaultRuleFlg и filterableField
@@ -126,15 +153,15 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 		String serviceName = bc.<InnerBcDescription>getDescription().getServiceClass().getSimpleName();
 		List<DictionaryLnkRule> rules = linkedDictionaryCache.getRules(serviceName)
 				.getOrDefault(field.getName(), Collections.emptyList())
-				.stream().filter(rule -> filterValues == rule.isFilterableField())
+				.stream().filter(rule -> filterValues == rule.getFilterableField())
 				.collect(Collectors.toList());
 		Set<LOV> result = new HashSet<>();
 		long ruleMatchCount = rules.stream()
-				.filter(rule -> !rule.isDefaultRuleFlg() && processRule(rule, result, bc))
+				.filter(rule -> !rule.getDefaultRuleFlg() && processRule(rule, result, bc))
 				.count();
 		if (ruleMatchCount < 1) {
 			rules.stream()
-					.filter(DictionaryLnkRule::isDefaultRuleFlg)
+					.filter(DictionaryLnkRule::getDefaultRuleFlg)
 					.findFirst()
 					.ifPresent(rule -> processRule(rule, result, bc));
 		}
@@ -157,7 +184,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 
 		String type = rules.get(0).getType();
 		String field = rules.get(0).getField();
-		boolean isFilterableField = rules.get(0).isFilterableField();
+		boolean isFilterableField = rules.get(0).getFilterableField();
 
 		boolean anyApplied = false;
 		Set<LOV> allLovs = new HashSet<>();
@@ -195,7 +222,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 			return false;
 		}
 
-		if (rule.isAllValues()) {
+		if (rule.getAllValues()) {
 			dictionaryCache.getAll(rule.getType()).stream()
 					.map(SimpleDictionary::getKey)
 					.map(LOV::new).forEach(lovs::add);
@@ -222,7 +249,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 				return false;
 			}
 			boolean result = conditionChecker.check(conditionChecker.prepare(ruleCondition, bc), ruleCondition);
-			if (ruleCondition.isRuleInversionFlg()) {
+			if (ruleCondition.getRuleInversionFlg()) {
 				result = !result;
 			}
 			return result;
@@ -259,7 +286,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 
 		@CacheEvict(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, value = CacheConfig.LINKED_DICTIONARY_RULES, allEntries = true)
 		public void evictRules() {
-
+			//add custom eviction policy on project level
 		}
 
 	}

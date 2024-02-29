@@ -16,6 +16,7 @@
 
 package org.cxbox.core.crudma.ext.impl;
 
+import java.util.EnumSet;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
@@ -48,7 +49,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.google.common.collect.Sets.immutableEnumSet;
 import static org.cxbox.core.crudma.CrudmaActionType.*;
 import static org.cxbox.core.dto.DrillDownType.INNER;
 import static org.cxbox.core.dto.rowmeta.PostAction.BasePostActionType.DRILL_DOWN;
@@ -203,7 +203,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 				responseService.createEntity(bc);
 			}
 			// эти действия сами вызывают update
-			if (state.getDto() != null && !immutableEnumSet(UPDATE, PREVIEW, INVOKE).contains(action)) {
+			if (state.getDto() != null && !EnumSet.of(UPDATE, PREVIEW, INVOKE).contains(action)) {
 				responseService.updateEntity(bc, state.getDto());
 			}
 		}

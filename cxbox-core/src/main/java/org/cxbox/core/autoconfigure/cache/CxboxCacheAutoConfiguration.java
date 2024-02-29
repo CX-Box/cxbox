@@ -16,18 +16,18 @@
 
 package org.cxbox.core.autoconfigure.cache;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Optional;
 import org.cxbox.core.autoconfigure.AutoConfiguration;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.config.cache.CacheManagerBasedCacheResolver;
 import org.cxbox.core.config.cache.CxboxCaches;
 import org.cxbox.core.config.cache.CxboxRequestAwareCacheHolder;
-import org.cxbox.core.metahotreload.MetaHotReloadService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.api.MetaHotReloadService;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
@@ -47,6 +47,7 @@ import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestContextHolder;
 
@@ -75,8 +76,9 @@ public class CxboxCacheAutoConfiguration {
 	private final CacheProperties cacheProperties;
 
 	@Bean
-	public CacheResolver cxboxCacheResolver(MetaHotReloadService metaHotReloadService) {
-		metaHotReloadService.loadMeta();
+	@Lazy(value = false)
+	public CacheResolver cxboxCacheResolver(Optional<MetaHotReloadService> metaHotReloadService) {
+		metaHotReloadService.ifPresent(MetaHotReloadService::loadMeta);
 		if (CacheType.NONE.equals(cacheProperties.getType())) {
 			return new CacheManagerBasedCacheResolver(new NoOpCacheManager());
 		}
@@ -108,7 +110,7 @@ public class CxboxCacheAutoConfiguration {
 	protected CacheManager buildRequestAwareCacheManager(String cacheName) {
 		SimpleCacheManager simpleCacheManager = new SimpleCacheManager();
 		simpleCacheManager.setCaches(
-				ImmutableList.of(new RequestAwareCacheDecorator(cacheName))
+				List.of(new RequestAwareCacheDecorator(cacheName))
 		);
 		simpleCacheManager.initializeCaches();
 		return simpleCacheManager;

@@ -18,12 +18,12 @@ package org.cxbox.sqlbc.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.cxbox.core.ui.model.json.FilterType;
-import org.cxbox.core.ui.model.json.field.FieldMeta;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.meta.ui.model.json.field.FieldMeta;
+import org.springframework.context.annotation.FilterType;
 
 @Getter
 @Setter

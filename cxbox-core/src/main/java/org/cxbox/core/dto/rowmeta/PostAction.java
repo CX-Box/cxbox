@@ -18,7 +18,7 @@ package org.cxbox.core.dto.rowmeta;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import org.cxbox.core.crudma.bc.BcIdentifier;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.dto.MessageType;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
 import java.util.HashMap;

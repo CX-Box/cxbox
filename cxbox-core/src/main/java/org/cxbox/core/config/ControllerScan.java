@@ -16,7 +16,6 @@
 
 package org.cxbox.core.config;
 
-import org.cxbox.api.util.spring.ServiceBasedComponentExcludeFilter;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -36,9 +35,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 @ComponentScan(
 		includeFilters = {
 				@Filter(value = {Controller.class, ControllerAdvice.class}, type = FilterType.ANNOTATION),
-		},
-		excludeFilters = {
-				@Filter(value = ServiceBasedComponentExcludeFilter.class, type = FilterType.CUSTOM),
 		}
 )
 public @interface ControllerScan {

@@ -24,6 +24,7 @@ import org.cxbox.core.dto.LovUtils;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService;
 import org.cxbox.source.dto.DictionaryLnkRuleDto;
@@ -33,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.reflections.ReflectionUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -89,7 +89,7 @@ public class DictionaryLnkRuleFieldMetaBuilder extends FieldMetaBuilder<Dictiona
 			return Collections.emptyList();
 		}
 		try {
-			return ReflectionUtils.getFields(ReflectionUtils.forName(dtoClassName)).stream()
+			return InstrumentationAwareReflectionUtils.getFields(InstrumentationAwareReflectionUtils.forName(dtoClassName)).stream()
 					.filter(field -> isSqlService ? field.getName().contains("edit_lov")
 							: LovUtils.getType(field) != null)
 					.map(Field::getName)

@@ -17,7 +17,7 @@
 package org.cxbox.core.crudma.bc.impl;
 
 import org.cxbox.core.crudma.Crudma;
-import org.cxbox.core.crudma.bc.BcIdentifier;
+import org.cxbox.api.data.BcIdentifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;

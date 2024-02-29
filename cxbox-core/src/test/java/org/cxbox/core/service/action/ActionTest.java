@@ -16,8 +16,8 @@
 
 package org.cxbox.core.service.action;
 
+import java.util.Map;
 import org.cxbox.core.test.util.TestResponseDto;
-import org.apache.commons.collections.map.SingletonMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +31,7 @@ class ActionTest {
 				.withoutIcon()
 				.add()
 				.associate()
-				.withCustomParameter(new SingletonMap("bcKey", "innerBcExample"))
+				.withCustomParameter(Map.of("bcKey", "innerBcExample"))
 				.withoutIcon()
 				.withoutAutoSaveBefore()
 				.add()

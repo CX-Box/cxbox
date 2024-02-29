@@ -21,7 +21,6 @@ import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.model.core.entity.Department;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.engine.LinkedDictionaryConditionChecker;
 import java.util.Objects;
@@ -30,7 +29,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service("UserDepartmentLinkedDictionaryConditionChecker")
-public class UserDepartmentLinkedDictionaryConditionChecker implements LinkedDictionaryConditionChecker<Department> {
+public class UserDepartmentLinkedDictionaryConditionChecker implements LinkedDictionaryConditionChecker<Long> {
 
 	@Autowired
 	private SessionService sessionService;
@@ -41,8 +40,8 @@ public class UserDepartmentLinkedDictionaryConditionChecker implements LinkedDic
 	}
 
 	@Override
-	public boolean check(Department object, DictionaryLnkRuleCond ruleCond) {
-		return Objects.equals(object, ruleCond.getDepartment());
+	public boolean check(Long object, DictionaryLnkRuleCond ruleCond) {
+		return Objects.equals(object, ruleCond.getDepartmentId());
 	}
 
 	@Override
@@ -55,8 +54,8 @@ public class UserDepartmentLinkedDictionaryConditionChecker implements LinkedDic
 			cacheNames = CacheConfig.REQUEST_CACHE,
 			keyGenerator = "conditionKeyGenerator"
 	)
-	public Department prepare(DictionaryLnkRuleCond ruleCond, BusinessComponent bc) {
-		return sessionService.getSessionUserDepartment();
+	public Long prepare(DictionaryLnkRuleCond ruleCond, BusinessComponent bc) {
+		return sessionService.getSessionUserDepartmentId();
 	}
 
 }

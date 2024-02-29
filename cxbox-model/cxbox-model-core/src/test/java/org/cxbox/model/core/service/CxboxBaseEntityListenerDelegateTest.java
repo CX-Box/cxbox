@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 import org.cxbox.model.core.api.CurrentUserAware;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -30,16 +29,13 @@ import org.mockito.MockitoAnnotations;
 class CxboxBaseEntityListenerDelegateTest {
 
 	@Mock
-	CurrentUserAware<User> currentUserAware;
+	CurrentUserAware<Long> currentUserAware;
 
 	@InjectMocks
 	CxboxBaseEntityListenerDelegate cxboxBaseEntityListenerDelegate;
 
 	@Mock
 	BaseEntity baseEntity;
-
-	@Mock
-	User user;
 
 	@BeforeEach
 	void setUp() {
@@ -53,14 +49,14 @@ class CxboxBaseEntityListenerDelegateTest {
 
 	@Test
 	void testBaseEntityOnCreate() {
-		when(currentUserAware.getCurrentUser()).thenReturn(user);
+		when(currentUserAware.getCurrentUser()).thenReturn(1L);
 
 		cxboxBaseEntityListenerDelegate.baseEntityOnCreate(baseEntity);
 	}
 
 	@Test
 	void testBaseEntityOnUpdate() {
-		when(currentUserAware.getCurrentUser()).thenReturn(user);
+		when(currentUserAware.getCurrentUser()).thenReturn(1L);
 
 		cxboxBaseEntityListenerDelegate.baseEntityOnUpdate(baseEntity);
 	}
