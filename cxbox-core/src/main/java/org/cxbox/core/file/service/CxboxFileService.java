@@ -17,7 +17,7 @@
 package org.cxbox.core.file.service;
 
 import org.cxbox.core.file.dto.FileDownloadDto;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.springframework.web.multipart.MultipartFile;

@@ -42,6 +42,8 @@ public class CxboxUserDetails implements CxboxUserDetailsInterface {
 
 	private Long id;
 
+	private Long departmentId;
+
 	private String username;
 
 	private String password;

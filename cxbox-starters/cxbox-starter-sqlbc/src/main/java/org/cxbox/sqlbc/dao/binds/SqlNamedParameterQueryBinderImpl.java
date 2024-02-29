@@ -16,7 +16,6 @@
 
 package org.cxbox.sqlbc.dao.binds;
 
-import com.google.common.collect.ImmutableMap;
 import org.cxbox.api.config.CxboxBeanProperties;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,10 +34,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SqlNamedParameterQueryBinderImpl implements SqlNamedParameterQueryBinder {
 
-	private final Map<Class, String> escapeTypes = ImmutableMap.<Class, String>builder()
-			.put(Timestamp.class, "{ts '%s'}")
-			.put(String.class, "'%s'")
-			.build();
+	private final Map<Class, String> escapeTypes = Map.of(
+			Timestamp.class, "{ts '%s'}",
+			String.class, "'%s'");
 	private final DataSource dataSource;
 
 	public SqlNamedParameterQueryBinderImpl(ApplicationContext applicationContext, CxboxBeanProperties cxboxBeanProperties) {

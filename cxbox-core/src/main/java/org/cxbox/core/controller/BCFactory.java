@@ -21,13 +21,12 @@ import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.BcHierarchy;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -39,7 +38,7 @@ public class BCFactory {
 
 	private final APIProperties apiProperties;
 
-	private final Set<String> operations = ImmutableSet.of(
+	private final Set<String> operations = Set.of(
 			"data", "count", "custom-action", "associate", "row-meta-new", "row-meta-empty", "row-meta"
 	);
 

@@ -40,6 +40,12 @@ public class CxboxCachingService {
 
 	}
 
+	//TODO!!!!
+	/*@CacheEvict(cacheNames = USER_CACHE, key = "userId")
+	public void evictUserCache(String userId) {
+
+	}*/
+
 	@CacheEvict(cacheNames = REQUEST_CACHE, allEntries = true)
 	public void evictRequestCache() {
 

@@ -24,7 +24,7 @@ import org.cxbox.api.util.Invoker;
 import org.cxbox.core.crudma.bc.RefreshableBcSupplier;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.ui.entity.Bc;
+import org.cxbox.meta.entity.Bc;
 
 import java.util.ArrayList;
 import java.util.List;

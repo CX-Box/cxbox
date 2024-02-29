@@ -18,11 +18,7 @@ package org.cxbox.core.config;
 
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.file.conf.CxboxFileConfiguration;
-import org.cxbox.core.metahotreload.conf.MetaHotReloadConfiguration;
-import org.cxbox.core.service.ResponsibilitiesService;
-import org.cxbox.core.service.impl.ResponsibilitiesServiceImpl;
 import org.cxbox.model.core.api.CurrentUserAware;
-import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.core.service.BaseEntityListenerDelegate;
 import org.cxbox.model.core.service.CxboxBaseEntityListenerDelegate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,17 +33,10 @@ import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 @BeanScan({"org.cxbox"})
 @EnableSpringConfigured
 @Import({
-		MetaHotReloadConfiguration.class,
 		CxboxFileConfiguration.class
 })
 @EnableConfigurationProperties(CxboxBeanProperties.class)
 public class CoreApplicationConfig {
-
-	@Bean
-	@ConditionalOnMissingBean
-	public ResponsibilitiesService responsibilitiesService(JpaDao jpaDao) {
-		return new ResponsibilitiesServiceImpl(jpaDao);
-	}
 
 	@Bean
 	@ConditionalOnMissingBean

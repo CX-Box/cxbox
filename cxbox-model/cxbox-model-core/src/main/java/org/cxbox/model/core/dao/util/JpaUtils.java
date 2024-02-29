@@ -21,24 +21,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.ParameterMode;
-import javax.persistence.Query;
-import javax.persistence.StoredProcedureQuery;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.Query;
+import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.metamodel.SingularAttribute;
 import lombok.experimental.UtilityClass;
 import org.hibernate.Hibernate;
 
 @UtilityClass
 public final class JpaUtils {
 
-	public <T> T getSingleResult(final TypedQuery<T> typedQuery) {
+	public static <T> T getSingleResult(final TypedQuery<T> typedQuery) {
 		final List<T> resultList = typedQuery.getResultList();
 		if (resultList.isEmpty()) {
 			throw new NoResultException();
@@ -49,7 +49,7 @@ public final class JpaUtils {
 		throw new NonUniqueResultException("result returns more than one elements");
 	}
 
-	public <T> T getSingleResultOrNull(final TypedQuery<T> typedQuery) {
+	public static <T> T getSingleResultOrNull(final TypedQuery<T> typedQuery) {
 		final List<T> resultList = typedQuery.getResultList();
 		if (resultList.isEmpty()) {
 			return null;
@@ -60,7 +60,7 @@ public final class JpaUtils {
 		throw new NonUniqueResultException("result returns more than one elements");
 	}
 
-	public <T> T getFirstResultOrNull(final TypedQuery<T> typedQuery) {
+	public static <T> T getFirstResultOrNull(final TypedQuery<T> typedQuery) {
 		final List<T> resultList = typedQuery.getResultList();
 		if (resultList.isEmpty()) {
 			return null;
@@ -68,19 +68,19 @@ public final class JpaUtils {
 		return resultList.get(0);
 	}
 
-	public void executeNativeQuery(final EntityManager entityManager, final String sql, final Object... params) {
+	public static void executeNativeQuery(final EntityManager entityManager, final String sql, final Object... params) {
 		final Query query = entityManager.createNativeQuery(sql);
 		bindParameters(query, params);
 		query.executeUpdate();
 	}
 
-	public <T> List<T> selectNativeQuery(final EntityManager entityManager, final String sql, final Object... params) {
+	public static <T> List<T> selectNativeQuery(final EntityManager entityManager, final String sql, final Object... params) {
 		final Query query = entityManager.createNativeQuery(sql);
 		bindParameters(query, params);
 		return query.getResultList();
 	}
 
-	public <T> List<T> selectNativeQuery(final EntityManager entityManager, Class<T> resultClass, final String sql,
+	public static <T> List<T> selectNativeQuery(final EntityManager entityManager, Class<T> resultClass, final String sql,
 			final Object... params) {
 		final Query query = entityManager.createNativeQuery(sql, resultClass);
 		bindParameters(query, params);
@@ -94,7 +94,7 @@ public final class JpaUtils {
 	 * @param output output parameter names
 	 * @return output parameters with their values
 	 */
-	public Map<String, Object> executeStoredProcedure(final EntityManager entityManager, final String procedureName,
+	public static Map<String, Object> executeStoredProcedure(final EntityManager entityManager, final String procedureName,
 			final Map<Integer, Object> input, final List<String> output) {
 		final StoredProcedureQuery query = entityManager.createStoredProcedureQuery(procedureName);
 		input.forEach((key, value) -> {
@@ -108,13 +108,13 @@ public final class JpaUtils {
 		return result;
 	}
 
-	private void bindParameters(Query query, Object[] params) {
+	private static void bindParameters(Query query, Object[] params) {
 		for (int i = 0; i < params.length; i++) {
 			query.setParameter(i + 1, params[i]);
 		}
 	}
 
-	public <X, Z, Y> Join<X, Z> addJoin(From<Y, X> from, SingularAttribute<X, Z> attribute, JoinType joinType) {
+	public static <X, Z, Y> Join<X, Z> addJoin(From<Y, X> from, SingularAttribute<X, Z> attribute, JoinType joinType) {
 		Set<Join<X, ?>> joins = from.getJoins();
 		Join existedJoin = joins.stream().filter(join -> join.getAttribute().equals(attribute)).findFirst().orElse(null);
 		if (existedJoin == null) {
@@ -124,7 +124,7 @@ public final class JpaUtils {
 		}
 	}
 
-	public Class unproxiedClass(BaseEntity proxy) {
+	public static Class unproxiedClass(BaseEntity proxy) {
 		return Hibernate.getClass(proxy);
 	}
 

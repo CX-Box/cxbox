@@ -18,7 +18,6 @@ package org.cxbox.core.util.session;
 
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.CoreSessionService;
-import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -84,40 +83,12 @@ public class CoreSessionServiceImpl implements CoreSessionService {
 	}
 
 	@Override
-	public ZoneId getZoneId(ZoneId defaultValue) {
-		return Optional.ofNullable(getSessionUserDetails(false))
-				.map(CxboxUserDetailsInterface::getTimezone)
-				.map(LOV::getKey)
-				.map(StringUtils::parseTimeZoneString)
-				.map(TimeZone::toZoneId)
-				.orElse(defaultValue);
-	}
-
-	@Override
 	public Locale getLocale(Locale defaultValue) {
 		return Optional.ofNullable(getSessionUserDetails(false))
 				.map(CxboxUserDetailsInterface::getLocaleCd)
 				.map(LOV::getKey)
 				.map(StringUtils::parseLocaleString)
 				.orElse(defaultValue);
-	}
-
-	@Override
-	public Long getSessionUserId() {
-		CxboxUserDetailsInterface sessionUser = getSessionUserDetails(false);
-		if (sessionUser == null) {
-			return -1L;
-		}
-		return sessionUser.getId();
-	}
-
-	@Override
-	public String getSessionUserName() {
-		CxboxUserDetailsInterface sessionUser = getSessionUserDetails(false);
-		if (sessionUser == null) {
-			return "<unknown>";
-		}
-		return sessionUser.getUsername();
 	}
 
 }

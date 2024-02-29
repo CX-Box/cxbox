@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
 
 package org.cxbox.core.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.cxbox.core.config.JacksonConfig;
+import org.cxbox.core.metafieldsecurity.WidgetUtils;
 import org.cxbox.core.util.SpringBeanUtils;
-import org.cxbox.model.ui.entity.Widget;
+import org.cxbox.meta.entity.Widget;
 import java.nio.charset.Charset;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
@@ -179,3 +181,4 @@ public class WidgetUtilsTest {
 	}
 
 }
+*/

@@ -16,10 +16,10 @@
 
 package org.cxbox.core.util.session;
 
-import org.cxbox.model.core.entity.User;
 
+import org.cxbox.api.service.session.IUser;
 
-public interface UserExternalService<T extends SessionUser> {
+public interface UserExternalService<T extends IUser<Long>> {
 
 	T getSessionUser();
 
@@ -30,7 +30,7 @@ public interface UserExternalService<T extends SessionUser> {
 	 * @param role role
 	 * @return User
 	 */
-	User upsert(T sessionUser, String role);
+	<E> IUser<E> upsert(T sessionUser, String role);
 
 
 }

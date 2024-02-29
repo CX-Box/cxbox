@@ -16,19 +16,20 @@
 
 package org.cxbox.model.dictionary.entity;
 
+import jakarta.persistence.Convert;
 import org.cxbox.model.core.api.Translatable;
 import org.cxbox.model.core.entity.BaseEntity;
 import java.io.Serializable;
 import java.util.Map;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -56,6 +57,7 @@ public class DictionaryItem extends BaseEntity implements Translatable<Dictionar
 	private String key;
 
 	@Column
+	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private boolean active;
 
 	@Column
@@ -65,7 +67,8 @@ public class DictionaryItem extends BaseEntity implements Translatable<Dictionar
 	private String description;
 
 	@Column(name = "ADDITION_FLG")
-	private boolean additionFlg;
+	@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private Boolean additionFlg;
 
 	@ManyToOne
 	@JoinColumn(name = "DICTIONARY_TYPE_ID", nullable = false)

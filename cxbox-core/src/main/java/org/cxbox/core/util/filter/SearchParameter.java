@@ -34,9 +34,9 @@ public @interface SearchParameter {
 
 	/**
 	 * A path to the field on a JPA entity on which filtering will be performed.
-	 * For collections annotated with {@link javax.persistence.ElementCollection ElementCollection}
+	 * For collections annotated with {@link jakarta.persistence.ElementCollection ElementCollection}
 	 * provide a path to the collection field itself.
-	 * For collections annotated with {@link javax.persistence.OneToMany OneToMany}
+	 * For collections annotated with {@link jakarta.persistence.OneToMany OneToMany}
 	 * provide a path to the association entity field.
 	 *
 	 * @return Dot notation path e.g. entityField.associationField.

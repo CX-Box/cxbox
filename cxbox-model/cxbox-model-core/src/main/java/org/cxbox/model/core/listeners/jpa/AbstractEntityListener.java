@@ -18,8 +18,8 @@ package org.cxbox.model.core.listeners.jpa;
 
 import org.cxbox.model.core.entity.AbstractEntity;
 import java.io.Serializable;
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 
 
 public class AbstractEntityListener implements Serializable {

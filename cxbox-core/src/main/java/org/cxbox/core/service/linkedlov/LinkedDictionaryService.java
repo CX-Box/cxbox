@@ -17,6 +17,7 @@
 package org.cxbox.core.service.linkedlov;
 
 import org.cxbox.api.data.dictionary.LOV;
+import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.EngineFieldsMeta;
@@ -25,7 +26,11 @@ import java.util.Set;
 
 public interface LinkedDictionaryService {
 
-	void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, boolean filterValues);
+	void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, DataResponseDTO dataDTO,
+			boolean filterValues);
+
+	void fillRowMetaWithLinkedDictionaries(EngineFieldsMeta<?> meta, BusinessComponent bc, Set<String> requiredFields,
+			boolean filterValues);
 
 	Set<LOV> getDictionariesForField(DtoField field, BusinessComponent bc, boolean filterValues);
 

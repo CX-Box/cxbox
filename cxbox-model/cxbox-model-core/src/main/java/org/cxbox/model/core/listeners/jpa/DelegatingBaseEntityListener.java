@@ -19,9 +19,9 @@ package org.cxbox.model.core.listeners.jpa;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.service.BaseEntityListenerDelegate;
 import java.io.Serializable;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

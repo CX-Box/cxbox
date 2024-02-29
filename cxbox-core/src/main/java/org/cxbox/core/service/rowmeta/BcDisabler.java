@@ -17,7 +17,7 @@
 package org.cxbox.core.service.rowmeta;
 
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
-import org.cxbox.core.crudma.bc.BcIdentifier;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import java.util.Collection;
 import java.util.Iterator;

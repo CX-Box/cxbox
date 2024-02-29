@@ -17,7 +17,7 @@
 package org.cxbox.core.service;
 
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
 
 
 public interface ValidatorsProvider {

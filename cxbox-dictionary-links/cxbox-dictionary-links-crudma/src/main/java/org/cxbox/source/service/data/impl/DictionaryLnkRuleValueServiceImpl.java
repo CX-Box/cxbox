@@ -16,6 +16,9 @@
 
 package org.cxbox.source.service.data.impl;
 
+import java.util.Collections;
+import java.util.List;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -25,12 +28,12 @@ import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue;
+import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue_;
+import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule_;
 import org.cxbox.source.dto.DictionaryLnkRuleValueDto;
 import org.cxbox.source.service.data.DictionaryLnkRuleValueService;
 import org.cxbox.source.service.meta.DictionaryLnkRuleValueFieldMetaBuilder;
-import org.cxbox.source.service.specification.DictionaryLnkRuleValueLinkSpecifications;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,7 +48,15 @@ public class DictionaryLnkRuleValueServiceImpl extends
 				null,
 				DictionaryLnkRuleValueFieldMetaBuilder.class
 		);
-		this.linkSpecificationHolder = DictionaryLnkRuleValueLinkSpecifications.class;
+	}
+
+	@Override
+	protected Specification<DictionaryLnkRuleValue> getSpecification(BusinessComponent bc) {
+		return (root, cq, cb) ->
+				cb.equal(
+						root.get(DictionaryLnkRuleValue_.dictionaryLnkRule).get(DictionaryLnkRule_.id),
+						NumberUtils.createLong(bc.getParentId())
+				);
 	}
 
 	@Override

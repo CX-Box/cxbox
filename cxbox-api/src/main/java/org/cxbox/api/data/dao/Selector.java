@@ -16,9 +16,9 @@
 
 package org.cxbox.api.data.dao;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
 
 @FunctionalInterface
 public interface Selector<R, T> {

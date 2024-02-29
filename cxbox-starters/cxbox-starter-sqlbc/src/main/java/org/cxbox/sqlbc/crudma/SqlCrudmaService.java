@@ -17,6 +17,20 @@
 package org.cxbox.sqlbc.crudma;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.NoResultException;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
@@ -25,11 +39,6 @@ import org.cxbox.core.controller.param.DateStep;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
-import org.cxbox.core.util.DateTimeUtil;
-import org.cxbox.sqlbc.dao.SqlBcQuery;
-import org.cxbox.sqlbc.dao.binds.SqlNamedParameterQueryBinder;
-import org.cxbox.sqlbc.dao.SqlComponentDao;
-import org.cxbox.sqlbc.dto.SqlBcEditFieldDTO;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.EngineFieldsMeta;
@@ -42,25 +51,16 @@ import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.action.ActionsBuilder;
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
-import org.cxbox.core.ui.BcUtils;
+import org.cxbox.core.util.DateTimeUtil;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.sqlbc.dao.SqlBcQuery;
+import org.cxbox.sqlbc.dao.SqlComponentDao;
+import org.cxbox.sqlbc.dao.binds.SqlNamedParameterQueryBinder;
+import org.cxbox.sqlbc.dto.SqlBcEditFieldDTO;
 import org.cxbox.sqlbc.dto.SqlBcEditFieldDTO_;
 import org.cxbox.sqlbc.entity.SqlBcEditField;
 import org.cxbox.sqlbc.entity.SqlBcEditField_;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.persistence.NoResultException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.stereotype.Service;
@@ -82,7 +82,7 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 
 	private final Optional<LinkedDictionaryService> linkedDictionaryService;
 
-	private final BcUtils bcUtils;
+	private final Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	private final SessionService sessionService;
 
@@ -261,11 +261,13 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 		return metaDTO;
 	}
 
+
 	@Override
 	public SQLMetaDTO getMeta(BusinessComponent bc) {
-		final Set<String> fieldsForCurrentScreen = bcUtils.getBcFieldsForCurrentScreen(bc);
+		final Set<String> fieldsForCurrentScreen = extendedDtoFieldLevelSecurityService.map(s -> s.getBcFieldsForCurrentScreen(
+				bc)).orElse(null);
 		final List<FieldDTO> fields = ((SqlBcDescription) bc.getDescription()).getFields().stream()
-				.filter(field -> fieldsForCurrentScreen.contains(field.getFieldName()))
+				.filter(field -> fieldsForCurrentScreen != null && fieldsForCurrentScreen.contains(field.getFieldName()))
 				.map(field -> (field.getEditable() && isActionSaveAvailable(bc))
 						? FieldDTO.enabledField(field.getFieldName())
 						: FieldDTO.disabledFilterableField(field.getFieldName())
@@ -274,7 +276,12 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 		EngineFieldsMeta meta = new EngineFieldsMeta(objectMapper);
 		fields.forEach(meta::add);
 		linkedDictionaryService.ifPresent(
-				linkedDictSrvc -> linkedDictSrvc.fillRowMetaWithLinkedDictionaries(meta, bc, false)
+				linkedDictSrvc -> linkedDictSrvc.fillRowMetaWithLinkedDictionaries(meta, bc,
+						fields.stream()
+								.map(FieldDTO::getKey)
+								.collect(Collectors.toSet()),
+						false
+				)
 		);
 		return buildMeta(bc, fields, getActions().toDto(bc));
 	}

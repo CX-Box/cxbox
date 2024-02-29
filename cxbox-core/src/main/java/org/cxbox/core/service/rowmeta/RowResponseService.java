@@ -17,9 +17,10 @@
 package org.cxbox.core.service.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
-import org.cxbox.core.crudma.bc.BcIdentifier;
+import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
@@ -28,7 +29,6 @@ import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.RowMetaDTO;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
-import org.cxbox.core.ui.BcUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,9 +40,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,7 @@ public class RowResponseService {
 
 	private final LinkedDictionaryService linkedDictionaryService;
 
-	private final BcUtils bcUtils;
+	private final Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	private final Map<String, List<BcDisabler>> bcDisablers;
 
@@ -67,10 +67,11 @@ public class RowResponseService {
 	public RowResponseService(ApplicationContext ctx,
 			Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
-			BcUtils bcUtils, ObjectMapper objectMapper) {
+			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
+			ObjectMapper objectMapper) {
 		this.ctx = ctx;
 		this.linkedDictionaryService = linkedDictionaryService.orElse(null);
-		this.bcUtils = bcUtils;
+		this.extendedDtoFieldLevelSecurityService = extendedDtoFieldLevelSecurityService;
 		this.bcDisablers = new HashMap<>();
 		this.objectMapper = objectMapper;
 		bcDisablers.ifPresent(disablers -> {
@@ -101,7 +102,7 @@ public class RowResponseService {
 			Class<? extends FieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (linkedDictionaryService != null) {
-			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, type == RowMetaType.META_EMPTY);
+			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
 		}
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			FieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
@@ -147,8 +148,8 @@ public class RowResponseService {
 	}
 
 	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
-		if (visibleOnly) {
-			return bcUtils.getBcFieldsForCurrentScreen(bc);
+		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
+			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
 		}
 		return InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
 				.map(Field::getName).collect(Collectors.toSet());

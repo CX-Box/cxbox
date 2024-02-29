@@ -18,6 +18,7 @@ package org.cxbox.source.service.data.impl;
 
 import static org.cxbox.api.data.dictionary.CoreDictionaries.DictionaryTermType.DICTIONARY_FIELD;
 
+import lombok.SneakyThrows;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.DictionaryType;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -28,13 +29,11 @@ import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.Department;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto;
 import org.cxbox.source.dto.DictionaryLnkRuleCondDto_;
-import javax.persistence.metamodel.SingularAttribute;
-import org.reflections.ReflectionUtils;
+import jakarta.persistence.metamodel.SingularAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +65,7 @@ public abstract class BaseDictionaryLnkRuleCondServiceImpl<D extends DictionaryL
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.type)) {
 				entity.setType(DictionaryType.DICTIONARY_TERM_TYPE.lookupName(data.getType()));
 				entity.setFieldName(null);
-				entity.setDepartment(null);
+				entity.setDepartmentId(null);
 				entity.setFieldTextValue(null);
 				entity.setBcName(null);
 				entity.setFieldDictValue(null);
@@ -79,11 +78,12 @@ public abstract class BaseDictionaryLnkRuleCondServiceImpl<D extends DictionaryL
 	}
 
 
+	@SneakyThrows
 	protected ActionResultDTO<D> doUpdateEntity(E entity, D data, boolean isSqlService, BusinessComponent bc) {
 		if (data.hasChangedFields()) {
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.fieldName)) {
 				entity.setFieldName(data.getFieldName());
-				Class<?> dtoClass = ReflectionUtils.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
+				Class<?> dtoClass = Class.forName(entity.getDictionaryLnkRule().getService().getDtoClass());
 				if (DICTIONARY_FIELD.equals(entity.getType()) && !isSqlService) {
 					entity.setFieldType(DTOUtils.getDictionaryType(dtoClass, data.getFieldName()));
 				}
@@ -92,8 +92,7 @@ public abstract class BaseDictionaryLnkRuleCondServiceImpl<D extends DictionaryL
 				entity.setBcName(data.getBcName());
 			}
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.departmentId)) {
-				entity.setDepartment(data.getDepartmentId() == null ? null
-						: baseDAO.findById(Department.class, Long.valueOf(data.getDepartmentId())));
+				entity.setDepartmentId(Long.valueOf(data.getDepartmentId()));
 			}
 			if (data.isFieldChanged(DictionaryLnkRuleCondDto_.fieldTextValue)) {
 				entity.setFieldTextValue(data.getFieldTextValue());

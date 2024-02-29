@@ -17,8 +17,8 @@
 package org.cxbox.model.core.converter;
 
 import org.cxbox.api.data.dictionary.LOV;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class LOVConverter implements AttributeConverter<LOV, String> {

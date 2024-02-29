@@ -57,7 +57,7 @@ public class DictionaryItemDTO extends DataResponseDTO {
 		this.type = dictionaryItem.getType();
 		this.displayOrder = dictionaryItem.getDisplayOrder();
 		this.description = dictionaryItem.getDescription();
-		this.additionFlg = dictionaryItem.isAdditionFlg();
+		this.additionFlg = dictionaryItem.getAdditionFlg();
 	}
 
 }

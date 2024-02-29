@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.collections4.CollectionUtils;
 
 
 @ToString
@@ -48,7 +47,7 @@ public class BaseParameterHolder<T extends QueryParameter> implements ParameterH
 
 	@Override
 	public final boolean isEmpty() {
-		return CollectionUtils.isEmpty(parameters);
+		return parameters == null || parameters.isEmpty();
 	}
 
 }

@@ -16,17 +16,14 @@
 
 package org.cxbox.core.dao.hbn;
 
-import org.cxbox.api.util.ServiceUtils;
-import org.cxbox.core.util.tx.ITransactionProvider;
-import javax.transaction.TransactionManager;
-import javax.transaction.UserTransaction;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.UserTransaction;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.engine.transaction.jta.platform.internal.AbstractJtaPlatform;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
-//TODO>>iborisenko>>ITransactionProvider has 0 implementations. Can we delete this?
 @RequiredArgsConstructor
 @Component
 public class ConfiguredJtaPlatform extends AbstractJtaPlatform {
@@ -35,20 +32,12 @@ public class ConfiguredJtaPlatform extends AbstractJtaPlatform {
 
 	@Override
 	protected TransactionManager locateTransactionManager() {
-		ITransactionProvider provider = ServiceUtils.getService(ITransactionProvider.class, this);
-		if (provider != null) {
-			return provider.locateTransactionManager();
-		}
 		JtaTransactionManager transactionManager = applicationContext.getBean(JtaTransactionManager.class);
 		return transactionManager.getTransactionManager();
 	}
 
 	@Override
 	protected UserTransaction locateUserTransaction() {
-		ITransactionProvider provider = ServiceUtils.getService(ITransactionProvider.class, this);
-		if (provider != null) {
-			return provider.locateUserTransaction();
-		}
 		JtaTransactionManager transactionManager = applicationContext.getBean(JtaTransactionManager.class);
 		return transactionManager.getUserTransaction();
 	}

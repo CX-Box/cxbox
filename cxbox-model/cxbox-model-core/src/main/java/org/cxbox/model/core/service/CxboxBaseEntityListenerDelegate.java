@@ -18,14 +18,13 @@ package org.cxbox.model.core.service;
 
 import org.cxbox.model.core.api.CurrentUserAware;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.User;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class CxboxBaseEntityListenerDelegate implements BaseEntityListenerDelegate {
 
-	private final CurrentUserAware<User> currentUserAware;
+	private final CurrentUserAware<Long> currentUserAware;
 
 	@Override
 	public void baseEntityOnLoad(BaseEntity baseEntity) {
@@ -38,7 +37,7 @@ public class CxboxBaseEntityListenerDelegate implements BaseEntityListenerDelega
 		baseEntity.setUpdatedDate(LocalDateTime.now());
 		Long currentUser = baseEntity.getCreatedBy();
 		if (currentUser == null) {
-			currentUser = currentUserAware.getCurrentUser().getId();
+			currentUser = currentUserAware.getCurrentUser();
 		}
 		if (currentUser != null) {
 			baseEntity.setCreatedBy(currentUser);
@@ -48,7 +47,7 @@ public class CxboxBaseEntityListenerDelegate implements BaseEntityListenerDelega
 
 	@Override
 	public void baseEntityOnUpdate(BaseEntity baseEntity) {
-		Long currentUser = currentUserAware.getCurrentUser().getId();
+		Long currentUser = currentUserAware.getCurrentUser();
 		baseEntity.setUpdatedDate(LocalDateTime.now());
 		if (currentUser != null) {
 			baseEntity.setLastUpdBy(currentUser);

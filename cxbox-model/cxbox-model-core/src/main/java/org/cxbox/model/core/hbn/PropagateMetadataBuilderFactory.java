@@ -18,10 +18,10 @@ package org.cxbox.model.core.hbn;
 
 import org.hibernate.annotations.common.reflection.java.JavaReflectionManager;
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.model.internal.JPAXMLOverriddenMetadataProvider;
 import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.boot.spi.MetadataBuilderFactory;
 import org.hibernate.boot.spi.MetadataBuilderImplementor;
-import org.hibernate.cfg.annotations.reflection.JPAMetadataProvider;
 
 /**
  * Modifies the standard MetadataBuilderImplementor to use
@@ -34,7 +34,7 @@ public class PropagateMetadataBuilderFactory implements MetadataBuilderFactory {
 			MetadataBuilderImplementor defaultBuilder) {
 		BootstrapContext bootstrapContext = defaultBuilder.getBootstrapContext();
 		JavaReflectionManager reflectionManager = (JavaReflectionManager) bootstrapContext.getReflectionManager();
-		JPAMetadataProvider metadataProvider = (JPAMetadataProvider) reflectionManager.getMetadataProvider();
+		JPAXMLOverriddenMetadataProvider metadataProvider = (JPAXMLOverriddenMetadataProvider) reflectionManager.getMetadataProvider();
 		reflectionManager.setMetadataProvider(new PropagateMetadataProvider(bootstrapContext, metadataProvider));
 		return defaultBuilder;
 	}

@@ -19,18 +19,17 @@ package org.cxbox.source.dto;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 import static org.cxbox.api.data.dictionary.DictionaryType.DICTIONARY_TERM_TYPE;
 
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.core.dto.Lov;
-import org.cxbox.core.util.filter.SearchParameter;
-import org.cxbox.core.util.filter.provider.impl.LovValueProvider;
-import org.cxbox.model.core.entity.Department;
-import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cxbox.api.data.dictionary.LOV;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.core.dto.Lov;
+import org.cxbox.core.util.filter.SearchParameter;
+import org.cxbox.core.util.filter.provider.impl.LovValueProvider;
+import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleCond;
 
 @Getter
 @Setter
@@ -55,8 +54,6 @@ public class DictionaryLnkRuleCondDto extends DataResponseDTO {
 
 	private String fieldDictValue;
 
-	private String department;
-
 	private String departmentId;
 
 	private String bcName;
@@ -72,10 +69,8 @@ public class DictionaryLnkRuleCondDto extends DataResponseDTO {
 		this.fieldName = entity.getFieldName();
 		this.fieldNameText = entity.getFieldName();
 		this.bcName = entity.getBcName();
-		this.departmentId = Optional.of(entity).map(DictionaryLnkRuleCond::getDepartment)
-				.map(Department::getId).map(Object::toString).orElse(null);
-		this.department = Optional.of(entity).map(DictionaryLnkRuleCond::getDepartment)
-				.map(Department::getShortName).orElse(null);
+		this.departmentId = Optional.of(entity).map(DictionaryLnkRuleCond::getDepartmentId)
+				.map(Object::toString).orElse(null);
 		this.fieldTextValue = entity.getFieldTextValue();
 		this.fieldBooleanValue = entity.getFieldBooleanValue();
 		this.type = DICTIONARY_TERM_TYPE.lookupValue(entity.getType());
@@ -85,9 +80,9 @@ public class DictionaryLnkRuleCondDto extends DataResponseDTO {
 			this.fieldDictValue = dictionary().lookupValue(entity.getFieldDictValue(), entity.getFieldType());
 		}
 		if (entity.getDictionaryLnkRule() != null) {
-			defaultRuleFlg = entity.getDictionaryLnkRule().isDefaultRuleFlg();
+			defaultRuleFlg = entity.getDictionaryLnkRule().getDefaultRuleFlg();
 		}
-		this.ruleInversionFlg = entity.isRuleInversionFlg();
+		this.ruleInversionFlg = entity.getRuleInversionFlg();
 	}
 
 }
