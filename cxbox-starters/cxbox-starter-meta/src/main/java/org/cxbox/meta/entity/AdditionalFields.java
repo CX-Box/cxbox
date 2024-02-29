@@ -1,4 +1,4 @@
-/*
+package org.cxbox.meta.entity;/*
  * © OOO "SI IKS LAB", 2022-2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,27 +14,33 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.model.json.field.subtypes;
 
-import org.cxbox.meta.ui.field.CxboxWidgetField;
-import org.cxbox.meta.ui.model.json.field.FieldMeta.FieldMetaBase;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
+import org.cxbox.model.core.entity.BaseEntity;
 
+@Entity
 @Getter
 @Setter
-@CxboxWidgetField({
-		"date",
-		"checkbox",
-		"checkboxSql",
-		"monthYear",
-		"dateTimeWithSeconds",
-		"richText",
-		"combo-condition",
-		"dateTime",
-		"time",
-		"radio"
-})
-public class EmptyFieldMeta extends FieldMetaBase {
+@EqualsAndHashCode(callSuper = true)
+@Table(name = "ADDITIONAL_FIELDS")
+@Accessors(chain = true)
+public class AdditionalFields extends BaseEntity {
+
+	private String userId;
+
+	private String view;
+
+	private String widget;
+
+	private String orderFields;
+
+	private String addedToAdditionalFields;
+
+	private String removedFromAdditionalFields;
 
 }

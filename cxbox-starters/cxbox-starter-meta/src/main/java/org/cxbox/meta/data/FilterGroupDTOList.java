@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.service;
+package org.cxbox.meta.data;
 
-import java.util.Map;
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.api.service.session.IUser;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
+import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
-/**
- * Service that defines access rights to screens and views
- */
-public interface ResponsibilitiesService {
+@SuperBuilder
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class FilterGroupDTOList implements Serializable {
 
-	/**
-	 * @param user
-	 * @param userRole
-	 * @return View name, Readonly flg pairs
-	 */
-	Map<String, Boolean> getListRespByUser(IUser<Long> user, LOV userRole);
+	private List<FilterGroupDTO> filterGroups;
 
-	String getListScreensByUser(IUser<Long> user, LOV userRole);
 }

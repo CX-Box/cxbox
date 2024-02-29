@@ -14,34 +14,38 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.data;
+package org.cxbox.meta.additionalFields;
 
-import java.io.Serializable;
-import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.meta.entity.AdditionalFields;
 
-@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
-@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class FilterGroupDTO implements Serializable {
+public class AdditionalFieldsDTO extends DataResponseDTO {
 
-	private Boolean personal;
+	private String view;
 
-	private String id;
+	private String widget;
 
-	private String name;
+	private List<String> orderFields;
 
-	private String filters;
+	private List<String> addedToAdditionalFields;
 
-	private String bc;
+	private List<String> removedFromAdditionalFields;
 
-
+	@Builder
+	public AdditionalFieldsDTO(AdditionalFields additionalFields) {
+		this.id = String.valueOf(additionalFields.getId());
+		this.view = additionalFields.getView();
+		this.widget = additionalFields.getWidget();
+	}
 
 }

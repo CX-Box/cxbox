@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.service;
+package org.cxbox.core.dto;
 
-import java.util.Map;
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.api.service.session.IUser;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Service that defines access rights to screens and views
- */
-public interface ResponsibilitiesService {
+@Getter
+@Setter
+@AllArgsConstructor
+public class RequestDTO<T> {
 
-	/**
-	 * @param user
-	 * @param userRole
-	 * @return View name, Readonly flg pairs
-	 */
-	Map<String, Boolean> getListRespByUser(IUser<Long> user, LOV userRole);
-
-	String getListScreensByUser(IUser<Long> user, LOV userRole);
+	T data;
 }

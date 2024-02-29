@@ -1,4 +1,4 @@
-/*
+package org.cxbox.meta.additionalFields;/*
  * © OOO "SI IKS LAB", 2022-2023
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.service;
 
-import java.util.Map;
-import org.cxbox.api.data.dictionary.LOV;
-import org.cxbox.api.service.session.IUser;
 
-/**
- * Service that defines access rights to screens and views
- */
-public interface ResponsibilitiesService {
+import java.util.List;
 
-	/**
-	 * @param user
-	 * @param userRole
-	 * @return View name, Readonly flg pairs
-	 */
-	Map<String, Boolean> getListRespByUser(IUser<Long> user, LOV userRole);
+public interface AdditionalFieldsService {
 
-	String getListScreensByUser(IUser<Long> user, LOV userRole);
+	List<AdditionalFieldsDTO> createAdditionalFields(List<AdditionalFieldsDTO> additionalFieldsDTO);
+
+	void deleteAdditionalFields(List<Long> ids);
+
+	List<AdditionalFieldsDTO> updateAdditionalFields(List<AdditionalFieldsDTO> additionalFieldsDTO);
 }

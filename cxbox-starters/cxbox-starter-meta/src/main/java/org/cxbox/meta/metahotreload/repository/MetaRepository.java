@@ -25,15 +25,15 @@ import lombok.RequiredArgsConstructor;
 import org.cxbox.api.data.dictionary.CoreDictionaries.ViewGroupType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
-import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.meta.entity.Responsibilities;
-import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
-import org.cxbox.meta.entity.Responsibilities_;
+import org.cxbox.meta.data.FilterGroupDTO;
 import org.cxbox.meta.entity.Bc;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.BcProperties_;
 import org.cxbox.meta.entity.FilterGroup;
 import org.cxbox.meta.entity.FilterGroup_;
+import org.cxbox.meta.entity.Responsibilities;
+import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
+import org.cxbox.meta.entity.Responsibilities_;
 import org.cxbox.meta.entity.Screen;
 import org.cxbox.meta.entity.Screen_;
 import org.cxbox.meta.entity.View;
@@ -46,6 +46,7 @@ import org.cxbox.meta.navigation.NavigationGroup;
 import org.cxbox.meta.navigation.NavigationGroup_;
 import org.cxbox.meta.navigation.NavigationView;
 import org.cxbox.meta.navigation.NavigationView_;
+import org.cxbox.model.core.dao.JpaDao;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -103,12 +104,31 @@ public class MetaRepository {
 	}
 
 
-
-
 	public Screen getScreenByName(String name) {
 		return jpaDao.getSingleResultOrNull(
 				Screen.class,
 				(root, query, cb) -> cb.equal(root.get(Screen_.name), name)
+		);
+	}
+
+	/*
+	bc to List of Personal Filter Groups
+	 */
+	public Map<String, List<FilterGroupDTO>> getPersonalFilterGroups(IUser<?> user) {
+		return jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
+				cb.and(
+						cb.isNotNull(root.get(FilterGroup_.bc)),
+						cb.equal(root.get(FilterGroup_.userId), String.valueOf(user.getId()))
+				)
+		).stream().map(fg -> FilterGroupDTO.builder()
+				.bc(fg.getBc())
+				.personal(Boolean.TRUE)
+				.id(String.valueOf(fg.getId()))
+				.name(fg.getName())
+				.filters(fg.getFilters())
+				.build()
+		).collect(
+				Collectors.groupingBy(FilterGroupDTO::getBc)
 		);
 	}
 
@@ -209,8 +229,11 @@ public class MetaRepository {
 
 	public Map<String, List<FilterGroup>> getFilterGroups() {
 		return jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
-				cb.isNotNull(root.get(FilterGroup_.bc))
-		).stream().collect(
+				cb.and(
+						cb.isNotNull(root.get(FilterGroup_.bc)),
+						cb.isNull(root.get(FilterGroup_.userId)
+						)
+				)).stream().collect(
 				Collectors.groupingBy(FilterGroup::getBc)
 		);
 	}
@@ -227,8 +250,6 @@ public class MetaRepository {
 				)
 		);
 	}
-
-
 
 
 }

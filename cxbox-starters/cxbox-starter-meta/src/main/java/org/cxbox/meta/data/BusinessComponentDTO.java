@@ -17,7 +17,7 @@
 package org.cxbox.meta.data;
 
 import java.io.Serializable;
-import org.cxbox.meta.data.FilterGroupDTO;
+import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.util.List;
 import lombok.EqualsAndHashCode;
@@ -41,7 +41,7 @@ public class BusinessComponentDTO implements Serializable {
 	@JsonRawValue
 	String dimFilterSpec;
 
-	List<FilterGroupDTO> filterGroups;
+	List<FilterGroupDTO> filterGroups = new ArrayList<>();
 
 	String defaultSort;
 

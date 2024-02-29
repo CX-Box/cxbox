@@ -71,4 +71,8 @@ public class WidgetMapper {
 				.setShowExportStamp(ofNullable(viewWidget.getShowExportStamp()).orElse(false));
 		return widgetDTO;
 	}
+
+
+
+
 }

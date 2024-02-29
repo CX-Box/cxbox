@@ -31,6 +31,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.cxbox.meta.additionalFields.AdditionalFieldsDTO;
 
 @Slf4j
 @NoArgsConstructor
@@ -60,6 +61,8 @@ public class WidgetDTO extends DataResponseDTO implements BcSource, Serializable
 	private String type;
 
 	private String url;
+
+	private AdditionalFieldsDTO personalFields;
 
 	@SearchParameter(name = "bc")
 	private String bcName;

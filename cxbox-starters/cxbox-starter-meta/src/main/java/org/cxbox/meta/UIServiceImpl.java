@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -100,9 +101,10 @@ public class UIServiceImpl {
 	public Map<String, List<FilterGroup>> getFilterGroups(BusinessObjectDTO boDto) {
 		HashMap<String, List<FilterGroup>> result = new HashMap<>(boDto.getBc().size());
 		Map<String, List<FilterGroup>> all = uiCache.getFilterGroups();
-		boDto.getBc().forEach(bc -> result.put(bc.getName(), all.get(bc.getName())));
+		boDto.getBc().forEach(bc -> result.put(bc.getName(), Optional.ofNullable(all.get(bc.getName())).map(ArrayList::new).orElse(null)));
 		return result;
 	}
+
 
 	public Map<String, List<ViewWidgets>> getAllWidgetsWithPositionByScreen(final List<String> views) {
 		HashMap<String, List<ViewWidgets>> result = new HashMap<>(views.size());

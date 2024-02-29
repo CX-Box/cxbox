@@ -32,6 +32,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class FilterGroup extends BaseEntity {
 
+	private String userId;
+
 	private String name;
 
 	private String filters;
