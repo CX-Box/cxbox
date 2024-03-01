@@ -92,7 +92,7 @@ public class UserMetaProvider {
 	}
 
 
-	private List<AdditionalFieldsDTO> getAdditionalFieldsDTO(IUser<?> user) {
+	private List<AdditionalFieldsDTO> getAdditionalFieldsDTO(IUser<Long> user) {
 
 		return jpaDao.getList(
 				AdditionalFields.class,

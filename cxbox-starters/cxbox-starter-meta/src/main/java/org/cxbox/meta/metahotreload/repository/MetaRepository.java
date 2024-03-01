@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.metahotreload.repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -114,7 +115,7 @@ public class MetaRepository {
 	/*
 	bc to List of Personal Filter Groups
 	 */
-	public Map<String, List<FilterGroupDTO>> getPersonalFilterGroups(IUser<?> user) {
+	public Map<String, List<FilterGroupDTO>> getPersonalFilterGroups(IUser<Long> user) {
 		return jpaDao.getList(FilterGroup.class, (root, cq, cb) ->
 				cb.and(
 						cb.isNotNull(root.get(FilterGroup_.bc)),
