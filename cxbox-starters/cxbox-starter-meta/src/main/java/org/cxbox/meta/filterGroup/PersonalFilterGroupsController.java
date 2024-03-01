@@ -55,8 +55,8 @@ public class PersonalFilterGroupsController {
 	}
 
 	@DeleteMapping
-	public void deleteFilterGroup(@RequestParam("id") RequestDTO<List<Long>> ids) {
-		personalFilterGroupService.delete(ids.getData());
+	public void deleteFilterGroup(@RequestBody List<Long> ids) {
+		personalFilterGroupService.delete(ids);
 		cxboxCachingService.evictUserCache(); //TODO>>REMOVE ONLY CURRENT USER CACHE!!!!
 	}
 
