@@ -16,6 +16,9 @@
 
 package org.cxbox.core.dto.mapper;
 
+import static org.apache.commons.lang3.reflect.ConstructorUtils.getMatchingAccessibleConstructor;
+
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
-import org.cxbox.core.dto.mapper.DtoConstructor;
+/*import org.cxbox.core.dto.mapper.DtoConstructor;
 import org.cxbox.core.dto.mapper.RequestValueCache;
+import org.cxbox.model.core.entity.BaseEntity;*/
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +60,7 @@ public class ExternalDtoConstructorService {
 			final Collection<DtoField<D, ?>> fields,
 			final Map<String, Object> attributes) {
 		final D dto;
-		//TODO раскопировать DtoConstructor и Mapping
+		//TODO COPY DTOCONSTRUCTOR AND MAPPING
 //		final DtoConstructor<E, D> dtoConstructor = findConstructor(entity, dtoClass);
 //		if (dtoConstructor != null) {
 //			dto = ConstructorUtils.invokeConstructor(dtoClass);
@@ -70,7 +75,27 @@ public class ExternalDtoConstructorService {
 //				dto.addComputedField(field.getName());
 //			}
 //		} else {
+		Class<?> entityClass = entity.getClass();
+		Constructor<D> matchingAccessibleConstructor = getMatchingAccessibleConstructor(
+				dtoClass,
+				entityClass
+		);
+		if (matchingAccessibleConstructor != null) {
 			dto = ConstructorUtils.invokeConstructor(dtoClass, entity);
+		} else if (dtoClass.equals(entityClass)) {
+			dto = ConstructorUtils.invokeConstructor(dtoClass);
+			BeanUtils.copyProperties(entity, dto);
+		} else {
+			throw new IllegalStateException("Cannot find mapper"
+					+ " from " + entityClass.getCanonicalName()
+					+ " to " + dtoClass.getCanonicalName()
+					+ " Please add mapper: "
+					+ " variant 1: add constructor"
+					+ " public " + dtoClass.getName() + "(" + entityClass.getCanonicalName()
+					+ " entity) { this.id = entity.id; //TODO>>other attributes mapping } "
+					+ " to " + dtoClass.getCanonicalName() + " class");
+		}
+
 //		}
 		dto.setSerializableFields(
 				fields.stream().map(DtoField::getName).collect(Collectors.toSet())
