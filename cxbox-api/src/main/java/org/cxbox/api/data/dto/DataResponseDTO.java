@@ -18,6 +18,8 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.IDataContainer;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.constgen.DtoMetamodelIgnore;
@@ -30,6 +32,8 @@ import java.util.function.Function;
 import lombok.Getter;
 import lombok.Setter;
 
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
 @Getter
 @Setter
 @GeneratesDtoMetamodel
