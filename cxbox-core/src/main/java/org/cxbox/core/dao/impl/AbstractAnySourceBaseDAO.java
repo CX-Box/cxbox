@@ -21,17 +21,17 @@ import java.util.Map;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.state.BcStateAware;
-import org.cxbox.core.dao.ExternalBaseDAO;
+import org.cxbox.core.dao.AnySourceBaseDAO;
 import org.cxbox.core.external.core.EntityFirstLevelCache;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractExternalBaseDAO<E> implements ExternalBaseDAO<E> {
+public abstract class AbstractAnySourceBaseDAO<E> implements AnySourceBaseDAO<E> {
 
 	@Autowired
 	private EntityFirstLevelCache<E> cache;
 
 	@Autowired
-	private BcStateAware externalBcStateAware;
+	private BcStateAware anySourceBcStateAware;
 
 	@Override
 	public String generateId() {
@@ -63,7 +63,7 @@ public abstract class AbstractExternalBaseDAO<E> implements ExternalBaseDAO<E> {
 
 	@Override
 	public void flush(BusinessComponent bc) {
-		if (externalBcStateAware.isPersisted(bc)) {
+		if (anySourceBcStateAware.isPersisted(bc)) {
 			setWithFirstLevelCache(bc, update(bc, getById(bc)));
 		} else {
 			setWithFirstLevelCache(bc, create(bc, getById(bc)));

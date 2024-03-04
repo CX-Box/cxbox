@@ -23,10 +23,10 @@ import org.cxbox.core.crudma.CrudmaFactory;
 import org.cxbox.core.crudma.CrudmaGateway;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
+import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.crudma.ext.CrudmaGatewayInvokeExtensionProvider;
-import org.cxbox.core.service.ExternalResponseFactory;
-import org.cxbox.core.service.ExternalResponseService;
+import org.cxbox.core.service.AnySourceResponseFactory;
+import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.ResponseFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -34,12 +34,12 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-public class ExternalCrudmaGateway extends CrudmaGateway {
+public class AnySourceCrudmaGateway extends CrudmaGateway {
 
 	@Autowired
-	public ExternalResponseFactory respFactory;
+	public AnySourceResponseFactory respFactory;
 
-	public ExternalCrudmaGateway(CrudmaFactory crudmaFactory, ResponseFactory respFactory, List<CrudmaGatewayInvokeExtensionProvider> extensionProviders) {
+	public AnySourceCrudmaGateway(CrudmaFactory crudmaFactory, ResponseFactory respFactory, List<CrudmaGatewayInvokeExtensionProvider> extensionProviders) {
 		super(crudmaFactory, respFactory, extensionProviders);
 	}
 
@@ -55,9 +55,9 @@ public class ExternalCrudmaGateway extends CrudmaGateway {
 		CrudmaActionType actionType = action.getActionType();
 		BusinessComponent bc = action.getBc();
 		BcDescription description = bc.getDescription();
-		if (description instanceof ExternalBcDescription) {
+		if (description instanceof AnySourceBcDescription) {
 			readOnly = actionType != null && actionType.isReadOnly();
-			ExternalResponseService<?, ?> responseService = getResponseService(bc);
+			AnySourceResponseService<?, ?> responseService = getResponseService(bc);
 			if (CrudmaActionType.CREATE == actionType) {
 				readOnly &= responseService.isDeferredCreationSupported(bc);
 			}
@@ -65,7 +65,7 @@ public class ExternalCrudmaGateway extends CrudmaGateway {
 		return readOnly;
 	}
 
-	private ExternalResponseService<?, ?> getResponseService(BusinessComponent bc) {
+	private AnySourceResponseService<?, ?> getResponseService(BusinessComponent bc) {
 		return respFactory.getService(bc.getDescription());
 	}
 

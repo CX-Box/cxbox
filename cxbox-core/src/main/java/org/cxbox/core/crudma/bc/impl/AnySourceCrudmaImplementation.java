@@ -13,6 +13,6 @@ import org.cxbox.core.crudma.Crudma;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExternalCrudmaImplementation {
+public @interface AnySourceCrudmaImplementation {
 	Class<? extends Crudma> value();
 }

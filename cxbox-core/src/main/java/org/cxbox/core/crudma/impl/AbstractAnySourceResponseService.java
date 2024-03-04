@@ -41,8 +41,8 @@ import org.cxbox.api.exception.ServerException;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.crudma.bc.impl.ExternalCrudmaImplementation;
-import org.cxbox.core.crudma.impl.inner.ExternalCrudmaService;
+import org.cxbox.core.crudma.bc.impl.AnySourceCrudmaImplementation;
+import org.cxbox.core.crudma.impl.inner.AnySourceCrudmaService;
 import org.cxbox.core.dto.PreInvokeEvent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
@@ -53,10 +53,10 @@ import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.EntityNotFoundException;
 import org.cxbox.core.exception.UnconfirmedException;
-import org.cxbox.core.dao.ExternalBaseDAO;
-import org.cxbox.core.service.rowmeta.ExternalFieldMetaBuilder;
-import org.cxbox.core.service.ExternalDTOMapper;
-import org.cxbox.core.service.ExternalResponseService;
+import org.cxbox.core.dao.AnySourceBaseDAO;
+import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
+import org.cxbox.core.service.AnySourceDTOMapper;
+import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.action.AssocPreActionEventParameters;
@@ -75,9 +75,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
-@ExternalCrudmaImplementation(ExternalCrudmaService.class)
-public abstract class AbstractExternalResponseService<T extends DataResponseDTO, E> implements
-		ExternalResponseService<T, E> {
+@AnySourceCrudmaImplementation(AnySourceCrudmaService.class)
+public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO, E> implements
+		AnySourceResponseService<T, E> {
 
 	@Getter
 	protected final Class<T> typeOfDTO;
@@ -85,10 +85,10 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	@Getter
 	protected final Class<E> typeOfEntity;
 
-	private final Class<? extends ExternalFieldMetaBuilder<T>> metaBuilder;
+	private final Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder;
 
 	@Getter
-	protected final Class<? extends ExternalBaseDAO<E>> externalBaseDAOClass;
+	protected final Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass;
 
 	protected Class<? extends PreActionConditionHolderDataResponse<T>> preActionConditionHolderDataResponse = null;
 
@@ -98,14 +98,14 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 	protected ApplicationContext applicationContext;
 
 	@Autowired
-	private ExternalDTOMapper dtoMapper;
+	private AnySourceDTOMapper dtoMapper;
 
 	@Autowired
-	private List<ExternalBaseDAO<E>> externalBaseDAOs;
+	private List<AnySourceBaseDAO<E>> anySourceBaseDAOs;
 
 	@Override
-	public ExternalBaseDAO<E> getBaseDao() {
-		return externalBaseDAOs.stream().filter(dao -> externalBaseDAOClass.isAssignableFrom(dao.getClass())).findFirst()
+	public AnySourceBaseDAO<E> getBaseDao() {
+		return anySourceBaseDAOs.stream().filter(dao -> anySourceBaseDAOClass.isAssignableFrom(dao.getClass())).findFirst()
 				.orElseThrow();
 	}
 
@@ -442,7 +442,7 @@ public abstract class AbstractExternalResponseService<T extends DataResponseDTO,
 		return getOneAsEntity(bc);
 	}
 
-	public Class<? extends ExternalFieldMetaBuilder<T>> getExternalFieldMetaBuilder() {
+	public Class<? extends AnySourceFieldMetaBuilder<T>> getAnySourceFieldMetaBuilder() {
 		return this.metaBuilder;
 	}
 

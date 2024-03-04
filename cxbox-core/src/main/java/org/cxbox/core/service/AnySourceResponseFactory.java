@@ -36,10 +36,10 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
+import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.dto.BusinessError.Entity;
 import org.cxbox.core.exception.BusinessException;
-import org.cxbox.core.service.ExternalResponseService;
+import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.service.ValidatorsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class ExternalResponseFactory {
+public class AnySourceResponseFactory {
 
 	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper mapper;
@@ -63,11 +63,11 @@ public class ExternalResponseFactory {
 	private ValidatorsProvider validatorsProvider;
 
 	/**
-	 * @param externalBcDescription information about BC;
-	 * @return {@link ExternalResponseService} common interface implemented by all services working with the controller
+	 * @param anySourceBcDescription information about BC;
+	 * @return {@link AnySourceResponseService} common interface implemented by all services working with the controller
 	 */
-	public ExternalResponseService getService(ExternalBcDescription externalBcDescription) {
-		return ctx.getBean(getServiceClass(externalBcDescription));
+	public AnySourceResponseService getService(AnySourceBcDescription anySourceBcDescription) {
+		return ctx.getBean(getServiceClass(anySourceBcDescription));
 	}
 
 	public DataResponseDTO getDTOFromMap(Map<String, Object> map, Class<?> clazz, BusinessComponent bc) {
@@ -128,27 +128,27 @@ public class ExternalResponseFactory {
 		return result;
 	}
 
-	public Class getDTOFromService(ExternalBcDescription externalBcDescription) {
-		return (Class) getResponseServiceParameters(externalBcDescription)[0];
+	public Class getDTOFromService(AnySourceBcDescription anySourceBcDescription) {
+		return (Class) getResponseServiceParameters(anySourceBcDescription)[0];
 	}
 
-	private Type[] getResponseServiceParameters(Class<? extends ExternalResponseService> cls) {
-		Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(cls, ExternalResponseService.class);
-		return Stream.of(ExternalResponseService.class.getTypeParameters())
+	private Type[] getResponseServiceParameters(Class<? extends AnySourceResponseService> cls) {
+		Map<TypeVariable<?>, Type> typeArguments = TypeUtils.getTypeArguments(cls, AnySourceResponseService.class);
+		return Stream.of(AnySourceResponseService.class.getTypeParameters())
 				.map(typeArguments::get)
 				.toArray(Type[]::new);
 	}
 
-	public Type[] getResponseServiceParameters(ExternalBcDescription externalBcDescription) {
-		return getResponseServiceParameters(getServiceClass(externalBcDescription));
+	public Type[] getResponseServiceParameters(AnySourceBcDescription anySourceBcDescription) {
+		return getResponseServiceParameters(getServiceClass(anySourceBcDescription));
 	}
 
-	private Class<? extends ExternalResponseService> getServiceClass(ExternalBcDescription externalBcDescription) {
-		if (ExternalResponseService.class.isAssignableFrom(externalBcDescription.getServiceClass())) {
-			return (Class<? extends ExternalResponseService>)externalBcDescription.getServiceClass();
+	private Class<? extends AnySourceResponseService> getServiceClass(AnySourceBcDescription anySourceBcDescription) {
+		if (AnySourceResponseService.class.isAssignableFrom(anySourceBcDescription.getServiceClass())) {
+			return (Class<? extends AnySourceResponseService>)anySourceBcDescription.getServiceClass();
 		}
 		throw new IllegalArgumentException(
-				"can't cast " + externalBcDescription.getServiceClass() + " to " + ResponseService.class
+				"can't cast " + anySourceBcDescription.getServiceClass() + " to " + ResponseService.class
 		);
 	}
 

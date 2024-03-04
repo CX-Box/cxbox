@@ -27,9 +27,9 @@ import org.cxbox.core.bc.InnerBcTypeAware;
 import org.cxbox.core.controller.BcHierarchyAware;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
+import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
-import org.cxbox.core.bc.ExternalBcTypeAware;
+import org.cxbox.core.bc.AnySourceBcTypeAware;
 import org.cxbox.core.service.DTOSecurityUtils;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.meta.UIServiceImpl.UserCache;
@@ -40,16 +40,16 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
-public class ExternalBcUtils extends BcUtils {
+public class AnySourceBcUtils extends BcUtils {
 
-	private final ExternalBcTypeAware externalBcTypeAware;
+	private final AnySourceBcTypeAware anySourceBcTypeAware;
 
-	public ExternalBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
+	public AnySourceBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
 			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, UserCache userCache,
-			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, ExternalBcTypeAware externalBcTypeAware) {
+			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware) {
 		super(innerBcTypeAware, metaRepository, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, userCache,
 				sessionService,  requiredFieldsSuppliersm);
-		this.externalBcTypeAware = externalBcTypeAware;
+		this.anySourceBcTypeAware = anySourceBcTypeAware;
 	}
 
 	/**
@@ -67,10 +67,10 @@ public class ExternalBcUtils extends BcUtils {
 				return Collections.emptySet();
 			}
 		}
-		if (bcDescription instanceof ExternalBcDescription) {
+		if (bcDescription instanceof AnySourceBcDescription) {
 			try {
-				final ExternalBcDescription externalBcDescription = (ExternalBcDescription) bcDescription;
-				final Class dtoClass = externalBcTypeAware.getTypeOfDto(externalBcDescription);
+				final AnySourceBcDescription anySourceBcDescription = (AnySourceBcDescription) bcDescription;
+				final Class dtoClass = anySourceBcTypeAware.getTypeOfDto(anySourceBcDescription);
 				return getDtoSecurityUtils().getDtoFields(dtoClass);
 			} catch (RuntimeException e) {
 				return Collections.emptySet();

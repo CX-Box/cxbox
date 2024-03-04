@@ -23,20 +23,20 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
-import org.cxbox.core.dao.ExternalBaseDAO;
-import org.cxbox.core.service.rowmeta.ExternalFieldMetaBuilder;
-import org.cxbox.core.exception.ExternalVersionMismatchException;
+import org.cxbox.core.dao.AnySourceBaseDAO;
+import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
+import org.cxbox.core.exception.AnySourceVersionMismatchException;
 
 @Slf4j
-public abstract class ExternalVersionAwareResponseService<T extends DataResponseDTO, E> extends
-		AbstractExternalResponseService<T, E> {
+public abstract class AnySourceVersionAwareResponseService<T extends DataResponseDTO, E> extends
+		AbstractAnySourceResponseService<T, E> {
 
 //	@Autowired
 //	private SystemSettings systemSettings;
 
-	protected ExternalVersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity, Class<? extends ExternalFieldMetaBuilder<T>> metaBuilder,
-			Class<? extends ExternalBaseDAO<E>> externalBaseDAOClass) {
-		super(typeOfDTO, typeOfEntity, metaBuilder, externalBaseDAOClass);
+	protected AnySourceVersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity, Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder,
+			Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass) {
+		super(typeOfDTO, typeOfEntity, metaBuilder, anySourceBaseDAOClass);
 	}
 
 	public Long getVstamp(final E entity) {
@@ -99,7 +99,7 @@ public abstract class ExternalVersionAwareResponseService<T extends DataResponse
 		E entity = isExist(bc);
 		final Long vstamp = getVstamp(entity);
 		if (!Objects.equals(data.getVstamp(), -1L) && !Objects.equals(vstamp, data.getVstamp())) {
-			throw new ExternalVersionMismatchException(vstamp, data);
+			throw new AnySourceVersionMismatchException(vstamp, data);
 		}
 		//TODO переделать на lock на внутренней таблице BFF с двумя колонками - id сущности и название сущности
 //		try {

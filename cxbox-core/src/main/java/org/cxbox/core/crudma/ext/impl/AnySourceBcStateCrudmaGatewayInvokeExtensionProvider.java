@@ -41,7 +41,7 @@ import org.cxbox.core.crudma.InterimResult;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
+import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.crudma.ext.CrudmaGatewayInvokeExtensionProvider;
 import org.cxbox.core.crudma.state.BcState;
 import org.cxbox.core.crudma.state.BcStateAware;
@@ -51,8 +51,8 @@ import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.dto.rowmeta.PostAction.BasePostActionField;
-import org.cxbox.core.service.ExternalResponseFactory;
-import org.cxbox.core.service.ExternalResponseService;
+import org.cxbox.core.service.AnySourceResponseFactory;
+import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionAvailableChecker;
 import org.cxbox.core.service.action.ActionDescriptionBuilder;
 import org.springframework.core.annotation.Order;
@@ -61,20 +61,20 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Order(100)
-public class ExternalBcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewayInvokeExtensionProvider {
+public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewayInvokeExtensionProvider {
 
 	private final BcRegistry bcRegistry;
 
 	private final BCFactory bcFactory;
 
-	private final ExternalResponseFactory respFactory;
+	private final AnySourceResponseFactory respFactory;
 
 	private final BcStateAware bcStateAware;
 
 	@Override
 	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker,
 			boolean readOnly) {
-		if (!(crudmaAction.getBc().getDescription() instanceof ExternalBcDescription)) {
+		if (!(crudmaAction.getBc().getDescription() instanceof AnySourceBcDescription)) {
 			return invoker;
 		} else {
 			return () -> {
@@ -85,7 +85,7 @@ public class ExternalBcStateCrudmaGatewayInvokeExtensionProvider implements Crud
 				) {
 					bcStateAware.clear();
 					BcDescription description = bc.getDescription();
-					if (description instanceof ExternalBcDescription) {
+					if (description instanceof AnySourceBcDescription) {
 						return (T) getResponseService(bc).onCancel(bc);
 					}
 					return (T) new ActionResultDTO().setAction(PostAction.postDelete());
@@ -211,7 +211,7 @@ public class ExternalBcStateCrudmaGatewayInvokeExtensionProvider implements Crud
 			if (state == null) {
 				continue;
 			}
-			if (!(bc.getDescription() instanceof ExternalBcDescription)) {
+			if (!(bc.getDescription() instanceof AnySourceBcDescription)) {
 				continue;
 			}
 			if (state.getPendingAction() != null) {
@@ -219,7 +219,7 @@ public class ExternalBcStateCrudmaGatewayInvokeExtensionProvider implements Crud
 				originalParameters.setParameter("_action", state.getPendingAction());
 				bc.setParameters(originalParameters);
 			}
-			final ExternalResponseService<?, ?> responseService = getResponseService(bc);
+			final AnySourceResponseService<?, ?> responseService = getResponseService(bc);
 			if (!bcStateAware.isPersisted(bc)) {
 				responseService.createEntity(bc);
 			}
@@ -242,7 +242,7 @@ public class ExternalBcStateCrudmaGatewayInvokeExtensionProvider implements Crud
 		);
 	}
 
-	private ExternalResponseService<?, ?> getResponseService(BusinessComponent bc) {
+	private AnySourceResponseService<?, ?> getResponseService(BusinessComponent bc) {
 		return respFactory.getService(bc.getDescription());
 	}
 
