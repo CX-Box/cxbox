@@ -21,14 +21,14 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.exception.BusinessException;
 
-public class ExternalVersionMismatchException extends BusinessException {
+public class AnySourceVersionMismatchException extends BusinessException {
 
-	public ExternalVersionMismatchException() {
+	public AnySourceVersionMismatchException() {
 		super();
 		addPopup(errorMessage("error.version_mismatch_simple"));
 	}
 
-	public ExternalVersionMismatchException(Long vstamp, DataResponseDTO data) {
+	public AnySourceVersionMismatchException(Long vstamp, DataResponseDTO data) {
 		super();
 		addPopup(buildPopup(vstamp, data));
 	}

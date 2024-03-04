@@ -14,16 +14,16 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.crudma.CrudmaActionHolder;
 import org.cxbox.core.crudma.CrudmaActionType;
-import org.cxbox.core.dto.mapper.ExternalDtoConstructorService;
+import org.cxbox.core.dto.mapper.AnySourceDtoConstructorService;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ExternalDTOMapper {
+public class AnySourceDTOMapper {
 
 	//	private final ApplicationEventPublisher applicationEventPublisher;
-	private final ExternalDtoConstructorService dtoConstructorService;
+	private final AnySourceDtoConstructorService dtoConstructorService;
 
 	//	private final TransactionService txService;
 	private final Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
@@ -129,7 +129,7 @@ public class ExternalDTOMapper {
 			return;
 		}
 		DataResponseDTO responseDTO = (DataResponseDTO) dto;
-		//TODO придумать как взять из ExternalVersionAwareResponseService
+		//TODO придумать как взять из AnySourceVersionAwareResponseService
 		responseDTO.setVstamp(0L);
 //		responseDTO.setVstamp(entity.getVstamp());
 //		txService.invokeAfterCompletion(Invoker.of(() -> responseDTO.setVstamp(entity.getVstamp())));

@@ -19,10 +19,10 @@ package org.cxbox.core.dao;
 import java.util.List;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.dao.impl.AbstractExternalBaseDAO;
+import org.cxbox.core.dao.impl.AbstractAnySourceBaseDAO;
 import org.springframework.data.domain.Page;
 
-public interface ExternalBaseDAO<E> {
+public interface AnySourceBaseDAO<E> {
 
 	String generateId();
 
@@ -31,14 +31,14 @@ public interface ExternalBaseDAO<E> {
 	void setId(final String id, final E entity);
 
 	/**
-	 * Should not be used anywhere except of {@link AbstractExternalBaseDAO}
+	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
 	 * @param bc
 	 * @return
 	 */
 	E getByIdIgnoringFirstLevelCache(BusinessComponent bc);
 
 	/**
-	 * Delete entity in external system
+	 * Delete entity in anySource system
 	 */
 	void delete(BusinessComponent bc);
 
@@ -50,7 +50,7 @@ public interface ExternalBaseDAO<E> {
 	long count(BusinessComponent bc);
 
 	/**
-	 * Get from First Level Cache or from external system (if cache is empty)
+	 * Get from First Level Cache or from anySource system (if cache is empty)
 	 */
 	E getById(BusinessComponent bc);
 
@@ -60,21 +60,21 @@ public interface ExternalBaseDAO<E> {
 	void setWithFirstLevelCache(BusinessComponent bc, E entity);
 
 	/**
-	 * Should not be used anywhere except of {@link AbstractExternalBaseDAO}
+	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
 	 * @param bc
 	 * @return
 	 */
 	E update(BusinessComponent bc, E entity);
 
 	/**
-	 * Should be used to explicitly update/create in external system by custom action
+	 * Should be used to explicitly update/create in anySource system by custom action
 	 * @param bc
 	 * @return
 	 */
 	void flush(BusinessComponent bc);
 
 	/**
-	 * Should not be used anywhere except of {@link AbstractExternalBaseDAO}
+	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
 	 * @param bc
 	 * @return
 	 */

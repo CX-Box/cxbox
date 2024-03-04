@@ -21,13 +21,13 @@ import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.crudma.bc.impl.ExternalResponseServiceMarker;
+import org.cxbox.core.crudma.bc.impl.AnySourceResponseServiceMarker;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.AssociateResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
-import org.cxbox.core.dao.ExternalBaseDAO;
-import org.cxbox.core.service.rowmeta.ExternalFieldMetaBuilder;
+import org.cxbox.core.dao.AnySourceBaseDAO;
+import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.RowMetaType;
 
@@ -36,7 +36,7 @@ import org.cxbox.core.service.rowmeta.RowMetaType;
  * @param <T> DTO between front and BFF
  * @param <E> DTO from microservice
  */
-public interface ExternalResponseService<T extends DataResponseDTO, E> extends ExternalResponseServiceMarker {
+public interface AnySourceResponseService<T extends DataResponseDTO, E> extends AnySourceResponseServiceMarker {
 
 	/**
 	 * Returns an entity based on a business component
@@ -153,11 +153,11 @@ public interface ExternalResponseService<T extends DataResponseDTO, E> extends E
 	T entityToDto(BusinessComponent bc, E entity);
 
 	/**
-	 * Returns ExternalFieldMetaBuilder for class
+	 * Returns AnySourceFieldMetaBuilder for class
 	 *
-	 * @return {@link ExternalFieldMetaBuilder} class for building field meta
+	 * @return {@link AnySourceFieldMetaBuilder} class for building field meta
 	 */
-	Class<? extends ExternalFieldMetaBuilder<T>> getExternalFieldMetaBuilder();
+	Class<? extends AnySourceFieldMetaBuilder<T>> getAnySourceFieldMetaBuilder();
 
 	/**
 	 * Returns the number of matching entities
@@ -199,6 +199,6 @@ public interface ExternalResponseService<T extends DataResponseDTO, E> extends E
 	 */
 	boolean isDeferredCreationSupported(BusinessComponent bc);
 
-	ExternalBaseDAO<E> getBaseDao();
+	AnySourceBaseDAO<E> getBaseDao();
 
 }

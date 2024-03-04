@@ -16,6 +16,6 @@
 
 package org.cxbox.core.crudma.bc.impl;
 
-public interface ExternalResponseServiceMarker {
+public interface AnySourceResponseServiceMarker {
 
 }

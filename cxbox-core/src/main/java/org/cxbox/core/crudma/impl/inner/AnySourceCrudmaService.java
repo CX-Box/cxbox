@@ -27,7 +27,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
-import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
+import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
@@ -35,49 +35,49 @@ import org.cxbox.core.dto.rowmeta.AssociateResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.exception.BusinessException;
-import org.cxbox.core.dao.ExternalBaseDAO;
-import org.cxbox.core.service.ExternalResponseFactory;
-import org.cxbox.core.service.ExternalResponseService;
+import org.cxbox.core.dao.AnySourceBaseDAO;
+import org.cxbox.core.service.AnySourceResponseFactory;
+import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionDescription;
-import org.cxbox.core.service.rowmeta.ExternalRowResponseService;
+import org.cxbox.core.service.rowmeta.AnySourceRowResponseService;
 import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ExternalCrudmaService extends AbstractCrudmaService {
+public class AnySourceCrudmaService extends AbstractCrudmaService {
 
 	@Autowired
-	private ExternalResponseFactory respFactory;
+	private AnySourceResponseFactory respFactory;
 
 	@Lazy
 	@Autowired
-	private ExternalRowResponseService rowMeta;
+	private AnySourceRowResponseService rowMeta;
 
 	@Override
 	public CreateResult create(BusinessComponent bc) {
-		ExternalResponseService<?, ?> responseService = getResponseService(bc.getDescription());
+		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		availabilityCheck(responseService, ActionType.CREATE.getType(), bc);
 		return responseService.createEntity(bc);
 	}
 
 	@Override
 	public DataResponseDTO get(BusinessComponent bc) {
-		ExternalResponseService<?, ?> responseService = getResponseService(bc.getDescription());
+		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		return responseService.getOne(bc);
 	}
 
 	@Override
 	public ResultPage<? extends DataResponseDTO> getAll(BusinessComponent bc) {
-		ExternalResponseService<?, ?> responseService = getResponseService(bc.getDescription());
+		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		return responseService.getList(bc);
 	}
 
 	@Override
 	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		final ExternalResponseService<?, ?> responseService = respFactory.getService(bcDescription);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		final AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
@@ -89,12 +89,12 @@ public class ExternalCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		ExternalResponseService responseService = respFactory.getService(bcDescription);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		AnySourceResponseService responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
-		final ExternalBaseDAO dao = responseService.getBaseDao();
+		final AnySourceBaseDAO dao = responseService.getBaseDao();
 		final ActionResultDTO actionResultDTO = responseService.updateEntity(bc, requestDTO);
 		dao.flush(bc);
 		actionResultDTO.transformData(r -> responseService.entityToDto(bc, dao.getById(bc)));
@@ -103,39 +103,39 @@ public class ExternalCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public ActionResultDTO delete(BusinessComponent bc) {
-		ExternalResponseService<?, ?> responseService = getResponseService(bc.getDescription());
+		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		availabilityCheck(responseService, ActionType.DELETE.getType(), bc);
 		return responseService.deleteEntity(bc);
 	}
 
 	@Override
 	public AssociateResultDTO associate(BusinessComponent bc, List<AssociateDTO> data) {
-		ExternalResponseService<?, ?> responseService = getResponseService(bc.getDescription());
+		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		availabilityCheck(responseService, ActionType.ASSOCIATE.getType(), bc);
 		return responseService.associate(data, bc);
 	}
 
 	@Override
 	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> data) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		ExternalResponseService<?, ?> responseService = respFactory.getService(bcDescription);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
 	}
 
 	@Override
 	public MetaDTO getMetaNew(BusinessComponent bc, CreateResult createResult) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		ExternalResponseService<?, ?> responseService = getResponseService(bcDescription);
-		return rowMeta.getExternalResponse(RowMetaType.META_NEW, createResult, bc, responseService);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		AnySourceResponseService<?, ?> responseService = getResponseService(bcDescription);
+		return rowMeta.getAnySourceResponse(RowMetaType.META_NEW, createResult, bc, responseService);
 	}
 
 	@Override
 	public MetaDTO getMeta(BusinessComponent bc) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		ExternalResponseService<?, ?> service = respFactory.getService(bcDescription);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		AnySourceResponseService<?, ?> service = respFactory.getService(bcDescription);
 		try {
-			return rowMeta.getExternalResponse(RowMetaType.META, getDto(service, bc), bc, service);
+			return rowMeta.getAnySourceResponse(RowMetaType.META, getDto(service, bc), bc, service);
 		} catch (BusinessException e) {
 			throw new BusinessException().addPopup(e.getMessage());
 		} catch (Exception e) {
@@ -145,10 +145,10 @@ public class ExternalCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public MetaDTO getMetaEmpty(BusinessComponent bc) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		ExternalResponseService<?, ?> service = respFactory.getService(bcDescription);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		AnySourceResponseService<?, ?> service = respFactory.getService(bcDescription);
 		try {
-			return rowMeta.getExternalResponse(RowMetaType.META_EMPTY, getDto(service, bc), bc, service);
+			return rowMeta.getAnySourceResponse(RowMetaType.META_EMPTY, getDto(service, bc), bc, service);
 		} catch (BusinessException e) {
 			throw new BusinessException().addPopup(e.getMessage());
 		} catch (Exception e) {
@@ -158,23 +158,23 @@ public class ExternalCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public MetaDTO getOnFieldUpdateMeta(BusinessComponent bc, DataResponseDTO dto) {
-		final ExternalBcDescription bcDescription = bc.getDescription();
-		final ExternalResponseService<?, ?> service = respFactory.getService(bcDescription);
-		return rowMeta.getExternalResponse(RowMetaType.ON_FIELD_UPDATE_META, dto, bc, service);
+		final AnySourceBcDescription bcDescription = bc.getDescription();
+		final AnySourceResponseService<?, ?> service = respFactory.getService(bcDescription);
+		return rowMeta.getAnySourceResponse(RowMetaType.ON_FIELD_UPDATE_META, dto, bc, service);
 	}
 
 	@Override
 	public long count(BusinessComponent bc) {
-		ExternalResponseService<?, ?> responseService = getResponseService(bc.getDescription());
+		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		return responseService.count(bc);
 	}
 
-	private ExternalResponseService<?, ?> getResponseService(ExternalBcDescription externalBcDescription) {
-		return respFactory.getService(externalBcDescription);
+	private AnySourceResponseService<?, ?> getResponseService(AnySourceBcDescription anySourceBcDescription) {
+		return respFactory.getService(anySourceBcDescription);
 	}
 
 	@SneakyThrows
-	private DataResponseDTO getDto(ExternalResponseService<?, ?> service, BusinessComponent bc) {
+	private DataResponseDTO getDto(AnySourceResponseService<?, ?> service, BusinessComponent bc) {
 		if (bc.getId() != null && service.hasPersister()) {
 			return service.getOne(bc);
 		}
@@ -182,7 +182,7 @@ public class ExternalCrudmaService extends AbstractCrudmaService {
 		return (DataResponseDTO) dto.getConstructor().newInstance();
 	}
 
-	private void availabilityCheck(ExternalResponseService<?, ?> service, String actionName, BusinessComponent bc) {
+	private void availabilityCheck(AnySourceResponseService<?, ?> service, String actionName, BusinessComponent bc) {
 		ActionDescription<?> action = service.getActions().getAction(actionName);
 		if (action == null || !action.isAvailable(bc)) {
 			throw new BusinessException().addPopup(

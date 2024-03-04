@@ -33,7 +33,7 @@ import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.dto.rowmeta.EngineFieldsMeta;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.RowMetaDTO;
-import org.cxbox.core.service.ExternalResponseService;
+import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Primary
-public class ExternalRowResponseService extends RowResponseService {
+public class AnySourceRowResponseService extends RowResponseService {
 
 	@Autowired
 	public ApplicationContext ctx;
@@ -64,22 +64,22 @@ public class ExternalRowResponseService extends RowResponseService {
 		});
 	}
 
-	public ExternalRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
+	public AnySourceRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService, Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService, ObjectMapper objectMapper) {
 		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, objectMapper);
 	}
 
-	public MetaDTO getExternalResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
-			ExternalResponseService<?, ?> responseService) {
+	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
+			AnySourceResponseService<?, ?> responseService) {
 		ActionsDTO actionDTO = responseService.getAvailableActions(type, dataDTO, bc);
-		return getExternalResponse(type, dataDTO, bc, actionDTO, responseService.getExternalFieldMetaBuilder());
+		return getAnySourceResponse(type, dataDTO, bc, actionDTO, responseService.getAnySourceFieldMetaBuilder());
 	}
 
-	public MetaDTO getExternalResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc, ActionsDTO actionDTO,
-			Class<? extends ExternalFieldMetaBuilder> fieldMetaBuilder) {
+	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc, ActionsDTO actionDTO,
+			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
-			ExternalFieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
+			AnySourceFieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildIndependentMeta(fieldsNode, bc);
 			if (bc.getId() != null) {
 				builder.buildRowDependentMeta(fieldsNode, bc);
@@ -96,11 +96,11 @@ public class ExternalRowResponseService extends RowResponseService {
 		return new MetaDTO(new RowMetaDTO(actionDTO, fieldsNode));
 	}
 
-	public MetaDTO getExternalResponse(RowMetaType type, CreateResult createResult, BusinessComponent bc,
-			ExternalResponseService<?, ?> responseService) {
+	public MetaDTO getAnySourceResponse(RowMetaType type, CreateResult createResult, BusinessComponent bc,
+			AnySourceResponseService<?, ?> responseService) {
 		final DataResponseDTO newRecord = createResult.getRecord();
 		final BusinessComponent newBc = bc.withId(newRecord.getId());
-		MetaDTO metaDTO = getExternalResponse(type, newRecord, newBc, responseService);
+		MetaDTO metaDTO = getAnySourceResponse(type, newRecord, newBc, responseService);
 		metaDTO.setPostActions(createResult.getPostActions());
 		return metaDTO;
 	}

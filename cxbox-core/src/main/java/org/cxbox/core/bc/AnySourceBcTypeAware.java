@@ -23,34 +23,34 @@ import lombok.Getter;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.core.crudma.bc.impl.ExternalBcDescription;
-import org.cxbox.core.service.ExternalResponseFactory;
+import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
+import org.cxbox.core.service.AnySourceResponseFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ExternalBcTypeAware {
+public class AnySourceBcTypeAware {
 
-	private final Map<String, ExternalBcTypes> types;
+	private final Map<String, AnySourceBcTypes> types;
 
-	public ExternalBcTypeAware(final BcRegistry bcRegistry, final ExternalResponseFactory respFactory) {
-		types = bcRegistry.select(ExternalBcDescription.class).collect(Collectors.toMap(
+	public AnySourceBcTypeAware(final BcRegistry bcRegistry, final AnySourceResponseFactory respFactory) {
+		types = bcRegistry.select(AnySourceBcDescription.class).collect(Collectors.toMap(
 				BcDescription::getName,
-				bcDescription -> new ExternalBcTypes(respFactory.getResponseServiceParameters(bcDescription))
+				bcDescription -> new AnySourceBcTypes(respFactory.getResponseServiceParameters(bcDescription))
 		));
 	}
 
-	public Class<? extends DataResponseDTO> getTypeOfDto(final ExternalBcDescription bcDescription) {
+	public Class<? extends DataResponseDTO> getTypeOfDto(final AnySourceBcDescription bcDescription) {
 		return types.get(bcDescription.getName()).getDto();
 	}
 
 	@Getter
-	private static class ExternalBcTypes {
+	private static class AnySourceBcTypes {
 
 		private final Class<?> entity;
 
 		private final Class<? extends DataResponseDTO> dto;
 
-		ExternalBcTypes(final Type[] responseServiceTypes) {
+		AnySourceBcTypes(final Type[] responseServiceTypes) {
 			this.entity = (Class<?>) responseServiceTypes[1];
 			this.dto = (Class<? extends DataResponseDTO>) responseServiceTypes[0];
 		}
