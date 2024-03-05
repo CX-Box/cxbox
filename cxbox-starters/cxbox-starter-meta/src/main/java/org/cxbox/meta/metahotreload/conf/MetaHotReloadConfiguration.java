@@ -26,7 +26,6 @@ import org.cxbox.meta.metahotreload.service.BcUtil;
 import org.cxbox.meta.metahotreload.service.MetaHotReloadServiceImpl;
 import org.cxbox.meta.metahotreload.service.MetaResourceReaderService;
 import org.cxbox.meta.metahotreload.service.ScreenAndNavigationGroupAndNavigationViewUtil;
-import org.cxbox.meta.metahotreload.service.WidgetUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -52,7 +51,6 @@ public class MetaHotReloadConfiguration {
 			InternalAuthorizationService authzService,
 			TransactionService txService,
 			MetaRepository metaRepository,
-			WidgetUtil widgetUtil,
 			ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil,
 			BcUtil bcUtil) {
 		return new MetaHotReloadServiceImpl(
@@ -61,7 +59,6 @@ public class MetaHotReloadConfiguration {
 				authzService,
 				txService,
 				metaRepository,
-				widgetUtil,
 				screenAndNavigationGroupAndNavigationViewUtil,
 				bcUtil);
 	}

@@ -40,7 +40,6 @@ import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
-import org.cxbox.meta.entity.Widget;
 import org.cxbox.meta.navigation.NavigationView;
 
 @RequiredArgsConstructor
@@ -56,13 +55,9 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected final MetaRepository metaRepository;
 
-	protected final WidgetUtil widgetUtil;
-
 	protected final ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil;
 
 	protected final BcUtil bcUtil;
-
-	//protected final JpaDao jpaDao;
 
 
 	public void loadMeta() {
@@ -78,7 +73,6 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 			loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
 			metaRepository.deleteAllMeta();
 			bcUtil.process(bcDtos);
-			Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
 			screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
 			responsibilitiesProcess(screenDtos, viewDtos);
 			loadMetaAfterProcess();

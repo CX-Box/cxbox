@@ -36,10 +36,6 @@ import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.entity.Responsibilities_;
 import org.cxbox.meta.entity.Screen;
 import org.cxbox.meta.entity.Screen_;
-import org.cxbox.meta.entity.ViewWidgets;
-import org.cxbox.meta.entity.ViewWidgets_;
-import org.cxbox.meta.entity.Widget;
-import org.cxbox.meta.entity.Widget_;
 import org.cxbox.meta.navigation.NavigationGroup;
 import org.cxbox.meta.navigation.NavigationView;
 import org.cxbox.meta.navigation.NavigationView_;
@@ -54,11 +50,6 @@ public class MetaRepository {
 
 	public void saveScreen(Screen screen) {
 		jpaDao.save(screen);
-	}
-
-
-	public void saveAllWidgets(Map<String, Widget> nameToWidget) {
-		nameToWidget.forEach((name, widget) -> jpaDao.save(widget));
 	}
 
 	public void saveBc(Bc bc) {
@@ -87,7 +78,6 @@ public class MetaRepository {
 		jpaDao.delete(NavigationView.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(NavigationGroup.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(Screen.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(Widget.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(Bc.class, (root, query, cb) -> cb.and());
 	}
 
@@ -134,27 +124,6 @@ public class MetaRepository {
 				),
 				getAll ? cb.and() : root.get(NavigationView_.viewName).in(responsibilities)
 		));
-	}
-
-	public List<Long> getBcWidgets(String bc) {
-		return jpaDao.getList(
-				Widget.class,
-				Long.class,
-				(root, cb) -> root.get(Widget_.id),
-				(root, query, cb) -> cb.equal(root.get(Widget_.bc), bc)
-		);
-	}
-
-	public List<String> getWidget(Long widgetId) {
-		return jpaDao.getList(
-				ViewWidgets.class,
-				String.class,
-				(root, cb) -> root.get(ViewWidgets_.viewName),
-				(root, query, cb) -> {
-					query.distinct(true);
-					return cb.equal(root.get(ViewWidgets_.widget).get(Widget_.id), widgetId);
-				}
-		);
 	}
 
 	public Map<String, BcProperties> getBcProperties() {
