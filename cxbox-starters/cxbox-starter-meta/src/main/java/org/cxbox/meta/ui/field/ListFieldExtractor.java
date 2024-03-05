@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Set;
 import org.cxbox.api.util.i18n.LocalizationFormatter;
 import org.cxbox.core.util.JsonUtils;
+import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
-import org.cxbox.meta.entity.Widget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 	}
 
 	@Override
-	public Set<BcField> extract(final Widget widget) {
+	public Set<BcField> extract(final WidgetDTO widget) {
 		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(widget.getTitle())));
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));

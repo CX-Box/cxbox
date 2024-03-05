@@ -16,16 +16,16 @@
 
 package org.cxbox.meta.ui.field;
 
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.entity.Widget;
 import java.util.List;
 import java.util.Set;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.model.BcField;
 import org.springframework.stereotype.Component;
 
 @Component
 public interface FieldExtractor {
 
-	Set<BcField> extract(Widget widget);
+	Set<BcField> extract(WidgetDTO widget);
 
 	List<String> getSupportedTypes();
 

@@ -26,7 +26,6 @@ import org.cxbox.meta.metahotreload.service.BcUtil;
 import org.cxbox.meta.metahotreload.service.MetaHotReloadServiceImpl;
 import org.cxbox.meta.metahotreload.service.MetaResourceReaderService;
 import org.cxbox.meta.metahotreload.service.ScreenAndNavigationGroupAndNavigationViewUtil;
-import org.cxbox.meta.metahotreload.service.ViewAndViewWidgetUtil;
 import org.cxbox.meta.metahotreload.service.WidgetUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,7 +53,6 @@ public class MetaHotReloadConfiguration {
 			TransactionService txService,
 			MetaRepository metaRepository,
 			WidgetUtil widgetUtil,
-			ViewAndViewWidgetUtil viewAndViewWidgetUtil,
 			ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil,
 			BcUtil bcUtil) {
 		return new MetaHotReloadServiceImpl(
@@ -64,7 +62,6 @@ public class MetaHotReloadConfiguration {
 				txService,
 				metaRepository,
 				widgetUtil,
-				viewAndViewWidgetUtil,
 				screenAndNavigationGroupAndNavigationViewUtil,
 				bcUtil);
 	}

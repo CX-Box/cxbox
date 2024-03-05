@@ -18,11 +18,6 @@ package org.cxbox.meta.ui.field;
 
 import static java.util.stream.Stream.of;
 
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.ChartMetaItem;
-import org.cxbox.core.util.JsonUtils;
-import org.cxbox.meta.entity.Widget;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Streams;
 import java.util.ArrayList;
@@ -32,19 +27,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.cxbox.core.util.JsonUtils;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.ChartMetaItem;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ChartFieldExtractor implements FieldExtractor {
 
-	private static Set<BcField> extractFromObject(final Widget widget, final JsonNode seriesNode) {
+	private static Set<BcField> extractFromObject(final WidgetDTO widget, final JsonNode seriesNode) {
 		return of("param", "value")
 				.map(name -> extractField(widget, seriesNode, name))
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
 	}
 
-	private static Set<BcField> extractFromStringArray(final Widget widget, final JsonNode seriesNode) {
+	private static Set<BcField> extractFromStringArray(final WidgetDTO widget, final JsonNode seriesNode) {
 		return Streams.stream(seriesNode)
 				.map(JsonNode::textValue)
 				.map(name -> extractField(widget, seriesNode, name))
@@ -52,7 +52,7 @@ public class ChartFieldExtractor implements FieldExtractor {
 				.collect(Collectors.toSet());
 	}
 
-	private static Set<BcField> extractFromObjectArray(final Widget widget, final JsonNode seriesNode) {
+	private static Set<BcField> extractFromObjectArray(final WidgetDTO widget, final JsonNode seriesNode) {
 		final HashSet<BcField> fields = new HashSet<>();
 		for (final JsonNode jsonNode : seriesNode) {
 			final JsonNode dataNode = jsonNode.get("data");
@@ -77,7 +77,7 @@ public class ChartFieldExtractor implements FieldExtractor {
 		return fields;
 	}
 
-	private static Set<BcField> extractField(final Widget widget, final JsonNode node, final String name) {
+	private static Set<BcField> extractField(final WidgetDTO widget, final JsonNode node, final String name) {
 		final JsonNode valueNode = node.get(name);
 		if (valueNode != null && valueNode.isTextual()) {
 			return Collections.singleton(newWidgetField(widget, valueNode.textValue()));
@@ -85,9 +85,9 @@ public class ChartFieldExtractor implements FieldExtractor {
 		return Collections.emptySet();
 	}
 
-	private static BcField newWidgetField(final Widget widget, final String name) {
-		return new BcField(widget.getBc(), trim(name))
-				.putAttribute(Attribute.WIDGET_ID, widget.getId());
+	private static BcField newWidgetField(final WidgetDTO widget, final String name) {
+		return new BcField(widget.getBcName(), trim(name))
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName());
 	}
 
 	private static String trim(final String value) {
@@ -109,7 +109,7 @@ public class ChartFieldExtractor implements FieldExtractor {
 	}
 
 	@Override
-	public Set<BcField> extract(final Widget widget) {
+	public Set<BcField> extract(final WidgetDTO widget) {
 		final HashSet<BcField> fields = new HashSet<>();
 
 		final JsonNode jsonNode = JsonUtils.readTree(widget.getChart());

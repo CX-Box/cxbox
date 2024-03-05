@@ -16,16 +16,16 @@
 
 package org.cxbox.meta.ui.field.link;
 
-import lombok.RequiredArgsConstructor;
-import org.cxbox.meta.ui.field.CustomFieldExtractor;
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
-import org.cxbox.meta.entity.Widget;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.CustomFieldExtractor;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,22 +35,22 @@ public final class LinkFieldExtractor {
 	private final CustomFieldExtractor customFieldExtractor;
 
 	@SneakyThrows
-	public Set<BcField> extract(final Widget widget, final Object object) {
-		return extract(widget.getId(), widget.getBc(), object);
+	public Set<BcField> extract(final WidgetDTO widget, final Object object) {
+		return extract(widget.getName(), widget.getBcName(), object);
 	}
 
 	@SneakyThrows
-	public Set<BcField> extract(final Long widgetId, final String bc, final Object object) {
+	public Set<BcField> extract(final String widgetName, final String bc, final Object object) {
 		final Set<BcField> fields = new HashSet<>();
 		for (final Field field : InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(object.getClass())) {
 			field.setAccessible(true);
 			if (field.isAnnotationPresent(LinkToField.class) && field.get(object) != null) {
 				fields.add(new BcField(bc, (String) field.get(object))
-						.putAttribute(Attribute.WIDGET_ID, widgetId)
+						.putAttribute(Attribute.WIDGET_NAME, widgetName)
 				);
 			}
 		}
-		Set<BcField> customFields = customFieldExtractor.extract(widgetId, bc, object);
+		Set<BcField> customFields = customFieldExtractor.extract(widgetName, bc, object);
 		fields.addAll(customFields);
 		return fields;
 	}

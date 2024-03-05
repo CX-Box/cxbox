@@ -17,14 +17,14 @@
 package org.cxbox.meta.ui.field;
 
 import java.util.ArrayList;
-import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.json.field.FieldMeta;
-import org.cxbox.core.util.JsonUtils;
-import org.cxbox.meta.entity.Widget;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.cxbox.core.util.JsonUtils;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ public class SimpleFormFieldExtractor extends BaseFieldExtractor {
 	}
 
 	@Override
-	public Set<BcField> extract(Widget widget) {
+	public Set<BcField> extract(WidgetDTO widget) {
 		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, widget.getTitle()));
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));

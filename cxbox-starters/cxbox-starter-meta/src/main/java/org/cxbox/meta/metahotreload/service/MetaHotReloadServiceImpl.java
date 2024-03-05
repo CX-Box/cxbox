@@ -58,8 +58,6 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected final WidgetUtil widgetUtil;
 
-	protected final ViewAndViewWidgetUtil viewAndViewWidgetUtil;
-
 	protected final ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil;
 
 	protected final BcUtil bcUtil;
@@ -81,7 +79,6 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 			metaRepository.deleteAllMeta();
 			bcUtil.process(bcDtos);
 			Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
-			viewAndViewWidgetUtil.process(viewDtos, nameToWidget);
 			screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
 			responsibilitiesProcess(screenDtos, viewDtos);
 			loadMetaAfterProcess();

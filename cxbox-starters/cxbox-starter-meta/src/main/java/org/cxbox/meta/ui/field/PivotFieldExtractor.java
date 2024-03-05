@@ -16,20 +16,20 @@
 
 package org.cxbox.meta.ui.field;
 
-import lombok.RequiredArgsConstructor;
-import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.field.FieldMeta;
-import org.cxbox.meta.ui.model.json.PivotMeta;
-import org.cxbox.meta.ui.model.json.PivotMeta.TableColRow;
-import org.cxbox.meta.ui.model.json.PivotMeta.TableValue;
-import org.cxbox.core.util.JsonUtils;
-import org.cxbox.meta.entity.Widget;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.cxbox.core.util.JsonUtils;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.PivotMeta;
+import org.cxbox.meta.ui.model.json.PivotMeta.TableColRow;
+import org.cxbox.meta.ui.model.json.PivotMeta.TableValue;
+import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,7 +39,7 @@ public class PivotFieldExtractor implements FieldExtractor {
 	private final LinkFieldExtractor linkFieldExtractor;
 
 	@Override
-	public Set<BcField> extract(final Widget widget) {
+	public Set<BcField> extract(final WidgetDTO widget) {
 		final Set<BcField> fields = new HashSet<>();
 		if (widget.getPivotFields() != null) {
 			final PivotMeta pivotMeta = JsonUtils.readValue(PivotMeta.class, widget.getPivotFields());
@@ -50,7 +50,7 @@ public class PivotFieldExtractor implements FieldExtractor {
 		return fields;
 	}
 
-	private Set<BcField> extract(final Widget widget, final TableColRow tableColRow) {
+	private Set<BcField> extract(final WidgetDTO widget, final TableColRow tableColRow) {
 		final Set<BcField> fields = linkFieldExtractor.extract(widget, tableColRow);
 		if (tableColRow.getChildren() != null) {
 			tableColRow.getChildren().forEach(child -> fields.addAll(extract(widget, child)));
@@ -58,11 +58,11 @@ public class PivotFieldExtractor implements FieldExtractor {
 		return fields;
 	}
 
-	private Set<BcField> extract(final Widget widget, final TableValue tableValue) {
+	private Set<BcField> extract(final WidgetDTO widget, final TableValue tableValue) {
 		final FieldMeta fieldMeta = tableValue.getField();
 		final HashSet<BcField> fields = new HashSet<>(linkFieldExtractor.extract(widget, fieldMeta));
-		fields.add(new BcField(widget.getBc(), fieldMeta.getKey())
-				.putAttribute(Attribute.WIDGET_ID, widget.getId())
+		fields.add(new BcField(widget.getBcName(), fieldMeta.getKey())
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 		);
 		return fields;
 	}

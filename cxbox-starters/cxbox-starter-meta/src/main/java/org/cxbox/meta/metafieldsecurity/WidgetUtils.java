@@ -16,13 +16,6 @@
 
 package org.cxbox.meta.metafieldsecurity;
 
-import org.cxbox.meta.ui.field.FieldExtractor;
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.ViewWidgetsGroup;
-import org.cxbox.meta.entity.ViewWidgets;
-import org.cxbox.meta.entity.Widget;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +27,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.FieldExtractor;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -54,7 +51,7 @@ public final class WidgetUtils {
 		fieldExtractorMap = Collections.unmodifiableMap(extractors);
 	}
 
-	public Set<BcField> extractFields(final Widget widget) {
+	public Set<BcField> extractFields(final WidgetDTO widget) {
 		final FieldExtractor fieldExtractor = fieldExtractorMap.get(widget.getType());
 		if (fieldExtractor == null) {
 			return Collections.emptySet();
@@ -62,7 +59,7 @@ public final class WidgetUtils {
 		return fieldExtractor.extract(widget);
 	}
 
-	public Set<BcField> extractPickListFields(final Widget widget) {
+	public Set<BcField> extractPickListFields(final WidgetDTO widget) {
 		return extractFields(widget).stream()
 				.map(field -> field.<Set<BcField>>getAttribute(Attribute.PICK_LIST_FIELDS))
 				.filter(e -> e != null && !e.isEmpty())
@@ -70,23 +67,23 @@ public final class WidgetUtils {
 				.collect(Collectors.toSet());
 	}
 
-	public Set<BcField> extractShowConditionFields(final Widget widget) {
+	public Set<BcField> extractShowConditionFields(final WidgetDTO widget) {
 		return fieldExtractorMap.get("ShowConditionFields").extract(widget);
 	}
 
-	public Set<BcField> extractPivotFields(final Widget widget) {
+	public Set<BcField> extractPivotFields(final WidgetDTO widget) {
 		return fieldExtractorMap.get("PivotFields").extract(widget);
 	}
 
-	public Set<BcField> extractChartFields(final Widget widget) {
+	public Set<BcField> extractChartFields(final WidgetDTO widget) {
 		return fieldExtractorMap.get("ChartFields").extract(widget);
 	}
 
-	public Set<BcField> extractHierarchyFields(final Widget widget) {
+	public Set<BcField> extractHierarchyFields(final WidgetDTO widget) {
 		return fieldExtractorMap.get("HierarchyFields").extract(widget);
 	}
 
-	public Set<BcField> extractAllFields(final Widget widget) {
+	public Set<BcField> extractAllFields(final WidgetDTO widget) {
 		final Set<BcField> fields = new HashSet<>(extractFields(widget));
 		fields.addAll(extractShowConditionFields(widget));
 		fields.addAll(extractPivotFields(widget));
@@ -100,16 +97,6 @@ public final class WidgetUtils {
 						.collect(Collectors.toSet())
 		);
 		return fields;
-	}
-
-	public List<ViewWidgetsGroup> getViewWidgetsGroups(final List<ViewWidgets> viewWidgetList) {
-		final Map<String, List<Widget>> viewWidgets = new HashMap<>();
-		for (final ViewWidgets viewWidget : viewWidgetList) {
-			viewWidgets.computeIfAbsent(viewWidget.getViewName(), s -> new ArrayList<>()).add(viewWidget.getWidget());
-		}
-		return viewWidgets.entrySet().stream()
-				.map(entry -> new ViewWidgetsGroup(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toList());
 	}
 
 }

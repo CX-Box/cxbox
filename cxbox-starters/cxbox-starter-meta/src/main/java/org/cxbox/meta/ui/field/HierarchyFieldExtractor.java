@@ -17,18 +17,18 @@
 package org.cxbox.meta.ui.field;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.RequiredArgsConstructor;
-import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.WidgetOptions;
-import org.cxbox.core.util.JsonUtils;
-import org.cxbox.meta.entity.Widget;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.cxbox.core.util.JsonUtils;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.WidgetOptions;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,7 +38,7 @@ public class HierarchyFieldExtractor implements FieldExtractor {
 	private final LinkFieldExtractor linkFieldExtractor;
 
 	@Override
-	public Set<BcField> extract(Widget widget) {
+	public Set<BcField> extract(WidgetDTO widget) {
 		final HashSet<BcField> fields = new HashSet<>();
 		Optional.ofNullable(widget.getOptions())
 				.map(JsonUtils::readTree)
@@ -48,12 +48,12 @@ public class HierarchyFieldExtractor implements FieldExtractor {
 				.ifPresent(list -> list.forEach(item -> {
 					if (item.getAssocValueKey() != null) {
 						fields.add(new BcField(item.getBcName(), item.getAssocValueKey())
-								.putAttribute(Attribute.WIDGET_ID, widget.getId()));
+								.putAttribute(Attribute.WIDGET_NAME, widget.getName()));
 					}
 					item.getFields().forEach(field -> {
 								fields.add(new BcField(item.getBcName(), field.getKey())
-										.putAttribute(Attribute.WIDGET_ID, widget.getId()));
-								fields.addAll(linkFieldExtractor.extract(widget.getId(), item.getBcName(), field));
+										.putAttribute(Attribute.WIDGET_NAME, widget.getName()));
+								fields.addAll(linkFieldExtractor.extract(widget.getName(), item.getBcName(), field));
 							});
 						}
 				));

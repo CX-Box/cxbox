@@ -33,6 +33,7 @@ import org.cxbox.core.bc.AnySourceBcTypeAware;
 import org.cxbox.core.service.DTOSecurityUtils;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.meta.UIServiceImpl.UserCache;
+import org.cxbox.meta.metahotreload.mapper.MetaProvider;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.springframework.context.annotation.Primary;
@@ -44,10 +45,10 @@ public class AnySourceBcUtils extends BcUtils {
 
 	private final AnySourceBcTypeAware anySourceBcTypeAware;
 
-	public AnySourceBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
+	public AnySourceBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, MetaProvider metaProvider, WidgetUtils widgetUtils,
 			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, UserCache userCache,
 			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware) {
-		super(innerBcTypeAware, metaRepository, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, userCache,
+		super(innerBcTypeAware, metaRepository, metaProvider, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, userCache,
 				sessionService,  requiredFieldsSuppliersm);
 		this.anySourceBcTypeAware = anySourceBcTypeAware;
 	}

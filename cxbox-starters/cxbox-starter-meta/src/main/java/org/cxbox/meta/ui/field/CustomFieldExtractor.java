@@ -39,7 +39,7 @@ public class CustomFieldExtractor {
 	private final Optional<CustomFields> customFields;
 
 	@SneakyThrows
-	public Set<BcField> extract(final Long widgetId, final String bc, final Object meta) {
+	public Set<BcField> extract(final String widgetName, final String bc, final Object meta) {
 		final Set<BcField> fields = new HashSet<>();
 		if (!customFields.isPresent()) {
 			return fields;
@@ -60,7 +60,7 @@ public class CustomFieldExtractor {
 			}
 
 			fields.add(new BcField(bc, entry.getValue())
-					.putAttribute(Attribute.WIDGET_ID, widgetId)
+					.putAttribute(Attribute.WIDGET_NAME, widgetName)
 			);
 		}
 
