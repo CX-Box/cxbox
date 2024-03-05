@@ -23,16 +23,16 @@ import java.util.Set;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
+import org.cxbox.core.bc.AnySourceBcTypeAware;
 import org.cxbox.core.bc.InnerBcTypeAware;
 import org.cxbox.core.controller.BcHierarchyAware;
 import org.cxbox.core.crudma.bc.BcRegistry;
-import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
-import org.cxbox.core.bc.AnySourceBcTypeAware;
 import org.cxbox.core.service.DTOSecurityUtils;
+import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.meta.UIServiceImpl.UserCache;
 import org.cxbox.meta.metahotreload.mapper.MetaProvider;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
@@ -46,9 +46,9 @@ public class AnySourceBcUtils extends BcUtils {
 	private final AnySourceBcTypeAware anySourceBcTypeAware;
 
 	public AnySourceBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, MetaProvider metaProvider, WidgetUtils widgetUtils,
-			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, UserCache userCache,
+			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, ResponsibilitiesService responsibilitiesService,
 			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware) {
-		super(innerBcTypeAware, metaRepository, metaProvider, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, userCache,
+		super(innerBcTypeAware, metaRepository, metaProvider, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, responsibilitiesService,
 				sessionService,  requiredFieldsSuppliersm);
 		this.anySourceBcTypeAware = anySourceBcTypeAware;
 	}

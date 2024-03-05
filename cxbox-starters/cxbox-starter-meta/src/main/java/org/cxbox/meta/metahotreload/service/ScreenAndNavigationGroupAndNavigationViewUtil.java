@@ -28,8 +28,6 @@ import lombok.RequiredArgsConstructor;
 import org.cxbox.api.data.dictionary.CoreDictionaries;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
-import org.cxbox.meta.metahotreload.util.JsonUtils;
-import org.cxbox.meta.entity.Screen;
 import org.cxbox.meta.navigation.NavigationGroup;
 import org.cxbox.meta.navigation.NavigationView;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,27 +45,13 @@ public class ScreenAndNavigationGroupAndNavigationViewUtil {
 	public void process(
 			@NonNull List<ScreenSourceDto> screenDtos) {
 		screenDtos.forEach(scr -> {
-			Screen screen = mapToScreen(objMapper, scr);
-			metaRepository.saveScreen(screen);
+
 			if (scr.getNavigation() != null && scr.getNavigation().getMenu() != null) {
 				AtomicInteger seq = new AtomicInteger(0);
 				scr.getNavigation().getMenu()
 						.forEach(menu -> dfs(scr.getName(), seq, null, menu, metaRepository));
 			}
 		});
-	}
-
-
-
-	@NonNull
-	private static Screen mapToScreen(
-			@NonNull ObjectMapper objectMapper,
-			@NonNull ScreenSourceDto screenSourceDto) {
-		return new Screen()
-				.setName(screenSourceDto.getName())
-				.setTitle(screenSourceDto.getTitle())
-				.setPrimary(screenSourceDto.getPrimaryViewName())
-				.setPrimaries(JsonUtils.serializeOrElseNull(objectMapper, screenSourceDto.getPrimaryViews()));
 	}
 
 	private static void dfs(@NonNull String screenName,

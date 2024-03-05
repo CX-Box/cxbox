@@ -34,8 +34,6 @@ import org.cxbox.meta.entity.FilterGroup_;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.entity.Responsibilities_;
-import org.cxbox.meta.entity.Screen;
-import org.cxbox.meta.entity.Screen_;
 import org.cxbox.meta.navigation.NavigationGroup;
 import org.cxbox.meta.navigation.NavigationView;
 import org.cxbox.meta.navigation.NavigationView_;
@@ -47,10 +45,6 @@ import org.springframework.stereotype.Service;
 public class MetaRepository {
 
 	private final JpaDao jpaDao;
-
-	public void saveScreen(Screen screen) {
-		jpaDao.save(screen);
-	}
 
 	public void saveBc(Bc bc) {
 		jpaDao.save(bc);
@@ -77,16 +71,7 @@ public class MetaRepository {
 	public void deleteAllMeta() {
 		jpaDao.delete(NavigationView.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(NavigationGroup.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(Screen.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(Bc.class, (root, query, cb) -> cb.and());
-	}
-
-
-	public Screen getScreenByName(String name) {
-		return jpaDao.getSingleResultOrNull(
-				Screen.class,
-				(root, query, cb) -> cb.equal(root.get(Screen_.name), name)
-		);
 	}
 
 	/*
@@ -111,8 +96,8 @@ public class MetaRepository {
 	}
 
 
-	public List<NavigationView> getViewByScreenAndResponsibilities(String screenName, boolean getAll,
-			Set<String> responsibilities) {
+	public List<String> getAvailableScreenViews(String screenName, boolean getAll,
+			Set<String> views) {
 		return jpaDao.getList(NavigationView.class, (root, query, cb) -> cb.and(
 				cb.equal(
 						root.get(NavigationView_.screenName),
@@ -122,8 +107,8 @@ public class MetaRepository {
 						root.get(NavigationView_.typeCd),
 						ViewGroupType.NAVIGATION
 				),
-				getAll ? cb.and() : root.get(NavigationView_.viewName).in(responsibilities)
-		));
+				getAll ? cb.and() : root.get(NavigationView_.viewName).in(views)
+		)).stream().map(NavigationView::getViewName).distinct().collect(Collectors.toList());
 	}
 
 	public Map<String, BcProperties> getBcProperties() {
@@ -144,7 +129,7 @@ public class MetaRepository {
 		);
 	}
 
-	public List<Responsibilities> getListByUserList(IUser<Long> user, LOV userRole,
+	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, LOV userRole,
 			ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
 		return jpaDao.getList(

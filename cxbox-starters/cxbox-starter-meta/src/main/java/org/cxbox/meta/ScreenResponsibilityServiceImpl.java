@@ -59,7 +59,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	public List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole) {
 		List<ScreenResponsibility> result = new ArrayList<>();
 		try {
-			String screens = respService.getListScreensByUser(user, userRole);
+			String screens = respService.getAvailableScreens(user, userRole);
 			if (StringUtils.isNotBlank(screens)) {
 				result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
 			}

@@ -66,7 +66,7 @@ public class UserMetaProvider {
 
 		Map<String, ScreenDTO> allUserScreens = SerializationUtils.clone((HashMap<String, ScreenDTO>) allScreens);
 
-		Map<String, Boolean> userViewToReadOnlyFlg = responsibilitiesService.getListRespByUser(user, userRole);
+		Map<String, Boolean> userViewToReadOnlyFlg = responsibilitiesService.getAvailableViews(user, userRole);
 		allUserScreens.values().forEach(s -> {
 			List<ViewDTO> userViews = s.getViews().stream()
 					.filter(v -> v.getName() != null && userViewToReadOnlyFlg.containsKey(v.getName())).toList();
