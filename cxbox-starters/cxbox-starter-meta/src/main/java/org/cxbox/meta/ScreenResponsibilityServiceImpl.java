@@ -30,7 +30,7 @@ import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.data.ScreenDTO;
-import org.cxbox.meta.metahotreload.mapper.UserMetaProvider;
+import org.cxbox.meta.metahotreload.repository.UserMetaProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

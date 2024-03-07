@@ -16,6 +16,8 @@
 
 package org.cxbox.meta;
 
+import com.google.common.collect.Sets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,6 +32,7 @@ import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
+import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
@@ -46,7 +49,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	private final TransactionService txService;
 
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
-			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
+			CacheConfig.USER_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
 	public Map<String, Boolean> getAvailableViews(IUser<Long> user, LOV userRole) {
 		return metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.VIEW)
 				.stream()
@@ -84,7 +87,10 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	public List<String> getAvailableScreenViews(String screenName, IUser<Long> user, LOV userRole) {
 		final Set<String> availableViews = this.getAvailableViews(user, userRole).keySet();
 		final boolean getAll = Objects.equals(userRole, CoreDictionaries.InternalRole.ADMIN);
-		return metaRepository.getAvailableScreenViews(screenName, getAll, availableViews);
+		var screenViews = metaRepository.getAllScreens().get(screenName).getViews().stream().map(ViewDTO::getName).collect(
+				Collectors.toSet());
+		var result = getAll ? screenViews : Sets.intersection(screenViews, availableViews);
+		return new ArrayList<>(result);
 	}
 
 }

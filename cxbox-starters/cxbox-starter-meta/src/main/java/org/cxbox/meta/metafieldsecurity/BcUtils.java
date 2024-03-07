@@ -44,7 +44,6 @@ import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.service.DTOSecurityUtils;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.meta.metahotreload.mapper.MetaProvider;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.cxbox.meta.ui.model.BcField;
@@ -59,8 +58,6 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	private final InnerBcTypeAware innerBcTypeAware;
 
 	private final MetaRepository metaRepository;
-
-	private final MetaProvider metaProvider;
 
 	private final WidgetUtils widgetUtils;
 
@@ -164,7 +161,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 		@SneakyThrows
 		public Map<String, Set<BcField>> load(final String viewName) {
 			final Set<BcField> fields = new HashSet<>();
-			metaProvider.getAllScreens().forEach((name, screen) -> screen.getViews().forEach(view -> {
+			metaRepository.getAllScreens().forEach((name, screen) -> screen.getViews().forEach(view -> {
 				if (Objects.equals(view.getName(), viewName)) {
 					view.getWidgets().forEach(widget -> {
 						var widgetFields = new HashSet<>(widgetUtils.extractAllFields(widget));

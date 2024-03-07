@@ -18,14 +18,15 @@ package org.cxbox.meta.metahotreload.repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.api.data.dictionary.CoreDictionaries.ViewGroupType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
+import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.meta.data.FilterGroupDTO;
+import org.cxbox.meta.data.ScreenDTO;
+import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.Bc;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.BcProperties_;
@@ -34,10 +35,12 @@ import org.cxbox.meta.entity.FilterGroup_;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.entity.Responsibilities_;
-import org.cxbox.meta.navigation.NavigationGroup;
-import org.cxbox.meta.navigation.NavigationView;
-import org.cxbox.meta.navigation.NavigationView_;
+import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
+import org.cxbox.meta.metahotreload.mapper.ScreenMapper;
+import org.cxbox.meta.metahotreload.mapper.ViewMapper;
+import org.cxbox.meta.metahotreload.service.MetaResourceReaderService;
 import org.cxbox.model.core.dao.JpaDao;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -46,16 +49,14 @@ public class MetaRepository {
 
 	private final JpaDao jpaDao;
 
+	private final MetaResourceReaderService metaResourceReaderService;
+
+	private final ScreenMapper screenMapper;
+
+	private final ViewMapper viewMapper;
+
 	public void saveBc(Bc bc) {
 		jpaDao.save(bc);
-	}
-
-	public void saveNavigationGroup(NavigationGroup navigationGroup) {
-		jpaDao.save(navigationGroup);
-	}
-
-	public void saveNavigationView(NavigationView navigationView) {
-		jpaDao.save(navigationView);
 	}
 
 	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities) {
@@ -63,14 +64,7 @@ public class MetaRepository {
 		jpaDao.saveAll(responsibilities);
 	}
 
-
-	public List<NavigationView> getNavigationViews() {
-		return jpaDao.getList(NavigationView.class);
-	}
-
 	public void deleteAllMeta() {
-		jpaDao.delete(NavigationView.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(NavigationGroup.class, (root, query, cb) -> cb.and());
 		jpaDao.delete(Bc.class, (root, query, cb) -> cb.and());
 	}
 
@@ -95,21 +89,6 @@ public class MetaRepository {
 		);
 	}
 
-
-	public List<String> getAvailableScreenViews(String screenName, boolean getAll,
-			Set<String> views) {
-		return jpaDao.getList(NavigationView.class, (root, query, cb) -> cb.and(
-				cb.equal(
-						root.get(NavigationView_.screenName),
-						screenName
-				),
-				cb.equal(
-						root.get(NavigationView_.typeCd),
-						ViewGroupType.NAVIGATION
-				),
-				getAll ? cb.and() : root.get(NavigationView_.viewName).in(views)
-		)).stream().map(NavigationView::getViewName).distinct().collect(Collectors.toList());
-	}
 
 	public Map<String, BcProperties> getBcProperties() {
 		return jpaDao.getList(BcProperties.class, (root, cq, cb) ->
@@ -142,5 +121,29 @@ public class MetaRepository {
 		);
 	}
 
+
+	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
+			cacheNames = CacheConfig.UI_CACHE,
+			key = "{#root.methodName}"
+	)
+	public Map<String, ScreenDTO> getAllScreens() {
+		//load data
+		var screens = metaResourceReaderService.getScreens();
+		var widgets = metaResourceReaderService.getWidgets();
+		var views = metaResourceReaderService.getViews();
+		Map<String, BcProperties> bcProps = getBcProperties();
+		Map<String, List<FilterGroup>> filterGroups = getFilterGroups();
+
+		//map data
+		var widgetNameToWidget = widgets.stream()
+				.collect(Collectors.toMap(WidgetSourceDTO::getName, e -> e));
+		var viewNameToView = views
+				.stream()
+				.map(v -> viewMapper.map(v, widgetNameToWidget))
+				.collect(Collectors.toMap(ViewDTO::getName, e -> e));
+		return screens.stream()
+				.map(screenSourceDto -> screenMapper.map(screenSourceDto, viewNameToView, bcProps, filterGroups))
+				.collect(Collectors.toMap(ScreenDTO::getName, e -> e));
+	}
 
 }
