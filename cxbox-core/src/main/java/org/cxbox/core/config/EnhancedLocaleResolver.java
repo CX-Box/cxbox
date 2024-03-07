@@ -38,7 +38,7 @@ public class EnhancedLocaleResolver extends CookieLocaleResolver {
 	}
 
 	@Override
-	protected Locale parseLocaleValue(String localeValue) {
+	public Locale parseLocaleValue(String localeValue) {
 		Locale locale = super.parseLocaleValue(localeValue);
 		if (locale == null || !localeService.isLanguageSupported(locale.getLanguage())) {
 			return null;
@@ -47,7 +47,7 @@ public class EnhancedLocaleResolver extends CookieLocaleResolver {
 	}
 
 	@Override
-	protected Locale determineDefaultLocale(HttpServletRequest request) {
+	public Locale determineDefaultLocale(HttpServletRequest request) {
 		Locale locale = coreSessionService.getLocale(super.determineDefaultLocale(request));
 		if (localeService.isLanguageSupported(locale.getLanguage())) {
 			return locale;
@@ -56,7 +56,7 @@ public class EnhancedLocaleResolver extends CookieLocaleResolver {
 	}
 
 	@Override
-	protected TimeZone determineDefaultTimeZone(HttpServletRequest request) {
+	public TimeZone determineDefaultTimeZone(HttpServletRequest request) {
 		return coreSessionService.getTimeZone(super.determineDefaultTimeZone(request));
 	}
 

@@ -37,4 +37,11 @@ public class UIProperties {
 	 */
 	private String path = "/ui";
 
+	/**
+	 ** Lock row in db timeout in ms; -1 by default, e.g. infinite
+	 */
+	private int uiLockTimeoutMs = -1;
+
+	private String systemUrl = null;
+
 }

@@ -74,7 +74,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	}
 
 	//TODO>>Draft. Refactor
-	private void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
+	public void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
 		if (config.isViewAllowedRolesEnabled()) {
 			Map<String, String> viewToScreenMap = new HashMap<>();
 			metaRepository.getAllScreens()
@@ -115,7 +115,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 				responsibilities.add(new Responsibilities()
 						.setResponsibilityType(ResponsibilityType.SCREEN)
 						.setInternalRoleCD(new LOV(role))
-						.setScreens(mapToScreens(screenNameToScreen, screens))
+						.setScreens(mapToScreens(screens))
 						.setDepartmentId(defaultDepartmentId));
 			}
 			metaRepository.deleteAndSaveResponsibilities(responsibilities);
@@ -126,8 +126,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	//TODO>>Draft. Refactor
 	@NonNull
-	private String mapToScreens(@NonNull Map<String, ScreenSourceDto> screenNameToScreen,
-			@NonNull Set<ScreenSourceDto> screens) {
+	public String mapToScreens(@NonNull Set<ScreenSourceDto> screens) {
 		StringJoiner joiner = new StringJoiner(",");
 		List<ScreenSourceDto> orderedScreens = screens
 				.stream()

@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package org.cxbox.api.system;
+package org.cxbox.api.config;
 
-import org.springframework.context.ApplicationListener;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
+@Getter
+@Setter
+@ConfigurationProperties("cxbox.localization")
+public class CxboxLocalizationProperties {
 
-public interface ISystemSettingChangeEventListener extends ApplicationListener<SystemSettingChangedEvent> {
-
-	void onApplicationEvent(SystemSettingChangedEvent event);
+	Set<String> supportedLanguages = Set.of("en");
 
 }

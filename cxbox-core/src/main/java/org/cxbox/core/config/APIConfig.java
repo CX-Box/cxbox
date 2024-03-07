@@ -17,16 +17,13 @@
 package org.cxbox.core.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cxbox.api.service.LocaleService;
-import org.cxbox.api.service.session.CoreSessionService;
+import java.util.List;
+import lombok.AllArgsConstructor;
 import org.cxbox.core.config.properties.APIProperties;
 import org.cxbox.core.controller.param.resolvers.LocaleParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.PageParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.QueryParametersResolver;
 import org.cxbox.core.controller.param.resolvers.TimeZoneParameterArgumentResolver;
-/*import java.nio.charset.StandardCharsets;*/
-import java.util.List;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -37,10 +34,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
-/*import org.springframework.web.multipart.commons.CommonsMultipartResolver;*/
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -78,9 +72,6 @@ public class APIConfig implements WebMvcConfigurer {
 		return resolver;
 	}
 
-	@Bean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
-	public LocaleResolver localeResolver(CoreSessionService coreSessionService, LocaleService localeService) {
-		return new EnhancedLocaleResolver(coreSessionService, localeService);
-	}
+
 
 }

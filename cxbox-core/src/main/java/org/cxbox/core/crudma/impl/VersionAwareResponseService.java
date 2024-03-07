@@ -16,9 +16,16 @@
 
 package org.cxbox.core.crudma.impl;
 
-import org.cxbox.api.data.dictionary.CoreDictionaries.SystemPref;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.metamodel.SingularAttribute;
+import java.util.Objects;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.system.SystemSettings;
+import org.cxbox.core.config.properties.UIProperties;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
@@ -26,14 +33,6 @@ import org.cxbox.core.exception.UnableToLockException;
 import org.cxbox.core.exception.VersionMismatchException;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.model.core.entity.BaseEntity;
-import java.util.Objects;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.LockTimeoutException;
-import jakarta.persistence.OptimisticLockException;
-import jakarta.persistence.PessimisticLockException;
-import jakarta.persistence.metamodel.SingularAttribute;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -42,7 +41,7 @@ public abstract class VersionAwareResponseService<T extends DataResponseDTO, E e
 		AbstractResponseService<T, E> {
 
 	@Autowired
-	private SystemSettings systemSettings;
+	private UIProperties uiProperties;
 
 	public VersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity,
 			SingularAttribute<? super E, ? extends BaseEntity> parentSpec,
@@ -110,7 +109,7 @@ public abstract class VersionAwareResponseService<T extends DataResponseDTO, E e
 	}
 
 	protected int getLockTimeout() {
-		return systemSettings.getIntegerValue(SystemPref.UI_LOCK_TIMEOUT, -1);
+		return uiProperties.getUiLockTimeoutMs();
 	}
 
 }

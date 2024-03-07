@@ -23,11 +23,11 @@ import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.core.config.properties.APIProperties;
 import org.cxbox.core.dto.ErrorResponseDTO;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.BusinessIntermediateException;
 import org.cxbox.core.exception.ClientException;
-import org.cxbox.core.exception.ExceptionHandlerSettings;
 import org.cxbox.core.exception.UnconfirmedException;
 import org.cxbox.core.exception.VersionMismatchException;
 import java.util.UUID;
@@ -50,7 +50,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalExceptionHandler {
 
 	@Autowired
-	private ExceptionHandlerSettings settings;
+	private APIProperties apiProperties;
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(value = INTERNAL_SERVER_ERROR)
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
 
 	private String buildLogMessage(Exception ex, UUID uuid) {
 		StringBuilder stringBuilder = new StringBuilder();
-		if (settings.isTrackExceptions()) {
+		if (apiProperties.isTrackExceptions()) {
 			stringBuilder.append(uuid.toString()).append(": ");
 		}
 		stringBuilder.append(ex.getMessage());
@@ -114,7 +114,7 @@ public class GlobalExceptionHandler {
 
 	private String buildResponseBody(Exception ex, UUID uuid) {
 		StringBuilder stringBuilder = new StringBuilder();
-		if (settings.isTrackExceptions()) {
+		if (apiProperties.isTrackExceptions()) {
 			stringBuilder.append(uuid.toString()).append(": ");
 		}
 		String message;
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler {
 			message = rootCause == null ? ex.getClass().getSimpleName() + ": " + ex.getMessage() : rootCause.getMessage();
 		}
 		stringBuilder.append(message);
-		if (settings.isFullStackTraces()) {
+		if (apiProperties.isFullStackTraces()) {
 			stringBuilder.append("\n");
 			stringBuilder.append(ExceptionUtils.getStackTrace(ex));
 		}

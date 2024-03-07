@@ -39,4 +39,9 @@ public class APIProperties {
 	 */
 	private String path = "/api/v1";
 
+
+	private boolean trackExceptions = false;
+
+	private boolean fullStackTraces = false;
+
 }

@@ -16,40 +16,27 @@
 
 package org.cxbox.model.core.service;
 
-import org.cxbox.api.data.dictionary.CoreDictionaries.SystemPref;
-import org.cxbox.api.service.LocaleService;
-import org.cxbox.api.system.ISystemSettingChangeEventListener;
-import org.cxbox.api.system.SystemSettingChangedEvent;
-import org.cxbox.api.system.SystemSettings;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.LocaleUtils;
+import org.cxbox.api.config.CxboxLocalizationProperties;
+import org.cxbox.api.service.LocaleService;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 
-@Service(LocaleService.SERVICE_NAME)
-public class LocaleServiceImpl implements LocaleService, ISystemSettingChangeEventListener {
 
-	private final SystemSettings systemSettings;
+@RequiredArgsConstructor
+public class LocaleServiceImpl implements LocaleService {
 
 	@Getter
 	private Set<String> supportedLanguages;
 
-	public LocaleServiceImpl(SystemSettings systemSettings) {
-		this.systemSettings = systemSettings;
-		this.supportedLanguages = checkLanguages(systemSettings.getListValue(SystemPref.SUPPORTED_LANGUAGES));
-	}
-
-	@Override
-	public void onApplicationEvent(SystemSettingChangedEvent event) {
-		if (SystemPref.SUPPORTED_LANGUAGES.equals(event.getSetting())) {
-			supportedLanguages = checkLanguages(systemSettings.getListValue(SystemPref.SUPPORTED_LANGUAGES));
-		}
+	public LocaleServiceImpl(CxboxLocalizationProperties localizationProperties) {
+		this.supportedLanguages = checkLanguages(localizationProperties.getSupportedLanguages());
 	}
 
 	@Override
@@ -57,11 +44,11 @@ public class LocaleServiceImpl implements LocaleService, ISystemSettingChangeEve
 		return supportedLanguages.contains(language);
 	}
 
-	private Set<String> checkLanguages(List<String> supportedLanguages) {
+	private Set<String> checkLanguages(Set<String> supportedLanguages) {
 		if (supportedLanguages.isEmpty()) {
 			throw new IllegalStateException("Please specify SUPPORTED_LANGUAGES in system settings");
 		}
-		LocaleService.defaultLocale.set(LocaleUtils.toLocale(supportedLanguages.get(0)));
+		LocaleService.defaultLocale.set(LocaleUtils.toLocale(supportedLanguages.stream().findFirst().orElseThrow()));
 		LocaleContextHolder.setDefaultLocale(defaultLocale.get());
 		return Collections.unmodifiableSet(new LinkedHashSet<>(supportedLanguages));
 	}
@@ -70,6 +57,5 @@ public class LocaleServiceImpl implements LocaleService, ISystemSettingChangeEve
 	public Locale getDefaultLocale() {
 		return LocaleService.defaultLocale.get();
 	}
-
 
 }
