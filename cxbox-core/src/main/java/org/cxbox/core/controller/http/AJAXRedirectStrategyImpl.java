@@ -16,9 +16,6 @@
 
 package org.cxbox.core.controller.http;
 
-import static org.cxbox.api.system.SystemSettings.systemSettings;
-
-import org.cxbox.api.data.dictionary.CoreDictionaries.SystemPref;
 import org.cxbox.api.data.dto.RedirectDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -27,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.cxbox.core.config.properties.UIProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -53,8 +51,11 @@ public class AJAXRedirectStrategyImpl extends DefaultRedirectStrategy implements
 
 	private final RequestMatcher ajaxRequestMatcher;
 
-	public AJAXRedirectStrategyImpl(ObjectMapper objectMapper) {
+	private final UIProperties uiProperties;
+
+	public AJAXRedirectStrategyImpl(ObjectMapper objectMapper, UIProperties uiProperties) {
 		this.objectMapper = objectMapper;
+		this.uiProperties = uiProperties;
 		this.ajaxRequestMatcher = createAJAXRequestMatcher();
 	}
 
@@ -121,7 +122,7 @@ public class AJAXRedirectStrategyImpl extends DefaultRedirectStrategy implements
 
 	@Override
 	public String getSystemUrl() {
-		return addUiHash(systemSettings().getValue(SystemPref.SYSTEM_URL));
+		return addUiHash(uiProperties.getSystemUrl());
 	}
 
 	private String addUiHash(String url) {

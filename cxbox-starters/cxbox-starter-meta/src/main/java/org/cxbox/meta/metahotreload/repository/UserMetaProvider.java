@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.metahotreload.mapper;
+package org.cxbox.meta.metahotreload.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserMetaProvider {
 
-	private final MetaProvider metaProvider;
 
 	private final ResponsibilitiesService responsibilitiesService;
 
@@ -62,11 +61,11 @@ public class UserMetaProvider {
 			key = "{#root.methodName, #user.id, #userRole}"
 	)
 	public Map<String, ScreenDTO> getScreens(IUser<Long> user, LOV userRole) {
-		Map<String, ScreenDTO> allScreens = metaProvider.getAllScreens();
+		Map<String, ScreenDTO> allScreens = metaRepository.getAllScreens();
 
 		Map<String, ScreenDTO> allUserScreens = SerializationUtils.clone((HashMap<String, ScreenDTO>) allScreens);
 
-		Map<String, Boolean> userViewToReadOnlyFlg = responsibilitiesService.getListRespByUser(user, userRole);
+		Map<String, Boolean> userViewToReadOnlyFlg = responsibilitiesService.getAvailableViews(user, userRole);
 		allUserScreens.values().forEach(s -> {
 			List<ViewDTO> userViews = s.getViews().stream()
 					.filter(v -> v.getName() != null && userViewToReadOnlyFlg.containsKey(v.getName())).toList();

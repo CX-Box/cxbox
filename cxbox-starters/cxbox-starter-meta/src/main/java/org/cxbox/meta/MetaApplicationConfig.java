@@ -17,6 +17,7 @@
 package org.cxbox.meta;
 
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.config.BeanScan;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.service.ResponsibilitiesService;
@@ -24,6 +25,7 @@ import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.PackageScanFieldIdResolver;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
@@ -37,8 +39,8 @@ public class MetaApplicationConfig {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ResponsibilitiesService responsibilitiesService(MetaRepository metaRepository) {
-		return new ResponsibilitiesServiceImpl(metaRepository);
+	public ResponsibilitiesService responsibilitiesService(MetaRepository metaRepository, CacheManager cacheManager, TransactionService txService) {
+		return new ResponsibilitiesServiceImpl(metaRepository, cacheManager, txService);
 	}
 
 

@@ -35,7 +35,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.hbn.ExtSequenceGenerator;
-import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
@@ -73,15 +72,11 @@ public class Responsibilities extends BaseEntity {
 	private ResponsibilityType responsibilityType;
 
 	@Column(name = "READ_ONLY")
-	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
 	private boolean readOnly;
 
 	@Lob
 	@JdbcTypeCode(Types.LONGVARCHAR)
 	private String screens;
-
-	@Formula("(SELECT views.TITLE FROM views WHERE views.NAME = RESPONSIBILITIES)")
-	private String viewTitle;
 
 	public enum ResponsibilityType {
 		VIEW,

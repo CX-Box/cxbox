@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.model;
+package org.cxbox.api.config;
 
-import org.cxbox.meta.entity.Widget;
-import java.util.List;
+import java.util.Set;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
-@RequiredArgsConstructor
-public final class ViewWidgetsGroup {
+@Setter
+@ConfigurationProperties("cxbox.localization")
+public class CxboxLocalizationProperties {
 
-	private final String viewName;
-
-	private final List<Widget> widgets;
+	Set<String> supportedLanguages = Set.of("en");
 
 }

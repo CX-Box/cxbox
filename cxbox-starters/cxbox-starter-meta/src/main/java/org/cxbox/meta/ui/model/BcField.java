@@ -54,7 +54,7 @@ public final class BcField {
 		/**
 		 * widget identifier
 		 */
-		WIDGET_ID,
+		WIDGET_NAME,
 
 		/**
 		 * Field type

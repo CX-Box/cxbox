@@ -18,15 +18,15 @@ package org.cxbox.meta.metahotreload.repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.api.data.dictionary.CoreDictionaries.ViewGroupType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
+import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.meta.data.FilterGroupDTO;
-import org.cxbox.meta.entity.Bc;
+import org.cxbox.meta.data.ScreenDTO;
+import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.BcProperties_;
 import org.cxbox.meta.entity.FilterGroup;
@@ -34,19 +34,13 @@ import org.cxbox.meta.entity.FilterGroup_;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.entity.Responsibilities_;
-import org.cxbox.meta.entity.Screen;
-import org.cxbox.meta.entity.Screen_;
-import org.cxbox.meta.entity.View;
-import org.cxbox.meta.entity.ViewWidgets;
-import org.cxbox.meta.entity.ViewWidgets_;
-import org.cxbox.meta.entity.View_;
-import org.cxbox.meta.entity.Widget;
-import org.cxbox.meta.entity.Widget_;
-import org.cxbox.meta.navigation.NavigationGroup;
-import org.cxbox.meta.navigation.NavigationGroup_;
-import org.cxbox.meta.navigation.NavigationView;
-import org.cxbox.meta.navigation.NavigationView_;
+import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
+import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
+import org.cxbox.meta.metahotreload.mapper.ScreenMapper;
+import org.cxbox.meta.metahotreload.mapper.ViewMapper;
+import org.cxbox.meta.metahotreload.service.MetaResourceReaderService;
 import org.cxbox.model.core.dao.JpaDao;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -55,32 +49,14 @@ public class MetaRepository {
 
 	private final JpaDao jpaDao;
 
-	public void saveScreen(Screen screen) {
-		jpaDao.save(screen);
-	}
+	private final MetaResourceReaderService metaResourceReaderService;
 
-	public void saveView(View view) {
-		jpaDao.save(view);
-	}
+	private final ScreenMapper screenMapper;
 
-	public void saveViewWidget(ViewWidgets viewWidget) {
-		jpaDao.save(viewWidget);
-	}
+	private final ViewMapper viewMapper;
 
-	public void saveAllWidgets(Map<String, Widget> nameToWidget) {
-		nameToWidget.forEach((name, widget) -> jpaDao.save(widget));
-	}
-
-	public void saveBc(Bc bc) {
-		jpaDao.save(bc);
-	}
-
-	public void saveNavigationGroup(NavigationGroup navigationGroup) {
-		jpaDao.save(navigationGroup);
-	}
-
-	public void saveNavigationView(NavigationView navigationView) {
-		jpaDao.save(navigationView);
+	public List<BcSourceDTO> getBcs() {
+		return metaResourceReaderService.getBcs();
 	}
 
 	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities) {
@@ -88,27 +64,7 @@ public class MetaRepository {
 		jpaDao.saveAll(responsibilities);
 	}
 
-
-	public List<NavigationView> getNavigationViews() {
-		return jpaDao.getList(NavigationView.class);
-	}
-
 	public void deleteAllMeta() {
-		jpaDao.delete(NavigationView.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(NavigationGroup.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(Screen.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(ViewWidgets.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(View.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(Widget.class, (root, query, cb) -> cb.and());
-		jpaDao.delete(Bc.class, (root, query, cb) -> cb.and());
-	}
-
-
-	public Screen getScreenByName(String name) {
-		return jpaDao.getSingleResultOrNull(
-				Screen.class,
-				(root, query, cb) -> cb.equal(root.get(Screen_.name), name)
-		);
 	}
 
 	/*
@@ -133,93 +89,6 @@ public class MetaRepository {
 	}
 
 
-	public List<NavigationView> getViewByScreenAndResponsibilities(String screenName, boolean getAll,
-			Set<String> responsibilities) {
-		return jpaDao.getList(NavigationView.class, (root, query, cb) -> cb.and(
-				cb.equal(
-						root.get(NavigationView_.screenName),
-						screenName
-				),
-				cb.equal(
-						root.get(NavigationView_.typeCd),
-						ViewGroupType.NAVIGATION
-				),
-				getAll ? cb.and() : root.get(NavigationView_.viewName).in(responsibilities)
-		));
-	}
-
-	public Widget getWidgetById(Long widgetId) {
-		return jpaDao.findById(Widget.class, widgetId);
-	}
-
-	public List<Long> getWidgetByViewName(String viewName) {
-		return jpaDao.getList(
-				ViewWidgets.class,
-				Long.class,
-				(root, cb) -> root.get(ViewWidgets_.widget).get(Widget_.id),
-				(root, query, cb) -> cb.equal(root.get(ViewWidgets_.viewName), viewName)
-		);
-	}
-
-	public List<Long> getBcWidgets(String bc) {
-		return jpaDao.getList(
-				Widget.class,
-				Long.class,
-				(root, cb) -> root.get(Widget_.id),
-				(root, query, cb) -> cb.equal(root.get(Widget_.bc), bc)
-		);
-	}
-
-	public List<String> getWidget(Long widgetId) {
-		return jpaDao.getList(
-				ViewWidgets.class,
-				String.class,
-				(root, cb) -> root.get(ViewWidgets_.viewName),
-				(root, query, cb) -> {
-					query.distinct(true);
-					return cb.equal(root.get(ViewWidgets_.widget).get(Widget_.id), widgetId);
-				}
-		);
-	}
-
-	public List<NavigationGroup> getScreenNavigationGroups(Screen screen) {
-		return jpaDao.getList(NavigationGroup.class, (root, query, cb) -> {
-			query.orderBy(cb.asc(root.get(NavigationGroup_.seq)));
-			return cb.and(
-					cb.equal(root.get(NavigationGroup_.screenName), screen.getName()),
-					cb.equal(root.get(NavigationGroup_.typeCd), ViewGroupType.NAVIGATION)
-			);
-		});
-	}
-
-
-	public List<NavigationView> getScreenViews(Screen screen) {
-		return jpaDao.getList(NavigationView.class, (root, query, cb) -> {
-			query.orderBy(cb.asc(root.get(NavigationView_.seq)));
-			return cb.and(
-					cb.equal(root.get(NavigationView_.screenName), screen.getName()),
-					cb.equal(root.get(NavigationView_.typeCd), ViewGroupType.NAVIGATION)
-			);
-		});
-	}
-
-	public Map<String, List<ViewWidgets>> getWidgets() {
-		return jpaDao.getList(ViewWidgets.class, (root, cq, cb) -> {
-			root.fetch(ViewWidgets_.widget);
-			return cb.isNotNull(root.get(ViewWidgets_.viewName));
-		}).stream().collect(
-				Collectors.groupingBy(ViewWidgets::getViewName)
-		);
-	}
-
-	public Map<String, View> getViews() {
-		return jpaDao.getList(View.class, (root, cq, cb) ->
-				cb.isNotNull(root.get(View_.name))
-		).stream().collect(
-				Collectors.toMap(View::getName, Function.identity())
-		);
-	}
-
 	public Map<String, BcProperties> getBcProperties() {
 		return jpaDao.getList(BcProperties.class, (root, cq, cb) ->
 				cb.isNotNull(root.get(BcProperties_.bc))
@@ -238,7 +107,7 @@ public class MetaRepository {
 		);
 	}
 
-	public List<Responsibilities> getListByUserList(IUser<Long> user, LOV userRole,
+	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, LOV userRole,
 			ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
 		return jpaDao.getList(
@@ -251,5 +120,29 @@ public class MetaRepository {
 		);
 	}
 
+
+	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
+			cacheNames = CacheConfig.UI_CACHE,
+			key = "{#root.methodName}"
+	)
+	public Map<String, ScreenDTO> getAllScreens() {
+		//load data
+		var screens = metaResourceReaderService.getScreens();
+		var widgets = metaResourceReaderService.getWidgets();
+		var views = metaResourceReaderService.getViews();
+		Map<String, BcProperties> bcProps = getBcProperties();
+		Map<String, List<FilterGroup>> filterGroups = getFilterGroups();
+
+		//map data
+		var widgetNameToWidget = widgets.stream()
+				.collect(Collectors.toMap(WidgetSourceDTO::getName, e -> e));
+		var viewNameToView = views
+				.stream()
+				.map(v -> viewMapper.map(v, widgetNameToWidget))
+				.collect(Collectors.toMap(ViewDTO::getName, e -> e));
+		return screens.stream()
+				.map(screenSourceDto -> screenMapper.map(screenSourceDto, viewNameToView, bcProps, filterGroups))
+				.collect(Collectors.toMap(ScreenDTO::getName, e -> e));
+	}
 
 }

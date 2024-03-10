@@ -16,6 +16,7 @@
 
 package org.cxbox.core.service;
 
+import java.util.List;
 import java.util.Map;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
@@ -25,12 +26,11 @@ import org.cxbox.api.service.session.IUser;
  */
 public interface ResponsibilitiesService {
 
-	/**
-	 * @param user
-	 * @param userRole
-	 * @return View name, Readonly flg pairs
-	 */
-	Map<String, Boolean> getListRespByUser(IUser<Long> user, LOV userRole);
+	Map<String, Boolean> getAvailableViews(IUser<Long> user, LOV userRole);
 
-	String getListScreensByUser(IUser<Long> user, LOV userRole);
+	String getAvailableScreens(IUser<Long> user, LOV userRole);
+
+	List<String> getAvailableScreenViews(String screenName, IUser<Long> user, LOV userRole);
+
+	void invalidateCache();
 }

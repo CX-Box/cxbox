@@ -29,11 +29,9 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
 
 
 @RequiredArgsConstructor
-@Service
 public class TranslationServiceImpl implements TranslationService {
 
 	private final LocaleService localeService;

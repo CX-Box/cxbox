@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.cxbox.core.util.JsonUtils;
-import org.cxbox.meta.entity.Widget;
+import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.json.field.FieldGroup;
@@ -37,7 +37,7 @@ public class InfoFieldExtractor extends BaseFieldExtractor {
 	}
 
 	@Override
-	public Set<BcField> extract(final Widget widget) {
+	public Set<BcField> extract(final WidgetDTO widget) {
 		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, widget.getTitle()));
 		FieldMeta[] fieldMetas = JsonUtils.readValue(FieldMeta[].class, widget.getFields());
 		FieldGroup[] fieldGroups = JsonUtils.readValue(FieldGroup[].class, widget.getFields());

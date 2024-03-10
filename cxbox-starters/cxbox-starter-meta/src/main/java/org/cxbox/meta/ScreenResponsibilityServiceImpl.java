@@ -30,7 +30,7 @@ import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.data.ScreenDTO;
-import org.cxbox.meta.metahotreload.mapper.UserMetaProvider;
+import org.cxbox.meta.metahotreload.repository.UserMetaProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +59,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	public List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole) {
 		List<ScreenResponsibility> result = new ArrayList<>();
 		try {
-			String screens = respService.getListScreensByUser(user, userRole);
+			String screens = respService.getAvailableScreens(user, userRole);
 			if (StringUtils.isNotBlank(screens)) {
 				result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
 			}

@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.data.BcIdentifier;
@@ -41,9 +42,8 @@ import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.service.DTOSecurityUtils;
+import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.meta.UIServiceImpl.UserCache;
-import org.cxbox.meta.entity.Widget;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.cxbox.meta.ui.model.BcField;
@@ -52,6 +52,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Getter
+@RequiredArgsConstructor
 public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 
 	private final InnerBcTypeAware innerBcTypeAware;
@@ -66,7 +67,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 
 	private final BcHierarchyAware bcHierarchyAware;
 
-	private final UserCache userCache;
+	private final ResponsibilitiesService responsibilitiesService;
 
 	private final SessionService sessionService;
 
@@ -76,62 +77,15 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 			.newBuilder()
 			.build(new BcFieldCacheLoader());
 
-	private final LoadingCache<Long, Set<BcField>> widgetFields = CacheBuilder
-			.newBuilder()
-			.build(new WidgetFieldCacheLoader());
 
 	private final LoadingCache<String, Map<String, Set<BcField>>> viewFields = CacheBuilder
 			.newBuilder()
 			.build(new ViewFieldCacheLoader());
 
-	@java.beans.ConstructorProperties({"innerBcTypeAware", "metaRepository", "widgetUtils", "bcRegistry",
-			"dtoSecurityUtils", "bcHierarchyAware", "userCache", "sessionService", "requiredFieldsSuppliers"})
-	public BcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
-			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, UserCache userCache,
-			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliers) {
-		this.innerBcTypeAware = innerBcTypeAware;
-		this.metaRepository = metaRepository;
-		this.widgetUtils = widgetUtils;
-		this.bcRegistry = bcRegistry;
-		this.dtoSecurityUtils = dtoSecurityUtils;
-		this.bcHierarchyAware = bcHierarchyAware;
-		this.userCache = userCache;
-		this.sessionService = sessionService;
-		this.requiredFieldsSuppliers = requiredFieldsSuppliers;
-	}
-
 
 	public void invalidateFieldCache() {
 		bcFields.invalidateAll();
-		widgetFields.invalidateAll();
 		viewFields.invalidateAll();
-	}
-
-	/**
-	 * @deprecated use {@link #invalidateFieldCache()} instead.
-	 */
-	@Deprecated
-	public void invalidateFieldCacheByView(final String viewName) {
-		viewFields.invalidate(viewName);
-	}
-
-	/**
-	 * @deprecated use {@link #invalidateFieldCache()} instead.
-	 */
-	@Deprecated
-	public void invalidateFieldCacheByWidget(final Long widgetId) {
-		widgetFields.invalidate(widgetId);
-		metaRepository.getWidget(widgetId).forEach(this::invalidateFieldCacheByView);
-	}
-
-
-	/**
-	 * @deprecated use {@link #invalidateFieldCache()} instead.
-	 */
-	@Deprecated
-	public void invalidateFieldCacheByBc(final String bc) {
-		bcFields.invalidate(bc);
-		metaRepository.getBcWidgets(bc).forEach(this::invalidateFieldCacheByWidget);
 	}
 
 	/**
@@ -173,7 +127,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	}
 
 	public List<String> getViews(final String screenName) {
-		return userCache.getViews(screenName, sessionService.getSessionUser(), sessionService.getSessionUserRole());
+		return responsibilitiesService.getAvailableScreenViews(screenName, sessionService.getSessionUser(), sessionService.getSessionUserRole());
 	}
 
 	/**
@@ -201,33 +155,23 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 
 	}
 
-	private final class WidgetFieldCacheLoader extends CacheLoader<Long, Set<BcField>> {
-
-		@Override
-		@SneakyThrows
-		public Set<BcField> load(final Long widgetId) {
-			final Widget widget = metaRepository.getWidgetById(widgetId);
-			final Set<BcField> fields = new HashSet<>(widgetUtils.extractAllFields(widget));
-			final Set<String> bcNames = fields.stream().map(BcField::getBc).filter(Objects::nonNull)
-					.collect(Collectors.toSet());
-			for (String bcName : bcNames) {
-				fields.addAll(bcFields.get(bcName));
-			}
-			return fields;
-		}
-
-	}
-
 	private final class ViewFieldCacheLoader extends CacheLoader<String, Map<String, Set<BcField>>> {
 
 		@Override
 		@SneakyThrows
 		public Map<String, Set<BcField>> load(final String viewName) {
-			final List<Long> widgetIds = metaRepository.getWidgetByViewName(viewName);
 			final Set<BcField> fields = new HashSet<>();
-			for (final Long widgetId : widgetIds) {
-				fields.addAll(widgetFields.get(widgetId));
-			}
+			metaRepository.getAllScreens().forEach((name, screen) -> screen.getViews().forEach(view -> {
+				if (Objects.equals(view.getName(), viewName)) {
+					view.getWidgets().forEach(widget -> {
+						var widgetFields = new HashSet<>(widgetUtils.extractAllFields(widget));
+						widgetFields.stream().map(BcField::getBc).filter(Objects::nonNull)
+								.forEach(bc -> fields.addAll(bcFields.getUnchecked(bc)));
+						fields.addAll(widgetFields);
+					});
+				}
+			}));
+
 			return fields.stream().collect(Collectors.groupingBy(BcField::getBc, Collectors.toSet()));
 		}
 

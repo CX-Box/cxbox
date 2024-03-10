@@ -16,14 +16,14 @@
 
 package org.cxbox.meta.ui.field;
 
-import lombok.RequiredArgsConstructor;
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.entity.Widget;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -33,10 +33,10 @@ public class AssocListFieldExtractor implements FieldExtractor {
 	private final ListFieldExtractor linkFieldExtractor;
 
 	@Override
-	public Set<BcField> extract(final Widget widget) {
+	public Set<BcField> extract(final WidgetDTO widget) {
 		final Set<BcField> widgetFields = new HashSet<>(linkFieldExtractor.extract(widget));
-		widgetFields.add(new BcField(widget.getBc(), BcField.FIELD_ASSOCIATE)
-				.putAttribute(Attribute.WIDGET_ID, widget.getId())
+		widgetFields.add(new BcField(widget.getBcName(), BcField.FIELD_ASSOCIATE)
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 		);
 		return widgetFields;
 	}

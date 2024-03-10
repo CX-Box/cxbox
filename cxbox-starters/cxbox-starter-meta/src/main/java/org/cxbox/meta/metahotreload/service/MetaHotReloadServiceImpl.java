@@ -32,16 +32,13 @@ import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.MetaHotReloadService;
+import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
-import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
-import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
-import org.cxbox.meta.entity.Widget;
-import org.cxbox.meta.navigation.NavigationView;
 
 @RequiredArgsConstructor
 public class MetaHotReloadServiceImpl implements MetaHotReloadService {
@@ -56,33 +53,14 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected final MetaRepository metaRepository;
 
-	protected final WidgetUtil widgetUtil;
-
-	protected final ViewAndViewWidgetUtil viewAndViewWidgetUtil;
-
-	protected final ScreenAndNavigationGroupAndNavigationViewUtil screenAndNavigationGroupAndNavigationViewUtil;
-
-	protected final BcUtil bcUtil;
-
-	//protected final JpaDao jpaDao;
-
-
 	public void loadMeta() {
-		//TODO>>new metalock
-		List<BcSourceDTO> bcDtos = metaResourceReaderService.getBcs();
 		List<ScreenSourceDto> screenDtos = metaResourceReaderService.getScreens();
-		List<WidgetSourceDTO> widgetDtos = metaResourceReaderService.getWidgets();
 		List<ViewSourceDTO> viewDtos = metaResourceReaderService.getViews();
 
 		authzService.loginAs(authzService.createAuthentication(InternalAuthorizationService.VANILLA));
 
 		txService.invokeInTx(() -> {
-			loadMetaPreProcess(widgetDtos, viewDtos, screenDtos);
 			metaRepository.deleteAllMeta();
-			bcUtil.process(bcDtos);
-			Map<String, Widget> nameToWidget = widgetUtil.process(widgetDtos);
-			viewAndViewWidgetUtil.process(viewDtos, nameToWidget);
-			screenAndNavigationGroupAndNavigationViewUtil.process(screenDtos);
 			responsibilitiesProcess(screenDtos, viewDtos);
 			loadMetaAfterProcess();
 			return null;
@@ -90,11 +68,12 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	}
 
 	//TODO>>Draft. Refactor
-	private void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
+	public void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
 		if (config.isViewAllowedRolesEnabled()) {
-			Map<String, String> viewToScreenMap = metaRepository.getNavigationViews()
-					.stream()
-					.collect(Collectors.toMap(NavigationView::getViewName, NavigationView::getScreenName));
+			Map<String, String> viewToScreenMap = new HashMap<>();
+			metaRepository.getAllScreens()
+					.forEach((screenName, screenDto) -> screenDto.getViews().stream().map(ViewDTO::getName)
+							.forEach(viewName -> viewToScreenMap.put(viewName, screenName)));
 
 			List<Responsibilities> responsibilities = new ArrayList<>();
 			long defaultDepartmentId = 0L; //TODO>>replace magic number with value from config
@@ -130,7 +109,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 				responsibilities.add(new Responsibilities()
 						.setResponsibilityType(ResponsibilityType.SCREEN)
 						.setInternalRoleCD(new LOV(role))
-						.setScreens(mapToScreens(screenNameToScreen, screens))
+						.setScreens(mapToScreens(screens))
 						.setDepartmentId(defaultDepartmentId));
 			}
 			metaRepository.deleteAndSaveResponsibilities(responsibilities);
@@ -141,8 +120,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	//TODO>>Draft. Refactor
 	@NonNull
-	private String mapToScreens(@NonNull Map<String, ScreenSourceDto> screenNameToScreen,
-			@NonNull Set<ScreenSourceDto> screens) {
+	public String mapToScreens(@NonNull Set<ScreenSourceDto> screens) {
 		StringJoiner joiner = new StringJoiner(",");
 		List<ScreenSourceDto> orderedScreens = screens
 				.stream()
@@ -163,11 +141,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 		return "[\n" + collect + "\n]";
 	}
 
-	protected void loadMetaPreProcess(List<WidgetSourceDTO> widgetDtos,
-			List<ViewSourceDTO> viewDtos,
-			List<ScreenSourceDto> screenDtos) {
 
-	}
 
 	protected void loadMetaAfterProcess() {
 

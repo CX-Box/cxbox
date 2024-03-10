@@ -19,11 +19,11 @@ package org.cxbox.core.controller;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.mockito.Mockito.when;
 
+import org.cxbox.core.config.properties.APIProperties;
 import org.cxbox.core.dto.ErrorResponseDTO;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.BusinessIntermediateException;
 import org.cxbox.core.exception.ClientException;
-import org.cxbox.core.exception.ExceptionHandlerSettings;
 import org.cxbox.core.exception.UnconfirmedException;
 import org.cxbox.core.exception.VersionMismatchException;
 import org.junit.jupiter.api.Assertions;
@@ -39,7 +39,7 @@ import org.springframework.http.ResponseEntity;
 class GlobalExceptionHandlerTest {
 
 	@Mock
-	ExceptionHandlerSettings settings;
+	APIProperties apiProperties;
 
 	@Mock
 	Logger log;
@@ -50,8 +50,8 @@ class GlobalExceptionHandlerTest {
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.initMocks(this);
-		when(settings.isTrackExceptions()).thenReturn(true);
-		when(settings.isFullStackTraces()).thenReturn(true);
+		when(apiProperties.isTrackExceptions()).thenReturn(true);
+		when(apiProperties.isFullStackTraces()).thenReturn(true);
 	}
 
 	@Test

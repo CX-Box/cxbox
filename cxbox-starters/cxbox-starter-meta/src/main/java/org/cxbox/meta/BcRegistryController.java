@@ -21,6 +21,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.dto.ResponseDTO;
+import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.ResponseBuilder;
 import org.cxbox.meta.metafieldsecurity.BcUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +39,13 @@ public class BcRegistryController {
 	private BcUtils bcUtils;
 
 	@Autowired
-	private UIServiceImpl uiService;
+	private ResponsibilitiesService responsibilitiesService;
 
 	@RequestMapping(method = GET, value = "invalidate-cache")
 	public ResponseDTO invalidateCache() {
 		bcRegistry.refresh();
 		bcUtils.invalidateFieldCache();
-		uiService.invalidateCache();
+		responsibilitiesService.invalidateCache();
 		return ResponseBuilder.build();
 	}
 

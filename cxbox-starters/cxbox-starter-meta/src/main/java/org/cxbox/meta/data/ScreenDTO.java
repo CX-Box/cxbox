@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.data;
 
+import java.util.ArrayList;
 import lombok.experimental.Accessors;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.LocaleAware;
@@ -45,7 +46,7 @@ public class ScreenDTO extends DataResponseDTO {
 
 	private String primary;
 
-	private List<ViewDTO> views;
+	private List<ViewDTO> views = new ArrayList<>();
 
 	private BusinessObjectDTO bo;
 

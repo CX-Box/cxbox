@@ -16,12 +16,14 @@
 
 package org.cxbox.core.crudma.bc.impl;
 
+import lombok.Setter;
 import org.cxbox.core.crudma.Crudma;
 import org.cxbox.api.data.BcIdentifier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+@Setter
 @Getter
 @ToString
 @RequiredArgsConstructor
@@ -37,9 +39,6 @@ public abstract class BcDescription implements BcIdentifier {
 	 * Prohibition of caching BC by the front
 	 */
 	private final boolean refresh;
-
-	//TODO used only for SqlBC. Delete after refactoring
-	protected Long id;
 
 	//TODO used only for SqlBC. Delete after refactoring
 	protected String bindsString;

@@ -16,24 +16,24 @@
 
 package org.cxbox.meta.ui.field;
 
-import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.Condition;
-import org.cxbox.meta.ui.model.json.Condition.IConditionFieldEqualityParams;
-import org.cxbox.core.util.JsonUtils;
-import org.cxbox.meta.entity.Widget;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import org.cxbox.core.util.JsonUtils;
+import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.Condition;
+import org.cxbox.meta.ui.model.json.Condition.IConditionFieldEqualityParams;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ShowConditionFieldExtractor implements FieldExtractor {
 
 	@Override
-	public Set<BcField> extract(final Widget widget) {
+	public Set<BcField> extract(final WidgetDTO widget) {
 		final Set<BcField> fields = new HashSet<>();
 		if (!Objects.equals(widget.getShowCondition(), "[]")) {
 			final Condition condition = JsonUtils.readValue(Condition.class, widget.getShowCondition());
@@ -49,11 +49,11 @@ public class ShowConditionFieldExtractor implements FieldExtractor {
 		return fields;
 	}
 
-	private BcField getField(final Widget widget, final Condition condition,
+	private BcField getField(final WidgetDTO widget, final Condition condition,
 			final IConditionFieldEqualityParams params) {
-		final String bc = condition.getBcName() == null ? widget.getBc() : condition.getBcName();
+		final String bc = condition.getBcName() == null ? widget.getBcName() : condition.getBcName();
 		return new BcField(bc, params.getFieldKey())
-				.putAttribute(Attribute.WIDGET_ID, widget.getId());
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName());
 	}
 
 	@Override

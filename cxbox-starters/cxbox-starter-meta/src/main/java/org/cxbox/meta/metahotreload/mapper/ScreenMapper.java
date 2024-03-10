@@ -101,7 +101,7 @@ public class ScreenMapper {
 						.filter(widgetDTO -> Objects.nonNull(widgetDTO.getBcName()))
 						.map(this::getWidgetBc)
 						.flatMap(Collection::stream)
-						.peek(this::setBcId)
+						.peek(this::setBcName)
 						.distinct()
 						.sorted(Comparator.comparing(BusinessComponentDTO::getUrl))
 						.collect(Collectors.toList())
@@ -170,11 +170,11 @@ public class ScreenMapper {
 		return result;
 	}
 
-	private void setBcId(BusinessComponentDTO dto) {
+	private void setBcName(BusinessComponentDTO dto) {
 		BcDescription description = bcRegistry.getBcDescription(dto.getName());
 		if (description != null) {
 			//TODO>>used only for sql bc. Delete after refactoring
-			Optional.ofNullable(description.getId()).ifPresent(dto::setId);
+			Optional.ofNullable(description.getName()).ifPresent(dto::setName);
 		}
 	}
 
