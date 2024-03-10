@@ -43,11 +43,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
 @RequiredArgsConstructor
 public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO {
 
+	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
 
 	public FieldDTO get(final DtoField<? super T, ?> field) {

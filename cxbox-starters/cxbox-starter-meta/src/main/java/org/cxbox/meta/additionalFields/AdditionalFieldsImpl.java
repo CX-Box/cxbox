@@ -23,10 +23,10 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.util.session.SessionService;
-import org.cxbox.meta.additionalFields.AdditionalFieldsService;
 import org.cxbox.meta.entity.AdditionalFields;
 import org.cxbox.meta.entity.AdditionalFields_;
 import org.cxbox.model.core.dao.JpaDao;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,6 +37,7 @@ public class AdditionalFieldsImpl implements AdditionalFieldsService {
 
 	private final SessionService service;
 
+	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
 
 	private final TransactionService transactionService;

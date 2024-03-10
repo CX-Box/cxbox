@@ -52,6 +52,7 @@ public class SqlBcCreator {
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
+	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
 
 	public SqlBcCreator(ApplicationContext applicationContext, CxboxBeanProperties cxboxBeanProperties, @Qualifier("cxboxObjectMapper") ObjectMapper objectMapper

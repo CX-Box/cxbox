@@ -16,6 +16,7 @@
 
 package org.cxbox.meta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.config.BeanScan;
@@ -23,6 +24,7 @@ import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.PackageScanFieldIdResolver;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.CacheManager;
@@ -39,8 +41,8 @@ public class MetaApplicationConfig {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ResponsibilitiesService responsibilitiesService(MetaRepository metaRepository, CacheManager cacheManager, TransactionService txService) {
-		return new ResponsibilitiesServiceImpl(metaRepository, cacheManager, txService);
+	public ResponsibilitiesService responsibilitiesService(MetaRepository metaRepository, CacheManager cacheManager, TransactionService txService, @Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
+		return new ResponsibilitiesServiceImpl(metaRepository, cacheManager, txService, objectMapper);
 	}
 
 
