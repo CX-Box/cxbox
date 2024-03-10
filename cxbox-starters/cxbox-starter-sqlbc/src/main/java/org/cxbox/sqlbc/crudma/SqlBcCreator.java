@@ -21,12 +21,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.controller.param.SearchOperation;
+import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
+import org.cxbox.meta.metahotreload.util.JsonUtils;
 import org.cxbox.sqlbc.crudma.SqlBcDescription.Bind;
 import org.cxbox.sqlbc.crudma.SqlBcDescription.Bindings;
 import org.cxbox.sqlbc.crudma.SqlBcDescription.Field;
 import org.cxbox.sqlbc.dao.SqlBcQuery;
 import org.cxbox.sqlbc.dao.SqlFieldType;
-import org.cxbox.meta.entity.Bc;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.ZoneId;
@@ -59,9 +60,9 @@ public class SqlBcCreator {
 		this.objectMapper = objectMapper;
 	}
 
-	public SqlBcDescription getDescription(Bc bc) {
-		List<Bind> binds = getBindsFromJson(bc.getBinds());
-		return new SqlBcDescription(bc, binds, new SqlBcFieldsLazyInitializer(bc.getQuery(), binds));
+	public SqlBcDescription getDescription(BcSourceDTO bc) {
+		List<Bind> binds = getBindsFromJson(JsonUtils.serializeOrElseNull(objectMapper, bc.getBinds()));
+		return new SqlBcDescription(objectMapper, bc, binds, new SqlBcFieldsLazyInitializer(bc.getQuery(), binds));
 	}
 
 

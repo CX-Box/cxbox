@@ -34,7 +34,6 @@ import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.MetaHotReloadService;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
-import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
@@ -54,11 +53,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 	protected final MetaRepository metaRepository;
 
-	protected final BcUtil bcUtil;
-
 	public void loadMeta() {
-		//TODO>>new metalock
-		List<BcSourceDTO> bcDtos = metaResourceReaderService.getBcs();
 		List<ScreenSourceDto> screenDtos = metaResourceReaderService.getScreens();
 		List<ViewSourceDTO> viewDtos = metaResourceReaderService.getViews();
 
@@ -66,7 +61,6 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 
 		txService.invokeInTx(() -> {
 			metaRepository.deleteAllMeta();
-			bcUtil.process(bcDtos);
 			responsibilitiesProcess(screenDtos, viewDtos);
 			loadMetaAfterProcess();
 			return null;

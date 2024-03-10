@@ -31,8 +31,6 @@ import lombok.Setter;
 @EqualsAndHashCode(of = {"name", "url"})
 public class BusinessComponentDTO implements Serializable {
 
-	Long id;
-
 	String url;
 
 	@JsonRawValue

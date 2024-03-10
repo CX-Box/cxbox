@@ -16,10 +16,12 @@
 
 package org.cxbox.sqlbc.crudma;
 
+import static java.util.Optional.ofNullable;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.util.tz.TimeZoneUtil;
 import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.meta.entity.Bc;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
+import org.cxbox.meta.metahotreload.util.JsonUtils;
 import org.cxbox.sqlbc.exception.BadSqlComponentException;
 import org.cxbox.sqlbc.dao.SqlFieldType;
 
@@ -50,17 +54,16 @@ public final class SqlBcDescription extends BcDescription {
 	@Getter
 	private final List<Bind> binds;
 
-	public SqlBcDescription(Bc bc, List<Bind> binds, LazyInitializer<List<Field>> fieldsInitializer) {
-		super(bc.getName(), bc.getParentName(), SqlCrudmaService.class, Boolean.TRUE.equals(bc.getRefresh()));
-		this.id = bc.getId();
+	public SqlBcDescription(ObjectMapper objectMapper, BcSourceDTO bc, List<Bind> binds, LazyInitializer<List<Field>> fieldsInitializer) {
+		super(bc.getName(), bc.getParentName(), SqlCrudmaService.class, Boolean.TRUE.equals(ofNullable(bc.getRefresh()).map(val -> val > 0).orElse(false)));
 		this.query = bc.getQuery();
 		this.defaultOrder = bc.getDefaultOrder();
 		this.reportDateField = bc.getReportDateField();
 		this.pageLimit = bc.getPageLimit();
-		this.editable = Boolean.TRUE.equals(bc.getEditable());
+		this.editable = Boolean.TRUE.equals(ofNullable(bc.getEditable()).map(val -> val > 0).orElse(false));
 		this.fieldsInitializer = fieldsInitializer;
 		this.binds = binds;
-		this.bindsString = bc.getBinds();
+		this.bindsString = JsonUtils.serializeOrElseNull(objectMapper, bc.getBinds());
 	}
 
 	public List<Field> getFields() {

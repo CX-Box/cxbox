@@ -23,8 +23,8 @@ import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.crudma.bc.RefreshableBcSupplier;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
+import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.meta.entity.Bc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +46,8 @@ public final class SqlBcSupplier implements RefreshableBcSupplier {
 
 	private final JpaDao jpaDao;
 
+	private final MetaRepository metaRepository;
+
 	private final SqlBcCreator sqlBcCreator;
 
 	private Map<String, SqlBcDescription> sqlBcMap;
@@ -53,11 +55,12 @@ public final class SqlBcSupplier implements RefreshableBcSupplier {
 	public SqlBcSupplier(
 			AsyncService asyncService,
 			TransactionService txService,
-			JpaDao jpaDao,
+			JpaDao jpaDao, MetaRepository metaRepository,
 			SqlBcCreator sqlBcCreator) {
 		this.asyncService = asyncService;
 		this.txService = txService;
 		this.jpaDao = jpaDao;
+		this.metaRepository = metaRepository;
 		this.sqlBcCreator = sqlBcCreator;
 		this.sqlBcMap = loadAllBcNames();
 		loadData(true);
@@ -102,7 +105,7 @@ public final class SqlBcSupplier implements RefreshableBcSupplier {
 	}
 
 	private Map<String, SqlBcDescription> loadAllBcNames() {
-		return jpaDao.getList(Bc.class).stream()
+		return metaRepository.getBcs().stream()
 				.map(sqlBcCreator::getDescription).collect(
 						Collectors.toMap(SqlBcDescription::getName, Function.identity())
 				);

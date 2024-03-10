@@ -27,7 +27,6 @@ import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.meta.data.FilterGroupDTO;
 import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
-import org.cxbox.meta.entity.Bc;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.BcProperties_;
 import org.cxbox.meta.entity.FilterGroup;
@@ -35,6 +34,7 @@ import org.cxbox.meta.entity.FilterGroup_;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.entity.Responsibilities_;
+import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.meta.metahotreload.mapper.ScreenMapper;
 import org.cxbox.meta.metahotreload.mapper.ViewMapper;
@@ -55,8 +55,8 @@ public class MetaRepository {
 
 	private final ViewMapper viewMapper;
 
-	public void saveBc(Bc bc) {
-		jpaDao.save(bc);
+	public List<BcSourceDTO> getBcs() {
+		return metaResourceReaderService.getBcs();
 	}
 
 	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities) {
@@ -65,7 +65,6 @@ public class MetaRepository {
 	}
 
 	public void deleteAllMeta() {
-		jpaDao.delete(Bc.class, (root, query, cb) -> cb.and());
 	}
 
 	/*
