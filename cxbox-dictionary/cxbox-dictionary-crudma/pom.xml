@@ -20,13 +20,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-dictionary-crudma</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M2</version>
+  <version>4.0.0-M3-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary Crudma</name>
 
   <parent>
     <artifactId>cxbox-dictionary</artifactId>
     <groupId>org.cxbox</groupId>
-    <version>4.0.0-M2</version>
+    <version>4.0.0-M3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
