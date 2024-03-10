@@ -17,13 +17,10 @@
 package org.cxbox.meta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.ScreenResponsibilityService;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
@@ -57,23 +54,13 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	 */
 	@Override
 	public List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole) {
-		List<ScreenResponsibility> result = new ArrayList<>();
-		try {
-			String screens = respService.getAvailableScreens(user, userRole);
-			if (StringUtils.isNotBlank(screens)) {
-				result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
-			}
-			Map<String, ScreenDTO> allUserScreens = userMetaProvider.getScreens(user, userRole);
-			result.forEach(resp -> {
-				String screenName = resp.getName();
-				ScreenDTO screenDto = allUserScreens.get(screenName);
-				resp.setMeta(screenDto);
-			});
-			return result;
-		} catch (IOException e) {
-			log.error(e.getLocalizedMessage(), e);
-		}
-
+		var result = respService.getAvailableScreensResponsibilities(user, userRole);
+		Map<String, ScreenDTO> allUserScreens = userMetaProvider.getScreens(user, userRole);
+		result.forEach(resp -> {
+			String screenName = resp.getName();
+			ScreenDTO screenDto = allUserScreens.get(screenName);
+			resp.setMeta(screenDto);
+		});
 		return result;
 	}
 }

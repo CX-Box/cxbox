@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
+import org.cxbox.dto.ScreenResponsibility;
 
 /**
  * Service that defines access rights to screens and views
@@ -28,7 +29,7 @@ public interface ResponsibilitiesService {
 
 	Map<String, Boolean> getAvailableViews(IUser<Long> user, LOV userRole);
 
-	String getAvailableScreens(IUser<Long> user, LOV userRole);
+	List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, LOV userRole);
 
 	List<String> getAvailableScreenViews(String screenName, IUser<Long> user, LOV userRole);
 

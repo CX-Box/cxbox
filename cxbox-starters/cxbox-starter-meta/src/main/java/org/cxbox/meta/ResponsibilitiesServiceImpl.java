@@ -16,6 +16,7 @@
 
 package org.cxbox.meta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.data.dictionary.CoreDictionaries;
 import org.cxbox.api.data.dictionary.LOV;
@@ -32,10 +34,12 @@ import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
+import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -47,6 +51,9 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	private final CacheManager cacheManager;
 
 	private final TransactionService txService;
+
+	@Qualifier("cxboxObjectMapper")
+	private final ObjectMapper objectMapper;
 
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.USER_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
@@ -62,13 +69,19 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 				);
 	}
 
-	public String getAvailableScreens(IUser<Long> user, LOV userRole) {
-		return metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.SCREEN)
+	@SneakyThrows
+	public List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, LOV userRole) {
+		String screens = metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.SCREEN)
 				.stream()
 				.map(Responsibilities::getScreens)
 				.filter(StringUtils::isNotBlank)
 				.findFirst()
 				.orElse(null);
+		List<ScreenResponsibility> result = new ArrayList<>();
+		if (StringUtils.isNotBlank(screens)) {
+			result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
+		}
+		return result;
 	}
 
 	public void invalidateCache() {
