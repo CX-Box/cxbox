@@ -72,6 +72,8 @@ public class FieldDTO {
 
 	Set<DictValue> filterValues = new LinkedHashSet<>();
 
+	String fileAccept; //format - see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept">...</a>"
+
 	Map<String, String> options = new HashMap<>();
 
 	private FieldDTO() {
