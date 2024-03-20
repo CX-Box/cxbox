@@ -36,6 +36,11 @@ public class UploadFileFieldMeta extends FieldMetaBase {
 	 */
 	private String fileAccept;
 
+	/**
+	 * same as fileAccept, but value is taken from DTO field (e.g. can be changed dynamically accordingly to your backend logic)
+	 */
+	private String fileAcceptKey;
+
 	private String fileSource;
 
 }
