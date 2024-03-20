@@ -30,17 +30,6 @@ public class UploadFileFieldMeta extends FieldMetaBase {
 	@LinkToField
 	private String fileIdKey;
 
-	/**
-	 * "fileAccept format - see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept">...</a>".
-	 *  Null means all file formats allowed
-	 */
-	private String fileAccept;
-
-	/**
-	 * same as fileAccept, but value is taken from DTO field (e.g. can be changed dynamically accordingly to your backend logic)
-	 */
-	private String fileAcceptKey;
-
 	private String fileSource;
 
 }

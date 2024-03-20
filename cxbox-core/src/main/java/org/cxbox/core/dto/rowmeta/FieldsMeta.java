@@ -19,6 +19,7 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -128,6 +129,14 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 					valueIconMap
 							.forEach((key, value) -> fieldDTO
 									.setIconWithValue(type.lookupValue(key), value, true));
+				});
+	}
+
+	public final void setFileAccept(DtoField<? super T, ?> field, @NonNull List<String> accept) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.setFileAccept(null);
+					fieldDTO.setFileAccept(String.join(",", accept));
 				});
 	}
 
