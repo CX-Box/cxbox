@@ -75,7 +75,7 @@ public class Responsibilities extends BaseEntity {
 	private boolean readOnly;
 
 	@Lob
-	@JdbcTypeCode(Types.LONGVARCHAR)
+	@JdbcTypeCode(Types.CLOB)
 	private String screens;
 
 	public enum ResponsibilityType {
