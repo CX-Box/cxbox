@@ -19,6 +19,8 @@ package org.cxbox.meta.ui.field.link;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
@@ -42,17 +44,32 @@ public final class LinkFieldExtractor {
 	@SneakyThrows
 	public Set<BcField> extract(final String widgetName, final String bc, final Object object) {
 		final Set<BcField> fields = new HashSet<>();
+		AtomicInteger maxDepth = new AtomicInteger(5);
+		recursiveExtractLinkToFields(widgetName, bc, object, fields, maxDepth);
+		Set<BcField> customFields = customFieldExtractor.extract(widgetName, bc, object);
+		fields.addAll(customFields);
+		return fields;
+	}
+
+	private static void recursiveExtractLinkToFields(String widgetName, String bc, @Nullable Object object, Set<BcField> fields,
+			AtomicInteger depth)
+			throws IllegalAccessException {
+		if (object  ==  null) {
+			return;
+		}
+		if (depth.decrementAndGet() <= 0) {
+			return;
+		}
 		for (final Field field : InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(object.getClass())) {
 			field.setAccessible(true);
 			if (field.isAnnotationPresent(LinkToField.class) && field.get(object) != null) {
 				fields.add(new BcField(bc, (String) field.get(object))
 						.putAttribute(Attribute.WIDGET_NAME, widgetName)
 				);
+			} else {
+				recursiveExtractLinkToFields(widgetName, bc, field.get(object), fields, depth);
 			}
 		}
-		Set<BcField> customFields = customFieldExtractor.extract(widgetName, bc, object);
-		fields.addAll(customFields);
-		return fields;
 	}
 
 }

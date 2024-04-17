@@ -16,6 +16,7 @@
 
 package org.cxbox.core.util;
 
+import java.lang.reflect.AccessibleObject;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -38,12 +39,13 @@ public final class InstrumentationAwareReflectionUtils {
 	 */
 	@SuppressWarnings("java:S3011")
 	public static List<Field> getAllNonSyntheticFieldsList(final Class<?> cls) {
-		List<Field> result = FieldUtils.getAllFieldsList(cls)
+		List<Field> fields = FieldUtils.getAllFieldsList(cls)
 				.stream()
 				.filter(field -> !field.isSynthetic())
 				.collect(Collectors.toList());
-		result.forEach(f ->  f.setAccessible(true));
-		return result;
+			List<Field> result = fields.stream().filter(AccessibleObject::trySetAccessible).collect(Collectors.toList());
+			result.forEach(f ->  f.setAccessible(true));
+			return result;
 	}
 
 	public static List<Field> getFields(final Class<?> cls) {

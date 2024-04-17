@@ -32,4 +32,24 @@ public class UploadFileFieldMeta extends FieldMetaBase {
 
 	private String fileSource;
 
+	private Preview preview;
+
+	@Getter
+	@Setter
+	public static class Preview {
+
+		private Boolean enabled;
+
+		@LinkToField
+		private String titleKey;
+
+		@LinkToField
+		private String hintKey;
+
+		private String mode; //'popup' | 'side-panel'
+
+		private Boolean miniPreview;
+
+	}
+
 }
