@@ -34,7 +34,9 @@ public class UploadFileFieldMeta extends FieldMetaBase {
 
 	private Preview preview;
 
-	private static class Preview {
+	@Getter
+	@Setter
+	public static class Preview {
 
 		private Boolean enabled;
 
