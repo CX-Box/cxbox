@@ -52,7 +52,7 @@
     <connection>scm:git:git@github.com:CX-Box/cxbox.git</connection>
     <developerConnection>scm:git:git@github.com:CX-Box/cxbox.git</developerConnection>
     <url>https://github.com/CX-Box/cxbox</url>
-    <tag>3.0.5-SNAPSHOT</tag>
+    <tag>4.0.0-M3-SNAPSHOT</tag>
   </scm>
 
   <distributionManagement>
@@ -74,7 +74,6 @@
 
   <properties>
     <spring-boot.version>3.1.2</spring-boot.version>
-
     <checktyle.config>/cxbox-base/src/main/resources/checkstyle-checker.xml</checktyle.config>
     <flatten.mode>oss</flatten.mode>
     <skip.checkstyle>false</skip.checkstyle>
@@ -85,7 +84,6 @@
   <profiles>
     <profile>
       <id>release</id>
-
       <build>
         <plugins>
           <plugin>
@@ -102,7 +100,6 @@
           </plugin>
         </plugins>
       </build>
-
     </profile>
   </profiles>
 
@@ -266,7 +263,6 @@
     <module>cxbox-starters/cxbox-starter-sqlbc</module>
     <module>cxbox-starters/cxbox-meta-api</module>
     <module>cxbox-starters/cxbox-starter-meta</module>
-
   </modules>
 
 </project>
