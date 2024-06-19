@@ -19,6 +19,7 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Comparator;
 import java.util.List;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
@@ -140,4 +141,24 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 				});
 	}
 
+	public final void setAllFilterValuesByLovTypeOrdered(final FieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type) {
+		setAllFilterValuesByLovType(fields, field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
+	}
+
+	private void setAllFilterValuesByLovType(final FieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type,
+			final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.clearFilterValues();
+					fieldDTO.setFilterValues(dictionary().getAll(type)
+							.stream()
+							.sorted(comparator)
+							.toList()
+					);
+				});
+	}
 }
