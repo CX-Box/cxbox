@@ -19,22 +19,24 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import jakarta.annotation.Nullable;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 
@@ -60,7 +62,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void enableFilter(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setFilterable(true)));
 	}
 
@@ -99,7 +101,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void setForceActive(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setForceActive(true)));
 
 	}
@@ -108,7 +110,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void setEphemeral(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setEphemeral(true)));
 	}
 
@@ -116,7 +118,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void setHidden(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setHidden(true)));
 	}
 
@@ -138,6 +140,23 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 					fieldDTO.setFileAccept(null);
 					fieldDTO.setFileAccept(String.join(",", accept));
 				});
+	}
+
+	public static void setAllFilterValuesByLovTypeOrdered(final RowDependentFieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type) {
+		setAllFilterValuesByLovType(fields, field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
+	}
+
+	private static void setAllFilterValuesByLovType(final RowDependentFieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type,
+			final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName())).ifPresent(fieldDTO -> {
+			fieldDTO.setDictionaryName(type.getName());
+			fieldDTO.clearValues();
+			fieldDTO.setValues(DictionaryCache.dictionary().getAll(type).stream().sorted(comparator).toList());
+		});
 	}
 
 }
