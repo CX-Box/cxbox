@@ -21,7 +21,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox-starter-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M3-SNAPSHOT</version>
+  <version>4.0.0-M3-CXBOX-348-SNAPSHOT</version>
   <name>IO Cxbox - Starter Parent</name>
 
   <url>http://cxbox.org</url>
@@ -68,12 +68,12 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.2</version>
+    <version>3.1.10</version>
   </parent>
 
   <properties>
-    <cxbox.version>4.0.0-M3-SNAPSHOT</cxbox.version>
-    <spring-boot.version>3.1.2</spring-boot.version>
+    <cxbox.version>4.0.0-M3-CXBOX-348-SNAPSHOT</cxbox.version>
+    <spring-boot.version>3.1.10</spring-boot.version>
 
     <jaxb.version>2.3.0</jaxb.version>
   </properties>
