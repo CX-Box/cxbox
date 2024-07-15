@@ -24,6 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 
 @NoArgsConstructor
 @Getter
@@ -47,6 +48,9 @@ public class BusinessComponentDTO implements Serializable {
 
 	Long page;
 
+	/**
+	 * default value is configured in {@link MetaConfigurationProperties#bcDefaultPageLimit bcDefaultPageLimit}
+	 */
 	Long limit;
 
 	Boolean hasNext;
@@ -68,7 +72,6 @@ public class BusinessComponentDTO implements Serializable {
 		this.url = url != null && url.charAt(url.length() - 1) == '/' ? url.substring(0, url.length() - 1) : url;
 		this.cursor = "";
 		this.page = 1L;
-		this.limit = 5L;
 		this.hasNext = false;
 	}
 

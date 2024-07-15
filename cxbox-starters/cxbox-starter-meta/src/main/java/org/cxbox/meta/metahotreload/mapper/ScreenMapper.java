@@ -49,6 +49,7 @@ import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.FilterGroup;
+import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto.ScreenNavigationSourceDto.MenuItemSourceDto;
 import org.cxbox.meta.metahotreload.util.JsonUtils;
@@ -68,6 +69,8 @@ public class ScreenMapper {
 
 	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
+
+	private final MetaConfigurationProperties metaConfigurationProperties;
 
 	public ScreenDTO map(ScreenSourceDto dto, Map<String, ViewDTO> viewNameToView, Map<String, BcProperties> bcProps, Map<String, List<FilterGroup>> filterGroupsAll) {
 		List<String> currentScreenViewNames = new ArrayList<>();
@@ -146,6 +149,9 @@ public class ScreenMapper {
 	private void setBcParameters(final BusinessObjectDTO boDto, Map<String, BcProperties> bcProps) {
 		Map<String, BcProperties> defaultBcPropertiesMap = getStringDefaultBcPropertiesMap(boDto, bcProps);
 		boDto.getBc().forEach(dto -> {
+			if (metaConfigurationProperties != null) {
+				Optional.ofNullable(metaConfigurationProperties.getBcDefaultPageLimit()).ifPresent(dto::setLimit);
+			}
 			BcProperties bcProperties = defaultBcPropertiesMap.get(dto.getName());
 			if (bcProperties != null) {
 				Optional.ofNullable(bcProperties.getLimit()).ifPresent(dto::setLimit);
