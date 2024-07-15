@@ -18,6 +18,7 @@ package org.cxbox.meta.metahotreload.conf.properties;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -48,5 +49,8 @@ public class MetaConfigurationProperties {
 
 	@NotBlank(message = "Path to sqlbc files from MetaConfigurationProperties.directory")
 	private String bcPath = "/**/*.sqlbc.json";
+
+	@Positive(message  =  "Number of rows on bc by default (can be override with BC_PROPERTIES.csv)")
+	private Long bcDefaultPageLimit = 5L;
 
 }
