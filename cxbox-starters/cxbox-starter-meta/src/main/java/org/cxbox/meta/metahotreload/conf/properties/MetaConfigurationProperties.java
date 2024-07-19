@@ -53,4 +53,9 @@ public class MetaConfigurationProperties {
 	@Positive(message  =  "Number of rows on bc by default (can be override with BC_PROPERTIES.csv)")
 	private Long bcDefaultPageLimit = 5L;
 
+	/**
+	 ** Enabled filter by range for Date/DateTime/DateTimeWithSeconds fields
+	 */
+	private boolean filterByRangeEnabled = false;
+
 }

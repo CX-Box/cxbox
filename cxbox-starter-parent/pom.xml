@@ -21,7 +21,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox-starter-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M3-SNAPSHOT</version>
+  <version>4.0.0-M3-SNAPSHOT-327</version>
   <name>IO Cxbox - Starter Parent</name>
 
   <url>http://cxbox.org</url>
@@ -72,7 +72,7 @@
   </parent>
 
   <properties>
-    <cxbox.version>4.0.0-M3-SNAPSHOT</cxbox.version>
+    <cxbox.version>4.0.0-M3-SNAPSHOT-327</cxbox.version>
     <spring-boot.version>3.1.2</spring-boot.version>
 
     <jaxb.version>2.3.0</jaxb.version>

@@ -69,4 +69,6 @@ public class LoggedUser {
 
 	private boolean devPanelEnabled;
 
+	private boolean filterByRangeEnabled;
+
 }
