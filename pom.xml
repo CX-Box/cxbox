@@ -69,11 +69,11 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.2</version>
+    <version>3.2.4</version>
   </parent>
 
   <properties>
-    <spring-boot.version>3.1.2</spring-boot.version>
+    <spring-boot.version>3.2.4</spring-boot.version>
     <checktyle.config>/cxbox-base/src/main/resources/checkstyle-checker.xml</checktyle.config>
     <flatten.mode>oss</flatten.mode>
     <skip.checkstyle>false</skip.checkstyle>
