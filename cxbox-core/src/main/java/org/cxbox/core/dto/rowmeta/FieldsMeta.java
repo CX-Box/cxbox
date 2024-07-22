@@ -19,7 +19,9 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Comparator;
 import java.util.List;
+import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -138,6 +140,60 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 					fieldDTO.setFileAccept(null);
 					fieldDTO.setFileAccept(String.join(",", accept));
 				});
+	}
+
+	/**
+	 * The method allows sorting LOV values to set the display order,
+	 * in accordance with the specified order in the CSV file,
+	 * by setting FilterValues to the corresponding value.
+	 * @param fields
+	 * @param field
+	 * @param type
+	 */
+	public final void setAllFilterValuesByLovTypeOrdered(final FieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type) {
+		setAllFilterValuesByLovType(fields, field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
+	}
+
+	private void setAllFilterValuesByLovType(final FieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type,
+			final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.clearFilterValues();
+					fieldDTO.setFilterValues(dictionary().getAll(type)
+							.stream()
+							.sorted(comparator)
+							.toList()
+					);
+				});
+	}
+
+	/**
+	 * The method allows sorting LOV values to set the display order,
+	 * in accordance with the specified order in the CSV file,
+	 * by setting Values to the corresponding value.
+	 * @param fields
+	 * @param field
+	 * @param type
+	 */
+	public static void setDictionaryTypeWithAllValuesOrdered(final RowDependentFieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type) {
+		setDictionaryTypeWithAllValues(fields, field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
+	}
+
+	public static void setDictionaryTypeWithAllValues(final RowDependentFieldsMeta<?> fields,
+			final DtoField<?, ?> field,
+			final IDictionaryType type,
+			final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName())).ifPresent(fieldDTO -> {
+			fieldDTO.setDictionaryName(type.getName());
+			fieldDTO.clearValues();
+			fieldDTO.setValues(DictionaryCache.dictionary().getAll(type).stream().sorted(comparator).toList());
+		});
 	}
 
 }
