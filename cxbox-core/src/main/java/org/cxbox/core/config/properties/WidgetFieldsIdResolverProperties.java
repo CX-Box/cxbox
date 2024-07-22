@@ -29,4 +29,11 @@ public class WidgetFieldsIdResolverProperties {
 
 	private String[] excludeClasses = {};
 
+
+	/**
+	 ** Enabled filter by range for Date/DateTime/DateTimeWithSeconds fields
+	 */
+	private boolean filterByRangeEnabledDefault = false;
+	public static final String FILTER_BY_RANGE_ENABLED_DEFAULT_PARAM_NAME = "filterByRangeEnabled";
+
 }

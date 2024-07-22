@@ -16,6 +16,7 @@
 
 package org.cxbox.core.util.filter.provider.impl;
 
+import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.ClassifyDataParameter;
@@ -31,6 +32,8 @@ import java.util.List;
 import static org.cxbox.core.controller.param.SearchOperation.SPECIFIED;
 
 public abstract class AbstractClassifyDataProvider implements ClassifyDataProvider {
+
+	private static WidgetFieldsIdResolverProperties widgetFieldsIdResolverProperties;
 
 	@Override
 	public List<ClassifyDataParameter> getClassifyDataParameters(Field dtoField, FilterParameter filterParam,
@@ -80,7 +83,9 @@ public abstract class AbstractClassifyDataProvider implements ClassifyDataProvid
 				dataParameter.setValue(param.getDateValue()
 						.with(DateTimeUtil.asStartOfDay())
 						.with(DateTimeUtil.fromSession(tzAware)));
-				if (parameter.strict()) {
+				if (parameter.strict() ||
+						(widgetFieldsIdResolverProperties == null ? true
+								: widgetFieldsIdResolverProperties.isFilterByRangeEnabledDefault())) {
 					dataParameter.setValue(param.getDateValue().with(DateTimeUtil.fromSession(tzAware)));
 				}
 				break;
@@ -89,7 +94,9 @@ public abstract class AbstractClassifyDataProvider implements ClassifyDataProvid
 				dataParameter.setValue(param.getDateValue()
 						.with(DateTimeUtil.asEndOfDay())
 						.with(DateTimeUtil.fromSession(tzAware)));
-				if (parameter.strict()) {
+				if (parameter.strict() ||
+						(widgetFieldsIdResolverProperties == null ? true
+								: widgetFieldsIdResolverProperties.isFilterByRangeEnabledDefault())) {
 					dataParameter.setValue(param.getDateValue().with(DateTimeUtil.fromSession(tzAware)));
 				}
 				break;
