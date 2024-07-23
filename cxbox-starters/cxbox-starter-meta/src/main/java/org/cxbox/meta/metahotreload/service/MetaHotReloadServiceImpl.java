@@ -39,6 +39,7 @@ import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
+import org.cxbox.model.core.entity.BaseEntity;
 
 @RequiredArgsConstructor
 public class MetaHotReloadServiceImpl implements MetaHotReloadService {
@@ -70,13 +71,15 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	//TODO>>Draft. Refactor
 	public void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
 		if (config.isViewAllowedRolesEnabled()) {
+
 			Map<String, String> viewToScreenMap = new HashMap<>();
+			List<Long> idCustomRecords = new ArrayList<>();
+			List<Responsibilities> responsibilities = new ArrayList<>();
+			long defaultDepartmentId = 0L; //TODO>>replace magic number with value from config
+
 			metaRepository.getAllScreens()
 					.forEach((screenName, screenDto) -> screenDto.getViews().stream().map(ViewDTO::getName)
 							.forEach(viewName -> viewToScreenMap.put(viewName, screenName)));
-
-			List<Responsibilities> responsibilities = new ArrayList<>();
-			long defaultDepartmentId = 0L; //TODO>>replace magic number with value from config
 			viewDtos.forEach(view -> {
 				view.getRolesAllowed().forEach(role -> {
 					responsibilities.add(new Responsibilities()
@@ -86,6 +89,36 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 							.setDepartmentId(defaultDepartmentId));
 				});
 			});
+
+			List<Responsibilities> viewDB = metaRepository.getAllView();
+			//block start - user records in table responsibilities
+			if (!viewDB.isEmpty()) {
+				//no start application with database changeset
+				Map<String, Responsibilities> keyViewsBD = viewDB.stream()
+						.collect(Collectors.toMap(
+								a -> a.getInternalRoleCD().getKey() + a.getView(),
+								resp -> resp
+						));
+
+				Map<String, Responsibilities> keyViewsMeta = responsibilities.stream()
+						.collect(Collectors.toMap(
+								a -> a.getInternalRoleCD().getKey() + a.getView(),
+								resp -> resp
+						));
+
+				//Delete user records in meta
+				List<Responsibilities> diffMetaDB = searchDiffData(keyViewsMeta, keyViewsBD);
+				if (!diffMetaDB.isEmpty()) {
+					responsibilities.removeAll(diffMetaDB);
+				}
+
+				//Ids - Not delete user records in database
+				List<Responsibilities> diffDBMeta = searchDiffData(keyViewsBD, keyViewsMeta);
+				if (!diffDBMeta.isEmpty()) {
+					idCustomRecords = diffDBMeta.stream().map(BaseEntity::getId).toList();
+				}
+			}
+			//block end
 
 			Map<String, ScreenSourceDto> screenNameToScreen = screenDtos.stream()
 					.collect(Collectors.toMap(ScreenSourceDto::getName, sd -> sd));
@@ -112,7 +145,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 						.setScreens(mapToScreens(screens))
 						.setDepartmentId(defaultDepartmentId));
 			}
-			metaRepository.deleteAndSaveResponsibilities(responsibilities);
+			metaRepository.deleteAndSaveResponsibilities(responsibilities, idCustomRecords);
 
 		}
 	}
@@ -142,9 +175,15 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	}
 
 
-
 	protected void loadMetaAfterProcess() {
 
+	}
+
+	private List<Responsibilities> searchDiffData(Map<String, Responsibilities> map,
+			Map<String, Responsibilities> mapForSearch) {
+		return map.entrySet().stream()
+				.filter(keyView -> !mapForSearch.containsKey(keyView.getKey()))
+				.map(Entry::getValue).toList();
 	}
 
 }
