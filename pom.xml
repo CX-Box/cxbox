@@ -77,7 +77,7 @@
     <checktyle.config>/cxbox-base/src/main/resources/checkstyle-checker.xml</checktyle.config>
     <flatten.mode>oss</flatten.mode>
     <skip.checkstyle>false</skip.checkstyle>
-    <gpg.key>4497C794A762CFBDA1F300A38A0F20A77946E4AB</gpg.key>
+    <gpg.key>0B8F9057DA81FB685DE8A12033EEDECAAC1E9F13</gpg.key>
     <skip.deploy>false</skip.deploy>
   </properties>
 
