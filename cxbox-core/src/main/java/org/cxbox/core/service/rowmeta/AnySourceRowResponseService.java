@@ -36,6 +36,7 @@ import org.cxbox.core.dto.rowmeta.RowMetaDTO;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,9 @@ public class AnySourceRowResponseService extends RowResponseService {
 	}
 
 	public AnySourceRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
-			Optional<LinkedDictionaryService> linkedDictionaryService, Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService, ObjectMapper objectMapper) {
+			Optional<LinkedDictionaryService> linkedDictionaryService,
+			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
+			@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
 		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, objectMapper);
 	}
 
@@ -75,7 +78,8 @@ public class AnySourceRowResponseService extends RowResponseService {
 		return getAnySourceResponse(type, dataDTO, bc, actionDTO, responseService.getAnySourceFieldMetaBuilder());
 	}
 
-	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc, ActionsDTO actionDTO,
+	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
+			ActionsDTO actionDTO,
 			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {

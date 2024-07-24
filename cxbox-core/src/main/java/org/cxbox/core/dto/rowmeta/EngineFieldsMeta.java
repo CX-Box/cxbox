@@ -17,17 +17,18 @@
 package org.cxbox.core.dto.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.api.data.dto.DataResponseDTO;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
 public class EngineFieldsMeta<T extends DataResponseDTO> extends FieldsMeta<T> {
 
 
-	public EngineFieldsMeta(ObjectMapper objectMapper) {
+	public EngineFieldsMeta(@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
 		super(objectMapper);
 	}
 

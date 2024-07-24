@@ -23,24 +23,20 @@ import com.fasterxml.jackson.databind.cfg.HandlerInstantiator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.time.LocalDateTime;
+import java.util.Date;
 import org.cxbox.api.util.jackson.DtoPropertyFilter;
 import org.cxbox.api.util.jackson.deser.contextual.TZAwareLDTContextualDeserializer;
 import org.cxbox.api.util.jackson.ser.contextual.I18NAwareStringContextualSerializer;
 import org.cxbox.api.util.jackson.ser.contextual.TZAwareJUDContextualSerializer;
 import org.cxbox.api.util.jackson.ser.contextual.TZAwareLDTContextualSerializer;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
-import java.time.LocalDateTime;
-import java.util.Date;
-
-
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.SpringHandlerInstantiator;
 
-@Configuration
 @EnableConfigurationProperties(WidgetFieldsIdResolverProperties.class)
 public class JacksonConfig {
 
@@ -67,7 +63,6 @@ public class JacksonConfig {
 	public HandlerInstantiator handlerInstantiator(ApplicationContext context) {
 		return new SpringHandlerInstantiator(context.getAutowireCapableBeanFactory());
 	}
-
 
 
 	private JavaTimeModule buildJavaTimeModule() {

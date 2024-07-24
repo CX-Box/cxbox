@@ -19,20 +19,20 @@ package org.cxbox.sqlbc.crudma;
 import static java.util.Optional.ofNullable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cxbox.api.util.tz.TimeZoneUtil;
-import org.cxbox.core.controller.param.SearchOperation;
-import org.cxbox.core.crudma.bc.impl.BcDescription;
 import java.util.List;
 import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.cxbox.api.util.tz.TimeZoneUtil;
+import org.cxbox.core.controller.param.SearchOperation;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
 import org.cxbox.meta.metahotreload.util.JsonUtils;
-import org.cxbox.sqlbc.exception.BadSqlComponentException;
 import org.cxbox.sqlbc.dao.SqlFieldType;
+import org.cxbox.sqlbc.exception.BadSqlComponentException;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 
 public final class SqlBcDescription extends BcDescription {
@@ -54,8 +54,14 @@ public final class SqlBcDescription extends BcDescription {
 	@Getter
 	private final List<Bind> binds;
 
-	public SqlBcDescription(ObjectMapper objectMapper, BcSourceDTO bc, List<Bind> binds, LazyInitializer<List<Field>> fieldsInitializer) {
-		super(bc.getName(), bc.getParentName(), SqlCrudmaService.class, Boolean.TRUE.equals(ofNullable(bc.getRefresh()).map(val -> val > 0).orElse(false)));
+	public SqlBcDescription(@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper, BcSourceDTO bc, List<Bind> binds,
+			LazyInitializer<List<Field>> fieldsInitializer) {
+		super(
+				bc.getName(),
+				bc.getParentName(),
+				SqlCrudmaService.class,
+				Boolean.TRUE.equals(ofNullable(bc.getRefresh()).map(val -> val > 0).orElse(false))
+		);
 		this.query = bc.getQuery();
 		this.defaultOrder = bc.getDefaultOrder();
 		this.reportDateField = bc.getReportDateField();

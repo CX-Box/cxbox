@@ -19,8 +19,17 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
@@ -28,21 +37,13 @@ import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import jakarta.annotation.Nullable;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
 
 public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMeta<T> {
 
-	public FieldsMeta(ObjectMapper objectMapper) {
+	public FieldsMeta(@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
 		super(objectMapper);
 	}
 
@@ -62,7 +63,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void enableFilter(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setFilterable(true)));
 	}
 
@@ -101,7 +102,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void setForceActive(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setForceActive(true)));
 
 	}
@@ -110,7 +111,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void setEphemeral(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setEphemeral(true)));
 	}
 
@@ -118,7 +119,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public final void setHidden(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
-						dtoField -> this.fields.get(dtoField.getName()))
+								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setHidden(true)));
 	}
 
@@ -146,9 +147,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * The method allows sorting LOV values to set the display order,
 	 * in accordance with the specified order in the CSV file,
 	 * by setting FilterValues to the corresponding value.
-	 * @param fields
-	 * @param field
-	 * @param type
 	 */
 	public final void setAllFilterValuesByLovTypeOrdered(final FieldsMeta<?> fields,
 			final DtoField<?, ?> field,
@@ -175,9 +173,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * The method allows sorting LOV values to set the display order,
 	 * in accordance with the specified order in the CSV file,
 	 * by setting Values to the corresponding value.
-	 * @param fields
-	 * @param field
-	 * @param type
 	 */
 	public static void setDictionaryTypeWithAllValuesOrdered(final RowDependentFieldsMeta<?> fields,
 			final DtoField<?, ?> field,
