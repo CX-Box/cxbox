@@ -39,6 +39,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
+import org.cxbox.core.config.properties.APIProperties;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceCrudmaImplementation;
 import org.cxbox.core.crudma.impl.inner.AnySourceCrudmaService;
@@ -102,6 +103,10 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Autowired
 	private List<AnySourceBaseDAO<E>> anySourceBaseDAOs;
+
+	@Autowired
+	private APIProperties apiProperties;
+
 
 	@Override
 	public AnySourceBaseDAO<E> getBaseDao() {
@@ -222,7 +227,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 		Page<E> page = getBaseDao().getList(bc, bc.getParameters());
 		return entitiesToDtos(
 				bc,
-				ResultPage.of(page.stream().toList(), page.hasNext())
+				ResultPage.of(page.stream().toList(), apiProperties.isAnySourceHasNextEnabled() ? page.hasNext() : false)
 		);
 	}
 
