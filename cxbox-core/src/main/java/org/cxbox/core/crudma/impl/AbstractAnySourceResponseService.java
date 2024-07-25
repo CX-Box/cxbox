@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +69,7 @@ import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -219,10 +219,10 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Override
 	public ResultPage<T> getList(BusinessComponent bc) {
-		//TODO hasNext hardcode
+		Page<E> page = getBaseDao().getList(bc, bc.getParameters());
 		return entitiesToDtos(
 				bc,
-				ResultPage.of(getBaseDao().getList(bc, bc.getParameters()).stream().collect(Collectors.toList()), false)
+				ResultPage.of(page.stream().toList(), page.hasNext())
 		);
 	}
 
