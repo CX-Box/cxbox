@@ -135,7 +135,7 @@ public class AdditionalFieldsImpl implements AdditionalFieldsService {
 				.setAddedToAdditionalFields(objectMapper
 						.writeValueAsString(additionalFieldsDTO.getAddedToAdditionalFields()))
 				.setRemovedFromAdditionalFields(objectMapper
-						.writeValueAsString(additionalFieldsDTO.getOrderFields()))
+						.writeValueAsString(additionalFieldsDTO.getRemovedFromAdditionalFields()))
 				.setOrderFields(objectMapper
 						.writeValueAsString(additionalFieldsDTO.getOrderFields()))
 				.setWidget(additionalFieldsDTO.getWidget())

@@ -104,7 +104,7 @@ public class UserMetaProvider {
 			AdditionalFieldsDTO additionalFieldsDTO = new AdditionalFieldsDTO(field);
 			additionalFieldsDTO.setAddedToAdditionalFields(getListFromJson(field.getAddedToAdditionalFields()));
 			additionalFieldsDTO.setOrderFields(getListFromJson(field.getOrderFields()));
-			additionalFieldsDTO.setRemovedFromAdditionalFields(getListFromJson(field.getAddedToAdditionalFields()));
+			additionalFieldsDTO.setRemovedFromAdditionalFields(getListFromJson(field.getRemovedFromAdditionalFields()));
 			return additionalFieldsDTO;
 		}).collect(Collectors.toList());
 	}
