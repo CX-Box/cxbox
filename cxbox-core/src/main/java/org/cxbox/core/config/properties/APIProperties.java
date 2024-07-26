@@ -44,4 +44,6 @@ public class APIProperties {
 
 	private boolean fullStackTraces = false;
 
+	private boolean anySourceHasNextEnabled = true;
+
 }

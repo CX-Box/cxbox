@@ -25,15 +25,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("cxbox.widget.fields")
 public class WidgetFieldsIdResolverProperties {
 
+	public static final String FILTER_BY_RANGE_ENABLED_DEFAULT_PARAM_NAME = "filterByRangeEnabled";
+
+	/**
+	 * Enabled filter by range for Date/DateTime/DateTimeWithSeconds fields
+	 */
+	private boolean filterByRangeEnabledDefault = false;
+
+
 	private String[] includePackages = {"org.cxbox.meta.ui.model.json.field.subtypes"};
 
 	private String[] excludeClasses = {};
-
-
-	/**
-	 ** Enabled filter by range for Date/DateTime/DateTimeWithSeconds fields
-	 */
-	private boolean filterByRangeEnabledDefault = false;
-	public static final String FILTER_BY_RANGE_ENABLED_DEFAULT_PARAM_NAME = "filterByRangeEnabled";
 
 }
