@@ -31,6 +31,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -61,6 +63,8 @@ public class APIConfig implements WebMvcConfigurer {
 		converters.add(new StringHttpMessageConverter());
 		converters.add(new ByteArrayHttpMessageConverter());
 		converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+		converters.add(new ResourceHttpMessageConverter());
+		converters.add(new ResourceRegionHttpMessageConverter());
 	}
 
 	@SuppressWarnings("java:S5693")
