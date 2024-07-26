@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO.ViewWidgetSourceDTO;
@@ -36,7 +37,7 @@ public class WidgetMapper {
 
 	private final AtomicInteger widgetSeq = new AtomicInteger(0);
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	private final BcRegistry bcRegistry;

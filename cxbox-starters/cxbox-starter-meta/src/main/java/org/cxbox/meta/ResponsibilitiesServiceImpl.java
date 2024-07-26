@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.CoreDictionaries;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
@@ -52,7 +53,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 
 	private final TransactionService txService;
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {

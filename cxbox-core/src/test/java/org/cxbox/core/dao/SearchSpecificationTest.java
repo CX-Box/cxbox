@@ -17,6 +17,7 @@
 package org.cxbox.core.dao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.controller.param.FilterParameter;
@@ -78,7 +79,7 @@ class SearchSpecificationTest {
 		BeanFactory mockedBeanFactory = mock(BeanFactory.class);
 		SpringBeanUtils springBeanUtils = new SpringBeanUtils();
 		springBeanUtils.setBeanFactory(mockedBeanFactory);
-		when(SpringBeanUtils.getBean("cxboxObjectMapper")).thenReturn(new ObjectMapper());
+		when(SpringBeanUtils.getBean(CxboxBeanProperties.OBJECT_MAPPER)).thenReturn(new ObjectMapper());
 		setProviders();
 		setSuccessMap();
 		setExceptionMap();

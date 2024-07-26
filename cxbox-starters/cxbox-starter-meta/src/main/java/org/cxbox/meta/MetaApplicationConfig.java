@@ -41,7 +41,7 @@ public class MetaApplicationConfig {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ResponsibilitiesService responsibilitiesService(MetaRepository metaRepository, CacheManager cacheManager, TransactionService txService, @Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
+	public ResponsibilitiesService responsibilitiesService(MetaRepository metaRepository, CacheManager cacheManager, TransactionService txService, @Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
 		return new ResponsibilitiesServiceImpl(metaRepository, cacheManager, txService, objectMapper);
 	}
 

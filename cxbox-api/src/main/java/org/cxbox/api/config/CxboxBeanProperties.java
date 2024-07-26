@@ -28,6 +28,11 @@ import org.springframework.validation.annotation.Validated;
 public class CxboxBeanProperties {
 
 	/**
+	 * We use "cxboxObjectMapper" to allow projects to define separate object mappers on project level and to avoid conflicts in this cases
+	 */
+	public static final String OBJECT_MAPPER = "cxboxObjectMapper";
+
+	/**
 	 * We use "dataSource" by default to ease springboot-starter-jpa (and so on) integration out of the box.
 	 * Set "primaryDS" legacy value explicitly, if you need this.
 	 */

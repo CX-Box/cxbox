@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.metahotreload.service;
 
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
@@ -44,7 +45,7 @@ public class MetaResourceReaderService {
 
 	final MetaConfigurationProperties config;
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	final ObjectMapper objMapper;
 
 	@NonNull

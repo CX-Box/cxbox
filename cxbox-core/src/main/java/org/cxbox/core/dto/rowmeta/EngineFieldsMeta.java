@@ -22,13 +22,12 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
 public class EngineFieldsMeta<T extends DataResponseDTO> extends FieldsMeta<T> {
 
 
-	public EngineFieldsMeta(@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
+	public EngineFieldsMeta(ObjectMapper objectMapper) {
 		super(objectMapper);
 	}
 

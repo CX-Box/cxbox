@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SerializationUtils;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
@@ -52,7 +53,7 @@ public class UserMetaProvider {
 
 	private final JpaDao jpaDao;
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 

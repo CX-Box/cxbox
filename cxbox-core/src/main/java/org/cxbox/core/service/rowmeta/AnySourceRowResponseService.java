@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -68,7 +69,7 @@ public class AnySourceRowResponseService extends RowResponseService {
 	public AnySourceRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
-			@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
+			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
 		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, objectMapper);
 	}
 

@@ -37,13 +37,11 @@ import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
-
 public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMeta<T> {
 
-	public FieldsMeta(@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper) {
+	public FieldsMeta(ObjectMapper objectMapper) {
 		super(objectMapper);
 	}
 

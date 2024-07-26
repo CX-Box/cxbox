@@ -16,6 +16,7 @@
 
 package org.cxbox.core.dto.multivalue;
 
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.exception.ClientException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class MultivalueFieldDeserializer extends JsonDeserializer<MultivalueField> {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper mapper;
 
 	private static final CollectionType collectionType =

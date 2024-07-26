@@ -52,10 +52,9 @@ public class SqlBcCreator {
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
 
-	public SqlBcCreator(ApplicationContext applicationContext, CxboxBeanProperties cxboxBeanProperties, @Qualifier("cxboxObjectMapper") ObjectMapper objectMapper
+	public SqlBcCreator(ApplicationContext applicationContext, CxboxBeanProperties cxboxBeanProperties, @Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper
 	) {
 		this.jdbcTemplate = new NamedParameterJdbcTemplate(applicationContext.getBean(cxboxBeanProperties.getDataSource(), DataSource.class));
 		this.objectMapper = objectMapper;

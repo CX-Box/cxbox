@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
 import java.util.Date;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.util.jackson.DtoPropertyFilter;
 import org.cxbox.api.util.jackson.deser.contextual.TZAwareLDTContextualDeserializer;
 import org.cxbox.api.util.jackson.ser.contextual.I18NAwareStringContextualSerializer;
@@ -40,7 +41,7 @@ import org.springframework.http.converter.json.SpringHandlerInstantiator;
 @EnableConfigurationProperties(WidgetFieldsIdResolverProperties.class)
 public class JacksonConfig {
 
-	@Bean("cxboxObjectMapper")
+	@Bean(CxboxBeanProperties.OBJECT_MAPPER)
 	public ObjectMapper cxboxObjectMapper(
 			HandlerInstantiator handlerInstantiator
 	) {

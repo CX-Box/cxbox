@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
@@ -39,7 +40,7 @@ public class ViewMapper {
 
 	private final AtomicLong viewSeq = new AtomicLong(0L);
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	public ViewDTO map(ViewSourceDTO dto, Map<String, WidgetSourceDTO> widgetNameToWidget) {

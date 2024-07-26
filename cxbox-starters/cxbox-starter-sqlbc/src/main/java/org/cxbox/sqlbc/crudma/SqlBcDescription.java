@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.util.tz.TimeZoneUtil;
 import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
@@ -54,7 +55,7 @@ public final class SqlBcDescription extends BcDescription {
 	@Getter
 	private final List<Bind> binds;
 
-	public SqlBcDescription(@Qualifier("cxboxObjectMapper") ObjectMapper objectMapper, BcSourceDTO bc, List<Bind> binds,
+	public SqlBcDescription(@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper, BcSourceDTO bc, List<Bind> binds,
 			LazyInitializer<List<Field>> fieldsInitializer) {
 		super(
 				bc.getName(),

@@ -17,6 +17,7 @@
 package org.cxbox.core.controller.param;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.TypeConverter;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,7 +43,7 @@ public interface QueryParameter {
 		if (StringUtils.isBlank(stringValue)) {
 			return Collections.emptyList();
 		}
-		ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean("cxboxObjectMapper");
+		ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean(CxboxBeanProperties.OBJECT_MAPPER);
 		List<String> strings = cxboxObjectMapper
 				.readValue(stringValue, new StringListTypeReference());
 		return strings.stream()

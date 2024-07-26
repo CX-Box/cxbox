@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
@@ -88,7 +89,7 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 
 	private final SqlNamedParameterQueryBinder sqlNamedParameterQueryBinder;
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	@Qualifier("primaryDatabase")

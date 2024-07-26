@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.meta.entity.AdditionalFields;
@@ -37,7 +38,7 @@ public class AdditionalFieldsImpl implements AdditionalFieldsService {
 
 	private final SessionService service;
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	private final TransactionService transactionService;
