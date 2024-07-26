@@ -19,6 +19,7 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -49,7 +50,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 @RequiredArgsConstructor
 public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	public FieldDTO get(final DtoField<? super T, ?> field) {

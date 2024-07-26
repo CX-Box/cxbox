@@ -20,6 +20,7 @@ import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.cxbox.api.util.i18n.InfoMessageSource.infoMessage;
 
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder;
@@ -45,7 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UniversalAssociateController {
 
 	@Autowired
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private ObjectMapper objectMapper;
 
 	@Autowired

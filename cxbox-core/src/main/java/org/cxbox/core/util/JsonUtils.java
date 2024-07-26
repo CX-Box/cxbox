@@ -16,6 +16,7 @@
 
 package org.cxbox.core.util;
 
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.exception.ServerException;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,7 +28,7 @@ public final class JsonUtils {
 
 	public static JsonNode readTree(String json) {
 		try {
-			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean("cxboxObjectMapper");
+			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean(CxboxBeanProperties.OBJECT_MAPPER);
 			return cxboxObjectMapper.readTree(json);
 		} catch (IOException e) {
 			throw new ServerException("Не удалось распарсить Json:" + json, e);
@@ -36,7 +37,7 @@ public final class JsonUtils {
 
 	public static <T> T readValue(final Class<T> valueClass, final TreeNode treeNode) {
 		try {
-			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean("cxboxObjectMapper");
+			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean(CxboxBeanProperties.OBJECT_MAPPER);
 			return cxboxObjectMapper.treeToValue(treeNode, valueClass);
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Не удалось распарсить Json:" + treeNode, e);
@@ -45,7 +46,7 @@ public final class JsonUtils {
 
 	public static <T> T readValue(final Class<T> valueClass, final String json) {
 		try {
-			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean("cxboxObjectMapper");
+			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean(CxboxBeanProperties.OBJECT_MAPPER);
 			return cxboxObjectMapper.readValue(json, valueClass);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Не удалось распарсить Json:" + json, e);
@@ -54,7 +55,7 @@ public final class JsonUtils {
 
 	public static <T> String writeValue(final T value) {
 		try {
-			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean("cxboxObjectMapper");
+			ObjectMapper cxboxObjectMapper = SpringBeanUtils.getBean(CxboxBeanProperties.OBJECT_MAPPER);
 			return cxboxObjectMapper.writeValueAsString(value);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Не удалось создать Json строку из класса:" + value, e);

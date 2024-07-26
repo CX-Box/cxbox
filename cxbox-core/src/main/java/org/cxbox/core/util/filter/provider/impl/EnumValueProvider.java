@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.dao.ClassifyDataParameter;
@@ -45,7 +46,7 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode(callSuper = false)
 public class EnumValueProvider extends AbstractClassifyDataProvider implements ClassifyDataProvider {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	@Override

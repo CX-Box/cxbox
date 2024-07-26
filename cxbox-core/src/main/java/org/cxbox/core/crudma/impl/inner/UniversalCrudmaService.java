@@ -19,6 +19,7 @@ package org.cxbox.core.crudma.impl.inner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.UniversalDTO;
@@ -73,7 +74,7 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	private Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	@Autowired
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private ObjectMapper objectMapper;
 
 	protected abstract Class<D> getDtoClass();

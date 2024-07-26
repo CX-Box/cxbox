@@ -33,15 +33,13 @@ import java.util.Set;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.reflect.TypeUtils;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.dto.BusinessError.Entity;
 import org.cxbox.core.exception.BusinessException;
-import org.cxbox.core.service.AnySourceResponseService;
-import org.cxbox.core.service.ResponseService;
-import org.cxbox.core.service.ValidatorsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -54,7 +52,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AnySourceResponseFactory {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper mapper;
 
 	private final ApplicationContext ctx;

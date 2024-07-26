@@ -19,6 +19,7 @@ package org.cxbox.core.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.config.properties.APIProperties;
 import org.cxbox.core.controller.param.resolvers.LocaleParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.PageParameterArgumentResolver;
@@ -44,7 +45,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableConfigurationProperties(APIProperties.class)
 public class APIConfig implements WebMvcConfigurer {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	protected final ObjectMapper objectMapper;
 
 	@Override

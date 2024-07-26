@@ -17,11 +17,11 @@
 package org.cxbox.core.dto.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.api.data.dto.DataResponseDTO;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
 
 @Slf4j
 public class EngineFieldsMeta<T extends DataResponseDTO> extends FieldsMeta<T> {

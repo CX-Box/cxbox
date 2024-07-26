@@ -18,6 +18,7 @@ package org.cxbox.core.service.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
@@ -61,14 +62,13 @@ public class RowResponseService {
 
 	private final Map<String, List<BcDisabler>> bcDisablers;
 
-	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
 
 	public RowResponseService(ApplicationContext ctx,
 			Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
-			ObjectMapper objectMapper) {
+			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
 		this.ctx = ctx;
 		this.linkedDictionaryService = linkedDictionaryService.orElse(null);
 		this.extendedDtoFieldLevelSecurityService = extendedDtoFieldLevelSecurityService;

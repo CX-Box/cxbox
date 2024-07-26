@@ -16,6 +16,7 @@
 
 package org.cxbox.core.controller.http;
 
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.RedirectDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -46,14 +47,13 @@ public class AJAXRedirectStrategyImpl extends DefaultRedirectStrategy implements
 
 	public static final String SLASH = "/";
 
-	@Qualifier("cxboxObjectMapper")
 	private final ObjectMapper objectMapper;
 
 	private final RequestMatcher ajaxRequestMatcher;
 
 	private final UIProperties uiProperties;
 
-	public AJAXRedirectStrategyImpl(ObjectMapper objectMapper, UIProperties uiProperties) {
+	public AJAXRedirectStrategyImpl(@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper, UIProperties uiProperties) {
 		this.objectMapper = objectMapper;
 		this.uiProperties = uiProperties;
 		this.ajaxRequestMatcher = createAJAXRequestMatcher();

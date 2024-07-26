@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -51,7 +52,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ResponseFactory {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper mapper;
 
 	private final ApplicationContext ctx;

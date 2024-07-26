@@ -17,6 +17,7 @@
 package org.cxbox.meta.metahotreload.conf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.MetaHotReloadService;
@@ -38,7 +39,7 @@ public class MetaHotReloadConfiguration {
 	MetaResourceReaderService metaResourceReaderService(
 			ApplicationContext applicationContext,
 			MetaConfigurationProperties config,
-			@Qualifier("cxboxObjectMapper") ObjectMapper objMapper) {
+			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objMapper) {
 		return new MetaResourceReaderService(applicationContext, config, objMapper);
 	}
 

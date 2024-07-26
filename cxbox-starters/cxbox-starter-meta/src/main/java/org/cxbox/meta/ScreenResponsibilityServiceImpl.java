@@ -22,6 +22,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.ScreenResponsibilityService;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.service.ResponsibilitiesService;
@@ -38,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityService {
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	private final ResponsibilitiesService respService;

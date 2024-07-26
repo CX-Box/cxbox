@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.meta.data.BcSourceBaseDTO;
@@ -67,7 +68,7 @@ public class ScreenMapper {
 
 	private final BcRegistry bcRegistry;
 
-	@Qualifier("cxboxObjectMapper")
+	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
 
 	private final MetaConfigurationProperties metaConfigurationProperties;
