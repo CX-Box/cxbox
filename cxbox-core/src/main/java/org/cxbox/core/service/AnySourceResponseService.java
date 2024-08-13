@@ -153,13 +153,6 @@ public interface AnySourceResponseService<T extends DataResponseDTO, E> extends 
 	T entityToDto(BusinessComponent bc, E entity);
 
 	/**
-	 * Returns AnySourceFieldMetaBuilder for class
-	 *
-	 * @return {@link AnySourceFieldMetaBuilder} class for building field meta
-	 */
-	Class<? extends AnySourceFieldMetaBuilder<T>> getAnySourceFieldMetaBuilder();
-
-	/**
 	 * Returns the number of matching entities
 	 *
 	 * @param bc businessComponent
@@ -199,6 +192,8 @@ public interface AnySourceResponseService<T extends DataResponseDTO, E> extends 
 	 */
 	boolean isDeferredCreationSupported(BusinessComponent bc);
 
-	AnySourceBaseDAO<E> getBaseDao();
+	AnySourceBaseDAO<E> getDao();
+
+	AnySourceFieldMetaBuilder<T> getMeta();
 
 }

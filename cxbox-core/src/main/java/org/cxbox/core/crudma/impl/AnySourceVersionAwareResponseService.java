@@ -23,17 +23,18 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
-import org.cxbox.core.dao.AnySourceBaseDAO;
-import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
 import org.cxbox.core.exception.AnySourceVersionMismatchException;
 
 @Slf4j
 public abstract class AnySourceVersionAwareResponseService<T extends DataResponseDTO, E> extends
 		AbstractAnySourceResponseService<T, E> {
 
-	protected AnySourceVersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity, Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder,
-			Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass) {
-		super(typeOfDTO, typeOfEntity, metaBuilder, anySourceBaseDAOClass);
+	protected AnySourceVersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity) {
+		super(typeOfDTO, typeOfEntity);
+	}
+
+	protected AnySourceVersionAwareResponseService() {
+		super();
 	}
 
 	public Long getVstamp(final E entity) {
@@ -53,14 +54,14 @@ public abstract class AnySourceVersionAwareResponseService<T extends DataRespons
 	public CreateResult<T> createEntity(BusinessComponent bc) {
 		// todo: add a check that the service returns actual data
 		final E entity = create(bc);
-		if (getBaseDao().getId(entity) == null && bc.getId() != null) {
-			getBaseDao().setId(bc.getId(), entity);
+		if (getDao().getId(entity) == null && bc.getId() != null) {
+			getDao().setId(bc.getId(), entity);
 		}
-		if (getBaseDao().getId(entity) == null) {
-			getBaseDao().setId(getBaseDao().generateId(), entity);
+		if (getDao().getId(entity) == null) {
+			getDao().setId(getDao().generateId(), entity);
 		}
 		final CreateResult<T> createResult = doCreateEntity(entity, bc);
-		getBaseDao().setWithFirstLevelCache(bc, entity);
+		getDao().setWithFirstLevelCache(bc, entity);
 //		baseDAO.flush();
 //		baseDAO.refresh(entity);
 		return createResult;
@@ -81,7 +82,7 @@ public abstract class AnySourceVersionAwareResponseService<T extends DataRespons
 		// todo: добавить проверку что сервис возвращает актуальные данные
 		final E entity = loadEntity(bc, data);
 		final ActionResultDTO<T> resultDTO = doUpdateEntity(entity, typeOfDTO.cast(data), bc);
-		getBaseDao().setWithFirstLevelCache(bc, entity);
+		getDao().setWithFirstLevelCache(bc, entity);
 		return resultDTO;
 	}
 

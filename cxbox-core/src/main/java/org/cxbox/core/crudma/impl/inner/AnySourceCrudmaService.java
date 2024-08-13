@@ -94,7 +94,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
-		final AnySourceBaseDAO dao = responseService.getBaseDao();
+		final AnySourceBaseDAO dao = responseService.getDao();
 		final ActionResultDTO actionResultDTO = responseService.updateEntity(bc, requestDTO);
 		dao.flush(bc);
 		actionResultDTO.transformData(r -> responseService.entityToDto(bc, dao.getById(bc)));

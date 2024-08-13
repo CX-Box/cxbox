@@ -31,7 +31,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
@@ -70,12 +69,12 @@ import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.ResolvableType;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
-@RequiredArgsConstructor
 @AnySourceCrudmaImplementation(AnySourceCrudmaService.class)
 public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO, E> implements
 		AnySourceResponseService<T, E> {
@@ -85,11 +84,6 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Getter
 	protected final Class<E> typeOfEntity;
-
-	private final Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder;
-
-	@Getter
-	protected final Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass;
 
 	protected Class<? extends PreActionConditionHolderDataResponse<T>> preActionConditionHolderDataResponse = null;
 
@@ -102,17 +96,24 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	private AnySourceDTOMapper dtoMapper;
 
 	@Autowired
-	private List<AnySourceBaseDAO<E>> anySourceBaseDAOs;
-
-	@Autowired
 	private APIProperties apiProperties;
 
+	public AbstractAnySourceResponseService() {
+		ResolvableType resolvableType = ResolvableType.forClass(this.getClass()).as(AnySourceResponseService.class);
+		this.typeOfDTO = (Class<T>) resolvableType.getGeneric(0).resolve();
+		this.typeOfEntity = (Class<E>) resolvableType.getGeneric(1).resolve();
+	}
+
+	public AbstractAnySourceResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity) {
+		this.typeOfDTO = typeOfDTO;
+		this.typeOfEntity = typeOfEntity;
+	}
 
 	@Override
-	public AnySourceBaseDAO<E> getBaseDao() {
-		return anySourceBaseDAOs.stream().filter(dao -> anySourceBaseDAOClass.isAssignableFrom(dao.getClass())).findFirst()
-				.orElseThrow();
-	}
+	public abstract AnySourceBaseDAO<E> getDao();
+
+	@Override
+	public abstract AnySourceFieldMetaBuilder<T> getMeta();
 
 	public static <T> T cast(Object o, Class<T> clazz) {
 		return clazz.isInstance(o) ? clazz.cast(o) : null;
@@ -201,7 +202,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Override
 	public E getOneAsEntity(BusinessComponent bc) {
-		return getBaseDao().getById(bc);
+		return getDao().getById(bc);
 	}
 
 	@Override
@@ -218,13 +219,13 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	}
 
 	public ActionResultDTO<T> deleteEntity(BusinessComponent bc) {
-		getBaseDao().delete(bc);
+		getDao().delete(bc);
 		return new ActionResultDTO<>();
 	}
 
 	@Override
 	public ResultPage<T> getList(BusinessComponent bc) {
-		Page<E> page = getBaseDao().getList(bc, bc.getParameters());
+		Page<E> page = getDao().getList(bc, bc.getParameters());
 		return entitiesToDtos(
 				bc,
 				ResultPage.of(page.stream().toList(), apiProperties.isAnySourceHasNextEnabled() ? page.hasNext() : false)
@@ -329,7 +330,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Override
 	public long count(BusinessComponent bc) {
-		return getBaseDao().count(bc);
+		return getDao().count(bc);
 	}
 
 	@Override
@@ -436,7 +437,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	}
 
 	protected final E isExist(final BusinessComponent bc) {
-		E entity = getBaseDao().getById(bc);
+		E entity = getDao().getById(bc);
 		if (entity == null) {
 			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getIdAsLong());
 		}
@@ -445,10 +446,6 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	protected E loadEntity(BusinessComponent bc, DataResponseDTO data) {
 		return getOneAsEntity(bc);
-	}
-
-	public Class<? extends AnySourceFieldMetaBuilder<T>> getAnySourceFieldMetaBuilder() {
-		return this.metaBuilder;
 	}
 
 	@Override

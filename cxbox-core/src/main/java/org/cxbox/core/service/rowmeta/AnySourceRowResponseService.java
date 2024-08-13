@@ -76,15 +76,14 @@ public class AnySourceRowResponseService extends RowResponseService {
 	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
 			AnySourceResponseService<?, ?> responseService) {
 		ActionsDTO actionDTO = responseService.getAvailableActions(type, dataDTO, bc);
-		return getAnySourceResponse(type, dataDTO, bc, actionDTO, responseService.getAnySourceFieldMetaBuilder());
+		return getAnySourceResponse(type, dataDTO, bc, actionDTO, responseService.getMeta());
 	}
 
 	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
-			ActionsDTO actionDTO,
-			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
+			ActionsDTO actionDTO, AnySourceFieldMetaBuilder<?> meta) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
-		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
-			AnySourceFieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
+		if (meta != null && type != RowMetaType.META_EMPTY) {
+			AnySourceFieldMetaBuilder builder = meta;
 			builder.buildIndependentMeta(fieldsNode, bc);
 			if (bc.getId() != null) {
 				builder.buildRowDependentMeta(fieldsNode, bc);
