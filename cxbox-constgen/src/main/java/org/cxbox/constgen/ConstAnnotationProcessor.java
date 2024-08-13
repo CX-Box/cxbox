@@ -16,11 +16,9 @@
 
 package org.cxbox.constgen;
 
-import com.google.auto.service.AutoService;
 import java.io.Writer;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.element.Element;
@@ -32,8 +30,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes({"org.cxbox.constgen.GeneratesDtoMetamodel"})
-@AutoService(Processor.class)
-public class ConstAnnotationProcessor extends AbstractProcessor {
+public class  ConstAnnotationProcessor extends AbstractProcessor {
 
 	private static final boolean ALLOW_OTHER_PROCESSORS_TO_CLAIM_ANNOTATIONS = false;
 

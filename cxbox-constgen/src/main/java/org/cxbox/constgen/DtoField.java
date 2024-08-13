@@ -16,14 +16,9 @@
 
 package org.cxbox.constgen;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.io.Serializable;
 import java.util.function.Function;
 
-@AllArgsConstructor
-@Getter
 public final class DtoField<D, T> implements Serializable {
 
 	public DtoField(final String name) {
@@ -37,8 +32,22 @@ public final class DtoField<D, T> implements Serializable {
 
 	private final Function<D, T> getter;
 
+
+	public DtoField(String name, Function<D, T> getter) {
+		this.name = name;
+		this.getter = getter;
+	}
+
 	public T getValue(D dto) {
 		return this.getter.apply(dto);
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public Function<D, T> getGetter() {
+		return this.getter;
 	}
 
 	private static class DefaultGetterNotFoundException extends RuntimeException {

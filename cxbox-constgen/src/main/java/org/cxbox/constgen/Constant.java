@@ -17,11 +17,7 @@
 package org.cxbox.constgen;
 
 import com.squareup.javapoet.TypeName;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
 public class Constant implements Comparable<Constant> {
 
 	public Constant(final String name, final TypeName type) {
@@ -36,9 +32,27 @@ public class Constant implements Comparable<Constant> {
 
 	private final String initializer;
 
+	public Constant(String name, TypeName type, String initializer) {
+		this.name = name;
+		this.type = type;
+		this.initializer = initializer;
+	}
+
 	@Override
 	public int compareTo(Constant o) {
 		return this.name.compareTo(o.name);
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public TypeName getType() {
+		return this.type;
+	}
+
+	public String getInitializer() {
+		return this.initializer;
 	}
 
 }

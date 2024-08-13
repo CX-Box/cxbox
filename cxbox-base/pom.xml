@@ -73,13 +73,9 @@
 
     <javapoet.version>1.13.0</javapoet.version>
     <guava.version>33.0.0-jre</guava.version>
-    <auto-service.version>1.1.1</auto-service.version>
 
     <!--plugins-->
     <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
-
-    <!--Test-->
-    <compile-testing.version>0.21.0</compile-testing.version>
   </properties>
 
   <dependencyManagement>
@@ -105,17 +101,6 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons-lang3.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.auto.service</groupId>
-        <artifactId>auto-service</artifactId>
-        <version>${auto-service.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.testing.compile</groupId>
-        <artifactId>compile-testing</artifactId>
-        <version>${compile-testing.version}</version>
-        <scope>test</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

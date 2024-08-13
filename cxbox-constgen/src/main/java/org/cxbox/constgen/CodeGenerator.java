@@ -39,8 +39,6 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
-import lombok.Getter;
-import lombok.experimental.UtilityClass;
 
 class CodeGenerator {
 
@@ -50,10 +48,8 @@ class CodeGenerator {
 
 	private final Elements elements;
 
-	@Getter
 	private final String packageName;
 
-	@Getter
 	private final String className;
 
 	CodeGenerator(TypeElement typeElement, Element superclass, Elements elements) {
@@ -113,7 +109,11 @@ class CodeGenerator {
 			}
 		}
 		fields.forEach(field -> fieldSpecs.add(
-				new Constant(field.getSimpleName().toString(), TypeName.get(field.asType()).box(), fieldInitializer(methods, field))
+				new Constant(
+						field.getSimpleName().toString(),
+						TypeName.get(field.asType()).box(),
+						fieldInitializer(methods, field)
+				)
 		));
 		Collections.sort(fieldSpecs);
 		return fieldSpecs;
@@ -146,8 +146,11 @@ class CodeGenerator {
 		return StringSubstitutor.replace(
 				"${prefix}${name}",
 				Map.of(
-						"prefix", (field.asType().getKind().isPrimitive() && TypeName.BOOLEAN.equals(TypeName.get(field.asType()))) ? "is" : "get",
-						"name", StringUtils.capitalize(field.getSimpleName().toString())
+						"prefix",
+						(field.asType().getKind().isPrimitive() && TypeName.BOOLEAN.equals(TypeName.get(field.asType()))) ? "is"
+								: "get",
+						"name",
+						StringUtils.capitalize(field.getSimpleName().toString())
 				)
 		);
 	}
@@ -182,8 +185,19 @@ class CodeGenerator {
 		return false;
 	}
 
-	@UtilityClass
-	public static class StringSubstitutor {
+	public String getPackageName() {
+		return this.packageName;
+	}
+
+	public String getClassName() {
+		return this.className;
+	}
+
+	public static final class StringSubstitutor {
+
+		private StringSubstitutor() {
+			throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+		}
 
 		public static String replace(String template, Map<String, Object> parameters) {
 			StringBuilder newTemplate = new StringBuilder(template);
@@ -204,11 +218,15 @@ class CodeGenerator {
 
 			return String.format(newTemplate.toString(), valueList.toArray());
 		}
+
 	}
 
 
-	@UtilityClass
-	public static class StringUtils {
+	public static final class StringUtils {
+
+		private StringUtils() {
+			throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+		}
 
 		/**
 		 * Capitalizes a String changing the first character to title case as
@@ -254,9 +272,6 @@ class CodeGenerator {
 		}
 
 	}
-
-
-
 
 
 }
