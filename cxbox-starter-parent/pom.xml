@@ -48,7 +48,7 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:CX-Boxcxbox.git</connection>
+    <connection>scm:git:git@github.com:CX-Box.git</connection>
     <developerConnection>scm:git:git@github.com:CX-Box/cxbox.git</developerConnection>
     <url>https://github.com/CX-Box/cxbox</url>
     <tag>3.0.0.M10.10-SNAPSHOT</tag>
@@ -68,12 +68,12 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
   </parent>
 
   <properties>
     <cxbox.version>4.0.0-M5-SNAPSHOT</cxbox.version>
-    <spring-boot.version>3.2.4</spring-boot.version>
+    <spring-boot.version>3.2.5</spring-boot.version>
 
     <jaxb.version>2.3.0</jaxb.version>
   </properties>

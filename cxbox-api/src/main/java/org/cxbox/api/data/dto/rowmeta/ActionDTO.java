@@ -58,7 +58,6 @@ public class ActionDTO {
 	@Getter
 	private String icon;
 
-	@Getter
 	private Map<String, String> customParameters;
 
 	@Getter

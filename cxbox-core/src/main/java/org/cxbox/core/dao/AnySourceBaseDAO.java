@@ -32,8 +32,6 @@ public interface AnySourceBaseDAO<E> {
 
 	/**
 	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
-	 * @param bc
-	 * @return
 	 */
 	E getByIdIgnoringFirstLevelCache(BusinessComponent bc);
 
@@ -61,22 +59,16 @@ public interface AnySourceBaseDAO<E> {
 
 	/**
 	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
-	 * @param bc
-	 * @return
 	 */
 	E update(BusinessComponent bc, E entity);
 
 	/**
 	 * Should be used to explicitly update/create in anySource system by custom action
-	 * @param bc
-	 * @return
 	 */
 	void flush(BusinessComponent bc);
 
 	/**
 	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
-	 * @param bc
-	 * @return
 	 */
 	E create(BusinessComponent bc, E entity);
 

@@ -66,48 +66,26 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <hibernate-commons-annotations.version>6.0.6.Final</hibernate-commons-annotations.version>
     <!-- dependencies versions -->
-    <commons-io.version>2.13.0</commons-io.version>
+    <hibernate-commons-annotations.version>6.0.6.Final</hibernate-commons-annotations.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <commons-lang3.version>3.13.0</commons-lang3.version>
-    <commons-text.version>1.10.0</commons-text.version>
-    <juel.version>2.2.7</juel.version>
+
     <javapoet.version>1.13.0</javapoet.version>
-    <guava.version>32.1.1-jre</guava.version>
+    <guava.version>33.0.0-jre</guava.version>
     <auto-service.version>1.1.1</auto-service.version>
-
-    <!--Test-->
-    <compile-testing.version>0.21.0</compile-testing.version>
-    <javax.el.version>3.0.0</javax.el.version>
-
 
     <!--plugins-->
     <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+
+    <!--Test-->
+    <compile-testing.version>0.21.0</compile-testing.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>de.odysseus.juel</groupId>
-        <artifactId>juel-api</artifactId>
-        <version>${juel.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>de.odysseus.juel</groupId>
-        <artifactId>juel-spi</artifactId>
-        <version>${juel.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>de.odysseus.juel</groupId>
-        <artifactId>juel-impl</artifactId>
-        <version>${juel.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons-io.version}</version>
-      </dependency>
+
+
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
@@ -137,11 +115,6 @@
         <groupId>com.google.testing.compile</groupId>
         <artifactId>compile-testing</artifactId>
         <version>${compile-testing.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.el</artifactId>
-        <version>${javax.el.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

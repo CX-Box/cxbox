@@ -106,11 +106,6 @@
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
-        <artifactId>cxbox-starter-parent</artifactId>
-        <version>4.0.0-M5-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.cxbox</groupId>
         <artifactId>cxbox-starter-sqlbc</artifactId>
         <version>4.0.0-M5-SNAPSHOT</version>
       </dependency>

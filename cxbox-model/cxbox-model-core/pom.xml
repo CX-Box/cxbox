@@ -34,7 +34,6 @@
     <dependency>
       <groupId>org.hibernate.common</groupId>
       <artifactId>hibernate-commons-annotations</artifactId>
-      <version>${hibernate-commons-annotations.version}</version>
     </dependency>
   </dependencies>
 
