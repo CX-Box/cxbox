@@ -16,8 +16,6 @@
 
 package org.cxbox.sqlbc.export.sql.db;
 
-import d djava.util.ArrayList;
-import java.util.List;
 import org.cxbox.api.util.CxCollections;
 import org.cxbox.sqlbc.dao.SqlFieldType;
 import java.util.stream.Collectors;
