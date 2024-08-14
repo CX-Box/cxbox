@@ -16,8 +16,8 @@
 
 package org.cxbox.sqlbc.export.sql;
 
-import com.google.common.collect.Lists;
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.api.util.CxCollections;
 import org.cxbox.sqlbc.export.base.JdbcTemplateSqlExporter;
 import org.cxbox.sqlbc.export.base.Parameters;
 import org.cxbox.sqlbc.export.sql.query.UpdateForeignKey;
@@ -73,7 +73,7 @@ public class SqlExportQueryBuilder {
 			final Parameters parameters, final String... columns) {
 		final List<UpdateForeignKey> inserts = new ArrayList<>();
 		if (parameters.isNotEmpty()) {
-			for (final List<BigDecimal> ids : Lists.partition(parameters.getIds(), 500)) {
+			for (final List<BigDecimal> ids : CxCollections.partition(parameters.getIds(), 500)) {
 				jdbcTemplate.query(String.format(
 						"select * from %s where %s in(:ids) and (1 = 2%s) order by id",
 						tableName,

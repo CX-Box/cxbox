@@ -17,7 +17,6 @@
 package org.cxbox.core.dto.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.constgen.DtoField;
@@ -47,10 +46,7 @@ class RowDependentFieldsMetaTest {
 	void testSetPlaceholder() {
 		rowDependentFieldsMeta = new RowDependentFieldsMeta<>(objectMapper);
 		DtoField<DataResponseDTO, FieldDTO> test = new DtoField<>("test");
-		FieldDTO field = ImmutableList.<FieldDTO>builder()
-				.add(FieldDTO.enabledField("test"))
-				.build()
-				.get(0);
+		FieldDTO field = FieldDTO.enabledField("test");
 		assertThat(field.getPlaceholder()).isNull();
 		rowDependentFieldsMeta.add(field);
 		rowDependentFieldsMeta.setPlaceholder(test, "placeholder");

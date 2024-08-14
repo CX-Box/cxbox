@@ -16,7 +16,6 @@
 
 package org.cxbox.meta.ui.field;
 
-import com.google.common.collect.Lists;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +57,7 @@ public class InfoFieldExtractor extends BaseFieldExtractor {
 
 	@Override
 	public List<String> getSupportedTypes() {
-		return Lists.newArrayList(
+		return List.of(
 				"Info"
 		);
 	}

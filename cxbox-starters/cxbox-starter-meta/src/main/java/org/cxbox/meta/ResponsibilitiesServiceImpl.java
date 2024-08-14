@@ -17,7 +17,6 @@
 package org.cxbox.meta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import org.cxbox.api.data.dictionary.CoreDictionaries;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.api.util.CxCollections;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
@@ -103,7 +103,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 		final boolean getAll = Objects.equals(userRole, CoreDictionaries.InternalRole.ADMIN);
 		var screenViews = metaRepository.getAllScreens().get(screenName).getViews().stream().map(ViewDTO::getName).collect(
 				Collectors.toSet());
-		var result = getAll ? screenViews : Sets.intersection(screenViews, availableViews);
+		var result = getAll ? screenViews : CxCollections.intersection(screenViews, availableViews);
 		return new ArrayList<>(result);
 	}
 

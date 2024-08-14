@@ -16,8 +16,9 @@
 
 package org.cxbox.sqlbc.export.sql.db;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Streams;
+import d djava.util.ArrayList;
+import java.util.List;
+import org.cxbox.api.util.CxCollections;
 import org.cxbox.sqlbc.dao.SqlFieldType;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -39,7 +40,8 @@ public class ColumnValue {
 			case STRING:
 				return "'" + escapeString(objectValue) + "'";
 			case CLOB:
-				return Streams.stream(Splitter.fixedLength(2000).split(String.valueOf(objectValue)))
+				return CxCollections.split(String.valueOf(objectValue), 2000)
+						.stream()
 						.map(this::escapeString)
 						.map(string -> "TO_CLOB('" + string + "')")
 						.collect(Collectors.joining(" || "));
