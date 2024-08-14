@@ -30,7 +30,6 @@
     </parent>
 
     <properties>
-        <!-- build settings -->
         <skip.checkstyle>false</skip.checkstyle>
     </properties>
 
