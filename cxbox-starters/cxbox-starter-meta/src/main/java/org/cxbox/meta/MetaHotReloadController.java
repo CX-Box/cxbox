@@ -25,6 +25,8 @@ import org.cxbox.api.util.Invoker;
 import org.cxbox.core.config.cache.CxboxCachingService;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.MetaHotReloadService;
+import org.cxbox.core.crudma.bc.BcRegistry;
+import org.cxbox.meta.metafieldsecurity.BcUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +41,10 @@ public class MetaHotReloadController {
 	final TransactionService txService;
 
 	final CxboxCachingService cachingService;
+
+	final  BcRegistry bcRegistry;
+
+	final  BcUtils bcUtils;
 
 	@GetMapping("refresh-meta")
 	public void refresh() {

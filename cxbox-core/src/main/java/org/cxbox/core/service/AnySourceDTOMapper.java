@@ -22,10 +22,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AnySourceDTOMapper {
 
-	//	private final ApplicationEventPublisher applicationEventPublisher;
 	private final AnySourceDtoConstructorService dtoConstructorService;
 
-	//	private final TransactionService txService;
 	private final Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
 
 	private final DTOSecurityUtils dtoSecurityUtils;

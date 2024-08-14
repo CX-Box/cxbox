@@ -99,11 +99,6 @@
       <artifactId>commons-collections4</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.hibernate.orm</groupId>
       <artifactId>hibernate-jpamodelgen</artifactId>
     </dependency>

@@ -46,9 +46,9 @@ public class AnySourceBcUtils extends BcUtils {
 
 	public AnySourceBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
 			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, ResponsibilitiesService responsibilitiesService,
-			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware) {
+			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware, ViewFieldsCache viewFieldsCache) {
 		super(innerBcTypeAware, metaRepository, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, responsibilitiesService,
-				sessionService,  requiredFieldsSuppliersm);
+				sessionService,  requiredFieldsSuppliersm, viewFieldsCache);
 		this.anySourceBcTypeAware = anySourceBcTypeAware;
 	}
 
@@ -58,19 +58,17 @@ public class AnySourceBcUtils extends BcUtils {
 	@Override
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFields(final BcIdentifier bcIdentifier) {
 		final BcDescription bcDescription = getBcRegistry().getBcDescription(bcIdentifier.getName());
-		if (bcDescription instanceof InnerBcDescription) {
+		if (bcDescription instanceof InnerBcDescription innerBcDescription) {
 			try {
-				final InnerBcDescription innerBcDescription = (InnerBcDescription) bcDescription;
-				final Class dtoClass = getInnerBcTypeAware().getTypeOfDto(innerBcDescription);
+				final Class<D> dtoClass = (Class<D>) getInnerBcTypeAware().getTypeOfDto(innerBcDescription);
 				return getDtoSecurityUtils().getDtoFields(dtoClass);
 			} catch (RuntimeException e) {
 				return Collections.emptySet();
 			}
 		}
-		if (bcDescription instanceof AnySourceBcDescription) {
+		if (bcDescription instanceof AnySourceBcDescription anySourceBcDescription) {
 			try {
-				final AnySourceBcDescription anySourceBcDescription = (AnySourceBcDescription) bcDescription;
-				final Class dtoClass = anySourceBcTypeAware.getTypeOfDto(anySourceBcDescription);
+				final Class<D> dtoClass = (Class<D>) anySourceBcTypeAware.getTypeOfDto(anySourceBcDescription);
 				return getDtoSecurityUtils().getDtoFields(dtoClass);
 			} catch (RuntimeException e) {
 				return Collections.emptySet();

@@ -17,35 +17,27 @@
 package org.cxbox.meta;
 
 import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import org.cxbox.core.crudma.bc.BcRegistry;
+import lombok.RequiredArgsConstructor;
+import org.cxbox.core.config.cache.CxboxCachingService;
 import org.cxbox.core.dto.ResponseDTO;
-import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.ResponseBuilder;
-import org.cxbox.meta.metafieldsecurity.BcUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(CXBOX_API_PATH_SPEL + "/bc-registry")
 public class BcRegistryController {
 
-	@Autowired
-	private BcRegistry bcRegistry;
+	private final CxboxCachingService cachingService;
 
-	@Autowired
-	private BcUtils bcUtils;
-
-	@Autowired
-	private ResponsibilitiesService responsibilitiesService;
-
-	@RequestMapping(method = GET, value = "invalidate-cache")
+	@GetMapping(value = "invalidate-cache")
 	public ResponseDTO invalidateCache() {
-		bcRegistry.refresh();
-		bcUtils.invalidateFieldCache();
-		responsibilitiesService.invalidateCache();
+		cachingService.evictUiCache();
+		cachingService.evictRequestCache();
+		cachingService.evictUserCache();
 		return ResponseBuilder.build();
 	}
 

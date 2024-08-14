@@ -72,7 +72,6 @@
     <commons-collections4.version>4.4</commons-collections4.version>
     <commons-lang3.version>3.13.0</commons-lang3.version>
     <javapoet.version>1.13.0</javapoet.version>
-    <guava.version>33.0.0-jre</guava.version>
 
     <!-- plugins versions -->
     <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
@@ -91,11 +90,6 @@
         <groupId>com.squareup</groupId>
         <artifactId>javapoet</artifactId>
         <version>${javapoet.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
