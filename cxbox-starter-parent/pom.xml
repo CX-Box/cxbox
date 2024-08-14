@@ -74,8 +74,6 @@
   <properties>
     <cxbox.version>4.0.0-M5-SNAPSHOT</cxbox.version>
     <spring-boot.version>3.2.5</spring-boot.version>
-
-    <jaxb.version>2.3.0</jaxb.version>
   </properties>
 
   <dependencyManagement>
@@ -86,16 +84,6 @@
         <type>pom</type>
         <scope>import</scope>
         <version>${cxbox.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>${jaxb.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>${jaxb.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
