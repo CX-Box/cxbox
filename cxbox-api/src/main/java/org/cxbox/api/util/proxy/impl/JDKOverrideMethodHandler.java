@@ -16,7 +16,7 @@
 
 package org.cxbox.api.util.proxy.impl;
 
-import org.apache.commons.lang3.reflect.MethodUtils;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.api.util.proxy.IDecorator;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +52,7 @@ class JDKOverrideMethodHandler<T> implements InvocationHandler {
 	private static Method getMethod(final Object object,
 			final String name,
 			final Class<?>[] parameterTypes) {
-		Method result = MethodUtils.getMatchingMethod(
+		Method result = CxReflectionUtils.getMatchingMethod(
 				object.getClass(),
 				name,
 				parameterTypes

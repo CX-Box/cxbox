@@ -33,7 +33,6 @@ public class DTOSecurityUtils {
 	 */
 	@SneakyThrows
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFields(final Class<D> dtoClass) {
-		log.warn("All dto fields are send to UI ignoring widget.json. Check if ExtendedDtoFieldLevelSecurityService is present in app context");
 		return DTOUtils.getAllFields(dtoClass);
 	}
 

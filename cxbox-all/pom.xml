@@ -62,12 +62,10 @@
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-model-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-dictionary-all</artifactId>
@@ -76,13 +74,10 @@
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-dictionary-links-all</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.cxbox</groupId>
             <artifactId>cxbox-starter-sqlbc</artifactId>
         </dependency>
-
-
     </dependencies>
 
 </project>

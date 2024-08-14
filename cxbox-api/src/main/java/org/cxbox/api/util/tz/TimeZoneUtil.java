@@ -29,7 +29,6 @@ import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjuster;
 import java.util.Date;
 import java.util.TimeZone;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 
@@ -65,7 +64,7 @@ public class TimeZoneUtil {
 	}
 
 	public static boolean hasTzAwareSuffix(String string) {
-		return StringUtils.isNotBlank(string) && string.toLowerCase().endsWith(SUFFIX);
+		return string != null && !string.isBlank() && string.toLowerCase().endsWith(SUFFIX);
 	}
 
 	public static LocalDateTime toLocalDateTime(final Date date) {

@@ -82,7 +82,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 		final BcDescription bcDescription = bcRegistry.getBcDescription(bcIdentifier.getName());
 		if (bcDescription instanceof InnerBcDescription innerBcDescription) {
 			try {
-				final Class dtoClass = innerBcTypeAware.getTypeOfDto(innerBcDescription);
+				final Class<D> dtoClass = (Class<D>) innerBcTypeAware.getTypeOfDto(innerBcDescription);
 				return dtoSecurityUtils.getDtoFields(dtoClass);
 			} catch (RuntimeException e) {
 				return Collections.emptySet();

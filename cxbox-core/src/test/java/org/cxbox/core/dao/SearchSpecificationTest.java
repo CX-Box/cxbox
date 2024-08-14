@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.FilterParameters;
 
@@ -29,7 +30,6 @@ import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.impl.MetadataUtils;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.test.util.TestResponseDto;
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
@@ -96,7 +96,7 @@ class SearchSpecificationTest {
 		FilterParameters fp = FilterParameters.fromMap(exceptionMap);
 		fp.forEach(
 				filterParameter -> {
-					Field field = InstrumentationAwareReflectionUtils.findField(TestResponseDto.class, filterParameter.getName());
+					Field field = CxReflectionUtils.findField(TestResponseDto.class, filterParameter.getName());
 					assert field != null;
 					SearchParameter searchParam = field.getDeclaredAnnotation(SearchParameter.class);
 					assert searchParam != null;

@@ -18,7 +18,6 @@ package org.cxbox.api.util.i18n;
 
 
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
@@ -92,7 +91,7 @@ public class LocalizationFormatter {
 
 			String key = string.substring(start + 2, i - 1);
 			String value = null;
-			if (StringUtils.isNotBlank(key)) {
+			if (!key.isBlank()) {
 				value = getMessage(key);
 			}
 
