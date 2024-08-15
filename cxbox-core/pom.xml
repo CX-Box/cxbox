@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-core</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M5-SNAPSHOT</version>
+  <version>4.0.0-M5</version>
   <name>IO Cxbox - Core</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>4.0.0-M5-SNAPSHOT</version>
+    <version>4.0.0-M5</version>
     <relativePath>../cxbox-base/pom.xml</relativePath>
   </parent>
 
