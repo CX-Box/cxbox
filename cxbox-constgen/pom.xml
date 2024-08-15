@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-constgen</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M5</version>
+  <version>4.0.0-M6-SNAPSHOT</version>
   <name>IO Cxbox - DTO Constant Generator</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>4.0.0-M5</version>
+    <version>4.0.0-M6-SNAPSHOT</version>
     <relativePath>../cxbox-base/pom.xml</relativePath>
   </parent>
 
