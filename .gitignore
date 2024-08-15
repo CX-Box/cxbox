@@ -31,3 +31,7 @@ hs_err_pid*
 
 # maven targets
 target/
+
+#maven-release-plugin
+release.properties
+pom.xml.releaseBackup
