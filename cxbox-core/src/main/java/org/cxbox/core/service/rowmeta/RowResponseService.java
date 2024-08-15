@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -151,7 +151,7 @@ public class RowResponseService {
 		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
 			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
 		}
-		return InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
+		return CxReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
 				.map(Field::getName).collect(Collectors.toSet());
 	}
 

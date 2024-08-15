@@ -19,7 +19,6 @@ package org.cxbox.meta.ui.field;
 import static java.util.stream.Stream.of;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Streams;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.cxbox.api.util.CxCollections;
 import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.model.BcField;
@@ -45,7 +45,7 @@ public class ChartFieldExtractor implements FieldExtractor {
 	}
 
 	private static Set<BcField> extractFromStringArray(final WidgetDTO widget, final JsonNode seriesNode) {
-		return Streams.stream(seriesNode)
+		return CxCollections.stream(seriesNode)
 				.map(JsonNode::textValue)
 				.map(name -> extractField(widget, seriesNode, name))
 				.flatMap(Collection::stream)

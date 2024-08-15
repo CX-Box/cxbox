@@ -29,10 +29,8 @@ import lombok.ToString;
 @ToString
 public class FilterParameter extends AbstractQueryParameter {
 
-	@Getter
 	private final SearchOperation operation;
 
-	@Getter
 	private final String stringValue;
 
 	public FilterParameter(String name, SearchOperation operation, String stringValue) {

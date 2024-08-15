@@ -16,40 +16,24 @@
 
 package org.cxbox.core.service;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import java.util.Set;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.dto.DTOUtils;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class DTOSecurityUtils {
-
-	private final LoadingCache<Class<? extends DataResponseDTO>, Set<DtoField<DataResponseDTO, ?>>> dtoFieldsCache = CacheBuilder
-			.newBuilder()
-			.build(new DtoFieldCacheLoader());
-
-	private class DtoFieldCacheLoader<D extends DataResponseDTO> extends
-			CacheLoader<Class<D>, Set<DtoField<D, ?>>> {
-
-		@Override
-		@SneakyThrows
-		public Set<DtoField<D, ?>> load(final Class<D> dtoClass) {
-			return DTOUtils.getAllFields(dtoClass);
-		}
-
-	}
 
 	/**
 	 * Returns a set of dto fields ({@link DtoField}) for the given dto class
 	 */
 	@SneakyThrows
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFields(final Class<D> dtoClass) {
-		return dtoFieldsCache.get((Class) dtoClass);
+		return DTOUtils.getAllFields(dtoClass);
 	}
 
 }

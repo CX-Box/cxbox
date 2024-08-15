@@ -16,14 +16,14 @@
 
 package org.cxbox.meta.ui.field.link;
 
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.CustomFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
@@ -60,7 +60,7 @@ public final class LinkFieldExtractor {
 		if (depth.decrementAndGet() <= 0) {
 			return;
 		}
-		for (final Field field : InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(object.getClass())) {
+		for (final Field field : CxReflectionUtils.getAllNonSyntheticFieldsList(object.getClass())) {
 			field.setAccessible(true);
 			if (field.isAnnotationPresent(LinkToField.class) && field.get(object) != null) {
 				fields.add(new BcField(bc, (String) field.get(object))

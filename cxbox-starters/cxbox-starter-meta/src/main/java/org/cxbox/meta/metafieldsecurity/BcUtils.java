@@ -16,9 +16,6 @@
 
 package org.cxbox.meta.metafieldsecurity;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
@@ -48,6 +46,7 @@ import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.cxbox.meta.ui.model.BcField;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -73,30 +72,17 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 
 	private final Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliers;
 
-	private final LoadingCache<String, Set<BcField>> bcFields = CacheBuilder
-			.newBuilder()
-			.build(new BcFieldCacheLoader());
+	private final ViewFieldsCache viewFieldsCache;
 
-
-	private final LoadingCache<String, Map<String, Set<BcField>>> viewFields = CacheBuilder
-			.newBuilder()
-			.build(new ViewFieldCacheLoader());
-
-
-	public void invalidateFieldCache() {
-		bcFields.invalidateAll();
-		viewFields.invalidateAll();
-	}
 
 	/**
 	 * Returns a set of dto fields ({@link DtoField}) for the given business component
 	 */
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFields(final BcIdentifier bcIdentifier) {
 		final BcDescription bcDescription = bcRegistry.getBcDescription(bcIdentifier.getName());
-		if (bcDescription instanceof InnerBcDescription) {
+		if (bcDescription instanceof InnerBcDescription innerBcDescription) {
 			try {
-				final InnerBcDescription innerBcDescription = (InnerBcDescription) bcDescription;
-				final Class dtoClass = innerBcTypeAware.getTypeOfDto(innerBcDescription);
+				final Class<D> dtoClass = (Class<D>) innerBcTypeAware.getTypeOfDto(innerBcDescription);
 				return dtoSecurityUtils.getDtoFields(dtoClass);
 			} catch (RuntimeException e) {
 				return Collections.emptySet();
@@ -114,7 +100,8 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	public Set<String> getBcFieldsForCurrentScreen(final BcIdentifier bc) {
 		final Set<String> viewFields = new HashSet<>();
 		for (final String viewName : getCurrentScreenViews()) {
-			final Set<BcField> fields = this.viewFields.get(viewName).getOrDefault(bc.getName(), Collections.emptySet());
+			final Set<BcField> fields = this.viewFieldsCache.getDtoFieldsAvailableOnCurrentView(viewName)
+					.getOrDefault(bc.getName(), Collections.emptySet());
 			for (final BcField field : fields) {
 				viewFields.add(field.getName());
 			}
@@ -127,12 +114,13 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	}
 
 	public List<String> getViews(final String screenName) {
-		return responsibilitiesService.getAvailableScreenViews(screenName, sessionService.getSessionUser(), sessionService.getSessionUserRole());
+		return responsibilitiesService.getAvailableScreenViews(
+				screenName,
+				sessionService.getSessionUser(),
+				sessionService.getSessionUserRole()
+		);
 	}
 
-	/**
-	 * Returns a set of required dto fields ({@link DtoField}) for the given business component on the current screen
-	 */
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFieldsAvailableOnCurrentScreen(final BcIdentifier bc) {
@@ -143,30 +131,28 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 				.collect(Collectors.toSet());
 	}
 
-	private final class BcFieldCacheLoader extends CacheLoader<String, Set<BcField>> {
+	@Component
+	@RequiredArgsConstructor
+	public static class ViewFieldsCache {
 
-		@Override
-		public Set<BcField> load(final String bc) {
-			final Set<BcField> fields = new HashSet<>();
-			requiredFieldsSuppliers.ifPresent(suppliers -> suppliers
-					.forEach(supplier -> fields.addAll(supplier.getRequiredFields(bc))));
-			return fields;
-		}
+		final MetaRepository metaRepository;
 
-	}
+		final WidgetUtils widgetUtils;
 
-	private final class ViewFieldCacheLoader extends CacheLoader<String, Map<String, Set<BcField>>> {
+		final Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliers;
 
-		@Override
-		@SneakyThrows
-		public Map<String, Set<BcField>> load(final String viewName) {
+		@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
+				cacheNames = CacheConfig.UI_CACHE,
+				key = "{#root.targetClass, #root.methodName, #viewName}"
+		)
+		public Map<String, Set<BcField>> getDtoFieldsAvailableOnCurrentView(final String viewName) {
 			final Set<BcField> fields = new HashSet<>();
 			metaRepository.getAllScreens().forEach((name, screen) -> screen.getViews().forEach(view -> {
 				if (Objects.equals(view.getName(), viewName)) {
 					view.getWidgets().forEach(widget -> {
 						var widgetFields = new HashSet<>(widgetUtils.extractAllFields(widget));
 						widgetFields.stream().map(BcField::getBc).filter(Objects::nonNull)
-								.forEach(bc -> fields.addAll(bcFields.getUnchecked(bc)));
+								.forEach(bc -> fields.addAll(getRequiredBcFields(bc)));
 						fields.addAll(widgetFields);
 					});
 				}
@@ -175,7 +161,14 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 			return fields.stream().collect(Collectors.groupingBy(BcField::getBc, Collectors.toSet()));
 		}
 
-	}
+		@NonNull
+		public Set<BcField> getRequiredBcFields(final @NonNull String bc) {
+			final Set<BcField> fields = new HashSet<>();
+			requiredFieldsSuppliers.ifPresent(suppliers -> suppliers
+					.forEach(supplier -> fields.addAll(supplier.getRequiredFields(bc))));
+			return fields;
+		}
 
+	}
 
 }

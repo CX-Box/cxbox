@@ -116,7 +116,7 @@ public class DictionaryCacheImpl implements DictionaryCache {
 	 *
 	 * @param key key
 	 * @param type dictionary type
-	 * @return Russian-language value of the dictionary
+	 * @return value of the dictionary
 	 */
 	@Override
 	public String lookupValue(LOV key, IDictionaryType type) {

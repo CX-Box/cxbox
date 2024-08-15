@@ -48,7 +48,7 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:CX-Boxcxbox.git</connection>
+    <connection>scm:git:git@github.com:CX-Box.git</connection>
     <developerConnection>scm:git:git@github.com:CX-Box/cxbox.git</developerConnection>
     <url>https://github.com/CX-Box/cxbox</url>
     <tag>3.0.0.M10.10-SNAPSHOT</tag>
@@ -68,14 +68,12 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.4</version>
+    <version>3.2.5</version>
   </parent>
 
   <properties>
     <cxbox.version>4.0.0-M5-SNAPSHOT</cxbox.version>
-    <spring-boot.version>3.2.4</spring-boot.version>
-
-    <jaxb.version>2.3.0</jaxb.version>
+    <spring-boot.version>3.2.5</spring-boot.version>
   </properties>
 
   <dependencyManagement>
@@ -87,59 +85,7 @@
         <scope>import</scope>
         <version>${cxbox.version}</version>
       </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>${jaxb.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>${jaxb.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <profiles>
-    <profile>
-      <id>release</id>
-
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-
-    </profile>
-  </profiles>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.5</version>
-          <configuration>
-            <keyname>${gpg.key}</keyname>
-          </configuration>
-          <executions>
-            <execution>
-              <id>sign-artifacts</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>sign</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
-
-  </build>
 
 </project>

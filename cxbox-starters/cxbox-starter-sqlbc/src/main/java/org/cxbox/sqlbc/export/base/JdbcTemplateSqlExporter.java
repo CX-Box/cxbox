@@ -16,8 +16,8 @@
 
 package org.cxbox.sqlbc.export.base;
 
-import com.google.common.collect.Lists;
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.api.util.CxCollections;
 import org.cxbox.sqlbc.export.base.model.ExportedRecord;
 import org.cxbox.sqlbc.export.base.model.TableMeta;
 import org.cxbox.sqlbc.dao.SqlFieldType;
@@ -50,7 +50,7 @@ public class JdbcTemplateSqlExporter {
 		final List<ExportedRecord> result = new ArrayList<>();
 		if (parameters.isNotEmpty()) {
 			final TableMeta tableMeta = getTableMeta(tableName, getAllIgnoredColumns(ignoredColumns));
-			for (final List<BigDecimal> ids : Lists.partition(parameters.getIds(), 500)) {
+			for (final List<BigDecimal> ids : CxCollections.partition(parameters.getIds(), 500)) {
 				result.addAll(jdbcTemplate.query(
 						String.format(
 								"select * from %s where %s in(:ids) order by id",

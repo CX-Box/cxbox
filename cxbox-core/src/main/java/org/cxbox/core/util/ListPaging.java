@@ -19,6 +19,8 @@ package org.cxbox.core.util;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.api.util.compare.CxComparatorUtils;
+import org.cxbox.api.util.compare.common.Transformer;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.controller.param.SortParameter;
@@ -28,12 +30,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.collections4.ComparatorUtils;
-import org.apache.commons.collections4.Transformer;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -50,76 +48,60 @@ public final class ListPaging {
 		if (!queryParameters.getSort().isEmpty()) {
 			stream = stream.sorted(createSorted(queryParameters.getSort()));
 		}
-		final List<T> filteredList = stream.collect(Collectors.toList());
+		final List<T> filteredList = stream.toList();
 
 		long from = (long) queryParameters.getPageNumber() * (long) queryParameters.getPageSize();
-		long to = from + (long) queryParameters.getPageSize();
+		long to = from + queryParameters.getPageSize();
 		if (to > filteredList.size()) {
 			to = filteredList.size();
 		}
-		return new ResultPage<>(
-				filteredList.subList((int) from, (int) to),
-				filteredList.size() > to
-		);
+		return new ResultPage<>(filteredList.subList((int) from, (int) to), filteredList.size() > to);
 	}
 
 	private static <T> Predicate<T> createFilter(FilterParameter parameter) {
-		switch (parameter.getOperation()) {
-			case CONTAINS:
-				return new PredicateContains<>(parameter);
-			case SPECIFIED:
-				return new PredicateSpecified<>(parameter);
-			case EQUALS:
-				return new PredicateEquals<>(parameter);
-			case GREATER_THAN:
-				return new PredicateGreaterThan<>(parameter);
-			case GREATER_OR_EQUAL_THAN:
-				return new PredicateGreaterOrEqualThan<>(parameter);
-			case LESS_THAN:
-				return new PredicateLessThan<>(parameter);
-			case LESS_OR_EQUAL_THAN:
-				return new PredicateLessOrEqualThan<>(parameter);
-			case EQUALS_ONE_OF:
-				return new PredicateEqualsOneOf<>(parameter);
-			case CONTAINS_ONE_OF:
-				return new PredicateContainsOneOf<>(parameter);
-		}
-		throw new ServerException(String.format("Операция \"%s\" не поддерживается", parameter.getOperation()));
+		return switch (parameter.getOperation()) {
+			case CONTAINS -> new PredicateContains<>(parameter);
+			case SPECIFIED -> new PredicateSpecified<>(parameter);
+			case EQUALS -> new PredicateEquals<>(parameter);
+			case GREATER_THAN -> new PredicateGreaterThan<>(parameter);
+			case GREATER_OR_EQUAL_THAN -> new PredicateGreaterOrEqualThan<>(parameter);
+			case LESS_THAN -> new PredicateLessThan<>(parameter);
+			case LESS_OR_EQUAL_THAN -> new PredicateLessOrEqualThan<>(parameter);
+			case EQUALS_ONE_OF -> new PredicateEqualsOneOf<>(parameter);
+			case CONTAINS_ONE_OF -> new PredicateContainsOneOf<>(parameter);
+			default ->
+					throw new ServerException(String.format("Operation \"%s\" is not supported", parameter.getOperation()));
+		};
 	}
 
 	private static <T> Comparator<T> createSorted(SortParameters sort) {
 		final List<SortParameter> sortedParameters = new ArrayList<>(sort.getParameters());
-		sortedParameters.sort(ComparatorUtils.transformedComparator(
-				ComparatorUtils.nullHighComparator(ComparatorUtils.<Integer>naturalComparator()),
+		sortedParameters.sort(CxComparatorUtils.transformedComparator(
+				CxComparatorUtils.nullHighComparator(CxComparatorUtils.<Integer>naturalComparator()),
 				SortParameter::getPriority
 		));
-		Comparator[] comparators = new Comparator[sortedParameters.size()];
-		for (int i = 0; i < sortedParameters.size(); i++) {
-			comparators[i] = createSorted(sortedParameters.get(i));
+		List<Comparator<T>> comparators = new ArrayList<>();
+		for (SortParameter sortedParameter : sortedParameters) {
+			comparators.add(createSorted(sortedParameter));
 		}
-		return ComparatorUtils.chainedComparator(comparators);
+		return CxComparatorUtils.chainedComparator(comparators);
 	}
 
-	private static Comparator createSorted(SortParameter parameter) {
-		FieldTransformer fieldTransformer = new FieldTransformer(parameter.getName());
-		switch (parameter.getType()) {
-			case ASC:
-				return ComparatorUtils.transformedComparator(
-						ComparatorUtils.nullHighComparator(ComparatorUtils.<Integer>naturalComparator()),
-						fieldTransformer
-				);
-			case DESC:
-				return ComparatorUtils.transformedComparator(
-						ComparatorUtils.nullHighComparator(
-								ComparatorUtils.reversedComparator(ComparatorUtils.<Integer>naturalComparator())
-						),
-						fieldTransformer
-				);
-		}
-		throw new ServerException(String.format("Сортировка \"%s\" не поддерживается", parameter.getType()));
+	private static <T, F extends Comparable<? super F>> Comparator<T> createSorted(SortParameter parameter) {
+		FieldTransformer<T, F> fieldTransformer = new FieldTransformer<>(parameter.getName());
+		return switch (parameter.getType()) {
+			case ASC -> CxComparatorUtils.transformedComparator(
+					CxComparatorUtils.nullHighComparator(CxComparatorUtils.<F>naturalComparator()),
+					fieldTransformer
+			);
+			case DESC -> CxComparatorUtils.transformedComparator(
+					CxComparatorUtils.nullHighComparator(CxComparatorUtils.reversedComparator(CxComparatorUtils.<F>naturalComparator())),
+					fieldTransformer
+			);
+		};
 	}
 
-	private static Object getValue(final Object dto, final String fieldName) {
+	private static <T> Object getValue(final T dto, final String fieldName) {
 		try {
 			return FieldUtils.getField(dto.getClass(), fieldName, true).get(dto);
 		} catch (Exception e) {
@@ -127,35 +109,34 @@ public final class ListPaging {
 		}
 	}
 
-	@RequiredArgsConstructor
-	private static final class FieldTransformer implements Transformer {
-
-		private final String fieldName;
+	private record FieldTransformer<T, F extends Comparable<? super F>>(String fieldName) implements Transformer<T, F> {
 
 		@Override
-		public Object transform(Object input) {
-			return getValue(input, fieldName);
+		public F transform(T input) {
+			Object value = getValue(input, fieldName);
+			try {
+				if (value instanceof Comparable<?> comp) {
+					return (F) comp;
+				}
+			} catch (Exception e) {
+				return null;
+			}
+			return null;
 		}
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateContains<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateContains<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
 			Object value = getValue(dto, parameter.getName());
-			return value instanceof String && StringUtils.containsIgnoreCase((String) value, parameter.getStringValue());
+			return value instanceof String str && StringUtils.containsIgnoreCase(str, parameter.getStringValue());
 		}
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateSpecified<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateSpecified<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
@@ -165,10 +146,7 @@ public final class ListPaging {
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateEquals<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateEquals<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
@@ -178,62 +156,47 @@ public final class ListPaging {
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateGreaterThan<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateGreaterThan<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
 			Object value = getValue(dto, parameter.getName());
-			return value instanceof Comparable && ((Comparable) value).compareTo(parameter.getValue(value.getClass())) > 0;
+			return value instanceof Comparable comp && comp.compareTo(parameter.getValue(value.getClass())) > 0;
 		}
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateGreaterOrEqualThan<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateGreaterOrEqualThan<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
 			Object value = getValue(dto, parameter.getName());
-			return value instanceof Comparable && ((Comparable) value).compareTo(parameter.getValue(value.getClass())) >= 0;
+			return value instanceof Comparable comp && comp.compareTo(parameter.getValue(value.getClass())) >= 0;
 		}
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateLessThan<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateLessThan<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
 			Object value = getValue(dto, parameter.getName());
-			return value instanceof Comparable && ((Comparable) value).compareTo(parameter.getValue(value.getClass())) < 0;
+			return value instanceof Comparable comp && comp.compareTo(parameter.getValue(value.getClass())) < 0;
 		}
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateLessOrEqualThan<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateLessOrEqualThan<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
 			Object value = getValue(dto, parameter.getName());
-			return value instanceof Comparable && ((Comparable) value).compareTo(parameter.getValue(value.getClass())) <= 0;
+			return value instanceof Comparable comp && comp.compareTo(parameter.getValue(value.getClass())) <= 0;
 		}
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateEqualsOneOf<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateEqualsOneOf<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
@@ -248,17 +211,14 @@ public final class ListPaging {
 
 	}
 
-	@RequiredArgsConstructor
-	private static final class PredicateContainsOneOf<T> implements Predicate<T> {
-
-		private final FilterParameter parameter;
+	private record PredicateContainsOneOf<T>(FilterParameter parameter) implements Predicate<T> {
 
 		@Override
 		public boolean test(T dto) {
 			Object value = getValue(dto, parameter.getName());
-			if (value instanceof String) {
+			if (value instanceof String str) {
 				for (String stringValue : parameter.getStringValuesAsList()) {
-					if (StringUtils.containsIgnoreCase((String) value, stringValue)) {
+					if (StringUtils.containsIgnoreCase(str, stringValue)) {
 						return true;
 					}
 				}

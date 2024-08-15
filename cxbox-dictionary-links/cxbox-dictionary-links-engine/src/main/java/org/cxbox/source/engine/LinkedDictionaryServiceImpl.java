@@ -22,6 +22,7 @@ import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.api.data.BcIdentifier;
@@ -30,7 +31,6 @@ import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.EngineFieldsMeta;
 
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
@@ -85,7 +85,7 @@ public class LinkedDictionaryServiceImpl implements LinkedDictionaryService {
 		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
 			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
 		}
-		return InstrumentationAwareReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
+		return CxReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
 				.map(Field::getName).collect(Collectors.toSet());
 	}
 

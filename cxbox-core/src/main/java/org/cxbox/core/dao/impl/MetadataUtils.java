@@ -53,12 +53,12 @@ import org.cxbox.api.data.Period;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.core.controller.param.FilterParameters;
 import org.cxbox.core.controller.param.SortParameter;
 import org.cxbox.core.controller.param.SortParameters;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.dto.LovUtils;
-import org.cxbox.core.util.InstrumentationAwareReflectionUtils;
 import org.cxbox.core.util.filter.MultisourceSearchParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
@@ -78,7 +78,7 @@ public class MetadataUtils {
 
 		filterParameters.forEach(filterParam -> {
 					try {
-						Field dtoField = Optional.ofNullable(InstrumentationAwareReflectionUtils.findField(dtoClazz, filterParam.getName()))
+						Field dtoField = Optional.ofNullable(CxReflectionUtils.findField(dtoClazz, filterParam.getName()))
 								.orElseThrow(
 										() -> new IllegalArgumentException(
 												errorMessage(
@@ -324,7 +324,7 @@ public class MetadataUtils {
 		if (dtoClazz == null) {
 			field = parameter.getName();
 		} else {
-			Field dtoField = InstrumentationAwareReflectionUtils.findField(dtoClazz, parameter.getName());
+			Field dtoField = CxReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
 						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
@@ -341,7 +341,7 @@ public class MetadataUtils {
 
 	private static IDictionaryType getLovType(Class dtoClazz, SortParameter parameter) {
 		if (dtoClazz != null) {
-			Field dtoField = InstrumentationAwareReflectionUtils.findField(dtoClazz, parameter.getName());
+			Field dtoField = CxReflectionUtils.findField(dtoClazz, parameter.getName());
 			if (dtoField == null) {
 				throw new IllegalArgumentException(
 						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
@@ -399,7 +399,7 @@ public class MetadataUtils {
 
 	private boolean isElementCollectionField(Root<?> root, String fieldName) {
 		Class<?> rootClass = root.getModel().getJavaType();
-		Field field = InstrumentationAwareReflectionUtils.findField(
+		Field field = CxReflectionUtils.findField(
 				rootClass,
 				fieldName
 		);

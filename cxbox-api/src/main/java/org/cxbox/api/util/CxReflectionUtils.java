@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.util;
+package org.cxbox.api.util;
 
 import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 @UtilityClass
-public final class InstrumentationAwareReflectionUtils {
+public final class CxReflectionUtils {
 
 	/**
 	 * Gets all non-synthetic fields of the given class and its parents (if any).
@@ -42,7 +46,7 @@ public final class InstrumentationAwareReflectionUtils {
 		List<Field> fields = FieldUtils.getAllFieldsList(cls)
 				.stream()
 				.filter(field -> !field.isSynthetic())
-				.collect(Collectors.toList());
+				.toList();
 			List<Field> result = fields.stream().filter(AccessibleObject::trySetAccessible).collect(Collectors.toList());
 			result.forEach(f ->  f.setAccessible(true));
 			return result;
@@ -59,6 +63,16 @@ public final class InstrumentationAwareReflectionUtils {
 
 	public static Field findField(Class<?> dtoClazz, String name) {
 		return FieldUtils.getField(dtoClazz, name, true);
+	}
+
+	public static Method getMatchingMethod(final Class<?> cls, final String methodName,
+			final Class<?>... parameterTypes) {
+		return MethodUtils.getMatchingMethod(cls, methodName, parameterTypes);
+	}
+
+	public static <T> Constructor<T> getMatchingAccessibleConstructor(final Class<T> cls,
+			final Class<?>... parameterTypes) {
+		return ConstructorUtils.getMatchingAccessibleConstructor(cls, parameterTypes);
 	}
 
 }

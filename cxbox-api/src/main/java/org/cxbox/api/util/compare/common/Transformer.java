@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package org.cxbox.api.util;
+package org.cxbox.api.util.compare.common;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import lombok.experimental.UtilityClass;
+@FunctionalInterface
+public interface Transformer<I, O> {
 
-@UtilityClass
-public class Collections {
-
-	public static <T> Collector<T, ?, List<T>> toSortedList(Comparator<? super T> c) {
-		return Collectors.collectingAndThen(Collectors.toList(), list -> {
-			list.sort(c);
-			return list;
-		});
-	}
+	O transform(I input);
 
 }

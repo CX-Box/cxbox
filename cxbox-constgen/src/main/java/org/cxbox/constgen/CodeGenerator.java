@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -37,9 +39,6 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.util.Elements;
-import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringSubstitutor;
 
 class CodeGenerator {
 
@@ -49,10 +48,8 @@ class CodeGenerator {
 
 	private final Elements elements;
 
-	@Getter
 	private final String packageName;
 
-	@Getter
 	private final String className;
 
 	CodeGenerator(TypeElement typeElement, Element superclass, Elements elements) {
@@ -112,7 +109,11 @@ class CodeGenerator {
 			}
 		}
 		fields.forEach(field -> fieldSpecs.add(
-				new Constant(field.getSimpleName().toString(), TypeName.get(field.asType()).box(), fieldInitializer(methods, field))
+				new Constant(
+						field.getSimpleName().toString(),
+						TypeName.get(field.asType()).box(),
+						fieldInitializer(methods, field)
+				)
 		));
 		Collections.sort(fieldSpecs);
 		return fieldSpecs;
@@ -145,8 +146,11 @@ class CodeGenerator {
 		return StringSubstitutor.replace(
 				"${prefix}${name}",
 				Map.of(
-						"prefix", (field.asType().getKind().isPrimitive() && TypeName.BOOLEAN.equals(TypeName.get(field.asType()))) ? "is" : "get",
-						"name", StringUtils.capitalize(field.getSimpleName().toString())
+						"prefix",
+						(field.asType().getKind().isPrimitive() && TypeName.BOOLEAN.equals(TypeName.get(field.asType()))) ? "is"
+								: "get",
+						"name",
+						StringUtils.capitalize(field.getSimpleName().toString())
 				)
 		);
 	}
@@ -180,5 +184,94 @@ class CodeGenerator {
 		}
 		return false;
 	}
+
+	public String getPackageName() {
+		return this.packageName;
+	}
+
+	public String getClassName() {
+		return this.className;
+	}
+
+	public static final class StringSubstitutor {
+
+		private StringSubstitutor() {
+			throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+		}
+
+		public static String replace(String template, Map<String, Object> parameters) {
+			StringBuilder newTemplate = new StringBuilder(template);
+			List<Object> valueList = new ArrayList<>();
+
+			Matcher matcher = Pattern.compile("[$][{](\\w+)}").matcher(template);
+
+			while (matcher.find()) {
+				String key = matcher.group(1);
+
+				String paramName = "${" + key + "}";
+				int index = newTemplate.indexOf(paramName);
+				if (index != -1) {
+					newTemplate.replace(index, index + paramName.length(), "%s");
+					valueList.add(parameters.get(key));
+				}
+			}
+
+			return String.format(newTemplate.toString(), valueList.toArray());
+		}
+
+	}
+
+
+	public static final class StringUtils {
+
+		private StringUtils() {
+			throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+		}
+
+		/**
+		 * Capitalizes a String changing the first character to title case as
+		 * per {@link Character#toTitleCase(int)}. No other characters are changed.
+		 *
+		 * <pre>
+		 * StringUtils.capitalize(null)  = null
+		 * StringUtils.capitalize("")    = ""
+		 * StringUtils.capitalize("cat") = "Cat"
+		 * StringUtils.capitalize("cAt") = "CAt"
+		 * StringUtils.capitalize("'cat'") = "'cat'"
+		 * </pre>
+		 *
+		 * @param str the String to capitalize, may be null
+		 * @return the capitalized String, {@code null} if null String input
+		 */
+		public static String capitalize(final String str) {
+			final int strLen = length(str);
+			if (strLen == 0) {
+				return str;
+			}
+
+			final int firstCodepoint = str.codePointAt(0);
+			final int newCodePoint = Character.toTitleCase(firstCodepoint);
+			if (firstCodepoint == newCodePoint) {
+				// already capitalized
+				return str;
+			}
+
+			final int[] newCodePoints = new int[strLen]; // cannot be longer than the char array
+			int outOffset = 0;
+			newCodePoints[outOffset++] = newCodePoint; // copy the first code point
+			for (int inOffset = Character.charCount(firstCodepoint); inOffset < strLen; ) {
+				final int codePoint = str.codePointAt(inOffset);
+				newCodePoints[outOffset++] = codePoint; // copy the remaining ones
+				inOffset += Character.charCount(codePoint);
+			}
+			return new String(newCodePoints, 0, outOffset);
+		}
+
+		public static int length(final CharSequence cs) {
+			return cs == null ? 0 : cs.length();
+		}
+
+	}
+
 
 }

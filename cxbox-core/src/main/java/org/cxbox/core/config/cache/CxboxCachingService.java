@@ -32,12 +32,12 @@ public class CxboxCachingService {
 
 	@CacheEvict(cacheNames = UI_CACHE, allEntries = true)
 	public void evictUiCache() {
-
+		// CacheEvict
 	}
 
 	@CacheEvict(cacheNames = USER_CACHE, allEntries = true)
 	public void evictUserCache() {
-
+		// CacheEvict
 	}
 
 	//TODO!!!!
@@ -48,7 +48,7 @@ public class CxboxCachingService {
 
 	@CacheEvict(cacheNames = REQUEST_CACHE, allEntries = true)
 	public void evictRequestCache() {
-
+		// CacheEvict
 	}
 
 }

@@ -16,8 +16,6 @@
 
 package org.cxbox.core.dto.mapper;
 
-import static org.apache.commons.lang3.reflect.ConstructorUtils.getMatchingAccessibleConstructor;
-
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.List;
@@ -27,10 +25,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.constgen.DtoField;
-/*import org.cxbox.core.dto.mapper.DtoConstructor;
-import org.cxbox.core.dto.mapper.RequestValueCache;
-import org.cxbox.model.core.entity.BaseEntity;*/
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,7 +72,7 @@ public class AnySourceDtoConstructorService {
 //			}
 //		} else {
 		Class<?> entityClass = entity.getClass();
-		Constructor<D> matchingAccessibleConstructor = getMatchingAccessibleConstructor(
+		Constructor<D> matchingAccessibleConstructor = CxReflectionUtils.getMatchingAccessibleConstructor(
 				dtoClass,
 				entityClass
 		);

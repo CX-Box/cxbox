@@ -203,10 +203,10 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 		for (E entity : entities) {
 			result.add(entityToDto(entity, dtoClass, names));
 		}
-		if (entities instanceof ResultPage) {
+		if (entities instanceof ResultPage rp) {
 			return ResultPage.of(
 					result,
-					((ResultPage) entities).isHasNext()
+					rp.isHasNext()
 			);
 		}
 		return ListPaging.getResultPage(result, bc.getParameters());

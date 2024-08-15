@@ -21,9 +21,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import lombok.NonNull;
 import org.cxbox.api.util.i18n.LocalizationFormatter;
-import org.cxbox.core.util.JuelUtils;
-import org.cxbox.core.util.JuelUtils.Property;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
@@ -136,14 +137,23 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 		if (title == null) {
 			return fields;
 		}
-		final String templateWithoutDefault = title
-				.replaceAll("\\$\\{(\\w*)(:[\\wа-яА-ЯёЁ\\-,. ]*)?}", "\\$\\{$1}");
-		for (final Property property : JuelUtils.getProperties(templateWithoutDefault)) {
-			fields.add(new BcField(widget.getBcName(), property.getIdentifier())
+		for (var fieldKey : fieldKeys(title)) {
+			fields.add(new BcField(widget.getBcName(), fieldKey)
 					.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 			);
 		}
 		return fields;
+	}
+
+	@NonNull
+	public List<String> fieldKeys(String template) {
+		List<String> valueList = new ArrayList<>();
+		Matcher matcher = Pattern.compile("[$][{](\\w+)}").matcher(template);
+		while (matcher.find()) {
+			String key = matcher.group(1);
+			valueList.add(key);
+		}
+		return valueList;
 	}
 
 }
