@@ -23,15 +23,16 @@ import static org.cxbox.core.dto.DrillDownType.INNER;
 import static org.cxbox.core.dto.rowmeta.PostAction.BasePostActionType.DRILL_DOWN;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
+import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.controller.BCFactory;
 import org.cxbox.core.controller.param.QueryParameters;
@@ -51,6 +52,7 @@ import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.dto.rowmeta.PostAction.BasePostActionField;
+import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.AnySourceResponseFactory;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionAvailableChecker;
@@ -67,9 +69,13 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 
 	private final BCFactory bcFactory;
 
+	private final TransactionService transactionService;
+
 	private final AnySourceResponseFactory respFactory;
 
 	private final BcStateAware bcStateAware;
+
+	private final ParentDtoFirstLevelCache parentDtoFirstLevelCache;
 
 	@Override
 	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker,
@@ -83,14 +89,14 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 				if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.INVOKE) &&
 						Objects.equals(ActionType.CANCEL_CREATE.getType(), crudmaAction.getName())
 				) {
-					bcStateAware.clear();
+					bcStateAware.clear(bc);
 					BcDescription description = bc.getDescription();
 					if (description instanceof AnySourceBcDescription) {
 						return (T) getResponseService(bc).onCancel(bc);
 					}
 					return (T) new ActionResultDTO().setAction(PostAction.postDelete());
 				}
-				restoreBcState(bc, action);
+				restoreBcState(bc, action, readOnly);
 				T invokeResult = invoker.invoke();
 				afterInvoke(crudmaAction, readOnly, bc, action, invokeResult);
 				return invokeResult;
@@ -102,7 +108,7 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 			Object invokeResult) {
 
 		if (action != null && !readOnly) {
-			bcStateAware.clear();
+			bcStateAware.clear(bc);
 		}
 		if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.CREATE) && readOnly) {
 			InterimResult result = castToInterimResultOrElseThrow(invokeResult, crudmaAction.getActionType());
@@ -119,7 +125,7 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 		if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.PREVIEW) && readOnly) {
 			InterimResult result = castToInterimResultOrElseThrow(invokeResult, crudmaAction.getActionType());
 			boolean isRecordPersisted = bcStateAware.isPersisted(bc);
-			bcStateAware.clear();
+			bcStateAware.clear(bc);
 			bcStateAware.set(
 					result.getBc(),
 					new BcState(
@@ -202,7 +208,7 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 		return bc;
 	}
 
-	private void restoreBcState(final BusinessComponent currentBc, final CrudmaActionType action) {
+	private void restoreBcState(final BusinessComponent currentBc, final CrudmaActionType action, boolean readOnly) {
 		for (final BusinessComponent bc : Arrays.asList(getParentBcForRestore(currentBc), currentBc)) {
 			if (bc == null) {
 				continue;
@@ -220,12 +226,40 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 				bc.setParameters(originalParameters);
 			}
 			final AnySourceResponseService<?, ?> responseService = getResponseService(bc);
-			if (!bcStateAware.isPersisted(bc)) {
-				responseService.createEntity(bc);
-			}
-			// эти действия сами вызывают update
-			if (state.getDto() != null && !Set.of(UPDATE, PREVIEW, INVOKE).contains(action)) {
-				responseService.updateEntity(bc, state.getDto());
+			if (currentBc.equals(bc)) { //current bc
+				if (!bcStateAware.isPersisted(bc)) {
+					responseService.createEntity(bc);
+				}
+
+				if (state.getDto() != null && !EnumSet.of(UPDATE, PREVIEW, INVOKE).contains(action)) {
+					responseService.updateEntity(bc, state.getDto());
+				}
+			} else { //parent
+				DataResponseDTO parentDto = null;
+				if (readOnly) { //restore parent for read only childes operations. For example, we create new task and read reviewers from picklist (that is child for task.
+
+					if (!bcStateAware.isPersisted(bc)) {
+						parentDto = responseService.createEntity(bc).getRecord();
+					}
+
+					if (state.getDto() != null) { //we always restore parent
+						parentDto = responseService.updateEntity(bc, state.getDto()).getRecord();
+					}
+				} else { //restore parent for non read only childes. For example, we create new task and read reviewers from picklist AND then CREATE new reviewer in popup.
+					// So in this case we roll back parent right here and recommend users to use VersionAware.getParentDTO() instead of finding parent in DB by id
+					parentDto = transactionService.invokeInNewRollbackOnlyTx(() -> {
+						DataResponseDTO result = null;
+						if (!bcStateAware.isPersisted(bc)) {
+							result = responseService.createEntity(bc).getRecord();
+						}
+
+						if (state.getDto() != null) { //we always restore parent
+							result = responseService.updateEntity(bc, state.getDto()).getRecord();
+						}
+						return result;
+					});
+				}
+				parentDtoFirstLevelCache.getCache().put(bc.getName(), Optional.ofNullable(parentDto));
 			}
 		}
 	}

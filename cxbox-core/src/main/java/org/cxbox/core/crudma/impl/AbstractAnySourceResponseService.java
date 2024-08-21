@@ -54,6 +54,7 @@ import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.EntityNotFoundException;
 import org.cxbox.core.exception.UnconfirmedException;
 import org.cxbox.core.dao.AnySourceBaseDAO;
+import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
 import org.cxbox.core.service.AnySourceDTOMapper;
 import org.cxbox.core.service.AnySourceResponseService;
@@ -107,6 +108,8 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	@Autowired
 	private APIProperties apiProperties;
 
+	@Autowired
+	private ParentDtoFirstLevelCache<?> parentDtoFirstLevelCache;
 
 	@Override
 	public AnySourceBaseDAO<E> getBaseDao() {
@@ -433,6 +436,24 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 			hasNext = false;
 		}
 		return new ResultPage<>(dtos, hasNext);
+	}
+
+	/**
+	 * see org.cxbox.core.crudma.impl.AbstractResponseService#getParentField(org.cxbox.constgen.DtoField, org.cxbox.core.crudma.bc.BusinessComponent)
+	 * Note! AnySource api do not restore bc state with insert/update to DB and 'rollback'/'commit' changes if user 'did not complete'/'completed' process,
+	 * but restores state in fully independent custom cache, so all any source bc's can be fetched with baseDao.getById()
+	 * -----------
+	 * But you can use AnySource service as child and VersionAware as parent,
+	 * so when CREATING ROW directly in child popup, then parent can again be fetched only
+	 * with this method see org.cxbox.core.crudma.impl.AbstractResponseService#getParentField(org.cxbox.constgen.DtoField, org.cxbox.core.crudma.bc.BusinessComponent)
+	 */
+	protected <P extends DataResponseDTO, F> F getParentField(DtoField<P, F> dtoField, BusinessComponent bc) {
+		Optional<?> parent = parentDtoFirstLevelCache.getCache().get(bc.getParentName());
+		if (parent == null) {
+			return null;
+		}
+		P parentDto = (P) parent.orElse(null);
+		return Optional.ofNullable(parentDto).map(dtoField.getGetter()).orElse(null);
 	}
 
 	protected final E isExist(final BusinessComponent bc) {
