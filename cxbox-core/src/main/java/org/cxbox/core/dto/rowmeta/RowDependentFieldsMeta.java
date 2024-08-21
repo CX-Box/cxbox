@@ -19,7 +19,23 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -30,20 +46,6 @@ import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.dto.FieldDrillDown;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import jakarta.annotation.Nullable;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
@@ -272,6 +274,26 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 	public final void setPlaceholder(DtoField<? super T, ?> field, String placeholder) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> fieldDTO.setPlaceholder(placeholder));
+	}
+
+	/**
+	 * The method allows sorting LOV values to set the display order,
+	 * in accordance with the specified order in the CSV file,
+	 * by setting Values to the corresponding value.
+	 */
+	public final void setDictionaryTypeWithAllValuesOrdered(final DtoField<?, ?> field,
+			final IDictionaryType type) {
+		setDictionaryTypeWithAllValues(field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
+	}
+
+	private void setDictionaryTypeWithAllValues(final DtoField<?, ?> field,
+			final IDictionaryType type,
+			final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> get(dtoField.getName())).ifPresent(fieldDTO -> {
+			fieldDTO.setDictionaryName(type.getName());
+			fieldDTO.clearValues();
+			fieldDTO.setValues(DictionaryCache.dictionary().getAll(type).stream().sorted(comparator).toList());
+		});
 	}
 
 }
