@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -65,11 +65,46 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.ifPresent(fieldDTO -> fieldDTO.setFilterable(true)));
 	}
 
+	/**
+	 * @param field dto field
+	 * @param type dictionary type
+	 * <p>
+	 * <br>
+	 * Field filter drop-downs (on List widgets header and so on) values sorted by display_order, then by key. display_order can be null
+	 * <p>
+	 * See dicts.sort and LinkedHashMap lines in {@link org.cxbox.model.core.service.DictionaryCacheImpl.Cache#load()}
+	 * <p>
+	 * <br>
+	 * Attention - sorting rows in List widgets always ignores display_order and is done by lov.key lexicographically!
+	 */
 	public final void setAllFilterValuesByLovType(DtoField<? super T, ?> field, IDictionaryType type) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> {
 					fieldDTO.clearFilterValues();
 					fieldDTO.setFilterValues(dictionary().getAll(type));
+				});
+	}
+
+	/**
+	 * @param field dto field
+	 * @param type dictionary type
+	 * @param comparator filter drop-downs will show values sorted by this comparator
+	 * <p>
+	 * Attention - sorting rows in List widgets always ignores display_order and is done by lov.key lexicographically!
+	 */
+	public final void setAllFilterValuesByLovType(
+			final DtoField<?, ?> field,
+			@NonNull final IDictionaryType type,
+			@NonNull final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.clearFilterValues();
+					fieldDTO.setFilterValues(dictionary().getAll(type)
+							.stream()
+							.filter(Objects::nonNull)
+							.sorted(comparator)
+							.toList()
+					);
 				});
 	}
 
@@ -139,54 +174,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 					fieldDTO.setFileAccept(null);
 					fieldDTO.setFileAccept(String.join(",", accept));
 				});
-	}
-
-	/**
-	 * The method allows sorting LOV values to set the display order,
-	 * in accordance with the specified order in the CSV file,
-	 * by setting FilterValues to the corresponding value.
-	 */
-	public final void setAllFilterValuesByLovTypeOrdered(final FieldsMeta<?> fields,
-			final DtoField<?, ?> field,
-			final IDictionaryType type) {
-		setAllFilterValuesByLovType(fields, field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
-	}
-
-	private void setAllFilterValuesByLovType(final FieldsMeta<?> fields,
-			final DtoField<?, ?> field,
-			final IDictionaryType type,
-			final Comparator<SimpleDictionary> comparator) {
-		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
-				.ifPresent(fieldDTO -> {
-					fieldDTO.clearFilterValues();
-					fieldDTO.setFilterValues(dictionary().getAll(type)
-							.stream()
-							.sorted(comparator)
-							.toList()
-					);
-				});
-	}
-
-	/**
-	 * The method allows sorting LOV values to set the display order,
-	 * in accordance with the specified order in the CSV file,
-	 * by setting Values to the corresponding value.
-	 */
-	public static void setDictionaryTypeWithAllValuesOrdered(final RowDependentFieldsMeta<?> fields,
-			final DtoField<?, ?> field,
-			final IDictionaryType type) {
-		setDictionaryTypeWithAllValues(fields, field, type, Comparator.comparingInt(SimpleDictionary::getDisplayOrder));
-	}
-
-	public static void setDictionaryTypeWithAllValues(final RowDependentFieldsMeta<?> fields,
-			final DtoField<?, ?> field,
-			final IDictionaryType type,
-			final Comparator<SimpleDictionary> comparator) {
-		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName())).ifPresent(fieldDTO -> {
-			fieldDTO.setDictionaryName(type.getName());
-			fieldDTO.clearValues();
-			fieldDTO.setValues(DictionaryCache.dictionary().getAll(type).stream().sorted(comparator).toList());
-		});
 	}
 
 }

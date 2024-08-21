@@ -19,7 +19,9 @@ package org.cxbox.core.dto.rowmeta;
 import static org.cxbox.api.data.dictionary.DictionaryCache.dictionary;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Comparator;
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -143,6 +145,18 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 				.ifPresent(fieldDTO -> fieldDTO.setDisabled(disabled)));
 	}
 
+	/**
+	 * @param field dto field
+	 * @param type dictionary type
+	 * <p>
+	 * <br>
+	 * field edit drop-downs (Form widget field during editing and so on) values sorted by display_order, then by key. display_order can be null
+	 * <p>
+	 * See dicts.sort and LinkedHashMap lines in {@link org.cxbox.model.core.service.DictionaryCacheImpl.Cache#load()}
+	 * <p>
+	 * <br>
+	 * Attention - sorting rows in List widgets always ignores display_order and is done by lov.key lexicographically!
+	 */
 	public final void setDictionaryTypeWithAllValues(DtoField<? super T, ?> field, IDictionaryType type) {
 		setDictionaryTypeWithAllValues(field, type.getName());
 	}
@@ -154,6 +168,24 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 					fieldDTO.clearValues();
 					fieldDTO.setValues(dictionary().getAll(type));
 				});
+	}
+
+	/**
+	 * @param field dto field
+	 * @param type dictionary type
+	 * @param comparator field edit drop-downs (Form widget field during editing and so on) show values sorted by this comparator
+	 * <p>
+	 * Attention - sorting rows in List widgets always ignores display_order and is done by lov.key lexicographically!
+	 */
+	private void setDictionaryTypeWithAllValues(
+			final DtoField<?, ?> field,
+			@NonNull final String type,
+			@NonNull final Comparator<SimpleDictionary> comparator) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName())).ifPresent(fieldDTO -> {
+			fieldDTO.setDictionaryName(type);
+			fieldDTO.clearValues();
+			fieldDTO.setValues(DictionaryCache.dictionary().getAll(type).stream().sorted(comparator).toList());
+		});
 	}
 
 	@Deprecated
