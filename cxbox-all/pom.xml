@@ -19,13 +19,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cxbox-all</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-M6-SNAPSHOT</version>
+    <version>4.0.0-M6</version>
     <name>IO Cxbox - All</name>
 
     <parent>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-base</artifactId>
-        <version>4.0.0-M6-SNAPSHOT</version>
+        <version>4.0.0-M6</version>
         <relativePath>../cxbox-base/pom.xml</relativePath>
     </parent>
 
@@ -39,7 +39,7 @@
                 <groupId>org.cxbox</groupId>
                 <artifactId>cxbox-bom</artifactId>
                 <type>import</type>
-                <version>4.0.0-M6-SNAPSHOT</version>
+                <version>4.0.0-M6</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
