@@ -49,9 +49,9 @@ public class BcStateAwareImpl implements BcStateAware {
 	private static final String NO_CLIENT = "NO_CLIENT";
 
 	@Override
-	public void clear() {
+	public void clear(BusinessComponent bc) {
 		ClientStorage storage = getStorage();
-		Optional.ofNullable(getState(storage)).ifPresent(Map::clear);
+		Optional.ofNullable(getState(storage)).ifPresent(state -> state.remove(BcKey.of(bc)));
 		flushStorage(storage);
 	}
 

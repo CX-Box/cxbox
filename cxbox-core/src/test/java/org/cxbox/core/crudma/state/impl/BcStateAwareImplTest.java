@@ -70,7 +70,7 @@ class BcStateAwareImplTest {
 				BUSINESS_COMPONENT,
 				STATE
 		);
-		bcStateAware.clear();
+		bcStateAware.clear(BUSINESS_COMPONENT);
 		Assertions.assertNull(bcStateAware.getState(BUSINESS_COMPONENT));
 	}
 

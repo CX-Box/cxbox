@@ -38,7 +38,7 @@ public interface BcStateAware {
 	/**
 	 * Clear all state records for current client
 	 */
-	void clear();
+	void clear(BusinessComponent bc);
 
 	/**
 	 * Change state for business component instance
