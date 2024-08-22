@@ -308,7 +308,8 @@ public class DictionaryCacheImpl implements DictionaryCache {
 			syncLanguages(data);
 			data.forEach((lang, typeaware) -> typeaware.forEach((type, dictmap) -> {
 				List<SimpleDictionary> dicts = new ArrayList<>(dictmap.values());
-				dicts.sort(Comparator.comparing(SimpleDictionary::getDisplayOrder));
+				//sort by displayOrder, then by key. displayOrder can be null
+				dicts.sort(Comparator.comparing(SimpleDictionary::getDisplayOrder, Comparator.nullsLast(Integer::compare)).thenComparing(SimpleDictionary::getKey));
 				dicts.forEach(dict -> {
 					byKey.get(lang).computeIfAbsent(type, v -> new LinkedHashMap<>()).put(dict.getKey(), dict);
 					byValue.get(lang).computeIfAbsent(type, v -> new LinkedHashMap<>()).put(dict.getValue(), dict);
