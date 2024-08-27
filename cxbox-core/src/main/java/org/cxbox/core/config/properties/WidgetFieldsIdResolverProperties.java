@@ -27,6 +27,8 @@ public class WidgetFieldsIdResolverProperties {
 
 	public static final String FILTER_BY_RANGE_ENABLED_DEFAULT_PARAM_NAME = "filterByRangeEnabled";
 
+	private Boolean defaultEnableSort = false;
+
 	/**
 	 * Enabled filter by range for Date/DateTime/DateTimeWithSeconds fields
 	 */

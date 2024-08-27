@@ -54,6 +54,8 @@ public class FieldDTO {
 
 	Boolean filterable;
 
+	Boolean sortable;
+
 	String placeholder;
 
 	@JsonIgnore
@@ -88,6 +90,7 @@ public class FieldDTO {
 		this.filterable = false;
 		this.key = field.getName();
 		this.tzAware = isTzAware(field);
+		this.sortable = false;
 	}
 
 	public void addOption(String key, String value) {
@@ -106,6 +109,16 @@ public class FieldDTO {
 		field.setKey(key);
 		field.setDisabled(Boolean.FALSE);
 		return field;
+	}
+
+	public static FieldDTO disabledSortableField(String key) {
+		FieldDTO field = disabledField(key);
+		field.setSortable(Boolean.FALSE);
+		return field;
+	}
+
+	public static FieldDTO disabledSortableField(DtoField<? extends DataResponseDTO, ?> field) {
+		return disabledSortableField(field.getName());
 	}
 
 	public static FieldDTO disabledFilterableField(String key, Collection<SimpleDictionary> filterValues) {

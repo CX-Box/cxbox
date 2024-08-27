@@ -28,6 +28,7 @@ import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
@@ -69,8 +70,9 @@ public class AnySourceRowResponseService extends RowResponseService {
 	public AnySourceRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
+			WidgetFieldsIdResolverProperties properties,
 			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
-		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, objectMapper);
+		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, properties, objectMapper);
 	}
 
 	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
