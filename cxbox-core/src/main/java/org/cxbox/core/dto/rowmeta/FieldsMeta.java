@@ -175,6 +175,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 					fieldDTO.setFileAccept(String.join(",", accept));
 				});
 	}
+
 	@SafeVarargs
 	public final void enableSort(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
@@ -182,4 +183,5 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setSortable(true)));
 	}
+
 }
