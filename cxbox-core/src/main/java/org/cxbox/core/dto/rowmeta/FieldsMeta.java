@@ -177,8 +177,11 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	}
 
 	/**
-	 * The method allows you to enable sorting of selected fields
-	 * @param fields
+	 * @param fields  fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
+	 * <ul>
+	 *     <li>See additional abilities for sorting  (how to set default value and so on) in this java doc
+	 *     {@link org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties#sortEnabledDefault}</li>
+	 * </ul>
 	 */
 	@SafeVarargs
 	public final void enableSort(DtoField<? super T, ?>... fields) {
@@ -186,18 +189,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 				field -> Optional.ofNullable(field).map(
 								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setSortable(true)));
-	}
-
-	/**
-	 * This method allows you to disable sorting of selected fields
-	 * @param fields
-	 */
-	@SafeVarargs
-	public final void disableSort(DtoField<? super T, ?>... fields) {
-		Stream.of(fields).forEach(
-				field -> Optional.ofNullable(field).map(
-								dtoField -> this.fields.get(dtoField.getName()))
-						.ifPresent(fieldDTO -> fieldDTO.setSortable(false)));
 	}
 
 }

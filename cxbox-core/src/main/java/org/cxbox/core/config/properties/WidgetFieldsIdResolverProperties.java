@@ -34,7 +34,7 @@ public class WidgetFieldsIdResolverProperties {
 	 /**
 	 * <code>sortEnabledDefault = false</code> - hides sort icon on all fields by default.
 	 * <ul>
-	 *     <li>To make individual field <code>sortable</code>, e.g. to show sort icon and enable user to change sort order with it - use {@link FieldsMeta#enableSort(DtoField[])}</li>
+	 *     <li>To make individual field <code>sortable</code>, e.g. to show sort icon and enable user to change sort order with it - use {@link org.cxbox.core.dto.rowmeta.FieldsMeta#enableSort(DtoField[])}</li>
 	 *     <li>To set <code>default sort order</code> on individual field - use {@link org.cxbox.meta.entity.BcProperties#sort} (usually is set with CSV <code>BC_PROPERTIES.CSV column SORT</code> in your project)</li>
 	 *     <li>If field is not <code>sortable</code>, but has <code>default sort order</code> - sort icon will be shown and <code>default sort order</code> will be auto applied, but user will not be able to change sort order</li>
 	 * </ul>
