@@ -166,7 +166,7 @@ public class RowResponseService {
 			return null;
 		}
 		FieldDTO fieldDTO = new FieldDTO(field);
-		fieldDTO.setSortable(properties.isSortEnableDefault());
+		fieldDTO.setSortable(properties.isSortEnabledDefault());
 		try {
 			switch (type) {
 				case META_NEW:

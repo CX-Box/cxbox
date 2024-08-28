@@ -176,12 +176,28 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 				});
 	}
 
+	/**
+	 * The method allows you to enable sorting of selected fields
+	 * @param fields
+	 */
 	@SafeVarargs
 	public final void enableSort(DtoField<? super T, ?>... fields) {
 		Stream.of(fields).forEach(
 				field -> Optional.ofNullable(field).map(
 								dtoField -> this.fields.get(dtoField.getName()))
 						.ifPresent(fieldDTO -> fieldDTO.setSortable(true)));
+	}
+
+	/**
+	 * This method allows you to disable sorting of selected fields
+	 * @param fields
+	 */
+	@SafeVarargs
+	public final void disableSort(DtoField<? super T, ?>... fields) {
+		Stream.of(fields).forEach(
+				field -> Optional.ofNullable(field).map(
+								dtoField -> this.fields.get(dtoField.getName()))
+						.ifPresent(fieldDTO -> fieldDTO.setSortable(false)));
 	}
 
 }
