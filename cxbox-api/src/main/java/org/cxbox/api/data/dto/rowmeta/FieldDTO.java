@@ -16,12 +16,6 @@
 
 package org.cxbox.api.data.dto.rowmeta;
 
-import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.Ephemeral;
-import org.cxbox.api.data.dto.TZAware;
-import org.cxbox.api.util.tz.TimeZoneUtil;
-import org.cxbox.constgen.DtoField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.lang.reflect.Field;
@@ -34,6 +28,12 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.Ephemeral;
+import org.cxbox.api.data.dto.TZAware;
+import org.cxbox.api.util.tz.TimeZoneUtil;
+import org.cxbox.constgen.DtoField;
 
 @Getter
 @Setter
@@ -111,16 +111,18 @@ public class FieldDTO {
 		return field;
 	}
 
-	public static FieldDTO disabledSortableField(String key) {
-		FieldDTO field = disabledField(key);
-		field.setSortable(Boolean.FALSE);
-		return field;
-	}
-
-	public static FieldDTO disabledSortableField(DtoField<? extends DataResponseDTO, ?> field) {
-		return disabledSortableField(field.getName());
-	}
-
+	/**
+	 * Will be removed in next releases. Use next code instead:
+	 * <br>
+	 * <pre>
+	 * {@code
+	 * field.disabledField(..);
+	 * field.setFilterable(..);
+	 * field.setFilterValues(..);
+	 * }
+	 * </pre>
+	 */
+	@Deprecated
 	public static FieldDTO disabledFilterableField(String key, Collection<SimpleDictionary> filterValues) {
 		FieldDTO field = disabledField(key);
 		field.setFilterable(Boolean.TRUE);
@@ -128,6 +130,7 @@ public class FieldDTO {
 		return field;
 	}
 
+	@Deprecated
 	public static FieldDTO disabledFilterableField(String key) {
 		return disabledFilterableField(key, Collections.emptyList());
 	}

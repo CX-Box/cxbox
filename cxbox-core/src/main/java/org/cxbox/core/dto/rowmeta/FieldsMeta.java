@@ -179,7 +179,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	/**
 	 * @param fields  fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
 	 * <ul>
-	 *     <li>See additional abilities for sorting  (how to set default value and so on) in this java doc
+	 *     <li>See additional abilities for sorting  (how to set <code>default sort order</code> and so on) in this java doc
 	 *     {@link org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties#sortEnabledDefault}</li>
 	 * </ul>
 	 */
