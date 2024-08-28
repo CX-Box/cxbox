@@ -121,8 +121,9 @@ public class FieldDTO {
 	 * field.setFilterValues(..);
 	 * }
 	 * </pre>
+	 * @deprecated
 	 */
-	@Deprecated
+	@Deprecated(since = "4.0.0-M7",forRemoval = true)
 	public static FieldDTO disabledFilterableField(String key, Collection<SimpleDictionary> filterValues) {
 		FieldDTO field = disabledField(key);
 		field.setFilterable(Boolean.TRUE);
@@ -130,7 +131,7 @@ public class FieldDTO {
 		return field;
 	}
 
-	@Deprecated
+	@Deprecated(since = "4.0.0-M7",forRemoval = true)
 	public static FieldDTO disabledFilterableField(String key) {
 		return disabledFilterableField(key, Collections.emptyList());
 	}
