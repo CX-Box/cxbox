@@ -16,6 +16,8 @@
 
 package org.cxbox.model.core.entity;
 
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.cxbox.model.core.listeners.jpa.AbstractEntityListener;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -23,11 +25,12 @@ import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Setter
 @Getter
 @MappedSuperclass
 @EntityListeners(AbstractEntityListener.class)
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
 public abstract class AbstractEntity {
 
 	@Transient

@@ -18,10 +18,6 @@ package org.cxbox.model.core.entity;
 
 import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
 
-import org.cxbox.model.core.hbn.PropagateAnnotations;
-import org.cxbox.model.core.listeners.jpa.DelegatingBaseEntityListener;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -30,9 +26,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.cxbox.model.core.hbn.PropagateAnnotations;
+import org.cxbox.model.core.listeners.jpa.DelegatingBaseEntityListener;
 import org.hibernate.annotations.DiscriminatorOptions;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -51,6 +53,8 @@ import org.springframework.data.annotation.CreatedDate;
 @EntityListeners(DelegatingBaseEntityListener.class)
 @DiscriminatorOptions(insert = false)
 @PropagateAnnotations({DiscriminatorOptions.class})
+@SuperBuilder(toBuilder = true)
+@NoArgsConstructor
 public abstract class BaseEntity extends AbstractEntity implements Serializable {
 
 	@Id
@@ -95,4 +99,7 @@ public abstract class BaseEntity extends AbstractEntity implements Serializable 
 		return String.format("%s:%d", getClass().getSimpleName(), getId());
 	}
 
+	public Long getIdAsLong() {
+		return id;
+	}
 }
