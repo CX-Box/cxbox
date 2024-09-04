@@ -296,7 +296,7 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 				});
 	}
 
-	public final void setCurrentValue(DtoField<? super T, ?> field, Object value) {
+	public final <V> void setCurrentValue(DtoField<? super T, V> field, V value) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> fieldDTO.setCurrentValue(value));
 	}
