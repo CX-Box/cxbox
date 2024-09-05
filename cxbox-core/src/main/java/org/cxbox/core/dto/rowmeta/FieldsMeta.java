@@ -148,14 +148,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.ifPresent(fieldDTO -> fieldDTO.setEphemeral(true)));
 	}
 
-	@SafeVarargs
-	public final void setHidden(DtoField<? super T, ?>... fields) {
-		Stream.of(fields).forEach(
-				field -> Optional.ofNullable(field).map(
-								dtoField -> this.fields.get(dtoField.getName()))
-						.ifPresent(fieldDTO -> fieldDTO.setHidden(true)));
-	}
-
 	public final void setFilterValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
