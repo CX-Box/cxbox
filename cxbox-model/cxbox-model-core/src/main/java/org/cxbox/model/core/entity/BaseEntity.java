@@ -99,7 +99,4 @@ public abstract class BaseEntity extends AbstractEntity implements Serializable 
 		return String.format("%s:%d", getClass().getSimpleName(), getId());
 	}
 
-	public Long getIdAsLong() {
-		return id;
-	}
 }
