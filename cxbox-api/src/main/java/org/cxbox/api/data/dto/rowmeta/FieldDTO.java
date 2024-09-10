@@ -189,11 +189,10 @@ public class FieldDTO {
 	}
 
 	/**
-	 * <ui>
-	 * <li>It is recommended to replace it with <code> {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setCurrentValue}</code></li></li>
-	 * </ui>
+	 * Change current field value in UI
 	 *
-	 * @deprecated TODO In a subsequent update, the access modifier will be changed to package only
+	 * @deprecated instead use type safe <code>{@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setCurrentValue}</code>.
+	 * Current method was originally designed as is an internal method, that consumes Object, so it is extremely error-prone. It will not be public anymore in future releases.
 	 */
 	@Deprecated()
 	public void setCurrentValue(Object currentValue) {
