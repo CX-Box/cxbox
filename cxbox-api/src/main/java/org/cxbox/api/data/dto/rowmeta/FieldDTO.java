@@ -16,12 +16,6 @@
 
 package org.cxbox.api.data.dto.rowmeta;
 
-import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.Ephemeral;
-import org.cxbox.api.data.dto.TZAware;
-import org.cxbox.api.util.tz.TimeZoneUtil;
-import org.cxbox.constgen.DtoField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.lang.reflect.Field;
@@ -34,6 +28,12 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.Ephemeral;
+import org.cxbox.api.data.dto.TZAware;
+import org.cxbox.api.util.tz.TimeZoneUtil;
+import org.cxbox.constgen.DtoField;
 
 @Getter
 @Setter
@@ -186,6 +186,18 @@ public class FieldDTO {
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
 		Set<DictValue> dictValues = isFilterValue ? filterValues : values;
 		dictValues.add(new DictValue(val, icon.code));
+	}
+
+	/**
+	 * <ui>
+	 * <li>It is recommended to replace it with <code> {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setCurrentValue}</code></li></li>
+	 * </ui>
+	 *
+	 * @deprecated TODO In a subsequent update, the access modifier will be changed to package only
+	 */
+	@Deprecated()
+	public void setCurrentValue(Object currentValue) {
+		this.currentValue = currentValue;
 	}
 
 	@AllArgsConstructor
