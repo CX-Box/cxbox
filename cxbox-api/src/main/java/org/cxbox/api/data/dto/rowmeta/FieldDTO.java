@@ -54,6 +54,8 @@ public class FieldDTO {
 
 	Boolean filterable;
 
+	Boolean sortable;
+
 	String placeholder;
 
 	@JsonIgnore
@@ -88,6 +90,7 @@ public class FieldDTO {
 		this.filterable = false;
 		this.key = field.getName();
 		this.tzAware = isTzAware(field);
+		this.sortable = false;
 	}
 
 	public void addOption(String key, String value) {
@@ -108,6 +111,20 @@ public class FieldDTO {
 		return field;
 	}
 
+	/**
+	 * Will be removed in next releases. Use next code instead:
+	 * <br>
+	 * <pre>
+	 * {@code
+	 * field.disabledField(..);
+	 * field.setFilterable(..);
+	 * field.setFilterValues(..);
+	 * }
+	 * </pre>
+	 *
+	 * @deprecated
+	 */
+	@Deprecated(since = "4.0.0-M7", forRemoval = true)
 	public static FieldDTO disabledFilterableField(String key, Collection<SimpleDictionary> filterValues) {
 		FieldDTO field = disabledField(key);
 		field.setFilterable(Boolean.TRUE);
@@ -115,6 +132,10 @@ public class FieldDTO {
 		return field;
 	}
 
+	/**
+	 * @deprecated
+	 */
+	@Deprecated(since = "4.0.0-M7", forRemoval = true)
 	public static FieldDTO disabledFilterableField(String key) {
 		return disabledFilterableField(key, Collections.emptyList());
 	}
