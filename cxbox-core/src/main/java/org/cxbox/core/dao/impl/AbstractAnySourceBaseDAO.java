@@ -57,16 +57,16 @@ public abstract class AbstractAnySourceBaseDAO<E> implements AnySourceBaseDAO<E>
 	}
 
 	@Override
-	public void setWithFirstLevelCache(BusinessComponent bc, E entity) {
-		cache.getCache().put(bc.getName(), entity);
+	public E setWithFirstLevelCache(BusinessComponent bc, E entity) {
+		return cache.getCache().put(bc.getName(), entity);
 	}
 
 	@Override
-	public void flush(BusinessComponent bc) {
+	public E flush(BusinessComponent bc) {
 		if (anySourceBcStateAware.isPersisted(bc)) {
-			setWithFirstLevelCache(bc, update(bc, getById(bc)));
+			return setWithFirstLevelCache(bc, update(bc, getById(bc)));
 		} else {
-			setWithFirstLevelCache(bc, create(bc, getById(bc)));
+			return setWithFirstLevelCache(bc, create(bc, getById(bc)));
 		}
 	}
 
