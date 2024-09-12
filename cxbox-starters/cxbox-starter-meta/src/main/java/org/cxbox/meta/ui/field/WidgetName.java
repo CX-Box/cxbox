@@ -9,4 +9,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 public @interface WidgetName {
 
+	/**
+	 * @return widget type prefix, by default includes all prefixes of widget types
+	 */
+	WidgetTypeFamily[] typeFamily() default {};
+
 }
