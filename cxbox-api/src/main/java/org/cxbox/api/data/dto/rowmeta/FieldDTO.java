@@ -16,12 +16,6 @@
 
 package org.cxbox.api.data.dto.rowmeta;
 
-import org.cxbox.api.data.dictionary.SimpleDictionary;
-import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.Ephemeral;
-import org.cxbox.api.data.dto.TZAware;
-import org.cxbox.api.util.tz.TimeZoneUtil;
-import org.cxbox.constgen.DtoField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.lang.reflect.Field;
@@ -34,6 +28,12 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.Ephemeral;
+import org.cxbox.api.data.dto.TZAware;
+import org.cxbox.api.util.tz.TimeZoneUtil;
+import org.cxbox.constgen.DtoField;
 
 @Getter
 @Setter
@@ -53,6 +53,8 @@ public class FieldDTO {
 	Boolean required;
 
 	Boolean filterable;
+
+	Boolean sortable;
 
 	String placeholder;
 
@@ -88,6 +90,7 @@ public class FieldDTO {
 		this.filterable = false;
 		this.key = field.getName();
 		this.tzAware = isTzAware(field);
+		this.sortable = false;
 	}
 
 	public void addOption(String key, String value) {
@@ -108,6 +111,20 @@ public class FieldDTO {
 		return field;
 	}
 
+	/**
+	 * Will be removed in next releases. Use next code instead:
+	 * <br>
+	 * <pre>
+	 * {@code
+	 * field.disabledField(..);
+	 * field.setFilterable(..);
+	 * field.setFilterValues(..);
+	 * }
+	 * </pre>
+	 *
+	 * @deprecated
+	 */
+	@Deprecated(since = "4.0.0-M7", forRemoval = true)
 	public static FieldDTO disabledFilterableField(String key, Collection<SimpleDictionary> filterValues) {
 		FieldDTO field = disabledField(key);
 		field.setFilterable(Boolean.TRUE);
@@ -115,6 +132,10 @@ public class FieldDTO {
 		return field;
 	}
 
+	/**
+	 * @deprecated
+	 */
+	@Deprecated(since = "4.0.0-M7", forRemoval = true)
 	public static FieldDTO disabledFilterableField(String key) {
 		return disabledFilterableField(key, Collections.emptyList());
 	}
@@ -186,6 +207,17 @@ public class FieldDTO {
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
 		Set<DictValue> dictValues = isFilterValue ? filterValues : values;
 		dictValues.add(new DictValue(val, icon.code));
+	}
+
+	/**
+	 * Change current field value in UI
+	 *
+	 * @deprecated instead use type safe <code>{@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setCurrentValue}</code>.
+	 * Current method was originally designed as is an internal method, that consumes Object, so it is extremely error-prone. It will not be public anymore in future releases.
+	 */
+	@Deprecated()
+	public void setCurrentValue(Object currentValue) {
+		this.currentValue = currentValue;
 	}
 
 	@AllArgsConstructor

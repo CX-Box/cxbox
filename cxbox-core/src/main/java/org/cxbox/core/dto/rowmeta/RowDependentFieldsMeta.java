@@ -117,6 +117,24 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 						.ifPresent(fieldDTO -> fieldDTO.setRequired(required)));
 	}
 
+	@SafeVarargs
+	public final void setHidden(DtoField<? super T, ?>... fields) {
+		hidden(true, fields);
+	}
+
+	@SafeVarargs
+	public final void setNotHidden(DtoField<? super T, ?>... fields) {
+		hidden(false, fields);
+	}
+
+	@SafeVarargs
+	public final void hidden(boolean required, DtoField<? super T, ?>... fields) {
+		Stream.of(fields).forEach(field ->
+				Optional.ofNullable(field)
+						.map(dtoField -> this.fields.get(dtoField.getName()))
+						.ifPresent(fieldDTO -> fieldDTO.setHidden(required)));
+	}
+
 	public final void disableFields() {
 		fields.values().forEach(fieldDTO -> fieldDTO.setDisabled(true));
 	}
@@ -296,7 +314,7 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 				});
 	}
 
-	public final void setCurrentValue(DtoField<? super T, ?> field, Object value) {
+	public final <V> void setCurrentValue(DtoField<? super T, V> field, V value) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> fieldDTO.setCurrentValue(value));
 	}

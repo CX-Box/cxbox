@@ -55,7 +55,7 @@ public interface AnySourceBaseDAO<E> {
 	/**
 	 * Put to First Level Cache
 	 */
-	void setWithFirstLevelCache(BusinessComponent bc, E entity);
+	E setWithFirstLevelCache(BusinessComponent bc, E entity);
 
 	/**
 	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}
@@ -65,7 +65,7 @@ public interface AnySourceBaseDAO<E> {
 	/**
 	 * Should be used to explicitly update/create in anySource system by custom action
 	 */
-	void flush(BusinessComponent bc);
+	E flush(BusinessComponent bc);
 
 	/**
 	 * Should not be used anywhere except of {@link AbstractAnySourceBaseDAO}

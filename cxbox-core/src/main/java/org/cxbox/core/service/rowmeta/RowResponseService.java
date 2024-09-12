@@ -22,6 +22,7 @@ import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
+import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
@@ -64,16 +65,20 @@ public class RowResponseService {
 
 	private final ObjectMapper objectMapper;
 
+	private final WidgetFieldsIdResolverProperties properties;
+
 	public RowResponseService(ApplicationContext ctx,
 			Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
+			WidgetFieldsIdResolverProperties properties,
 			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
 		this.ctx = ctx;
 		this.linkedDictionaryService = linkedDictionaryService.orElse(null);
 		this.extendedDtoFieldLevelSecurityService = extendedDtoFieldLevelSecurityService;
 		this.bcDisablers = new HashMap<>();
 		this.objectMapper = objectMapper;
+		this.properties = properties;
 		bcDisablers.ifPresent(disablers -> {
 			for (final BcDisabler bcDisabler : disablers) {
 				for (final BcIdentifier bcIdentifier : bcDisabler.getSupportedBc()) {
@@ -161,6 +166,7 @@ public class RowResponseService {
 			return null;
 		}
 		FieldDTO fieldDTO = new FieldDTO(field);
+		fieldDTO.setSortable(properties.isSortEnabledDefault());
 		try {
 			switch (type) {
 				case META_NEW:

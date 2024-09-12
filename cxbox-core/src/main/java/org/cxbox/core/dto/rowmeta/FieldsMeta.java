@@ -148,14 +148,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.ifPresent(fieldDTO -> fieldDTO.setEphemeral(true)));
 	}
 
-	@SafeVarargs
-	public final void setHidden(DtoField<? super T, ?>... fields) {
-		Stream.of(fields).forEach(
-				field -> Optional.ofNullable(field).map(
-								dtoField -> this.fields.get(dtoField.getName()))
-						.ifPresent(fieldDTO -> fieldDTO.setHidden(true)));
-	}
-
 	public final void setFilterValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
@@ -174,6 +166,21 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 					fieldDTO.setFileAccept(null);
 					fieldDTO.setFileAccept(String.join(",", accept));
 				});
+	}
+
+	/**
+	 * @param fields  fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
+	 * <ul>
+	 *     <li>See additional abilities for sorting  (how to set <code>default sort order</code> and so on) in this java doc
+	 *     {@link org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties#sortEnabledDefault}</li>
+	 * </ul>
+	 */
+	@SafeVarargs
+	public final void enableSort(DtoField<? super T, ?>... fields) {
+		Stream.of(fields).forEach(
+				field -> Optional.ofNullable(field).map(
+								dtoField -> this.fields.get(dtoField.getName()))
+						.ifPresent(fieldDTO -> fieldDTO.setSortable(true)));
 	}
 
 }
