@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum WidgetTypeFamily {
 
 	INFO("Info"),
-	FROM("From"),
+	FORM("Form"),
 	LIST("List"),
 	GROUPING_HIERARCHY("GroupingHierarchy"),
 	STATS_BLOCK("StatsBlock"),
