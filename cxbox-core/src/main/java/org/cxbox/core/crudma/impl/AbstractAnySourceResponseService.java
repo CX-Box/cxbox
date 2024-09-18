@@ -109,7 +109,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	private APIProperties apiProperties;
 
 	@Autowired
-	private ParentDtoFirstLevelCache<?> parentDtoFirstLevelCache;
+	private ParentDtoFirstLevelCache parentDtoFirstLevelCache;
 
 	@Override
 	public AnySourceBaseDAO<E> getBaseDao() {
@@ -439,21 +439,18 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	}
 
 	/**
-	 * see org.cxbox.core.crudma.impl.AbstractResponseService#getParentField(org.cxbox.constgen.DtoField, org.cxbox.core.crudma.bc.BusinessComponent)
+	 * see {@link org.cxbox.core.crudma.impl.AbstractResponseService#getParentField(org.cxbox.constgen.DtoField, org.cxbox.core.crudma.bc.BusinessComponent)}
+	 * <br>
 	 * Note! AnySource api do not restore bc state with insert/update to DB and 'rollback'/'commit' changes if user 'did not complete'/'completed' process,
 	 * but restores state in fully independent custom cache, so all any source bc's can be fetched with baseDao.getById()
-	 * -----------
+	 * <br>
+	 * <br>
 	 * But you can use AnySource service as child and VersionAware as parent,
 	 * so when CREATING ROW directly in child popup, then parent can again be fetched only
-	 * with this method see org.cxbox.core.crudma.impl.AbstractResponseService#getParentField(org.cxbox.constgen.DtoField, org.cxbox.core.crudma.bc.BusinessComponent)
+	 * with this method see {@link org.cxbox.core.crudma.impl.AbstractResponseService#getParentField(org.cxbox.constgen.DtoField, org.cxbox.core.crudma.bc.BusinessComponent)})
 	 */
 	protected <P extends DataResponseDTO, F> F getParentField(DtoField<P, F> dtoField, BusinessComponent bc) {
-		Optional<?> parent = parentDtoFirstLevelCache.getCache().get(bc.getParentName());
-		if (parent == null) {
-			return null;
-		}
-		P parentDto = (P) parent.orElse(null);
-		return Optional.ofNullable(parentDto).map(dtoField.getGetter()).orElse(null);
+		return parentDtoFirstLevelCache.getParentField(dtoField, bc);
 	}
 
 	protected final E isExist(final BusinessComponent bc) {
