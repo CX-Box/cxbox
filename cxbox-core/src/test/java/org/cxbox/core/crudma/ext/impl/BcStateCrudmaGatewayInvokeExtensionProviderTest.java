@@ -46,6 +46,7 @@ import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.dto.rowmeta.RowMetaDTO;
+import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.ResponseFactory;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.test.util.TestResponseDto;
@@ -70,6 +71,9 @@ class BcStateCrudmaGatewayInvokeExtensionProviderTest {
 
 	@Mock
 	BcStateAware bcStateAware;
+
+	@Mock
+	ParentDtoFirstLevelCache parentDtoFirstLevelCache;
 
 	private BcDescription bcDescription;
 

@@ -112,7 +112,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	private DTOMapper dtoMapper;
 
 	@Autowired
-	private ParentDtoFirstLevelCache<?> parentDtoFirstLevelCache;
+	private ParentDtoFirstLevelCache parentDtoFirstLevelCache;
 
 
 	public static <T> T cast(Object o, Class<T> clazz) {
@@ -505,25 +505,25 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param <F> parent DTO field type
 	 * @return parent DTO
 	 * In this DTO you'll get parent state including not persisted yet changes. Cases:
+	 * <br>
 	 * 1) parent is saved to persistence storage - it will be mapped to DTO with entityToDTO method and returned as DTO
+	 * <br>
 	 * 2) parent is saved to persistence storage and have new not yet persisted changes that backend already knows about (for example parent have force active field that was changed and this change is stored in BcStateAware).
 	 * In this case entity will be fetched from persistence storage and then changes from BcStateAware will be applied with doUpdate method, so you'll get parent DTO with ALL CHANGES backend already knows about
+	 * <br>
 	 * 3) parent is in creation process and have new not yet persisted changes - result will be same as in 2), e.g. you'll get parent DTO with ALL CHANGES backend already knows about
-	 * -----------
+	 * <br>
+	 * <br>
 	 * CREATE new row directly in popup:
 	 * One MUST use this method, when service is used to CREATE new row directly in popup, because in this case the only way to get data from parent is this method
 	 * Why behaviour is different? Why you cannot not get parent with repository findById(bc.getParentIdAsLong())? Because commiting changes to new child in popup, would have to commit not yet persisted changes in parent TOO which is wrong and breaks parent creation cancellation, so parent not persisted changes is not available in DB at all when child action is not readonly (e.g. changes will not be rolled back)!
-	 * -----------
+	 * <br>
+	 * <br>
 	 * Other, then CREATE new row directly in popup cases:
 	 * Fill free to use this method, or as usually get parent with repository findById(bc.getParentIdAsLong())
 	 */
 	protected <P extends DataResponseDTO, F> F getParentField(DtoField<P, F> dtoField, BusinessComponent bc) {
-		Optional<?> parent = parentDtoFirstLevelCache.getCache().get(bc.getParentName());
-		if (parent == null) {
-			return null;
-		}
-		P parentDto = (P) parent.orElse(null);
-		return Optional.ofNullable(parentDto).map(dtoField.getGetter()).orElse(null);
+		return parentDtoFirstLevelCache.getParentField(dtoField, bc);
 	}
 
 	protected final E isExist(final Long id) {

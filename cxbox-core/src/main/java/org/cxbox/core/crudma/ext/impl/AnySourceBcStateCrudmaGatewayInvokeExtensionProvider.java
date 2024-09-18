@@ -16,13 +16,10 @@
 
 package org.cxbox.core.crudma.ext.impl;
 
-import static org.cxbox.core.crudma.CrudmaActionType.INVOKE;
-import static org.cxbox.core.crudma.CrudmaActionType.PREVIEW;
-import static org.cxbox.core.crudma.CrudmaActionType.UPDATE;
+import static org.cxbox.core.crudma.CrudmaActionType.*;
 import static org.cxbox.core.dto.DrillDownType.INNER;
 import static org.cxbox.core.dto.rowmeta.PostAction.BasePostActionType.DRILL_DOWN;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -32,9 +29,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
-import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
-import org.cxbox.core.controller.BCFactory;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
 import org.cxbox.core.crudma.CrudmaActionType;
@@ -46,11 +41,7 @@ import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.crudma.ext.CrudmaGatewayInvokeExtensionProvider;
 import org.cxbox.core.crudma.state.BcState;
 import org.cxbox.core.crudma.state.BcStateAware;
-import org.cxbox.core.dto.rowmeta.ActionResultDTO;
-import org.cxbox.core.dto.rowmeta.ActionType;
-import org.cxbox.core.dto.rowmeta.ActionsDTO;
-import org.cxbox.core.dto.rowmeta.MetaDTO;
-import org.cxbox.core.dto.rowmeta.PostAction;
+import org.cxbox.core.dto.rowmeta.*;
 import org.cxbox.core.dto.rowmeta.PostAction.BasePostActionField;
 import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.AnySourceResponseFactory;
@@ -67,15 +58,35 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 
 	private final BcRegistry bcRegistry;
 
-	private final BCFactory bcFactory;
-
-	private final TransactionService transactionService;
-
 	private final AnySourceResponseFactory respFactory;
 
 	private final BcStateAware bcStateAware;
 
 	private final ParentDtoFirstLevelCache parentDtoFirstLevelCache;
+
+	private static InterimResult castToInterimResultOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+		if (invokeResult instanceof InterimResult) {
+			return (InterimResult) invokeResult;
+		}
+		throw new IllegalArgumentException(
+				"invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
+	}
+
+	private static DataResponseDTO castToDataResponseDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+		if (invokeResult instanceof DataResponseDTO) {
+			return (DataResponseDTO) invokeResult;
+		}
+		throw new IllegalArgumentException(
+				"invokeResult is expected to be InterimResult for DataResponseDTO = " + actionType);
+	}
+
+	private static MetaDTO castToMetaDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
+		if (invokeResult instanceof MetaDTO) {
+			return (MetaDTO) invokeResult;
+		}
+		throw new IllegalArgumentException(
+				"invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
+	}
 
 	@Override
 	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker,
@@ -87,8 +98,7 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 				BusinessComponent bc = crudmaAction.getBc();
 				CrudmaActionType action = crudmaAction.getActionType();
 				if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.INVOKE) &&
-						Objects.equals(ActionType.CANCEL_CREATE.getType(), crudmaAction.getName())
-				) {
+						Objects.equals(ActionType.CANCEL_CREATE.getType(), crudmaAction.getName())) {
 					bcStateAware.clear(bc);
 					BcDescription description = bc.getDescription();
 					if (description instanceof AnySourceBcDescription) {
@@ -106,7 +116,6 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 
 	private void afterInvoke(CrudmaAction crudmaAction, boolean readOnly, BusinessComponent bc, CrudmaActionType action,
 			Object invokeResult) {
-
 		if (action != null && !readOnly) {
 			bcStateAware.clear(bc);
 		}
@@ -126,15 +135,12 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 			InterimResult result = castToInterimResultOrElseThrow(invokeResult, crudmaAction.getActionType());
 			boolean isRecordPersisted = bcStateAware.isPersisted(bc);
 			bcStateAware.clear(bc);
-			bcStateAware.set(
-					result.getBc(),
-					new BcState(
-							result.getDto(),
-							isRecordPersisted,
-							Optional.ofNullable(result.getBc()).map(BusinessComponent::getParameters)
-									.map(par -> par.getParameter("_action")).orElse((ActionType.CREATE.getType()))
-					)
-			);
+			bcStateAware.set(result.getBc(), new BcState(
+					result.getDto(),
+					isRecordPersisted,
+					Optional.ofNullable(result.getBc()).map(BusinessComponent::getParameters)
+							.map(par -> par.getParameter("_action")).orElse((ActionType.CREATE.getType()))
+			));
 			if (!bcStateAware.isPersisted(bc)) {
 				addActionCancel(bc, result.getMeta().getRow().getActions());
 			}
@@ -167,30 +173,6 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 		}
 	}
 
-	private static InterimResult castToInterimResultOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
-		if (invokeResult instanceof InterimResult) {
-			return (InterimResult) invokeResult;
-		}
-		throw new IllegalArgumentException(
-				"invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
-	}
-
-	private static DataResponseDTO castToDataResponseDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
-		if (invokeResult instanceof DataResponseDTO) {
-			return (DataResponseDTO) invokeResult;
-		}
-		throw new IllegalArgumentException(
-				"invokeResult is expected to be InterimResult for DataResponseDTO = " + actionType);
-	}
-
-	private static MetaDTO castToMetaDTOOrElseThrow(Object invokeResult, CrudmaActionType actionType) {
-		if (invokeResult instanceof MetaDTO) {
-			return (MetaDTO) invokeResult;
-		}
-		throw new IllegalArgumentException(
-				"invokeResult is expected to be InterimResult for CrudmaActionType = " + actionType);
-	}
-
 	private BusinessComponent getBcForState(final BusinessComponent bc, final List<PostAction> postActions) {
 		for (final PostAction postAction : postActions) {
 			if (DRILL_DOWN.equals(postAction.getAttribute(BasePostActionField.TYPE)) && INNER.getValue()
@@ -209,71 +191,24 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 	}
 
 	private void restoreBcState(final BusinessComponent currentBc, final CrudmaActionType action, boolean readOnly) {
-		for (final BusinessComponent bc : Arrays.asList(getParentBcForRestore(currentBc), currentBc)) {
-			if (bc == null) {
-				continue;
-			}
-			final BcState state = bcStateAware.getState(bc);
-			if (state == null) {
-				continue;
-			}
-			if (!(bc.getDescription() instanceof AnySourceBcDescription)) {
-				continue;
-			}
-			if (state.getPendingAction() != null) {
-				QueryParameters originalParameters = bc.getParameters();
-				originalParameters.setParameter("_action", state.getPendingAction());
-				bc.setParameters(originalParameters);
-			}
-			final AnySourceResponseService<?, ?> responseService = getResponseService(bc);
-			if (currentBc.equals(bc)) { //current bc
-				if (!bcStateAware.isPersisted(bc)) {
-					responseService.createEntity(bc);
+		if ((currentBc.getDescription() instanceof AnySourceBcDescription)) {
+			parentDtoFirstLevelCache.restoreParentBc(readOnly, currentBc);
+			final BcState state = bcStateAware.getState(currentBc);
+			if (state != null) {
+				if (state.getPendingAction() != null) {
+					QueryParameters originalParameters = currentBc.getParameters();
+					originalParameters.setParameter("_action", state.getPendingAction());
+					currentBc.setParameters(originalParameters);
 				}
-
+				final AnySourceResponseService<?, ?> responseService = getResponseService(currentBc);
+				if (!bcStateAware.isPersisted(currentBc)) {
+					responseService.createEntity(currentBc);
+				}
 				if (state.getDto() != null && !EnumSet.of(UPDATE, PREVIEW, INVOKE).contains(action)) {
-					responseService.updateEntity(bc, state.getDto());
+					responseService.updateEntity(currentBc, state.getDto());
 				}
-			} else { //parent
-				DataResponseDTO parentDto = null;
-				if (readOnly) { //restore parent for read only childes operations. For example, we create new task and read reviewers from picklist (that is child for task.
-
-					if (!bcStateAware.isPersisted(bc)) {
-						parentDto = responseService.createEntity(bc).getRecord();
-					}
-
-					if (state.getDto() != null) { //we always restore parent
-						parentDto = responseService.updateEntity(bc, state.getDto()).getRecord();
-					}
-				} else { //restore parent for non read only childes. For example, we create new task and read reviewers from picklist AND then CREATE new reviewer in popup.
-					// So in this case we roll back parent right here and recommend users to use VersionAware.getParentDTO() instead of finding parent in DB by id
-					parentDto = transactionService.invokeInNewRollbackOnlyTx(() -> {
-						DataResponseDTO result = null;
-						if (!bcStateAware.isPersisted(bc)) {
-							result = responseService.createEntity(bc).getRecord();
-						}
-
-						if (state.getDto() != null) { //we always restore parent
-							result = responseService.updateEntity(bc, state.getDto()).getRecord();
-						}
-						return result;
-					});
-				}
-				parentDtoFirstLevelCache.getCache().put(bc.getName(), Optional.ofNullable(parentDto));
 			}
 		}
-	}
-
-	private BusinessComponent getParentBcForRestore(final BusinessComponent currentBc) {
-		if (currentBc.getHierarchy() == null || currentBc.getHierarchy().getParent() == null) {
-			return null;
-		}
-		return bcFactory.getBusinessComponent(
-				currentBc.getHierarchy().getParent(),
-				QueryParameters.onlyDatesQueryParameters(
-						currentBc.getParameters()
-				)
-		);
 	}
 
 	private AnySourceResponseService<?, ?> getResponseService(BusinessComponent bc) {
