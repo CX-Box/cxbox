@@ -190,12 +190,20 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 		return this;
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#action(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionsBuilder<T> add(Boolean updateRequired) {
 		ActionDescription<T> actionDescription = this.build(updateRequired);
 		this.actionsBuilder.addAction(actionDescription);
 		return this.actionsBuilder;
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#action(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionsBuilder<T> add() {
 		return add(null);
 	}
