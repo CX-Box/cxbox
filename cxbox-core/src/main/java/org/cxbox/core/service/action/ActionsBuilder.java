@@ -20,6 +20,8 @@ import static org.cxbox.core.service.action.ActionAvailableChecker.ALWAYS_FALSE;
 import static org.cxbox.core.service.action.ActionAvailableChecker.ALWAYS_TRUE;
 import static java.util.Objects.nonNull;
 
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
 import java.util.ArrayList;
@@ -45,23 +47,55 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 		return this;
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#action(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> newAction() {
 		actionDescriptionBuilder = ActionDescription.<T>builder().withBuilder(this);
 		actionDescriptionBuilder.available(ALWAYS_TRUE);
 		return actionDescriptionBuilder;
 	}
 
+	public ActionsBuilder<T> action(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+		var lambdaActionBuilder = ActionDescription.<T>builder().withBuilder(this);
+		descriptionBuilderConsumer.apply(lambdaActionBuilder);
+		var actionDescription = lambdaActionBuilder.build(null);
+		addAction(actionDescription);
+		return this;
+	}
+
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#action(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> action(String type, String actionName) {
 		actionDescriptionBuilder = newAction();
 		actionDescriptionBuilder.action(type, actionName);
 		return actionDescriptionBuilder;
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#action(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> action(ActionType actionType) {
 		actionDescriptionBuilder = newAction().action(actionType);
 		return actionDescriptionBuilder;
 	}
 
+	public ActionsBuilder<T> create(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+		var lambdaActionBuilder = create();
+		descriptionBuilderConsumer.apply(lambdaActionBuilder);
+		var actionDescription = lambdaActionBuilder.build(null);
+		addAction(actionDescription);
+		return this;
+	}
+
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#create(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> create() {
 		actionDescriptionBuilder = action(ActionType.CREATE)
 				.scope(ActionScope.BC)
@@ -69,11 +103,35 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 		return actionDescriptionBuilder;
 	}
 
+	public ActionsBuilder<T> save(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+		var lambdaActionBuilder = save();
+		descriptionBuilderConsumer.apply(lambdaActionBuilder);
+		var actionDescription = lambdaActionBuilder.build(null);
+		addAction(actionDescription);
+		return this;
+	}
+
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#save(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> save() {
 		actionDescriptionBuilder = action(ActionType.SAVE);
 		return actionDescriptionBuilder;
 	}
 
+	public ActionsBuilder<T> cancelCreate(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+		var lambdaActionBuilder = cancelCreate();
+		descriptionBuilderConsumer.apply(lambdaActionBuilder);
+		var actionDescription = lambdaActionBuilder.build(null);
+		addAction(actionDescription);
+		return this;
+	}
+
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#cancelCreate(java.util.function.UnaryOperator)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> cancelCreate() {
 		// по-умолчанию недоступно, а решается в org.cxbox.core.crudma.CrudmaGateway
 		actionDescriptionBuilder = action(ActionType.CANCEL_CREATE).available(ALWAYS_FALSE)
@@ -81,12 +139,36 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 		return actionDescriptionBuilder;
 	}
 
+	public ActionsBuilder<T> associate(Consumer<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+		var lambdaActionBuilder = associate();
+		descriptionBuilderConsumer.accept(lambdaActionBuilder);
+		var actionDescription = lambdaActionBuilder.build(null);
+		addAction(actionDescription);
+		return this;
+	}
+
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#associate(java.util.function.Consumer)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> associate() {
 		actionDescriptionBuilder = action(ActionType.ASSOCIATE)
 				.scope(ActionScope.BC);
 		return actionDescriptionBuilder;
 	}
 
+	public ActionsBuilder<T> delete(Consumer<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+		var lambdaActionBuilder = delete();
+		descriptionBuilderConsumer.accept(lambdaActionBuilder);
+		var actionDescription = lambdaActionBuilder.build(null);
+		addAction(actionDescription);
+		return this;
+	}
+
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#delete(java.util.function.Consumer)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionDescriptionBuilder<T> delete() {
 		actionDescriptionBuilder = action(ActionType.DELETE)
 				.withoutAutoSaveBefore();
@@ -101,6 +183,10 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 		return this;
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M7 use {@link ActionDescriptionBuilder#withIcon(ActionIconSpecifier, boolean)} instead
+	 */
+	@Deprecated(since = "4.0.0-M7")
 	public ActionsBuilder<T> withIcon(ActionIconSpecifier icon, boolean showOnlyIcon) {
 		this.actionGroupDefinitions.get(actionGroupDefinitions.size() - 1).setIconCode(icon);
 		this.actionGroupDefinitions.get(actionGroupDefinitions.size() - 1).setShowOnlyIcon(showOnlyIcon);
