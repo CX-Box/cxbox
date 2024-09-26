@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.metahotreload.repository;
 
+import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -59,8 +60,15 @@ public class MetaRepository {
 		return metaResourceReaderService.getBcs();
 	}
 
-	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities) {
-		jpaDao.delete(Responsibilities.class, (root, query, cb) -> cb.and());
+	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities, List<Long> ids) {
+
+		jpaDao.delete(Responsibilities.class, (root, query, cb) -> ids.isEmpty()
+				? cb.and()
+				: cb.or(
+						ids.stream()
+								.map(id -> cb.notEqual(root.get("id"), id))
+								.toArray(Predicate[]::new)
+				));
 		jpaDao.saveAll(responsibilities);
 	}
 
@@ -143,6 +151,14 @@ public class MetaRepository {
 		return screens.stream()
 				.map(screenSourceDto -> screenMapper.map(screenSourceDto, viewNameToView, bcProps, filterGroups))
 				.collect(Collectors.toMap(ScreenDTO::getName, e -> e));
+	}
+
+	public List<Responsibilities> getAllView() {
+		return jpaDao.getList(
+				Responsibilities.class,
+				(root, cq, cb) ->
+						cb.equal(root.get(Responsibilities_.responsibilityType), ResponsibilityType.VIEW)
+		);
 	}
 
 }
