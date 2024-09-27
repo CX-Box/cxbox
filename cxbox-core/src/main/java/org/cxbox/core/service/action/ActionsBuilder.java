@@ -20,7 +20,6 @@ import static org.cxbox.core.service.action.ActionAvailableChecker.ALWAYS_FALSE;
 import static org.cxbox.core.service.action.ActionAvailableChecker.ALWAYS_TRUE;
 import static java.util.Objects.nonNull;
 
-import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
@@ -139,9 +138,9 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 		return actionDescriptionBuilder;
 	}
 
-	public ActionsBuilder<T> associate(Consumer<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+	public ActionsBuilder<T> associate(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = associate();
-		descriptionBuilderConsumer.accept(lambdaActionBuilder);
+		descriptionBuilderConsumer.apply(lambdaActionBuilder);
 		var actionDescription = lambdaActionBuilder.build(null);
 		addAction(actionDescription);
 		return this;
@@ -157,9 +156,9 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 		return actionDescriptionBuilder;
 	}
 
-	public ActionsBuilder<T> delete(Consumer<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
+	public ActionsBuilder<T> delete(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = delete();
-		descriptionBuilderConsumer.accept(lambdaActionBuilder);
+		descriptionBuilderConsumer.apply(lambdaActionBuilder);
 		var actionDescription = lambdaActionBuilder.build(null);
 		addAction(actionDescription);
 		return this;
