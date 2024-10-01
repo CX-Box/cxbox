@@ -16,15 +16,16 @@
 
 package org.cxbox.core.crudma.bc;
 
-import org.cxbox.api.data.BcIdentifier;
-import org.cxbox.core.controller.param.QueryParameters;
-import org.cxbox.core.crudma.bc.impl.BcDescription;
 import java.util.List;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.cxbox.api.data.BcIdentifier;
+import org.cxbox.core.controller.param.QueryParameters;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
+import org.cxbox.core.exception.EntityNotFoundException;
 
 @Getter
 @ToString
@@ -77,7 +78,11 @@ public class BusinessComponent implements BcIdentifier {
 	}
 
 	public Long getParentIdAsLong() {
-		return getAsLong(parentId);
+		try {
+			return getAsLong(parentId);
+		} catch (NumberFormatException numberFormatException) {
+			throw new EntityNotFoundException();
+		}
 	}
 
 	private Long getAsLong(String id) {
