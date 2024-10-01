@@ -1,5 +1,5 @@
 <!--
-  ~ © OOO "SI IKS LAB", 2022-2023
+  ~ © OOO "SI IKS LAB", 2022-2024
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
   -->
 
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="cxbox_clean_install_DskipTests_T1C" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+  <configuration default="false" name="clean_install_fast_local" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
       <option name="myRunnerParameters">
         <MavenRunnerParameters>
+          <option name="cmdOptions" />
           <option name="profiles">
             <set />
           </option>
@@ -28,13 +29,21 @@
             <list>
               <option value="clean" />
               <option value="install" />
-              <option value="-DskipTests" />
-              <option value="-T1C" />
+              <option value="-Dmaven.test.skip=true" />
+              <option value="-Dmaven.site.skip=true" />
+              <option value="-Dmaven.javadoc.skip=true" />
+              <option value="-Dskip.checkstyle=true" />
+              <option value="-Dmaven.build.cache.lazyRestore=true" />
+              <option value="-T2C" />
             </list>
           </option>
+          <option name="multimoduleDir" />
           <option name="pomFileName" />
           <option name="profilesMap">
             <map />
+          </option>
+          <option name="projectsCmdOptionValues">
+            <list />
           </option>
           <option name="resolveToWorkspace" value="false" />
           <option name="workingDirPath" value="$PROJECT_DIR$" />
