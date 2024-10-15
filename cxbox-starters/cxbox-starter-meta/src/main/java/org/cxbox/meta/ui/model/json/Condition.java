@@ -26,18 +26,33 @@ import lombok.Setter;
 @Setter
 public class Condition {
 
+	private String bcName;
+
+	private IConditionFieldEqualityParams params;
+	/**
+	 * @deprecated Since 4.0.0-M9 no use
+	 */
+	@Deprecated(since = "4.0.0-M9")
 	private String key;
 
+	/**
+	 * @deprecated Since 4.0.0-M9 no use
+	 */
+	@Deprecated(since = "4.0.0-M9")
 	private Long sequence;
 
+	/**
+	 * @deprecated Since 4.0.0-M9 no use
+	 */
+	@Deprecated(since = "4.0.0-M9")
 	@JsonProperty(value = "default")
 	private Boolean isDefault;
 
-	private IConditionFieldEqualityParams params;
-
+	/**
+	 * @deprecated Since 4.0.0-M9 no use
+	 */
+	@Deprecated(since = "4.0.0-M9")
 	private List<IConditionFieldEqualityParams> multipleParams;
-
-	private String bcName;
 
 	@Getter
 	@Setter
@@ -47,6 +62,10 @@ public class Condition {
 
 		private JsonNode value;
 
+		/**
+		 * @deprecated Since 4.0.0-M9 no use
+		 */
+		@Deprecated(since = "4.0.0-M9")
 		private String valueList;
 
 	}
