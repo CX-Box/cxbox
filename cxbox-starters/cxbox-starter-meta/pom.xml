@@ -19,13 +19,13 @@
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>4.0.0-M9</version>
+    <version>4.0.0-M10-SNAPSHOT</version>
     <relativePath>../../cxbox-base/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-starter-meta</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M9</version>
+  <version>4.0.0-M10-SNAPSHOT</version>
   <name>IO Cxbox Starter - meta</name>
 
   <properties>
