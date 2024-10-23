@@ -16,9 +16,15 @@
 
 package org.cxbox.core.service;
 
+import static org.cxbox.core.util.SpringBeanUtils.getBean;
+
+import java.util.List;
+import java.util.Optional;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.core.crudma.CrudmaActionType;
+import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
@@ -28,8 +34,7 @@ import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.cxbox.model.core.entity.BaseEntity;
-
-import java.util.List;
+import org.springframework.web.context.request.RequestContextHolder;
 
 
 public interface ResponseService<T extends DataResponseDTO, E extends BaseEntity> {
@@ -192,5 +197,23 @@ public interface ResponseService<T extends DataResponseDTO, E extends BaseEntity
 	 * @param bc businessComponent
 	 */
 	boolean isDeferredCreationSupported(BusinessComponent bc);
+
+	default CrudmaActionType getActionType() {
+		if (RequestContextHolder.getRequestAttributes() != null) {
+			return Optional.ofNullable(getBean(PlatformRequest.class))
+					.map(PlatformRequest::getCrudmaActionType)
+					.orElse(null);
+		}
+		return null;
+	}
+
+	default BusinessComponent getBc() {
+		if (RequestContextHolder.getRequestAttributes() != null) {
+			return Optional.ofNullable(getBean(PlatformRequest.class))
+					.map(PlatformRequest::getBc)
+					.orElse(null);
+		}
+		return null;
+	}
 
 }
