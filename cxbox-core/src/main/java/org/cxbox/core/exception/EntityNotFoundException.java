@@ -31,7 +31,16 @@ public class EntityNotFoundException extends BusinessException {
 		addPopup(buildPopup(type, id));
 	}
 
+	public EntityNotFoundException(String type, String id) {
+		super();
+		addPopup(buildPopup(type, id));
+	}
+
 	private String buildPopup(String type, long id) {
+		return errorMessage("error.object_not_found_full", type, id);
+	}
+
+	private String buildPopup(String type, String id) {
 		return errorMessage("error.object_not_found_full", type, id);
 	}
 

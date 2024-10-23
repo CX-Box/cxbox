@@ -25,7 +25,6 @@ import lombok.ToString;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
-import org.cxbox.core.exception.EntityNotFoundException;
 
 @Getter
 @ToString
@@ -78,11 +77,7 @@ public class BusinessComponent implements BcIdentifier {
 	}
 
 	public Long getParentIdAsLong() {
-		try {
-			return getAsLong(parentId);
-		} catch (NumberFormatException numberFormatException) {
-			throw new EntityNotFoundException();
-		}
+		return getAsLong(parentId);
 	}
 
 	private Long getAsLong(String id) {

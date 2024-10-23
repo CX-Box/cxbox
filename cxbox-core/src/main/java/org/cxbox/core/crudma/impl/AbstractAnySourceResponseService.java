@@ -456,7 +456,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	protected final E isExist(final BusinessComponent bc) {
 		E entity = getBaseDao().getById(bc);
 		if (entity == null) {
-			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getIdAsLong());
+			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getId());
 		}
 		return entity;
 	}
