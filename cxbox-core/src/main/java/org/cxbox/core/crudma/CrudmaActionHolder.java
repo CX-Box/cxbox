@@ -18,8 +18,6 @@ package org.cxbox.core.crudma;
 
 import static org.cxbox.core.util.SpringBeanUtils.getBean;
 
-import org.cxbox.core.controller.param.QueryParameters;
-import org.cxbox.core.crudma.bc.BusinessComponent;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.Getter;
@@ -27,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.cxbox.core.controller.param.QueryParameters;
+import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -34,7 +34,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 
 @Component
 @RequestScope
-public class CrudmaActionHolder {
+public class CrudmaActionHolder implements PlatformRequest {
 
 	private CrudmaAction crudmaAction;
 
@@ -59,6 +59,18 @@ public class CrudmaActionHolder {
 				.map(CrudmaAction::getBc)
 				.map(BusinessComponent::getParameters)
 				.orElse(QueryParameters.emptyQueryParameters());
+	}
+
+	@Override
+	public BusinessComponent getBc() {
+		return Optional.ofNullable(getCrudmaAction())
+				.map(CrudmaAction::getBc)
+				.orElse(null);
+	}
+
+	@Override
+	public CrudmaActionType getCrudmaActionType() {
+		return getActionType();
 	}
 
 	public CrudmaAction getAction() {
@@ -113,7 +125,7 @@ public class CrudmaActionHolder {
 		CrudmaActionHolder.CrudmaAction setOriginalActionType(String originalActionType);
 
 	}
-	
+
 	@RequiredArgsConstructor
 	@Accessors(chain = true)
 	@ToString

@@ -20,21 +20,30 @@ import java.util.Collection;
 import java.util.List;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.constgen.DtoField;
+import org.cxbox.core.crudma.CrudmaActionType;
+import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.ExtremeBcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
+import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
-
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class FieldMetaBuilder<T extends DataResponseDTO> {
+
+	@Autowired
+	private PlatformRequest platformRequest;
+
+	@Autowired
+	private ParentDtoFirstLevelCache parentDtoFirstLevelCache;
 
 	/**
 	 * <ui>
 	 * <p>
-	 * 	This method configures form/list fields with UI changes, taking into account the information in the row:
-	 * 	</p>
+	 * This method configures form/list fields with UI changes, taking into account the information in the row:
+	 * </p>
 	 * <li> Enabling field editing  - the field becomes editable (editing is available in the form and in the list by double-clicking on the field) {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setEnabled(DtoField[])} #}</li>
 	 * <li> Requiring the field - the field becomes mandatory (if the form field is not filled in, an error message will appear) {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setRequired(DtoField[])} </li>
 	 * <li> Adds a drop-down list to the Radio/Dictionary field of the form with values from the enum that are suitable only for enum fields {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setEnumValues(DtoField, Enum[])}</li>
@@ -71,6 +80,19 @@ public abstract class FieldMetaBuilder<T extends DataResponseDTO> {
 
 	public void buildExtremeRowDependentMeta(RowDependentFieldsMeta<T> fields, ExtremeBcDescription bcDescription,
 			Long id, Long parentId) {
+	}
+
+	public CrudmaActionType getActionType() {
+		return platformRequest.getCrudmaActionType();
+	}
+
+	public BusinessComponent getBc() {
+		return platformRequest.getBc();
+	}
+
+
+	public <P extends DataResponseDTO, F> F getParentField(DtoField<P, F> dtoField, BusinessComponent bc) {
+		return parentDtoFirstLevelCache.getParentField(dtoField, bc);
 	}
 
 	/**
