@@ -16,15 +16,15 @@
 
 package org.cxbox.core.crudma.bc;
 
-import org.cxbox.api.data.BcIdentifier;
-import org.cxbox.core.controller.param.QueryParameters;
-import org.cxbox.core.crudma.bc.impl.BcDescription;
 import java.util.List;
 import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.cxbox.api.data.BcIdentifier;
+import org.cxbox.core.controller.param.QueryParameters;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 
 @Getter
 @ToString

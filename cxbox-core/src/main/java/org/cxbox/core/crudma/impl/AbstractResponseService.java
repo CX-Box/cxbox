@@ -210,7 +210,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, getOneSpecification);*/
 		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, (root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
 		if (entity == null) {
-			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getIdAsLong());
+			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getId());
 		}
 		return entity;
 	}
