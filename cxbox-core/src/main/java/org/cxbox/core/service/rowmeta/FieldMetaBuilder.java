@@ -42,8 +42,8 @@ public abstract class FieldMetaBuilder<T extends DataResponseDTO> {
 	/**
 	 * <ui>
 	 * <p>
-	 * This method configures form/list fields with UI changes, taking into account the information in the row:
-	 * </p>
+	 *  This method configures form/list fields with UI changes, taking into account the information in the row:
+	 *  </p>
 	 * <li> Enabling field editing  - the field becomes editable (editing is available in the form and in the list by double-clicking on the field) {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setEnabled(DtoField[])} #}</li>
 	 * <li> Requiring the field - the field becomes mandatory (if the form field is not filled in, an error message will appear) {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setRequired(DtoField[])} </li>
 	 * <li> Adds a drop-down list to the Radio/Dictionary field of the form with values from the enum that are suitable only for enum fields {@link org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta#setEnumValues(DtoField, Enum[])}</li>

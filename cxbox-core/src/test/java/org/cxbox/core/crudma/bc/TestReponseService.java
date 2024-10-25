@@ -18,6 +18,7 @@ package org.cxbox.core.crudma.bc;
 
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.core.crudma.CrudmaActionType;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.AssociateResultDTO;
@@ -130,6 +131,16 @@ public class TestReponseService implements ResponseService {
 
 	@Override
 	public AssociateResultDTO associate(List data, BusinessComponent bc) {
+		return null;
+	}
+
+	@Override
+	public CrudmaActionType getActionType() {
+		return null;
+	}
+
+	@Override
+	public BusinessComponent getBc() {
 		return null;
 	}
 

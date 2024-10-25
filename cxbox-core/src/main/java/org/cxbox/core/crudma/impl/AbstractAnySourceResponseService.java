@@ -40,6 +40,8 @@ import org.cxbox.api.exception.ServerException;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.config.properties.APIProperties;
+import org.cxbox.core.crudma.CrudmaActionType;
+import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceCrudmaImplementation;
 import org.cxbox.core.crudma.impl.inner.AnySourceCrudmaService;
@@ -110,6 +112,9 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Autowired
 	private ParentDtoFirstLevelCache parentDtoFirstLevelCache;
+
+	@Autowired
+	private PlatformRequest platformRequest;
 
 	@Override
 	public AnySourceBaseDAO<E> getBaseDao() {
@@ -496,6 +501,16 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	protected AssociateResultDTO doAssociate(List<AssociateDTO> data, BusinessComponent bc) {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public CrudmaActionType getActionType() {
+		return platformRequest.getCrudmaActionType();
+	}
+
+	@Override
+	public BusinessComponent getBc() {
+		return platformRequest.getBc();
 	}
 
 }
