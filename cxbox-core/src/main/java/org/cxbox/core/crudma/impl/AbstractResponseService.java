@@ -44,6 +44,8 @@ import org.cxbox.api.exception.ServerException;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.controller.param.QueryParameters;
+import org.cxbox.core.crudma.CrudmaActionType;
+import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dao.BaseDAO;
 import org.cxbox.core.dto.PreInvokeEvent;
@@ -97,6 +99,9 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	@Autowired
 	private BcSpecificationBuilder specificationBuilder;
+
+	@Autowired
+	private PlatformRequest platformRequest;
 
 	protected Class<? extends PreActionConditionHolderDataResponse<T>> preActionConditionHolderDataResponse = null;
 
@@ -573,6 +578,16 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	protected Specification<E> getSpecification(BusinessComponent bc) {
 		return trueSpecification();
+	}
+
+	@Override
+	public CrudmaActionType getActionType() {
+		return platformRequest.getCrudmaActionType();
+	}
+
+	@Override
+	public BusinessComponent getBc() {
+		return platformRequest.getBc();
 	}
 
 }

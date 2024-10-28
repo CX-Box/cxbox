@@ -20,6 +20,7 @@ import java.util.List;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.core.crudma.CrudmaActionType;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceResponseServiceMarker;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
@@ -201,4 +202,7 @@ public interface AnySourceResponseService<T extends DataResponseDTO, E> extends 
 
 	AnySourceBaseDAO<E> getBaseDao();
 
+	CrudmaActionType getActionType();
+
+	BusinessComponent getBc();
 }
