@@ -152,6 +152,11 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.ifPresent(fieldDTO -> fieldDTO.setEphemeral(true)));
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M10
+	 * use {@link FieldsMeta#setAllValuesAddIconsLOV}
+	 */
+	@Deprecated(since = "4.0.0-M10")
 	public final void setFilterValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
@@ -163,6 +168,43 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 									.setIconWithValue(type.lookupValue(key), value, true));
 				});
 	}
+
+	/**
+	 * Method for LOV
+	 * @param field dto field
+	 * @param type dictionary type
+	 * @param valueIconMap <LOV, IconCode> assign an icon to each value based on the reference LOV.
+	*/
+	public final void setAllValuesAddIconsLOV(DtoField<? super T, ?> field, IDictionaryType type,
+			Map<LOV, IconCode> valueIconMap) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.setDictionaryName(type.getName());
+					valueIconMap
+							.forEach((key, value) -> fieldDTO
+									.setIconAllValue(type.lookupValue(key), value));
+				});
+	}
+
+	/**
+	 * Method for Enum
+	 * @param field dto field
+	 * @param type dictionary type
+	 * @param valueIconMap <extends Enum, IconCode> assign an icon to each value based on the reference Enum.
+	 */
+	public final <E extends Enum>  void setAllValuesAddIconsEnum(DtoField<? super T, ?> field, IDictionaryType type,
+			Map<E, IconCode> valueIconMap) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.setDictionaryName(type.getName());
+					valueIconMap
+							.forEach((key, value) -> fieldDTO
+									.setIconAllValue(serialize(key), value));
+				});
+	}
+
+
+
 
 	public final void setFileAccept(DtoField<? super T, ?> field, @NonNull List<String> accept) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))

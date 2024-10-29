@@ -86,6 +86,11 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 		setDictionaryTypeWithConcreteValues(field, type, keys);
 	}
 
+	/**
+	 * It is not recommended to load images individually for specific values.
+	 * Instead, load all images at once as a complete reference book
+	 * use {@link FieldsMeta#setAllValuesAddIconsLOV}
+	 */
 	@Deprecated
 	public void setDictionaryValuesWithIcons(String field, IDictionaryType type, Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField))
@@ -302,6 +307,12 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 		}
 	}
 
+	/**
+	 * It is not recommended to load images individually for specific values.
+	 * Instead, load all images at once as a complete reference book
+	 * use {@link FieldsMeta#setAllValuesAddIconsLOV}
+	 */
+	@Deprecated(since = "4.0.0-M10")
 	public final void setDictionaryValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))

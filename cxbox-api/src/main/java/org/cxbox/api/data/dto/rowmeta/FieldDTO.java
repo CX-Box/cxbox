@@ -75,6 +75,8 @@ public class FieldDTO {
 
 	Set<DictValue> filterValues = new LinkedHashSet<>();
 
+	Set<DictValue> allValues = new LinkedHashSet<>();
+
 	String fileAccept; //format - see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept">...</a>"
 
 	Map<String, String> options = new HashMap<>();
@@ -208,9 +210,18 @@ public class FieldDTO {
 		filterValues.clear();
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M10
+	 * use {@link FieldDTO#setIconAllValue}
+	 */
+	@Deprecated(since = "4.0.0-M10")
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
 		Set<DictValue> dictValues = isFilterValue ? filterValues : values;
 		dictValues.add(new DictValue(val, icon.code));
+	}
+
+	public void setIconAllValue(String val, IconCode icon) {
+		allValues.add(new DictValue(val, icon.code));
 	}
 
 	/**
