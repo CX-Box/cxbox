@@ -16,20 +16,20 @@
 
 package org.cxbox.core.service.action;
 
-import static org.cxbox.core.service.action.ActionAvailableChecker.and;
-import static org.cxbox.core.service.action.CxboxActionIconSpecifier.WITHOUT_ICON;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.cxbox.core.service.action.ActionAvailableChecker.and;
+import static org.cxbox.core.service.action.CxboxActionIconSpecifier.WITHOUT_ICON;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import lombok.NoArgsConstructor;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
 import org.cxbox.core.dto.rowmeta.PreAction;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class ActionDescriptionBuilder<T extends DataResponseDTO> {
@@ -59,6 +59,8 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 	private ActionScope actionScope = ActionScope.RECORD;
 
 	private Map<String, String> customParameter;
+
+	private Boolean updateRequired;
 
 	private boolean autoSaveBefore = true;
 
@@ -190,6 +192,11 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 		return this;
 	}
 
+	public ActionDescriptionBuilder<T> updateRequired(Boolean updateRequired) {
+		this.updateRequired = updateRequired;
+		return this;
+	}
+
 	/**
 	 * @deprecated Since 4.0.0-M7 use {@link org.cxbox.core.service.action.ActionsBuilder#action(java.util.function.UnaryOperator)} instead
 	 */
@@ -234,6 +241,10 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 				actionScope,
 				autoSaveBefore
 		);
+	}
+
+	public ActionDescription<T> build() {
+		return build(updateRequired);
 	}
 
 }
