@@ -32,6 +32,7 @@ import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.Ephemeral;
 import org.cxbox.api.data.dto.TZAware;
+import org.cxbox.api.data.dto.hierarhy.grouping.Hierarchy;
 import org.cxbox.api.util.tz.TimeZoneUtil;
 import org.cxbox.constgen.DtoField;
 
@@ -77,6 +78,9 @@ public class FieldDTO {
 	String fileAccept; //format - see <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept">...</a>"
 
 	Map<String, String> options = new HashMap<>();
+
+	@JsonInclude
+	Hierarchy defaultGroupingHierarchy;
 
 	private FieldDTO() {
 	}
