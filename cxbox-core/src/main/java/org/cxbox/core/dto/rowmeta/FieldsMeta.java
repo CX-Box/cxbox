@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +39,6 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.hierarhy.grouping.GroupByField;
 import org.cxbox.api.data.dto.hierarhy.grouping.Hierarchy;
 import org.cxbox.api.data.dto.hierarhy.grouping.HierarchyWithFields;
-import org.cxbox.api.data.dto.hierarhy.grouping.SubTree;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
 
@@ -248,11 +246,10 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * <br>
 	 * Example 2: <strong>dynamically</strong> provided default hierarchy tree (grouped by single Enum field <strong>document</strong>):
 	 * <pre>{@code
-	 * var result = new Hierarchy<Documents, Hierarchy<Briefings, ?>>();
+	 * var result = new Hierarchy<Documents, ?>();
 	 * Arrays.stream(Documents.values()).forEach(e -> result.addWithCfg(e, cfg -> cfg));
 	 * fields.defaultGroupingHierarchy(
 	 *   MeetingDocumentsDTO_.document,
-	 *   MeetingDocumentsDTO_.briefing,
 	 *   lvl -> result
 	 * );
 	 * }</pre>
@@ -527,7 +524,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * </ul>
 	 * <br>
 	 * or create own analog if more, then FOUR hierarchy levels are needed
-	 * @param groupByFields - for widget with "type": "GroupingHierarchy" exactly equal to fields listed in "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
+	 * @param groupByFields - for widget with "type": "GroupingHierarchy" exactly equal to fields listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
 	 * @param hierarchy - grouping hierarchy structure.
 	 * This structure will be shown even when widget has no data. If data is present - hierarchy parts that are not present in data will be shown too
 	 * @param <D> - DTO
