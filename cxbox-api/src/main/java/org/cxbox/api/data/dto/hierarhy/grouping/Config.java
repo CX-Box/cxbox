@@ -42,6 +42,12 @@ public class Config {
 		Cfg() {
 		}
 
+		/**
+		 * <br>
+		 * <br>
+		 * @param options -- params of current hierarchy subtree root. Designed to be used for project customizations of "GroupingHierarchy" widget (for example to set custom property "expandedByDefault": true)
+		 * @return this
+		 */
 		public Cfg options(Map<String, String> options) {
 			this.options = options;
 			return this;

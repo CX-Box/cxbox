@@ -188,7 +188,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	}
 
 	/**
-	 * ---------------------------------------------------------------------------------------------------------------
+	 * <br>
 	 * <br>
 	 * This method sets default hierarchy for "GroupingHierarchy" widget, that will always be shown (even, when widget has no data from backend).
 	 * Use this method only for hierarchies grouped by SINGLE column
@@ -244,13 +244,15 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * }</pre>
 	 * <br>
 	 * <br>
-	 * Example 2: <strong>dynamically</strong> provided default hierarchy tree (grouped by single Enum field <strong>document</strong>):
+	 * Example 2: <strong>dynamically</strong> provided default hierarchy tree (grouped by single Enum field <strong>document</strong>). Can be convenient, when default hierarchy structure is configurable through admin UI, so needed to be loaded from DB/microservice:
 	 * <pre>{@code
-	 * var result = new Hierarchy<Documents, ?>();
-	 * Arrays.stream(Documents.values()).forEach(e -> result.addWithCfg(e, cfg -> cfg));
 	 * fields.defaultGroupingHierarchy(
-	 *   MeetingDocumentsDTO_.document,
-	 *   lvl -> result
+	 *  MeetingDocumentsDTO_.document,
+	 *  l -> Arrays.stream(Documents.values()).collect(Hierarchy.toHierarchyWithCfg(
+	 *    e -> e,
+	 *    (e, cfg) -> cfg.options(Map.of("sdfsdf", "sdzfdsf"))
+	 *   )
+	 *  )
 	 * );
 	 * }</pre>
 	 * <br>
@@ -305,15 +307,21 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * }
 	 * }</pre>
 	 * see details in <a href="https://doc.cxbox.org/">documentation</a>
+	 * <br>
+	 * <br>
+	 * @param field1 FIRST field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
+	 * @param <D> DTO type
+	 * @param <E1> DTO field type. Usually one will use field with "type":"input" or "type":"dictionary, so DTO field types will usually be String or Enum
 	 */
 	public <D extends DataResponseDTO, E1> void defaultGroupingHierarchy(
-			DtoField<D, E1> field1,
-			UnaryOperator<Hierarchy<E1, ?>> hb) {
-		defaultGroupingHierarchy(List.of(field1),hb.apply(new Hierarchy<>()));
+			@NonNull DtoField<D, E1> field1,
+			@NonNull UnaryOperator<Hierarchy<E1, ?>> hierarchyBuilder) {
+		defaultGroupingHierarchy(List.of(field1),hierarchyBuilder.apply(new Hierarchy<>()));
 	}
 
 	/**
-	 * ---------------------------------------------------------------------------------------------------------------
+	 * <br>
 	 * <br>
 	 * This method sets default hierarchy for "GroupingHierarchy" widget, that will always be shown (even, when widget has no data from backend).
 	 * Use this method only for hierarchies grouped by TWO columns
@@ -345,7 +353,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * _______________________________________
 	 * |Document↓    | Briefing↓   |File     |
 	 * _______________________________________
-	 * |Reference↓(2)| Financial(0)|         |
+	 * |Reference↓(0)| Financial(0)|         |
 	 * |             | Project  (0)|         |
 	 * |Policy    (0)|             |         |
 	 * _______________________________________
@@ -363,10 +371,10 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * _________________________________________
 	 * |Document↓    | Briefing↓     |File     |
 	 * _________________________________________
-	 * |Reference↓(3)| Financial  (0)|         |
+	 * |Reference↓(1)| Financial  (0)|         |
 	 * |             | Project    (0)|         |
 	 * |             | Operational(1)|File1.jpg|
-	 * |Policy↓   (2)| Security↓  (2)|File2.jpg|
+	 * |Policy↓   (3)| Security↓  (2)|File2.jpg|
 	 * |             |               |File3.jpg|
 	 * |             | Project    (1)|File4.jpg|
 	 * |Legal     (1)| Operational(1)|File5.jpg|
@@ -382,6 +390,24 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * |Policy       | Project       |File4.jpg|
 	 * |Legal        | Operational   |File5.jpg|
 	 * _________________________________________
+	 * }</pre>
+	 * <br>
+	 * <br>
+	 * Example 2: <strong>dynamically</strong> provided default hierarchy tree (grouped by single Enum field <strong>document</strong>). Can be convenient, when default hierarchy structure is configurable through admin UI, so needed to be loaded from DB/microservice:
+	 * <pre>{@code
+	 * Map<Documents, Set<Briefings>> external = Map.of(
+	 *  Documents.REFERENCE, Set.of(Briefings.FINANCIAL, Briefings.PROJECT),
+	 *  Documents.POLICY, new HashSet<>()
+	 * );
+	 * fields.defaultGroupingHierarchy(
+	 *  MeetingDocumentsDTO_.document,
+	 *  MeetingDocumentsDTO_.briefing,
+	 *  lvl1 -> external.entrySet().stream().collect(Hierarchy.toHierarchy(
+	 *    Entry::getKey,
+	 *    (doc, lvl2) -> doc.getValue().stream().collect(Hierarchy.toHierarchy(brief -> brief))
+	 *   )
+	 *  )
+	 * );
 	 * }</pre>
 	 * <br>
 	 * <br>
@@ -454,34 +480,43 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * }
 	 * }</pre>
 	 * <br>
-	 * see full documentation in <a href="https://doc.cxbox.org/">documentation</a>
+	 * @param field1 FIRST field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param field2 SECOND field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
+	 * @param <D> DTO type
+	 * @param <E1> DTO field type. Usually one will use field with "type":"input" or "type":"dictionary, so DTO field types will usually be String or Enum
 	 */
 	public <D extends DataResponseDTO, E1, E2> void defaultGroupingHierarchy(
-			DtoField<D, E1> field1,
-			DtoField<D, E2> field2,
-			UnaryOperator<Hierarchy<E1, Hierarchy<E2, ?>>> hb) {
-		defaultGroupingHierarchy(List.of(field1, field2), hb.apply(new Hierarchy<>()));
+			@NonNull DtoField<D, E1> field1,
+			@NonNull DtoField<D, E2> field2,
+			@NonNull UnaryOperator<Hierarchy<E1, Hierarchy<E2, ?>>> hierarchyBuilder) {
+		defaultGroupingHierarchy(List.of(field1, field2), hierarchyBuilder.apply(new Hierarchy<>()));
 	}
 
 
 	/**
-	 * ---------------------------------------------------------------------------------------------------------------
+	 * <br>
 	 * <br>
 	 * This method sets default hierarchy for "GroupingHierarchy" widget, that will always be shown (even, when widget has no data from backend).
 	 * Use this method only for hierarchies grouped by TREE columns
 	 * <br>
 	 * <br>
-	 *
-	 * see examples in java doc here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
+	 * See usage example here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
-	 * see full documentation in <a href="https://doc.cxbox.org/">documentation</a>
+	 * <br>
+	 * @param field1 FIRST  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param field2 SECOND field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param field3 THIRD  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
+	 * @param <D> DTO type
+	 * @param <E1> DTO field type. Usually one will use field with "type":"input" or "type":"dictionary, so DTO field types will usually be String or Enum
 	 */
 	public <D extends DataResponseDTO, E1, E2, E3> void defaultGroupingHierarchy(
-			DtoField<D, E1> field1,
-			DtoField<D, E2> field2,
-			DtoField<D, E3> field3,
-			UnaryOperator<Hierarchy<E1, Hierarchy<E2, Hierarchy<E3, ?>>>> hb) {
-		defaultGroupingHierarchy(List.of(field1, field2, field3), hb.apply(new Hierarchy<>()));
+			@NonNull DtoField<D, E1> field1,
+			@NonNull DtoField<D, E2> field2,
+			@NonNull DtoField<D, E3> field3,
+			@NonNull UnaryOperator<Hierarchy<E1, Hierarchy<E2, Hierarchy<E3, ?>>>> hierarchyBuilder) {
+		defaultGroupingHierarchy(List.of(field1, field2, field3), hierarchyBuilder.apply(new Hierarchy<>()));
 	}
 
 	/**
@@ -491,22 +526,28 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * Use this method only for hierarchies grouped by FOUR columns
 	 * <br>
 	 * <br>
-	 *
-	 * see examples in java doc here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
+	 * See usage example here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
-	 * see full documentation in <a href="https://doc.cxbox.org/">documentation</a>
+	 * <br>
+	 * @param field1 FIRST  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param field2 SECOND field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param field3 THIRD  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param field4 FOURTH  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
+	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
+	 * @param <D> DTO type
+	 * @param <E1> DTO field type. Usually one will use field with "type":"input" or "type":"dictionary, so DTO field types will usually be String or Enum
 	 */
 	public <D extends DataResponseDTO, E1, E2, E3, E4> void defaultGroupingHierarchy(
-			DtoField<D, E1> field1,
-			DtoField<D, E2> field2,
-			DtoField<D, E3> field3,
-			DtoField<D, E4> field4,
-			UnaryOperator<Hierarchy<E1, Hierarchy<E2, Hierarchy<E3, Hierarchy<E4, ?>>>>> hb) {
-		defaultGroupingHierarchy(List.of(field1, field2, field3, field4), hb.apply(new Hierarchy<>()));
+			@NonNull DtoField<D, E1> field1,
+			@NonNull DtoField<D, E2> field2,
+			@NonNull DtoField<D, E3> field3,
+			@NonNull DtoField<D, E4> field4,
+			@NonNull UnaryOperator<Hierarchy<E1, Hierarchy<E2, Hierarchy<E3, Hierarchy<E4, ?>>>>> hierarchyBuilder) {
+		defaultGroupingHierarchy(List.of(field1, field2, field3, field4), hierarchyBuilder.apply(new Hierarchy<>()));
 	}
 
 	/**
-	 * ---------------------------------------------------------------------------------------------------------------
+	 * <br>
 	 * <br>
 	 * Internal API.
 	 * <br>
@@ -524,12 +565,12 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * </ul>
 	 * <br>
 	 * or create own analog if more, then FOUR hierarchy levels are needed
-	 * @param groupByFields - for widget with "type": "GroupingHierarchy" exactly equal to fields listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
-	 * @param hierarchy - grouping hierarchy structure.
+	 * @param groupByFields for widget with "type": "GroupingHierarchy" exactly equal to fields listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
+	 * @param hierarchy hierarchy structure.
 	 * This structure will be shown even when widget has no data. If data is present - hierarchy parts that are not present in data will be shown too
 	 * @param <D> - DTO
 	 */
-	public <D extends DataResponseDTO> void defaultGroupingHierarchy(List<DtoField<D,?>> groupByFields, Hierarchy<?, ?> hierarchy) {
+	public <D extends DataResponseDTO> void defaultGroupingHierarchy(@NonNull List<DtoField<D,?>> groupByFields, @NonNull Hierarchy<?, ?> hierarchy) {
 		var field = groupByFields.stream()
 				.filter(Objects::nonNull)
 				.map(e -> GroupByField.builder()
