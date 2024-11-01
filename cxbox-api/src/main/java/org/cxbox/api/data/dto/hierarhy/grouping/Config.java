@@ -16,23 +16,45 @@
 
 package org.cxbox.api.data.dto.hierarhy.grouping;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
-@Setter
-@SuperBuilder
-@EqualsAndHashCode(of = {"name"})
-public class GroupByField {
+//@Builder
+public class Config {
 
-	@JsonInclude
-	private String name;
-
-	@JsonInclude
 	private Map<String, String> options;
+
+	//@Builder de-lombok generated code
+	@java.beans.ConstructorProperties({"options"})
+	Config(Map<String, String> options) {
+		this.options = options;
+	}
+
+	public static Cfg builder() {
+		return new Cfg();
+	}
+
+	public static class Cfg {
+
+		private Map<String, String> options;
+
+		Cfg() {
+		}
+
+		public Cfg options(Map<String, String> options) {
+			this.options = options;
+			return this;
+		}
+
+		public Config build() {
+			return new Config(this.options);
+		}
+
+		public String toString() {
+			return "Config.ConfigBuilder(options=" + this.options + ")";
+		}
+
+	}
 
 }

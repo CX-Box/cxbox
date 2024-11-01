@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -38,7 +39,8 @@ import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.hierarhy.grouping.GroupByField;
 import org.cxbox.api.data.dto.hierarhy.grouping.Hierarchy;
-import org.cxbox.api.data.dto.hierarhy.grouping.Level;
+import org.cxbox.api.data.dto.hierarhy.grouping.HierarchyWithFields;
+import org.cxbox.api.data.dto.hierarhy.grouping.SubTree;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
 
@@ -198,10 +200,9 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * <pre>{@code
 	 * fields.defaultGroupingHierarchy(
 	 *  MeetingDocumentsDTO_.document,
-	 *  Set.of(
-	 *    Level.builder(Documents.REFERENCE).build(),
-	 *    Level.builder(Documents.POLICY).build()
-	 *  )
+	 *  lvl -> lvl
+	 *    .add(Documents.REFERENCE),
+	 *    .add(Documents.POLICY)
 	 * );
 	 * }</pre>
 	 * <br>
@@ -247,12 +248,12 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * <br>
 	 * Example 2: <strong>dynamically</strong> provided default hierarchy tree (grouped by single Enum field <strong>document</strong>):
 	 * <pre>{@code
+	 * var result = new Hierarchy<Documents, Hierarchy<Briefings, ?>>();
+	 * Arrays.stream(Documents.values()).forEach(e -> result.addWithCfg(e, cfg -> cfg));
 	 * fields.defaultGroupingHierarchy(
-	 *  MeetingDocumentsDTO_.document,
-	 *  Arrays.stream(Documents.values())
-	 *    .map(e -> Level.builder(e).build())
-	 *    .collect(Collectors.toSet())
-	 *  );
+	 *   MeetingDocumentsDTO_.document,
+	 *   MeetingDocumentsDTO_.briefing,
+	 *   lvl -> result
 	 * );
 	 * }</pre>
 	 * <br>
@@ -310,8 +311,8 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 */
 	public <D extends DataResponseDTO, E1> void defaultGroupingHierarchy(
 			DtoField<D, E1> field1,
-			Set<? extends Level<E1, ?>> levels) {
-		defaultGroupingHierarchy(List.of(field1), levels);
+			UnaryOperator<Hierarchy<E1, ?>> hb) {
+		defaultGroupingHierarchy(List.of(field1),hb.apply(new Hierarchy<>()));
 	}
 
 	/**
@@ -326,20 +327,17 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * fields.defaultGroupingHierarchy(
 	 *  MeetingDocumentsDTO_.document,
 	 *  MeetingDocumentsDTO_.briefing,
-	 *  Set.of(
-	 *    Level.builder(
+	 *  lvl -> lvl
+	 *    .add(
 	 *        Documents.REFERENCE,
-	 *        Set.of(
-	 *          Level.builder(Briefings.FINANCIAL).build(),
-	 *          Level.builder(Briefings.PROJECT).build()
+	 *        lvl2 -> lvl2.
+	 *          add(Briefings.FINANCIAL),
+	 *          add(Briefings.PROJECT)
 	 *        )
+	 *     ),
+	 *    .add(
+	 *        Documents.POLICY
 	 *     )
-	 *     .build(),
-	 *    Level.builder(
-	 *        Documents.POLICY,
-	 *        new HashSet<Level<Briefings, ?>>()
-	 *     )
-	 *     .build()
 	 *  )
 	 * );
 	 * }</pre>
@@ -387,18 +385,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * |Policy       | Project       |File4.jpg|
 	 * |Legal        | Operational   |File5.jpg|
 	 * _________________________________________
-	 * }</pre>
-	 * <br>
-	 * <br>
-	 * Example 2: <strong>dynamically</strong> provided default hierarchy tree (grouped by single Enum field <strong>document</strong> and then <strong>briefing</strong>):
-	 * <pre>{@code
-	 * fields.defaultGroupingHierarchy(
-	 *  MeetingDocumentsDTO_.document,
-	 *  Arrays.stream(Documents.values())
-	 *    .map(e -> Level.builder(e).build())
-	 *    .collect(Collectors.toSet())
-	 *  );
-	 * );
 	 * }</pre>
 	 * <br>
 	 * <br>
@@ -476,9 +462,10 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public <D extends DataResponseDTO, E1, E2> void defaultGroupingHierarchy(
 			DtoField<D, E1> field1,
 			DtoField<D, E2> field2,
-			Set<? extends Level<E1, ? extends Level<E2, ?>>> levels) {
-		defaultGroupingHierarchy(List.of(field1, field2), levels);
+			UnaryOperator<Hierarchy<E1, Hierarchy<E2, ?>>> hb) {
+		defaultGroupingHierarchy(List.of(field1, field2), hb.apply(new Hierarchy<>()));
 	}
+
 
 	/**
 	 * ---------------------------------------------------------------------------------------------------------------
@@ -488,7 +475,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * <br>
 	 * <br>
 	 *
-	 * see examples in java doc here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, Set)}
+	 * see examples in java doc here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
 	 * see full documentation in <a href="https://doc.cxbox.org/">documentation</a>
 	 */
@@ -496,8 +483,8 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 			DtoField<D, E1> field1,
 			DtoField<D, E2> field2,
 			DtoField<D, E3> field3,
-			Set<? extends Level<E1, ? extends Level<E2, ? extends Level<E3, ?>>>> levels) {
-		defaultGroupingHierarchy(List.of(field1, field2, field3), levels);
+			UnaryOperator<Hierarchy<E1, Hierarchy<E2, Hierarchy<E3, ?>>>> hb) {
+		defaultGroupingHierarchy(List.of(field1, field2, field3), hb.apply(new Hierarchy<>()));
 	}
 
 	/**
@@ -508,7 +495,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * <br>
 	 * <br>
 	 *
-	 * see examples in java doc here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, Set)}
+	 * see examples in java doc here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
 	 * see full documentation in <a href="https://doc.cxbox.org/">documentation</a>
 	 */
@@ -517,8 +504,8 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 			DtoField<D, E2> field2,
 			DtoField<D, E3> field3,
 			DtoField<D, E4> field4,
-			Set<? extends Level<E1, ? extends Level<E2, ? extends Level<E3, ? extends Level<E4, ?>>>>> levels) {
-		defaultGroupingHierarchy(List.of(field1, field2, field3, field4), levels);
+			UnaryOperator<Hierarchy<E1, Hierarchy<E2, Hierarchy<E3, Hierarchy<E4, ?>>>>> hb) {
+		defaultGroupingHierarchy(List.of(field1, field2, field3, field4), hb.apply(new Hierarchy<>()));
 	}
 
 	/**
@@ -533,19 +520,19 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * <br>
 	 * Please, do not use this method directly. Use one of existing STRONGLY TYPED methods:
 	 * <ul>
-	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, Set)} (see examples here)</li>
-	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, Set)} (see examples here) </li>
-	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, DtoField, Set)} </li>
-	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, DtoField, DtoField, Set)} </li>
+	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, UnaryOperator)} (see examples here)</li>
+	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)} (see examples here) </li>
+	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, DtoField, UnaryOperator)} </li>
+	 * <li> {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, DtoField, DtoField, UnaryOperator)} </li>
 	 * </ul>
 	 * <br>
 	 * or create own analog if more, then FOUR hierarchy levels are needed
 	 * @param groupByFields - for widget with "type": "GroupingHierarchy" exactly equal to fields listed in "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
-	 * @param levels - grouping hierarchy structure.
+	 * @param hierarchy - grouping hierarchy structure.
 	 * This structure will be shown even when widget has no data. If data is present - hierarchy parts that are not present in data will be shown too
 	 * @param <D> - DTO
 	 */
-	public <D extends DataResponseDTO> void defaultGroupingHierarchy(List<DtoField<D,?>> groupByFields, Set<? extends Level<?, ?>> levels) {
+	public <D extends DataResponseDTO> void defaultGroupingHierarchy(List<DtoField<D,?>> groupByFields, Hierarchy<?, ?> hierarchy) {
 		var field = groupByFields.stream()
 				.filter(Objects::nonNull)
 				.map(e -> GroupByField.builder()
@@ -554,7 +541,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.build())
 				.toList();
 		Optional.ofNullable(fields.get(field.get(0).getName()))
-				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchy(new Hierarchy(field, levels)));
+				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchyWithFields(new HierarchyWithFields(field, hierarchy.getSubTrees())));
 	}
 
 }

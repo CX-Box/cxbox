@@ -16,23 +16,36 @@
 
 package org.cxbox.api.data.dto.hierarhy.grouping;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
-@SuperBuilder
-@EqualsAndHashCode(of = {"name"})
-public class GroupByField {
+@EqualsAndHashCode(of = {"value"})
+@Accessors(chain = true)
+public class SubTree<T, G extends SubTree<?, ?>> implements Serializable {
 
 	@JsonInclude
-	private String name;
+	private T value;
+
+	@JsonInclude
+	private Set<G> child;
 
 	@JsonInclude
 	private Map<String, String> options;
+
+	@JsonIgnore
+	SubTree(T value, Set<G> child, Map<String, String> options) {
+		this.value = value;
+		this.child = child;
+		this.options = options;
+	}
 
 }

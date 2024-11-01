@@ -17,22 +17,22 @@
 package org.cxbox.api.data.dto.hierarhy.grouping;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.Map;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@SuperBuilder
-@EqualsAndHashCode(of = {"name"})
-public class GroupByField {
+@AllArgsConstructor
+public final class HierarchyWithFields implements Serializable {
 
 	@JsonInclude
-	private String name;
+	private List<? extends GroupByField> groupByFields;
 
 	@JsonInclude
-	private Map<String, String> options;
+	private Set<? extends SubTree<?, ?>> levels;
 
 }

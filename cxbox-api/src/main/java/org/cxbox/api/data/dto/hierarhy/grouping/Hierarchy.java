@@ -16,23 +16,40 @@
 
 package org.cxbox.api.data.dto.hierarhy.grouping;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.Serializable;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import lombok.AllArgsConstructor;
+import java.util.function.UnaryOperator;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.cxbox.api.data.dto.hierarhy.grouping.Config.Cfg;
 
 @Getter
-@Setter
-@AllArgsConstructor
-public final class Hierarchy implements Serializable {
+@NoArgsConstructor
+public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 
-	@JsonInclude
-	private List<? extends GroupByField> groupByFields;
+	private final Set<SubTree<T, ?>> subTrees = new HashSet<>();
 
-	@JsonInclude
-	private Set<? extends Level<?, ?>> levels;
+	public Hierarchy<T, G> add(@NonNull T value) {
+		subTrees.add(new SubTree<>(value, null, null));
+		return this;
+	}
+
+	public Hierarchy<T, G> add(@NonNull T value, @NonNull UnaryOperator<G> childHierarchy) {
+		var hb = (G) (new Hierarchy<>());
+		subTrees.add(new SubTree<>(value, childHierarchy.apply(hb).getSubTrees(), null));
+		return this;
+	}
+
+	public Hierarchy<T, G> addWithCfg(@NonNull T value, @NonNull UnaryOperator<Cfg> cfg) {
+		subTrees.add(new SubTree<>(value, null, cfg.apply(new Cfg()).build().getOptions()));
+		return this;
+	}
+
+	public Hierarchy<T, G> addWithCfg(@NonNull T value, @NonNull UnaryOperator<Cfg> cfg, @NonNull UnaryOperator<G> childHierarchy) {
+		var hb = (G) (new Hierarchy<>());
+		subTrees.add(new SubTree<>(value, childHierarchy.apply(hb).getSubTrees(), cfg.apply(new Cfg()).build().getOptions()));
+		return this;
+	}
 
 }
