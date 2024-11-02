@@ -80,7 +80,7 @@ public class FieldDTO {
 	Map<String, String> options = new HashMap<>();
 
 	@JsonInclude
-	HierarchyWithFields defaultGroupingHierarchyWithFields;
+	HierarchyWithFields defaultGroupingHierarchy;
 
 	private FieldDTO() {
 	}

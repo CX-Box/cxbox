@@ -579,7 +579,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.build())
 				.toList();
 		Optional.ofNullable(fields.get(field.get(0).getName()))
-				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchyWithFields(new HierarchyWithFields(field, hierarchy.getSubTrees())));
+				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchy(new HierarchyWithFields(field, hierarchy.getSubTrees())));
 	}
 
 }
