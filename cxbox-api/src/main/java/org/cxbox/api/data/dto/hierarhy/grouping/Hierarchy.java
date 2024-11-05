@@ -41,11 +41,12 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage Example 1 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param value DTO field value
 	 * @return this
 	 */
 	public Hierarchy<T, G> add(@NonNull T value) {
-		subTrees.add(new SubTree<>(value, null, null));
+		subTrees.add(new SubTree<>(value, null, null, null));
 		return this;
 	}
 
@@ -56,12 +57,13 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage Example 1 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param value DTO field value
 	 * @return this
 	 */
 	public Hierarchy<T, G> add(@NonNull T value, @NonNull UnaryOperator<G> childHierarchy) {
 		var hb = (G) (new Hierarchy<>());
-		subTrees.add(new SubTree<>(value, childHierarchy.apply(hb).getSubTrees(), null));
+		subTrees.add(new SubTree<>(value, childHierarchy.apply(hb).getSubTrees(), null, null));
 		return this;
 	}
 
@@ -72,11 +74,13 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage Example 1 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param value DTO field value
 	 * @return this
 	 */
 	public Hierarchy<T, G> addWithCfg(@NonNull T value, @NonNull UnaryOperator<Cfg> cfg) {
-		subTrees.add(new SubTree<>(value, null, cfg.apply(new Cfg()).build().getOptions()));
+		Config config = cfg.apply(new Cfg()).build();
+		subTrees.add(new SubTree<>(value, null, config.getOptions(), config.getDefaultExpanded()));
 		return this;
 	}
 
@@ -87,16 +91,19 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage in Example 2 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param value DTO field value
 	 * @return this
 	 */
 	public Hierarchy<T, G> addWithCfg(@NonNull T value, @NonNull UnaryOperator<Cfg> cfg,
 			@NonNull UnaryOperator<G> childHierarchy) {
 		var hb = (G) (new Hierarchy<>());
+		Config config = cfg.apply(new Cfg()).build();
 		subTrees.add(new SubTree<>(
 				value,
 				childHierarchy.apply(hb).getSubTrees(),
-				cfg.apply(new Cfg()).build().getOptions()
+				config.getOptions(),
+				config.getDefaultExpanded()
 		));
 		return this;
 	}
@@ -108,6 +115,7 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage in Example 2 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param valueMapper external value to hierarchy value mapper
 	 * @return this
 	 */
@@ -123,6 +131,7 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage in Example 2 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param valueMapper external value to hierarchy value mapper
 	 * @param optionsMapper external value to params mapper
 	 * @return this
@@ -140,6 +149,7 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage in Example 2 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param valueMapper external value to hierarchy value mapper
 	 * @param subTreeMapper external value to children mapper
 	 * @return this
@@ -157,6 +167,7 @@ public class Hierarchy<T, G extends Hierarchy<?, ?>> {
 	 * <br>
 	 * See usage in Example 2 here {@link  org.cxbox.core.dto.rowmeta.FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
+	 *
 	 * @param valueMapper external value to hierarchy value mapper
 	 * @param subTreeMapper external value to children mapper
 	 * @return this

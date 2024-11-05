@@ -25,10 +25,13 @@ public class Config {
 
 	private Map<String, String> options;
 
+	private Boolean defaultExpanded;
+
 	//@Builder de-lombok generated code
-	@java.beans.ConstructorProperties({"options"})
-	Config(Map<String, String> options) {
+	@java.beans.ConstructorProperties({"options", "defaultExpanded"})
+	Config(Map<String, String> options, Boolean defaultExpanded) {
 		this.options = options;
+		this.defaultExpanded = defaultExpanded;
 	}
 
 	public static Cfg builder() {
@@ -39,12 +42,15 @@ public class Config {
 
 		private Map<String, String> options;
 
+		private Boolean defaultExpanded;
+
 		Cfg() {
 		}
 
 		/**
 		 * <br>
 		 * <br>
+		 *
 		 * @param options -- params of current hierarchy subtree root. Designed to be used for project customizations of "GroupingHierarchy" widget (for example to set custom property "expandedByDefault": true)
 		 * @return this
 		 */
@@ -53,8 +59,13 @@ public class Config {
 			return this;
 		}
 
+		public Cfg defaultExpanded(Boolean defaultExpanded) {
+			this.defaultExpanded = defaultExpanded;
+			return this;
+		}
+
 		public Config build() {
-			return new Config(this.options);
+			return new Config(this.options, this.defaultExpanded);
 		}
 
 		public String toString() {
