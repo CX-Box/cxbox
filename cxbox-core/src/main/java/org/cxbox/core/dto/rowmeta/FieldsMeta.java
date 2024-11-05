@@ -39,6 +39,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.hierarhy.grouping.GroupByField;
 import org.cxbox.api.data.dto.hierarhy.grouping.Hierarchy;
 import org.cxbox.api.data.dto.hierarhy.grouping.HierarchyWithFields;
+import org.cxbox.api.data.dto.rowmeta.Icon;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
 
@@ -153,10 +154,10 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	}
 
 	/**
-	 * @deprecated Since 4.0.0-M10
-	 * use {@link FieldsMeta#setAllValuesAddIconsLOV}
+	 * @deprecated Since 4.0.0-M11
+	 * use {@link FieldsMeta#setAllValuesWithIcons(DtoField, IDictionaryType, Map)}
 	 */
-	@Deprecated(since = "4.0.0-M10")
+	@Deprecated(since = "4.0.0-M11")
 	public final void setFilterValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
@@ -170,40 +171,47 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	}
 
 	/**
-	 * Method for LOV
+	 * Show icon for fields having "type":"dictionary" in widget.json based on LOV.
+	 * Icon will appear in both From, List widgets.
+	 * For List widget filtration and rows will get icons - no other method are needed to be called
+	 * Icon can depend on parent bc
+	 *
 	 * @param field dto field
 	 * @param type dictionary type
-	 * @param valueIconMap <LOV, IconCode> assign an icon to each value based on the reference LOV.
-	*/
-	public final void setAllValuesAddIconsLOV(DtoField<? super T, ?> field, IDictionaryType type,
-			Map<LOV, IconCode> valueIconMap) {
+	 * @param valueIconMap <LOV, Icon> LOV to icon mapping
+	 */
+	public final void setAllValuesWithIcons(
+			DtoField<? super T, ?> field,
+			IDictionaryType type,
+			Map<LOV, Icon> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> {
-					fieldDTO.setDictionaryName(type.getName());
+					fieldDTO.clearAllValues();
 					valueIconMap
-							.forEach((key, value) -> fieldDTO
-									.setIconAllValue(type.lookupValue(key), value));
+							.forEach((key, value) ->
+									fieldDTO.setIconWithValue(type.lookupValue(key), value)
+							);
 				});
 	}
 
 	/**
-	 * Method for Enum
+	 * Same as {@link FieldsMeta#setAllValuesWithIcons(DtoField, IDictionaryType, Map)} but for Enum base dictionary fields
+	 *
 	 * @param field dto field
-	 * @param type dictionary type
-	 * @param valueIconMap <extends Enum, IconCode> assign an icon to each value based on the reference Enum.
+	 * @param valueIconMap <extends Enum, Icon> Enum to icon mapping
 	 */
-	public final <E extends Enum>  void setAllValuesAddIconsEnum(DtoField<? super T, ?> field, IDictionaryType type,
-			Map<E, IconCode> valueIconMap) {
+	public final <E extends Enum> void setAllValuesWithIcons(DtoField<? super T, ?> field,
+			Map<E, Icon> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> {
-					fieldDTO.setDictionaryName(type.getName());
-					valueIconMap
-							.forEach((key, value) -> fieldDTO
-									.setIconAllValue(serialize(key), value));
-				});
+							fieldDTO.clearAllValues();
+							valueIconMap
+									.forEach((key, value) ->
+											fieldDTO.setIconWithValue(serialize(key), value)
+									);
+						}
+				);
 	}
-
-
 
 
 	public final void setFileAccept(DtoField<? super T, ?> field, @NonNull List<String> accept) {
@@ -215,7 +223,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	}
 
 	/**
-	 * @param fields  fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
+	 * @param fields fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
 	 * <ul>
 	 *     <li>See additional abilities for sorting  (how to set <code>default sort order</code> and so on) in this java doc
 	 *     {@link org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties#sortEnabledDefault}</li>
@@ -351,6 +359,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * see details in <a href="https://doc.cxbox.org/">documentation</a>
 	 * <br>
 	 * <br>
+	 *
 	 * @param field1 FIRST field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
 	 * @param <D> DTO type
@@ -359,7 +368,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public <D extends DataResponseDTO, E1> void defaultGroupingHierarchy(
 			@NonNull DtoField<D, E1> field1,
 			@NonNull UnaryOperator<Hierarchy<E1, ?>> hierarchyBuilder) {
-		defaultGroupingHierarchy(List.of(field1),hierarchyBuilder.apply(new Hierarchy<>()));
+		defaultGroupingHierarchy(List.of(field1), hierarchyBuilder.apply(new Hierarchy<>()));
 	}
 
 	/**
@@ -522,6 +531,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * }
 	 * }</pre>
 	 * <br>
+	 *
 	 * @param field1 FIRST field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field2 SECOND field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
@@ -546,6 +556,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * See usage example here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
 	 * <br>
+	 *
 	 * @param field1 FIRST  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field2 SECOND field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field3 THIRD  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
@@ -571,6 +582,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * See usage example here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
 	 * <br>
+	 *
 	 * @param field1 FIRST  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field2 SECOND field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field3 THIRD  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
@@ -607,12 +619,14 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * </ul>
 	 * <br>
 	 * or create own analog if more, then FOUR hierarchy levels are needed
+	 *
 	 * @param groupByFields for widget with "type": "GroupingHierarchy" exactly equal to fields listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
 	 * @param hierarchy hierarchy structure.
 	 * This structure will be shown even when widget has no data. If data is present - hierarchy parts that are not present in data will be shown too
 	 * @param <D> - DTO
 	 */
-	public <D extends DataResponseDTO> void defaultGroupingHierarchy(@NonNull List<DtoField<D,?>> groupByFields, @NonNull Hierarchy<?, ?> hierarchy) {
+	public <D extends DataResponseDTO> void defaultGroupingHierarchy(@NonNull List<DtoField<D, ?>> groupByFields,
+			@NonNull Hierarchy<?, ?> hierarchy) {
 		var field = groupByFields.stream()
 				.filter(Objects::nonNull)
 				.map(e -> GroupByField.builder()
@@ -621,7 +635,10 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.build())
 				.toList();
 		Optional.ofNullable(fields.get(field.get(0).getName()))
-				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchy(new HierarchyWithFields(field, hierarchy.getSubTrees())));
+				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchy(new HierarchyWithFields(
+						field,
+						hierarchy.getSubTrees()
+				)));
 	}
 
 }

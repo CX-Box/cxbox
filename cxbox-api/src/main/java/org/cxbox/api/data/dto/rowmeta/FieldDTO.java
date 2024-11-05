@@ -211,17 +211,20 @@ public class FieldDTO {
 	}
 
 	/**
-	 * @deprecated Since 4.0.0-M10
-	 * use {@link FieldDTO#setIconAllValue}
+	 * @deprecated Since 4.0.0-M11
 	 */
-	@Deprecated(since = "4.0.0-M10")
+	@Deprecated(since = "4.0.0-M11",forRemoval = true)
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
 		Set<DictValue> dictValues = isFilterValue ? filterValues : values;
 		dictValues.add(new DictValue(val, icon.code));
 	}
 
-	public void setIconAllValue(String val, IconCode icon) {
-		allValues.add(new DictValue(val, icon.code));
+	public void setIconWithValue(String val, Icon icon) {
+		allValues.add(new DictValue(val, icon.getIcon()));
+	}
+
+	public void clearAllValues() {
+		allValues.clear();
 	}
 
 	/**

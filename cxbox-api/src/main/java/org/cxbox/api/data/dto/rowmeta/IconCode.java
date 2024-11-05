@@ -18,6 +18,11 @@ package org.cxbox.api.data.dto.rowmeta;
 
 import lombok.AllArgsConstructor;
 
+/**
+ * @deprecated Since 4.0.0-M11
+ * use {@link Icon}
+ */
+@Deprecated(since = "4.0.0-M11",forRemoval = true)
 @AllArgsConstructor
 public enum IconCode {
 	ARROW_UP_RED("arrow-up red"),
