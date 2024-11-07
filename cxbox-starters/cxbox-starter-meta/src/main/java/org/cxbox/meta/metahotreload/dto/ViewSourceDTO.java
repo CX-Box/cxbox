@@ -48,7 +48,7 @@ public class ViewSourceDTO {
 
 	private List<ViewWidgetSourceDTO> widgets;
 
-	private List<ViewWidgetGroupSourceDTO> groups;
+	private List<ViewWidgetGroupSourceDTO> groups = new ArrayList<>();
 
 	/**
 	 * Inspired with JSR-250 and spring @RolesAllowed annotation.

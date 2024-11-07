@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.data;
 
+import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class ViewWidgetGroupDTO {
+public class ViewWidgetGroupDTO implements Serializable {
 
 	private List<String> widgetNames;
 
