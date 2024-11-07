@@ -172,8 +172,8 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 
 	/**
 	 * Show icon for fields having "type":"dictionary" in widget.json based on LOV.
-	 * Icon will appear in both From, List widgets.
-	 * For List widget filtration and rows will get icons - no other method are needed to be called
+	 * Icon will appear in both From, List widgets etc.
+	 * For List widget filtration and rows will get icons - no others method are needed to be called
 	 * Icon can depend on parent bc
 	 *
 	 * @param field dto field
@@ -199,6 +199,46 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 *
 	 * @param field dto field
 	 * @param valueIconMap <extends Enum, Icon> Enum to icon mapping
+	 *
+	 * <br>
+	 * <br>
+	 * Example 1:
+	 *
+	 * <pre>{@code
+	 * @RequiredArgsConstructor
+	 * @Getter
+	 * public enum IconsEnum implements Icon {
+	 *  ARROW_UP("arrow-up #0cbfe9"),
+	 *  WATERMELON("watermelon"),
+	 *  DOWN("down");
+	 *
+	 * private final String icon;
+	 * }}</pre>
+	 * <pre>{@code
+	 * @Getter
+	 * @AllArgsConstructor
+	 * public enum CustomFieldDictionaryEnum {
+	 *
+	 *  HIGH("High", IconsEnum.ARROW_UP),
+	 *  MIDDLE("Middle", IconsEnum.DOWN),
+	 *  LOW("Low", IconsEnum.WATERMELON);
+	 *
+	 *  @JsonValue
+	 *  private final String value;
+	 *
+	 *  private final Icon icon;
+	 *
+	 *  public static Map<CustomFieldDictionaryEnum, Icon> iconMap() {
+	 *      return Arrays.stream(CustomFieldDictionaryEnum.values())
+	 *      .filter(e -> e.icon != null)
+	 *      .collect(Collectors.toMap(e -> e, e -> e.icon));
+	 *  }
+	 *
+	 * }}</pre>
+	 * Add to buildIndependentMeta
+	 * <pre>{@code
+	 *  fields.setAllValuesWithIcons(MyExampleDTO_.customFieldDictionary, CustomFieldDictionaryEnum.iconMap());
+	 * }</pre>
 	 */
 	public final <E extends Enum> void setAllValuesWithIcons(DtoField<? super T, ?> field,
 			Map<E, Icon> valueIconMap) {
@@ -213,7 +253,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 				);
 	}
 
-
 	public final void setFileAccept(DtoField<? super T, ?> field, @NonNull List<String> accept) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> {
@@ -223,7 +262,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	}
 
 	/**
-	 * @param fields fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
+	 * @param fields  fields to be made <code>sortable</code>. Sort icon will appear in UI, that user can interact with to apply/change sorting order
 	 * <ul>
 	 *     <li>See additional abilities for sorting  (how to set <code>default sort order</code> and so on) in this java doc
 	 *     {@link org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties#sortEnabledDefault}</li>
@@ -359,7 +398,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * see details in <a href="https://doc.cxbox.org/">documentation</a>
 	 * <br>
 	 * <br>
-	 *
 	 * @param field1 FIRST field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
 	 * @param <D> DTO type
@@ -368,7 +406,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	public <D extends DataResponseDTO, E1> void defaultGroupingHierarchy(
 			@NonNull DtoField<D, E1> field1,
 			@NonNull UnaryOperator<Hierarchy<E1, ?>> hierarchyBuilder) {
-		defaultGroupingHierarchy(List.of(field1), hierarchyBuilder.apply(new Hierarchy<>()));
+		defaultGroupingHierarchy(List.of(field1),hierarchyBuilder.apply(new Hierarchy<>()));
 	}
 
 	/**
@@ -531,7 +569,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * }
 	 * }</pre>
 	 * <br>
-	 *
 	 * @param field1 FIRST field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field2 SECOND field listed in .widget. json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param hierarchyBuilder builder for default hierarchy. See usage example at this java-doc beginning
@@ -556,7 +593,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * See usage example here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
 	 * <br>
-	 *
 	 * @param field1 FIRST  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field2 SECOND field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field3 THIRD  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
@@ -582,7 +618,6 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * See usage example here {@link FieldsMeta#defaultGroupingHierarchy(DtoField, DtoField, UnaryOperator)}
 	 * <br>
 	 * <br>
-	 *
 	 * @param field1 FIRST  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field2 SECOND field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
 	 * @param field3 THIRD  field listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields"
@@ -619,14 +654,12 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 	 * </ul>
 	 * <br>
 	 * or create own analog if more, then FOUR hierarchy levels are needed
-	 *
 	 * @param groupByFields for widget with "type": "GroupingHierarchy" exactly equal to fields listed in .widget.json -> "options" -> "groupingHierarchy" -> "fields". Fields must be listed in same sequence
 	 * @param hierarchy hierarchy structure.
 	 * This structure will be shown even when widget has no data. If data is present - hierarchy parts that are not present in data will be shown too
 	 * @param <D> - DTO
 	 */
-	public <D extends DataResponseDTO> void defaultGroupingHierarchy(@NonNull List<DtoField<D, ?>> groupByFields,
-			@NonNull Hierarchy<?, ?> hierarchy) {
+	public <D extends DataResponseDTO> void defaultGroupingHierarchy(@NonNull List<DtoField<D,?>> groupByFields, @NonNull Hierarchy<?, ?> hierarchy) {
 		var field = groupByFields.stream()
 				.filter(Objects::nonNull)
 				.map(e -> GroupByField.builder()
@@ -635,10 +668,7 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.build())
 				.toList();
 		Optional.ofNullable(fields.get(field.get(0).getName()))
-				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchy(new HierarchyWithFields(
-						field,
-						hierarchy.getSubTrees()
-				)));
+				.ifPresent(fieldDTO -> fieldDTO.setDefaultGroupingHierarchy(new HierarchyWithFields(field, hierarchy.getSubTrees())));
 	}
 
 }

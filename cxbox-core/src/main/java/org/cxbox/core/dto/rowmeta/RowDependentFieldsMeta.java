@@ -308,6 +308,7 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 	}
 
 	/**
+	 * @deprecated Since 4.0.0-M11
 	 * Not recommended to load icons individually for specific values.
 	 * Instead, load all icons at once as a complete dictionary
 	 * use {@link FieldsMeta#setAllValuesWithIcons(DtoField, IDictionaryType, Map)}}

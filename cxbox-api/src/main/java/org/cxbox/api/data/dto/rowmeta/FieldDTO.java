@@ -212,6 +212,7 @@ public class FieldDTO {
 
 	/**
 	 * @deprecated Since 4.0.0-M11
+	 * use {@link FieldDTO#setIconWithValue(String, Icon)}
 	 */
 	@Deprecated(since = "4.0.0-M11",forRemoval = true)
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
