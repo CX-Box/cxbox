@@ -39,6 +39,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.hierarhy.grouping.GroupByField;
 import org.cxbox.api.data.dto.hierarhy.grouping.Hierarchy;
 import org.cxbox.api.data.dto.hierarhy.grouping.HierarchyWithFields;
+import org.cxbox.api.data.dto.rowmeta.Icon;
 import org.cxbox.api.data.dto.rowmeta.IconCode;
 import org.cxbox.constgen.DtoField;
 
@@ -152,6 +153,11 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 						.ifPresent(fieldDTO -> fieldDTO.setEphemeral(true)));
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M11
+	 * use {@link FieldsMeta#setAllValuesWithIcons(DtoField, IDictionaryType, Map)}
+	 */
+	@Deprecated(since = "4.0.0-M11")
 	public final void setFilterValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
@@ -162,6 +168,89 @@ public class FieldsMeta<T extends DataResponseDTO> extends RowDependentFieldsMet
 							.forEach((key, value) -> fieldDTO
 									.setIconWithValue(type.lookupValue(key), value, true));
 				});
+	}
+
+	/**
+	 * Show icon for fields having "type":"dictionary" in widget.json based on LOV.
+	 * Icon will appear in both From, List widgets etc.
+	 * For List widget filtration and rows will get icons - no others method are needed to be called
+	 * Icon can depend on parent bc
+	 *
+	 * @param field dto field
+	 * @param type dictionary type
+	 * @param valueIconMap <LOV, Icon> LOV to icon mapping
+	 */
+	public final void setAllValuesWithIcons(
+			DtoField<? super T, ?> field,
+			IDictionaryType type,
+			Map<LOV, Icon> valueIconMap) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.clearAllValues();
+					valueIconMap
+							.forEach((key, value) ->
+									fieldDTO.setIconWithValue(type.lookupValue(key), value)
+							);
+				});
+	}
+
+	/**
+	 * Same as {@link FieldsMeta#setAllValuesWithIcons(DtoField, IDictionaryType, Map)} but for Enum base dictionary fields
+	 *
+	 * @param field dto field
+	 * @param valueIconMap <extends Enum, Icon> Enum to icon mapping
+	 *
+	 * <br>
+	 * <br>
+	 * Example 1:
+	 *
+	 * <pre>{@code
+	 * @RequiredArgsConstructor
+	 * @Getter
+	 * public enum IconsEnum implements Icon {
+	 *  ARROW_UP("arrow-up #0cbfe9"),
+	 *  WATERMELON("watermelon"),
+	 *  DOWN("down");
+	 *
+	 * private final String icon;
+	 * }}</pre>
+	 * <pre>{@code
+	 * @Getter
+	 * @AllArgsConstructor
+	 * public enum CustomFieldDictionaryEnum {
+	 *
+	 *  HIGH("High", IconsEnum.ARROW_UP),
+	 *  MIDDLE("Middle", IconsEnum.DOWN),
+	 *  LOW("Low", IconsEnum.WATERMELON);
+	 *
+	 *  @JsonValue
+	 *  private final String value;
+	 *
+	 *  private final Icon icon;
+	 *
+	 *  public static Map<CustomFieldDictionaryEnum, Icon> iconMap() {
+	 *      return Arrays.stream(CustomFieldDictionaryEnum.values())
+	 *      .filter(e -> e.icon != null)
+	 *      .collect(Collectors.toMap(e -> e, e -> e.icon));
+	 *  }
+	 *
+	 * }}</pre>
+	 * Add to buildIndependentMeta
+	 * <pre>{@code
+	 *  fields.setAllValuesWithIcons(MyExampleDTO_.customFieldDictionary, CustomFieldDictionaryEnum.iconMap());
+	 * }</pre>
+	 */
+	public final <E extends Enum> void setAllValuesWithIcons(DtoField<? super T, ?> field,
+			Map<E, Icon> valueIconMap) {
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+							fieldDTO.clearAllValues();
+							valueIconMap
+									.forEach((key, value) ->
+											fieldDTO.setIconWithValue(serialize(key), value)
+									);
+						}
+				);
 	}
 
 	public final void setFileAccept(DtoField<? super T, ?> field, @NonNull List<String> accept) {

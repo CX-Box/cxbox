@@ -86,7 +86,12 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 		setDictionaryTypeWithConcreteValues(field, type, keys);
 	}
 
-	@Deprecated
+	/**
+	 * Not recommended to load icons individually for specific values.
+	 * Instead, load all icons at once as a complete dictionary
+	 * use {@link FieldsMeta#setAllValuesWithIcons}
+	 */
+	@Deprecated(forRemoval = true)
 	public void setDictionaryValuesWithIcons(String field, IDictionaryType type, Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField))
 				.ifPresent(fieldDTO -> {
@@ -302,6 +307,13 @@ public class RowDependentFieldsMeta<T extends DataResponseDTO> extends FieldsDTO
 		}
 	}
 
+	/**
+	 * @deprecated Since 4.0.0-M11
+	 * Not recommended to load icons individually for specific values.
+	 * Instead, load all icons at once as a complete dictionary
+	 * use {@link FieldsMeta#setAllValuesWithIcons(DtoField, IDictionaryType, Map)}}
+	 */
+	@Deprecated(since = "4.0.0-M11", forRemoval = true)
 	public final void setDictionaryValuesWithIcons(DtoField<? super T, ?> field, IDictionaryType type,
 			Map<LOV, IconCode> valueIconMap) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
