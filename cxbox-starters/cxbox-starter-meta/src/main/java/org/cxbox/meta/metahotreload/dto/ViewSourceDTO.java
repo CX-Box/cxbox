@@ -24,6 +24,7 @@ import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
@@ -46,6 +47,8 @@ public class ViewSourceDTO {
 	private JsonNode options;
 
 	private List<ViewWidgetSourceDTO> widgets;
+
+	private List<ViewWidgetGroupSourceDTO> groups;
 
 	/**
 	 * Inspired with JSR-250 and spring @RolesAllowed annotation.
@@ -91,6 +94,15 @@ public class ViewSourceDTO {
 		public String getWidgetNaturalKey() {
 			return Optional.ofNullable(this.widgetId).orElse(this.widgetName);
 		}
+	}
+
+	@Getter
+	@Setter
+	@Accessors(chain = true)
+	public static class ViewWidgetGroupSourceDTO {
+
+		private List<String> widgetNames;
+
 	}
 
 }

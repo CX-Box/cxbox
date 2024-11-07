@@ -54,6 +54,8 @@ public class ViewDTO implements Serializable {
 
 	private List<WidgetDTO> widgets;
 
+	private List<ViewWidgetGroupDTO> groups;
+
 	private Integer columns;
 
 	private Integer rowHeight;
