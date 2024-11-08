@@ -59,7 +59,7 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 	public ActionsBuilder<T> action(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = ActionDescription.<T>builder().withBuilder(this);
 		descriptionBuilderConsumer.apply(lambdaActionBuilder);
-		var actionDescription = lambdaActionBuilder.build(null);
+		var actionDescription = lambdaActionBuilder.build();
 		addAction(actionDescription);
 		return this;
 	}
@@ -86,7 +86,7 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 	public ActionsBuilder<T> create(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = create();
 		descriptionBuilderConsumer.apply(lambdaActionBuilder);
-		var actionDescription = lambdaActionBuilder.build(null);
+		var actionDescription = lambdaActionBuilder.build();
 		addAction(actionDescription);
 		return this;
 	}
@@ -105,7 +105,7 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 	public ActionsBuilder<T> save(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = save();
 		descriptionBuilderConsumer.apply(lambdaActionBuilder);
-		var actionDescription = lambdaActionBuilder.build(null);
+		var actionDescription = lambdaActionBuilder.build();
 		addAction(actionDescription);
 		return this;
 	}
@@ -122,7 +122,7 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 	public ActionsBuilder<T> cancelCreate(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = cancelCreate();
 		descriptionBuilderConsumer.apply(lambdaActionBuilder);
-		var actionDescription = lambdaActionBuilder.build(null);
+		var actionDescription = lambdaActionBuilder.build();
 		addAction(actionDescription);
 		return this;
 	}
@@ -141,7 +141,7 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 	public ActionsBuilder<T> associate(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = associate();
 		descriptionBuilderConsumer.apply(lambdaActionBuilder);
-		var actionDescription = lambdaActionBuilder.build(null);
+		var actionDescription = lambdaActionBuilder.build();
 		addAction(actionDescription);
 		return this;
 	}
@@ -159,7 +159,7 @@ public class ActionsBuilder<T extends DataResponseDTO> {
 	public ActionsBuilder<T> delete(UnaryOperator<ActionDescriptionBuilder<T>> descriptionBuilderConsumer) {
 		var lambdaActionBuilder = delete();
 		descriptionBuilderConsumer.apply(lambdaActionBuilder);
-		var actionDescription = lambdaActionBuilder.build(null);
+		var actionDescription = lambdaActionBuilder.build();
 		addAction(actionDescription);
 		return this;
 	}
