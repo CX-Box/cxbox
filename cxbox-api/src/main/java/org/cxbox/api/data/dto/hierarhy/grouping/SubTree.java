@@ -41,11 +41,15 @@ public class SubTree<T, G extends SubTree<?, ?>> implements Serializable {
 	@JsonInclude
 	private Map<String, String> options;
 
+	@JsonInclude
+	private Boolean defaultExpanded;
+
 	@JsonIgnore
-	SubTree(T value, Set<G> child, Map<String, String> options) {
+	SubTree(T value, Set<G> child, Map<String, String> options, Boolean defaultExpanded) {
 		this.value = value;
 		this.child = child;
 		this.options = options;
+		this.defaultExpanded = defaultExpanded;
 	}
 
 }
