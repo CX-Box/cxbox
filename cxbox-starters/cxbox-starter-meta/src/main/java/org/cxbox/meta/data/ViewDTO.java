@@ -19,6 +19,7 @@ package org.cxbox.meta.data;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,7 +53,9 @@ public class ViewDTO implements Serializable {
 
 	private Boolean editable;
 
-	private List<WidgetDTO> widgets;
+	private List<WidgetDTO> widgets = new ArrayList<>();
+
+	private List<ViewWidgetGroupDTO> groups = new ArrayList<>();
 
 	private Integer columns;
 

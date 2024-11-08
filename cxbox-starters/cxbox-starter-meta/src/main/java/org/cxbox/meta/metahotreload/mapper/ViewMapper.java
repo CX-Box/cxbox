@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.meta.data.ViewDTO;
+import org.cxbox.meta.data.ViewWidgetGroupDTO;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.meta.metahotreload.util.JsonUtils;
@@ -55,12 +56,17 @@ public class ViewMapper {
 				.setIgnoreHistory(ofNullable(dto.getIgnoreHistory()).orElse(false))
 				.setOptions(JsonUtils.serializeOrElseEmptyArr(objectMapper, dto.getOptions()))
 				.setReadOnly(false) //TODO>>take from responsibilities. temporary dropped in 4.0.0
+				.setGroups(dto.getGroups().stream()
+						.map(e -> new ViewWidgetGroupDTO()
+								.setWidgetNames(e.getWidgetNames()))
+						.collect(Collectors.toList()))
 				.setWidgets(dto.getWidgets()
 						.stream()
 						.map(vw -> widgetMapper.map(widgetNameToWidget.get(vw.getWidgetName()), vw))
-						.peek(vw -> {
+						.map(vw -> {
 							vw.setWidgetId(viewWidgetSeq.getAndIncrement());
 							vw.setId(vw.getId());
+							return vw;
 						})
 						.collect(Collectors.toList()));
 		viewDto.setId(viewSeq.getAndIncrement());
