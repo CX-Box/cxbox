@@ -17,20 +17,14 @@
 package org.cxbox.meta.metahotreload.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.MetaHotReloadService;
+import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
@@ -65,79 +59,26 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 			return null;
 		});
 	}
-
-	//TODO>>Draft. Refactor
+	
 	public void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
 		if (config.isViewAllowedRolesEnabled()) {
 			Map<String, String> viewToScreenMap = new HashMap<>();
 			metaRepository.getAllScreens()
-					.forEach((screenName, screenDto) -> screenDto.getViews().stream().map(ViewDTO::getName)
+					.forEach((screenName, screenDto) -> ((ScreenDTO) screenDto.getMeta()).getViews().stream().map(ViewDTO::getName)
 							.forEach(viewName -> viewToScreenMap.put(viewName, screenName)));
 
 			List<Responsibilities> responsibilities = new ArrayList<>();
-			long defaultDepartmentId = 0L; //TODO>>replace magic number with value from config
 			viewDtos.forEach(view -> {
 				view.getRolesAllowed().forEach(role -> {
 					responsibilities.add(new Responsibilities()
 							.setResponsibilityType(ResponsibilityType.VIEW)
 							.setInternalRoleCD(role)
-							.setView(view.getName())
-							.setDepartmentId(defaultDepartmentId));
+							.setView(view.getName()));
 				});
 			});
-
-			Map<String, ScreenSourceDto> screenNameToScreen = screenDtos.stream()
-					.collect(Collectors.toMap(ScreenSourceDto::getName, sd -> sd));
-
-			Map<String, Set<ScreenSourceDto>> rolesToScreens = new HashMap<>();
-			viewDtos.forEach(v -> {
-				if (viewToScreenMap.containsKey(v.getName())) {
-					String screenName = viewToScreenMap.get(v.getName());
-					v.getRolesAllowed().forEach(role -> {
-						if (!rolesToScreens.containsKey(role)) {
-							rolesToScreens.put(role, new HashSet<>());
-						}
-						rolesToScreens.get(role).add(screenNameToScreen.get(screenName));
-					});
-				}
-			});
-
-			for (Entry<String, Set<ScreenSourceDto>> entry : rolesToScreens.entrySet()) {
-				String role = entry.getKey();
-				Set<ScreenSourceDto> screens = entry.getValue();
-				responsibilities.add(new Responsibilities()
-						.setResponsibilityType(ResponsibilityType.SCREEN)
-						.setInternalRoleCD(role)
-						.setScreens(mapToScreens(screens))
-						.setDepartmentId(defaultDepartmentId));
-			}
 			metaRepository.deleteAndSaveResponsibilities(responsibilities);
 
 		}
-	}
-
-
-	//TODO>>Draft. Refactor
-	@NonNull
-	public String mapToScreens(@NonNull Set<ScreenSourceDto> screens) {
-		StringJoiner joiner = new StringJoiner(",");
-		List<ScreenSourceDto> orderedScreens = screens
-				.stream()
-				.sorted(Comparator.comparing(ScreenSourceDto::getOrder).thenComparing(ScreenSourceDto::getName))
-				.collect(Collectors.toList());
-		for (int i = 0; i < orderedScreens.size(); i++) {
-			ScreenSourceDto screen = orderedScreens.get(i);
-			String s = "  {\n"
-					+ "    \"id\": \"id" + i + "\",\n"
-					+ "    \"name\": \"" + screen.getName() + "\",\n"
-					+ "    \"text\": \"" + screen.getTitle() + "\",\n"
-					+ "    \"url\": \"/screen/" + screen.getName() + "\",\n"
-					+ "    \"icon\": \"" + screen.getIcon() + "\"\n"
-					+ "  }";
-			joiner.add(s);
-		}
-		String collect = joiner.toString();
-		return "[\n" + collect + "\n]";
 	}
 
 

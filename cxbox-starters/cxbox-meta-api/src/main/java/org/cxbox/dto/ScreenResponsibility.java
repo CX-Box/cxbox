@@ -16,6 +16,8 @@
 
 package org.cxbox.dto;
 
+import java.io.Serializable;
+import lombok.experimental.Accessors;
 import org.cxbox.api.data.dto.LocaleAware;
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
@@ -25,13 +27,17 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ScreenResponsibility {
+@Accessors(chain = true)
+public class ScreenResponsibility implements Serializable {
 
 	public static final TypeReference<List<ScreenResponsibility>> LIST_TYPE_REFERENCE = new ListTypeReference();
 
 	private String id;
 
 	private String name;
+
+	//not used directly - used only for sorting on backend side
+	private Integer order;
 
 	@LocaleAware
 	private String text;
@@ -40,7 +46,8 @@ public class ScreenResponsibility {
 
 	private String icon;
 
-	private boolean defaultScreen;
+	@Deprecated(since = "4.0.0-M12")
+	private Boolean defaultScreen;
 
 	//ScreenDTO.class
 	private Object meta;

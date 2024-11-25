@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
+import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.data.FilterGroupDTO;
-import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.BcProperties_;
@@ -109,6 +109,7 @@ public class MetaRepository {
 	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, String userRole,
 			ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
+
 		return jpaDao.getList(
 				Responsibilities.class,
 				(root, cq, cb) -> cb.and(
@@ -124,7 +125,7 @@ public class MetaRepository {
 			cacheNames = CacheConfig.UI_CACHE,
 			key = "{#root.methodName}"
 	)
-	public Map<String, ScreenDTO> getAllScreens() {
+	public Map<String, ScreenResponsibility> getAllScreens() {
 		//load data
 		var screens = metaResourceReaderService.getScreens();
 		var widgets = metaResourceReaderService.getWidgets();
@@ -141,7 +142,7 @@ public class MetaRepository {
 				.collect(Collectors.toMap(ViewDTO::getName, e -> e));
 		return screens.stream()
 				.map(screenSourceDto -> screenMapper.map(screenSourceDto, viewNameToView, bcProps, filterGroups))
-				.collect(Collectors.toMap(ScreenDTO::getName, e -> e));
+				.collect(Collectors.toMap(ScreenResponsibility::getName, e -> e));
 	}
 
 }
