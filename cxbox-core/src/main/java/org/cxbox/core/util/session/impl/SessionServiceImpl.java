@@ -20,7 +20,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.CoreSessionService;
 import org.cxbox.api.service.session.CxboxUserDetailsInterface;
 import org.cxbox.api.service.session.IUser;
@@ -51,10 +50,9 @@ public class SessionServiceImpl implements SessionService {
 		return getSessionUser().getDepartmentId();
 	}
 
-
 	@Override
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {CacheConfig.REQUEST_CACHE}, key = "#root.methodName")
-	public LOV getSessionUserRole() {
+	public String getSessionUserRole() {
 		CxboxUserDetailsInterface userDetails = coreSessionService.getSessionUserDetails(true);
 		HttpServletRequest request = WebHelper.getCurrentRequest().orElse(null);
 		if (request == null) {
@@ -63,23 +61,21 @@ public class SessionServiceImpl implements SessionService {
 		return calculateUserRole(request, userDetails);
 	}
 
-	private LOV calculateUserRole(HttpServletRequest request, CxboxUserDetailsInterface userDetails) {
-		LOV mainRole = userDetails.getUserRole();
+	private String calculateUserRole(HttpServletRequest request, CxboxUserDetailsInterface userDetails) {
+		String mainRole = userDetails.getUserRole();
 		String requestedRole = request.getHeader("RequestedUserRole");
 		if (StringUtils.isBlank(requestedRole)) {
 			return mainRole;
 		}
-		if (mainRole != null && requestedRole.equals(mainRole.getKey())) {
+		if (mainRole != null && requestedRole.equals(mainRole)) {
 			return mainRole;
 		}
-		return  new LOV(requestedRole);
+		return requestedRole;
 	}
-
 
 	@Override
 	public String getSessionId() {
 		return coreSessionService.getSessionId();
 	}
-
 
 }

@@ -17,9 +17,12 @@
 package org.cxbox.core.dto.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
+import lombok.Getter;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.constgen.DtoField;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,9 +36,12 @@ class RowDependentFieldsMetaTest {
 	@Mock
 	ObjectMapper objectMapper;
 
+	@Mock
+	Optional<DictionaryProvider> dictionaryProvider;
+
 
 	@InjectMocks
-	RowDependentFieldsMeta<DataResponseDTO> rowDependentFieldsMeta;
+	RowDependentFieldsMeta<TestDTO> rowDependentFieldsMeta;
 
 	@BeforeEach
 	void setUp() {
@@ -44,12 +50,17 @@ class RowDependentFieldsMetaTest {
 
 	@Test
 	void testSetPlaceholder() {
-		rowDependentFieldsMeta = new RowDependentFieldsMeta<>(objectMapper);
-		DtoField<DataResponseDTO, FieldDTO> test = new DtoField<>("test");
+		rowDependentFieldsMeta = new RowDependentFieldsMeta<>(objectMapper, dictionaryProvider);
 		FieldDTO field = FieldDTO.enabledField("test");
+		DtoField<TestDTO, String> test = new DtoField<>("test", TestDTO::getTest, String.class);
 		assertThat(field.getPlaceholder()).isNull();
 		rowDependentFieldsMeta.add(field);
 		rowDependentFieldsMeta.setPlaceholder(test, "placeholder");
 		assertThat(field.getPlaceholder()).isEqualTo("placeholder");
+	}
+
+	@Getter
+	public static class TestDTO extends DataResponseDTO {
+		private String test;
 	}
 }

@@ -21,7 +21,6 @@ import static org.hibernate.id.OptimizableGenerator.INITIAL_PARAM;
 import static org.hibernate.id.OptimizableGenerator.OPT_PARAM;
 
 import java.sql.Types;
-import org.cxbox.api.data.dictionary.LOV;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -58,7 +57,7 @@ import org.hibernate.type.SqlTypes;
 public class Responsibilities extends BaseEntity {
 
 	@Column(name = "INTERNAL_ROLE_CD")
-	private LOV internalRoleCD;
+	private String internalRoleCD;
 
 	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "DEPT_ID")

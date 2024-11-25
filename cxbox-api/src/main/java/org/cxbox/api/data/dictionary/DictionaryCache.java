@@ -31,30 +31,85 @@ public interface DictionaryCache {
 
 	void reload();
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	SimpleDictionary get(IDictionaryType type, String key);
 
 	SimpleDictionary get(String type, String key);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	Collection<SimpleDictionary> getAll(IDictionaryType dictionaryType);
 
 	Collection<SimpleDictionary> getAll(String dictionaryType);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	String lookupValue(LOV key, IDictionaryType type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	String lookupValue(LOV key, String type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	String lookupValueNullable(LOV key, IDictionaryType type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	LOV lookupName(String val, IDictionaryType type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	LOV lookupName(String val, String type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	boolean containsKey(String key, IDictionaryType type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	boolean containsKey(LOV key, IDictionaryType type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	boolean containsValue(String value, IDictionaryType type);
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	String getDescription(String key, IDictionaryType type);
 
 	Set<String> types();

@@ -23,9 +23,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Types of simple dictionaries
- * https://kb-liga.phoenixit.ru/pages/viewpage.action?pageId=8753193
+ * @deprecated
+ * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
  */
+@Deprecated(since = "4.0.0-M12", forRemoval = true)
 @Getter
 @RequiredArgsConstructor
 public enum DictionaryType implements Serializable, IDictionaryType {

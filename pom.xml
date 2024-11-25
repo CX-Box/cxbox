@@ -20,12 +20,12 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M12-SNAPSHOT</version>
+  <version>4.0.0-M12-CXBOX-569-5-SNAPSHOT</version>
   <name>IO Cxbox</name>
   <description>Java framework designed for creating Enterprise Rich Web Applications</description>
   <inceptionYear>2022</inceptionYear>
 
-  <url>http://cxbox.org</url>
+  <url>https://www.javadoc.io/doc/org.cxbox</url>
 
   <organization>
     <name>OOO "SI IKS LAB"</name>

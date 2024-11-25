@@ -16,6 +16,8 @@
 
 package org.cxbox.core.config;
 
+import static org.cxbox.dictionary.DictionaryModule.buildDictionaryModule;
+
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.util.jackson.DtoPropertyFilter;
 import org.cxbox.api.util.jackson.deser.contextual.TZAwareLDTContextualDeserializer;
@@ -32,6 +35,7 @@ import org.cxbox.api.util.jackson.ser.contextual.I18NAwareStringContextualSerial
 import org.cxbox.api.util.jackson.ser.contextual.TZAwareJUDContextualSerializer;
 import org.cxbox.api.util.jackson.ser.contextual.TZAwareLDTContextualSerializer;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -43,12 +47,13 @@ public class JacksonConfig {
 
 	@Bean(CxboxBeanProperties.OBJECT_MAPPER)
 	public ObjectMapper cxboxObjectMapper(
-			HandlerInstantiator handlerInstantiator
+			HandlerInstantiator handlerInstantiator,
+			Optional<DictionaryProvider> dictionaryProvider
 	) {
 		return Jackson2ObjectMapperBuilder
 				.json()
 				.handlerInstantiator(handlerInstantiator)
-				.modules(buildJavaTimeModule(), i18NModule())
+				.modules(buildJavaTimeModule(), i18NModule(), buildDictionaryModule(dictionaryProvider, true))
 				.featuresToDisable(
 						SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
 						SerializationFeature.FLUSH_AFTER_WRITE_VALUE,
@@ -64,7 +69,6 @@ public class JacksonConfig {
 	public HandlerInstantiator handlerInstantiator(ApplicationContext context) {
 		return new SpringHandlerInstantiator(context.getAutowireCapableBeanFactory());
 	}
-
 
 	private JavaTimeModule buildJavaTimeModule() {
 		JavaTimeModule javaTimeModule = new JavaTimeModule();

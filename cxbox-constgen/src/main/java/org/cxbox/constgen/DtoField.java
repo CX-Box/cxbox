@@ -18,36 +18,50 @@ package org.cxbox.constgen;
 
 import java.io.Serializable;
 import java.util.function.Function;
+import lombok.NonNull;
 
 public final class DtoField<D, T> implements Serializable {
-
-	public DtoField(final String name) {
-		this.name = name;
-		this.getter = noDefaultGetter -> {
-			throw new DefaultGetterNotFoundException(this.name);
-		};
-	}
 
 	private final String name;
 
 	private final Function<D, T> getter;
 
+	private final Class<T> valueClazz;
 
-	public DtoField(String name, Function<D, T> getter) {
+	public DtoField(@NonNull String name, @NonNull Function<D, T> getter, Class<?> valueClazz) {
 		this.name = name;
 		this.getter = getter;
+		this.valueClazz = (Class<T>) valueClazz;
+	}
+
+	/**
+	 * @deprecated instead use type safe <code>{@link DtoField#DtoField(String, Function, Class)}</code>.
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
+	public DtoField(@NonNull String name, Class<?> valueClazz) {
+		this.name = name;
+		this.getter = noDefaultGetter -> {
+			throw new DefaultGetterNotFoundException(this.name);
+		};
+		this.valueClazz = (Class<T>) valueClazz;
 	}
 
 	public T getValue(D dto) {
 		return this.getter.apply(dto);
 	}
 
+	@NonNull
 	public String getName() {
 		return this.name;
 	}
 
+	@NonNull
 	public Function<D, T> getGetter() {
 		return this.getter;
+	}
+
+	public Class<T> getValueClazz() {
+		return this.valueClazz;
 	}
 
 	private static class DefaultGetterNotFoundException extends RuntimeException {

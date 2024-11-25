@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SerializationUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
@@ -36,7 +35,6 @@ import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.AdditionalFields;
 import org.cxbox.meta.entity.AdditionalFields_;
-import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.model.core.dao.JpaDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -61,7 +59,7 @@ public class UserMetaProvider {
 			cacheNames = CacheConfig.USER_CACHE,
 			key = "{#root.methodName, #user.id, #userRole}"
 	)
-	public Map<String, ScreenDTO> getScreens(IUser<Long> user, LOV userRole) {
+	public Map<String, ScreenDTO> getScreens(IUser<Long> user, String userRole) {
 		Map<String, ScreenDTO> allScreens = metaRepository.getAllScreens();
 
 		Map<String, ScreenDTO> allUserScreens = SerializationUtils.clone((HashMap<String, ScreenDTO>) allScreens);
