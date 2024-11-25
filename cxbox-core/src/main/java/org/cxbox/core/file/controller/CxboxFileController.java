@@ -41,7 +41,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
  * }</pre>
  * on implementation class
  */
-public interface CxboxFileController<D> {
+public interface CxboxFileController {
 
 
 	/**
@@ -67,7 +67,7 @@ public interface CxboxFileController<D> {
 	 * <pre></pre>
 	 * See buildFileHttpEntity example of constructing response for this method
 	 */
-	HttpEntity<D> download(
+	HttpEntity<StreamingResponseBody> download(
 			@RequestParam("id") String id,
 			@RequestParam(value = "source", required = false) String source,
 			@RequestParam(value = "preview", required = false, defaultValue = "false") boolean preview);

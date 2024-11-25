@@ -16,33 +16,25 @@
 
 package org.cxbox.core.file.controller;
 
-import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
-
 import org.cxbox.core.file.dto.CxboxResponseDTO;
 import org.cxbox.core.file.dto.FileDownloadDto;
 import org.cxbox.core.file.dto.FileUploadDto;
 import org.cxbox.core.file.service.CxboxFileService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @Slf4j
-@RestController
-@RequiredArgsConstructor
-@RequestMapping(CXBOX_API_PATH_SPEL + "/file")
-@ConditionalOnMissingBean(CxboxFileController.class)
-public class CxboxFileControllerSimple implements CxboxFileController<StreamingResponseBody> {
+public abstract class AbstractCxboxFileController implements CxboxFileController {
 
-	private final CxboxFileService cxboxFileService;
+	@Autowired
+	private CxboxFileService cxboxFileService;
 
 	@Override
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
