@@ -25,6 +25,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("cxbox.ui")
 public class UIProperties {
 
+	public static final String DRILL_DOWN_TOOLTIP_NAME = "drillDownTooltip";
+
 	/**
 	 ** Use only when useServletContextPath = false;
 	 */
@@ -36,5 +38,7 @@ public class UIProperties {
 	private int uiLockTimeoutMs = -1;
 
 	private String systemUrl = null;
+
+	private String drillDownTooltip = null;
 
 }
