@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.ScreenResponsibilityService;
 import org.cxbox.api.config.CxboxBeanProperties;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.dto.ScreenResponsibility;
@@ -54,7 +53,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	 * @return JsonNode Available screens
 	 */
 	@Override
-	public List<ScreenResponsibility> getScreens(IUser<Long> user, LOV userRole) {
+	public List<ScreenResponsibility> getScreens(IUser<Long> user, String userRole) {
 		var result = respService.getAvailableScreensResponsibilities(user, userRole);
 		Map<String, ScreenDTO> allUserScreens = userMetaProvider.getScreens(user, userRole);
 		result.forEach(resp -> {

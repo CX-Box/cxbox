@@ -46,6 +46,10 @@
       <version>4.0.0-M12-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.cxbox</groupId>
+      <artifactId>cxbox-dictionary-api-internal</artifactId>
+    </dependency>
 
   </dependencies>
 

@@ -19,6 +19,10 @@ package org.cxbox.api.data.dictionary;
 import lombok.experimental.UtilityClass;
 
 
+/**
+ * @deprecated LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+ */
+@Deprecated(since = "4.0.0-M12", forRemoval = true)
 public class CoreDictionaries {
 
 	@UtilityClass
@@ -35,7 +39,7 @@ public class CoreDictionaries {
 	@UtilityClass
 	public static class InternalRole {
 
-		public static final LOV ADMIN = new LOV("ADMIN");
+		public static final String ADMIN = "ADMIN";
 
 	}
 

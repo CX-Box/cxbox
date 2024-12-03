@@ -31,8 +31,11 @@
   </parent>
 
   <modules>
+    <module>cxbox-dictionary-api-internal</module>
+    <module>cxbox-dictionary-api</module>
+    <module>cxbox-dictionary-jackson</module>
+    <module>cxbox-dictionary-hibernate</module>
     <module>cxbox-dictionary-model</module>
-    <module>cxbox-dictionary-crudma</module>
     <module>cxbox-dictionary-cache</module>
     <module>cxbox-dictionary-all</module>
   </modules>

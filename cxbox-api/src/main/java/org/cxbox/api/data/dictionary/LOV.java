@@ -22,6 +22,11 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * @deprecated
+ * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+ */
+@Deprecated(since = "4.0.0-M12", forRemoval = true)
 @Getter
 @ToString(of = {"key"})
 public final class LOV implements Serializable {

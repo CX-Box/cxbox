@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.cxbox.api.util.CxReflectionUtils;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -65,12 +66,15 @@ public class RowResponseService {
 
 	private final ObjectMapper objectMapper;
 
+	private final Optional<DictionaryProvider> dictionaryProvider;
+
 	private final WidgetFieldsIdResolverProperties properties;
 
 	public RowResponseService(ApplicationContext ctx,
 			Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
+			Optional<DictionaryProvider> dictionaryProvider,
 			WidgetFieldsIdResolverProperties properties,
 			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
 		this.ctx = ctx;
@@ -78,6 +82,7 @@ public class RowResponseService {
 		this.extendedDtoFieldLevelSecurityService = extendedDtoFieldLevelSecurityService;
 		this.bcDisablers = new HashMap<>();
 		this.objectMapper = objectMapper;
+		this.dictionaryProvider = dictionaryProvider;
 		this.properties = properties;
 		bcDisablers.ifPresent(disablers -> {
 			for (final BcDisabler bcDisabler : disablers) {
@@ -138,7 +143,7 @@ public class RowResponseService {
 	}
 
 	public EngineFieldsMeta getMeta(BcIdentifier bc, RowMetaType type, DataResponseDTO dataDto, boolean visibleOnly) {
-		final EngineFieldsMeta fieldsNode = new EngineFieldsMeta(objectMapper);
+		final EngineFieldsMeta fieldsNode = new EngineFieldsMeta(objectMapper, dictionaryProvider);
 		for (final String dtoField : getFields(bc, dataDto, visibleOnly)) {
 			final Field field = FieldUtils.getField(dataDto.getClass(), dtoField, true);
 			if (field == null) {

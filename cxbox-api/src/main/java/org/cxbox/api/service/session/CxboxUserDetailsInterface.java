@@ -32,7 +32,7 @@ public interface CxboxUserDetailsInterface extends UserDetails, IUser<Long> {
 
 	String getPassword();
 
-	LOV getUserRole();
+	String getUserRole();
 
 	LOV getTimezone();
 
@@ -46,7 +46,7 @@ public interface CxboxUserDetailsInterface extends UserDetails, IUser<Long> {
 
 	CxboxUserDetailsInterface setPassword(String password);
 
-	CxboxUserDetailsInterface setUserRole(LOV userRole);
+	CxboxUserDetailsInterface setUserRole(String userRole);
 
 	CxboxUserDetailsInterface setTimezone(LOV timezone);
 

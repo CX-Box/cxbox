@@ -28,7 +28,6 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.MetaHotReloadService;
@@ -81,7 +80,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 				view.getRolesAllowed().forEach(role -> {
 					responsibilities.add(new Responsibilities()
 							.setResponsibilityType(ResponsibilityType.VIEW)
-							.setInternalRoleCD(new LOV(role))
+							.setInternalRoleCD(role)
 							.setView(view.getName())
 							.setDepartmentId(defaultDepartmentId));
 				});
@@ -108,7 +107,7 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 				Set<ScreenSourceDto> screens = entry.getValue();
 				responsibilities.add(new Responsibilities()
 						.setResponsibilityType(ResponsibilityType.SCREEN)
-						.setInternalRoleCD(new LOV(role))
+						.setInternalRoleCD(role)
 						.setScreens(mapToScreens(screens))
 						.setDepartmentId(defaultDepartmentId));
 			}

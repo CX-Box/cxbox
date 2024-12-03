@@ -37,6 +37,7 @@ import org.cxbox.core.service.ResponseFactory;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.cxbox.core.util.ListPaging;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.cxbox.model.core.dao.JpaDao;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -76,6 +77,9 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	@Autowired
 	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private Optional<DictionaryProvider> dictionaryProvider;
 
 	protected abstract Class<D> getDtoClass();
 
@@ -125,7 +129,7 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	}
 
 	protected EngineFieldsMeta getMeta(BcIdentifier bc, RowMetaType type, D dataDto, boolean visibleOnly) {
-		final EngineFieldsMeta fieldsNode = new EngineFieldsMeta(objectMapper);
+		final EngineFieldsMeta fieldsNode = new EngineFieldsMeta(objectMapper, dictionaryProvider);
 		Set<String> fields = getBCFields(bc, dataDto, visibleOnly);
 		Map<String, Object> values = getValues(dataDto, fields);
 		for (final String dtoField : fields) {

@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.meta.data.FilterGroupDTO;
@@ -107,7 +106,7 @@ public class MetaRepository {
 		);
 	}
 
-	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, LOV userRole,
+	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, String userRole,
 			ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
 		return jpaDao.getList(

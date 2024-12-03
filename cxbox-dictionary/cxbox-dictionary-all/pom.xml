@@ -33,11 +33,19 @@
   <dependencies>
     <dependency>
       <groupId>org.cxbox</groupId>
-      <artifactId>cxbox-dictionary-cache</artifactId>
+      <artifactId>cxbox-dictionary-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.cxbox</groupId>
-      <artifactId>cxbox-dictionary-crudma</artifactId>
+      <artifactId>cxbox-dictionary-jackson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.cxbox</groupId>
+      <artifactId>cxbox-dictionary-hibernate</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.cxbox</groupId>
+      <artifactId>cxbox-dictionary-cache</artifactId>
     </dependency>
   </dependencies>
 

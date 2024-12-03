@@ -28,7 +28,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.CoreDictionaries;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.CxCollections;
@@ -58,7 +57,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.USER_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
-	public Map<String, Boolean> getAvailableViews(IUser<Long> user, LOV userRole) {
+	public Map<String, Boolean> getAvailableViews(IUser<Long> user, String userRole) {
 		return metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.VIEW)
 				.stream()
 				.collect(
@@ -71,7 +70,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	}
 
 	@SneakyThrows
-	public List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, LOV userRole) {
+	public List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, String userRole) {
 		String screens = metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.SCREEN)
 				.stream()
 				.map(Responsibilities::getScreens)
@@ -98,7 +97,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 			cacheNames = {CacheConfig.USER_CACHE},
 			key = "{#root.methodName, #screenName, #user.id, #userRole}"
 	)
-	public List<String> getAvailableScreenViews(String screenName, IUser<Long> user, LOV userRole) {
+	public List<String> getAvailableScreenViews(String screenName, IUser<Long> user, String userRole) {
 		final Set<String> availableViews = this.getAvailableViews(user, userRole).keySet();
 		final boolean getAll = Objects.equals(userRole, CoreDictionaries.InternalRole.ADMIN);
 		var screenViews = metaRepository.getAllScreens().get(screenName).getViews().stream().map(ViewDTO::getName).collect(

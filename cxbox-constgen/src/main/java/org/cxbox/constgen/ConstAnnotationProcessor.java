@@ -30,7 +30,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 @SupportedAnnotationTypes({"org.cxbox.constgen.GeneratesDtoMetamodel"})
-public class  ConstAnnotationProcessor extends AbstractProcessor {
+public class ConstAnnotationProcessor extends AbstractProcessor {
 
 	private static final boolean ALLOW_OTHER_PROCESSORS_TO_CLAIM_ANNOTATIONS = false;
 

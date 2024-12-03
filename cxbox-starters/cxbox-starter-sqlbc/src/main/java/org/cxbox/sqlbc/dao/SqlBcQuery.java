@@ -18,7 +18,6 @@ package org.cxbox.sqlbc.dao;
 
 import static java.util.Map.entry;
 
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.util.tz.TimeZoneUtil;
 import org.cxbox.core.controller.param.BindParameter;
 import org.cxbox.core.controller.param.BindsParameters;
@@ -221,7 +220,7 @@ public final class SqlBcQuery {
 		private void fillParameterSource(String id, String parentId, QueryParameters queryParameters) {
 			int from = queryParameters.getPageNumber() * queryParameters.getPageSize();
 			int to = from + queryParameters.getPageSize() + 1;
-			String userRole = Optional.ofNullable(sessionService.getSessionUserRole()).map(LOV::getKey).orElse("");
+			String userRole = Optional.ofNullable(sessionService.getSessionUserRole()).orElse("");
 			parameterSource
 					.addValue("userid", sessionService.getSessionUser().getId())
 					.addValue("userrole", userRole)

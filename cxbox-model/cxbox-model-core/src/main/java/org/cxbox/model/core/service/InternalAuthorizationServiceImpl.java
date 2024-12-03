@@ -16,7 +16,6 @@
 
 package org.cxbox.model.core.service;
 
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.session.CxboxAuthenticationService;
 import org.springframework.context.annotation.Lazy;
@@ -41,7 +40,7 @@ public final class InternalAuthorizationServiceImpl implements InternalAuthoriza
 	}
 
 	@Override
-	public Authentication createAuthentication(final String login, final LOV userRole) {
+	public Authentication createAuthentication(final String login, final String userRole) {
 		final UserDetails userDetails = cxboxAuthenticationService.loadUserByUsername(login, userRole);
 		return new UsernamePasswordAuthenticationToken(
 				userDetails,
@@ -56,7 +55,7 @@ public final class InternalAuthorizationServiceImpl implements InternalAuthoriza
 	}
 
 	@Override
-	public void loginAs(final String login, final LOV userRole) {
+	public void loginAs(final String login, final String userRole) {
 		loginAs(createAuthentication(login, userRole));
 	}
 
