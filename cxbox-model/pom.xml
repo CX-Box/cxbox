@@ -19,13 +19,13 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cxbox-model</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-M12-CXBOX-569-5-SNAPSHOT</version>
+    <version>4.0.0-M12-SNAPSHOT</version>
     <name>IO Cxbox - Models</name>
 
     <parent>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox</artifactId>
-        <version>4.0.0-M12-CXBOX-569-5-SNAPSHOT</version>
+        <version>4.0.0-M12-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
