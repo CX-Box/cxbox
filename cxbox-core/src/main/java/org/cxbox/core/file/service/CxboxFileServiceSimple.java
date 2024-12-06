@@ -26,12 +26,8 @@ import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
-@Service
-@ConditionalOnMissingBean(CxboxFileService.class)
 public class CxboxFileServiceSimple implements CxboxFileService {
 
 	public static final String UNIQUE_PREFIX_SEPARATOR = ".";
