@@ -16,9 +16,6 @@
 
 package org.cxbox.core.file.conf;
 
-
-import org.cxbox.core.file.controller.CxboxFileController;
-import org.cxbox.core.file.controller.CxboxFileControllerSimple;
 import org.cxbox.core.file.service.CxboxFileService;
 import org.cxbox.core.file.service.CxboxFileServiceSimple;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +25,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CxboxFileConfiguration {
-
-	@Bean
-	@ConditionalOnMissingBean(CxboxFileController.class)
-	CxboxFileController cxboxFileController(CxboxFileService cxboxFileService) {
-		return new CxboxFileControllerSimple(cxboxFileService);
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(CxboxFileService.class)

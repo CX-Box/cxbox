@@ -53,7 +53,7 @@ public interface CxboxFileService {
 	 * @param source (deprecated)
 	 * @return file entity
 	 */
-	<D extends FileDownloadDto> D download(@NonNull String id, @Nullable String source);
+	FileDownloadDto download(@NonNull String id, @Nullable String source);
 
 
 	/**
