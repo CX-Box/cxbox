@@ -86,6 +86,26 @@
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
+        <artifactId>cxbox-dictionary-api-internal</artifactId>
+        <version>4.0.0-M12-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cxbox</groupId>
+        <artifactId>cxbox-dictionary-api</artifactId>
+        <version>4.0.0-M12-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cxbox</groupId>
+        <artifactId>cxbox-dictionary-jackson</artifactId>
+        <version>4.0.0-M12-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cxbox</groupId>
+        <artifactId>cxbox-dictionary-hibernate</artifactId>
+        <version>4.0.0-M12-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-crudma</artifactId>
         <version>4.0.0-M12-SNAPSHOT</version>
       </dependency>

@@ -33,13 +33,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(CXBOX_API_PATH_SPEL + "/file")
 @ConditionalOnMissingBean(CxboxFileController.class)
-public class CxboxFileControllerSimple implements CxboxFileController {
+public class CxboxFileControllerSimple implements CxboxFileController<StreamingResponseBody> {
 
 	private final CxboxFileService cxboxFileService;
 
@@ -53,9 +54,9 @@ public class CxboxFileControllerSimple implements CxboxFileController {
 
 	@Override
 	@GetMapping
-	public HttpEntity<byte[]> download(String id, String source, boolean preview) {
+	public HttpEntity<StreamingResponseBody> download(String id, String source, boolean preview) {
 		FileDownloadDto file = cxboxFileService.download(id, source);
-		return buildFileHttpEntity(file.getBytes(), file.getName(), file.getType(), preview);
+		return buildFileHttpEntity(file.getContent().get(), file.getLength(), file.getName(), file.getType(), preview);
 	}
 
 	@Override

@@ -16,17 +16,60 @@
 
 package org.cxbox.core.file.dto;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.function.Supplier;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 
 @Getter
-@RequiredArgsConstructor
 public class FileDownloadDto {
 
-	private final byte[] bytes;
+	private final Supplier<InputStream> content;
 
 	private final String name;
 
+	private final long length;
+
 	private final String type;
+
+	/**
+	 * deprecated. use {@link #FileDownloadDto(Supplier, long, String, String)}
+	 *
+	 * @param bytes file content
+	 * @param name file name
+	 * @param type file type
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
+	public FileDownloadDto(byte[] bytes, String name, String type) {
+		this.content = bytes.length == 0 ? null : () -> new ByteArrayInputStream(bytes);
+		this.length = bytes.length;
+		this.name = name;
+		this.type = type;
+	}
+
+	/**
+	 * @param content file content
+	 * @param name file name
+	 * @param type`file type
+	 */
+	public FileDownloadDto(@NonNull Supplier<InputStream> content, long length, String name, String type) {
+		this.content = content;
+		this.length = length;
+		this.name = name;
+		this.type = type;
+	}
+
+	/**
+	 * deprecated. use {@link #getContent()}
+	 *
+	 * @return file content
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
+	@SneakyThrows
+	public byte[] getBytes() {
+		return content == null ? new byte[0] : content.get().readAllBytes();
+	}
 
 }

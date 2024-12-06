@@ -16,6 +16,7 @@
 
 package org.cxbox.core.file.service;
 
+import java.io.IOException;
 import org.cxbox.core.file.dto.FileDownloadDto;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,7 +55,7 @@ public class CxboxFileServiceSimple implements CxboxFileService {
 		String id = UUID.randomUUID().toString().replaceAll("-", "")
 				+ UNIQUE_PREFIX_SEPARATOR
 				+ file.getName();
-		FileCopyUtils.copy(file.getBytes(), Files.newOutputStream(getPathFromId(id)));
+		FileCopyUtils.copy(file.getContent().get(), Files.newOutputStream(getPathFromId(id)));
 		return id;
 	}
 
@@ -63,7 +64,14 @@ public class CxboxFileServiceSimple implements CxboxFileService {
 	public FileDownloadDto download(@NonNull String id, @Nullable String source) {
 		Path path = getPathFromId(id);
 		return new FileDownloadDto(
-				Files.readAllBytes(path),
+				() -> {
+					try {
+						return Files.newInputStream(path);
+					} catch (IOException e) {
+						throw new IllegalStateException(e);
+					}
+				},
+				Files.size(path),
 				path.getFileName().toString().substring(0, path.getFileName().toString().indexOf(UNIQUE_PREFIX_SEPARATOR)),
 				Files.probeContentType(path)
 		);

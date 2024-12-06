@@ -37,6 +37,7 @@ import lombok.SneakyThrows;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.crudma.bc.BcRegistry;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
+import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.data.BcSourceBaseDTO;
 import org.cxbox.meta.data.BusinessComponentDTO;
 import org.cxbox.meta.data.BusinessObjectDTO;
@@ -73,7 +74,7 @@ public class ScreenMapper {
 
 	private final MetaConfigurationProperties metaConfigurationProperties;
 
-	public ScreenDTO map(ScreenSourceDto dto, Map<String, ViewDTO> viewNameToView, Map<String, BcProperties> bcProps, Map<String, List<FilterGroup>> filterGroupsAll) {
+	public ScreenResponsibility map(ScreenSourceDto dto, Map<String, ViewDTO> viewNameToView, Map<String, BcProperties> bcProps, Map<String, List<FilterGroup>> filterGroupsAll) {
 		List<String> currentScreenViewNames = new ArrayList<>();
 		ScreenDTO screenDTO = new ScreenDTO()
 				.setName(dto.getName())
@@ -88,7 +89,14 @@ public class ScreenMapper {
 				.setBo(getBusinessObject(intersection(viewNameToView, currentScreenViewNames).collect(Collectors.toMap(ViewDTO::getName, e -> e)), bcProps, filterGroupsAll))
 				.setPrimaries(JsonUtils.serializeOrElseNull(objectMapper, dto.getPrimaryViews()));
 		screenDTO.setId(String.valueOf(screenSeq.getAndIncrement()));
-		return screenDTO;
+		return new ScreenResponsibility()
+				.setMeta(screenDTO)
+				.setName(dto.getName())
+				.setOrder(dto.getOrder())
+				.setIcon(dto.getIcon())
+				.setText(dto.getTitle())
+				.setUrl("/screen/" + dto.getName())
+				.setId(screenDTO.getId());
 	}
 
 	private static Stream<ViewDTO> intersection(Map<String, ViewDTO> viewNameToView, List<String> screenViewsNames) {

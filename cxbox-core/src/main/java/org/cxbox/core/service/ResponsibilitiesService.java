@@ -28,7 +28,7 @@ public interface ResponsibilitiesService {
 
 	Map<String, Boolean> getAvailableViews(IUser<Long> user, String userRole);
 
-	List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, String userRole);
+	List<ScreenResponsibility> getOverrideScreensResponsibilities(IUser<Long> user, String userRole);
 
 	List<String> getAvailableScreenViews(String screenName, IUser<Long> user, String userRole);
 

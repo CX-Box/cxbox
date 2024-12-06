@@ -17,8 +17,10 @@
 package org.cxbox.meta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.ScreenResponsibilityService;
@@ -26,7 +28,6 @@ import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.dto.ScreenResponsibility;
-import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.metahotreload.repository.UserMetaProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -54,13 +55,27 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	 */
 	@Override
 	public List<ScreenResponsibility> getScreens(IUser<Long> user, String userRole) {
-		var result = respService.getAvailableScreensResponsibilities(user, userRole);
-		Map<String, ScreenDTO> allUserScreens = userMetaProvider.getScreens(user, userRole);
-		result.forEach(resp -> {
-			String screenName = resp.getName();
-			ScreenDTO screenDto = allUserScreens.get(screenName);
-			resp.setMeta(screenDto);
-		});
-		return result;
+		var allOverrides = respService.getOverrideScreensResponsibilities(user, userRole);
+		Map<String, ScreenResponsibility> allUserScreens = userMetaProvider.getAvailableScreensResponsibilities(
+				user,
+				userRole
+		);
+		allOverrides.forEach(override -> allUserScreens.computeIfPresent(
+						override.getName(),
+						(key, old) -> new ScreenResponsibility()
+								.setId(old.getId())
+								.setUrl(old.getUrl())
+								.setMeta(old.getMeta())
+								.setName(override.getName())
+								.setOrder(Optional.ofNullable(override.getOrder()).orElse(Optional.ofNullable(old.getOrder()).orElse(0)))
+								.setText(Optional.ofNullable(override.getText()).orElse(old.getText()))
+								.setIcon(Optional.ofNullable(override.getIcon()).orElse(old.getIcon()))
+
+				)
+		);
+		return allUserScreens.values().stream()
+				.sorted(Comparator.comparing(ScreenResponsibility::getOrder).thenComparing(ScreenResponsibility::getName))
+				.toList();
 	}
+
 }

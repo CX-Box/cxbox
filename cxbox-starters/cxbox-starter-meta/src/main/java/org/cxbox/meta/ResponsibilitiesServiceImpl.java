@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.CoreDictionaries;
@@ -35,6 +36,7 @@ import org.cxbox.api.util.Invoker;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.dto.ScreenResponsibility;
+import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
@@ -43,6 +45,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 
+@Slf4j
 @RequiredArgsConstructor
 public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 
@@ -70,7 +73,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	}
 
 	@SneakyThrows
-	public List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, String userRole) {
+	public List<ScreenResponsibility> getOverrideScreensResponsibilities(IUser<Long> user, String userRole) {
 		String screens = metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.SCREEN)
 				.stream()
 				.map(Responsibilities::getScreens)
@@ -79,7 +82,24 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 				.orElse(null);
 		List<ScreenResponsibility> result = new ArrayList<>();
 		if (StringUtils.isNotBlank(screens)) {
-			result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
+			try {
+				result.addAll(objectMapper.readValue(screens, ScreenResponsibility.LIST_TYPE_REFERENCE));
+			} catch (Exception e) {
+				var example = """
+						[{
+						"name": "client",
+						"text": "Client",
+						"icon": "team",
+						"order": 999
+						}]
+						""";
+				log.error("Screen params (name*, text, icon, order) override for role " + userRole
+						+ " is skipped. Default values from *.screen.json will be used. "
+						+ " \n Reason: cannot deserialize " + screens
+						+ " to org.cxbox.dto.ScreenResponsibility array. "
+						+ " \n Valid example is (name is required. other fields are optional): "
+						+ example, e);
+			}
 		}
 		return result;
 	}
@@ -100,8 +120,9 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	public List<String> getAvailableScreenViews(String screenName, IUser<Long> user, String userRole) {
 		final Set<String> availableViews = this.getAvailableViews(user, userRole).keySet();
 		final boolean getAll = Objects.equals(userRole, CoreDictionaries.InternalRole.ADMIN);
-		var screenViews = metaRepository.getAllScreens().get(screenName).getViews().stream().map(ViewDTO::getName).collect(
-				Collectors.toSet());
+		var screenViews = ((ScreenDTO) metaRepository.getAllScreens().get(screenName).getMeta()).getViews().stream()
+				.map(ViewDTO::getName).collect(
+						Collectors.toSet());
 		var result = getAll ? screenViews : CxCollections.intersection(screenViews, availableViews);
 		return new ArrayList<>(result);
 	}

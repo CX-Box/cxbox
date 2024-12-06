@@ -61,7 +61,7 @@ public class Responsibilities extends BaseEntity {
 
 	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "DEPT_ID")
-	private Long departmentId;
+	private Long departmentId = 0L;
 
 	@Column(name = "RESPONSIBILITIES")
 	private String view;
@@ -74,7 +74,7 @@ public class Responsibilities extends BaseEntity {
 	private boolean readOnly;
 
 	@Lob
-	@JdbcTypeCode(Types.CLOB)
+	@JdbcTypeCode(Types.VARCHAR)
 	private String screens;
 
 	public enum ResponsibilityType {
