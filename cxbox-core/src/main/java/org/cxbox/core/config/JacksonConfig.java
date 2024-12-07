@@ -34,6 +34,7 @@ import org.cxbox.api.util.jackson.deser.contextual.TZAwareLDTContextualDeseriali
 import org.cxbox.api.util.jackson.ser.contextual.I18NAwareStringContextualSerializer;
 import org.cxbox.api.util.jackson.ser.contextual.TZAwareJUDContextualSerializer;
 import org.cxbox.api.util.jackson.ser.contextual.TZAwareLDTContextualSerializer;
+import org.cxbox.core.config.properties.ScreenResolverProperties;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.dictionary.DictionaryProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -42,7 +43,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.SpringHandlerInstantiator;
 
-@EnableConfigurationProperties(WidgetFieldsIdResolverProperties.class)
+@EnableConfigurationProperties({WidgetFieldsIdResolverProperties.class, ScreenResolverProperties.class})
 public class JacksonConfig {
 
 	@Bean(CxboxBeanProperties.OBJECT_MAPPER)
