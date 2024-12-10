@@ -78,12 +78,20 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public Set<String> getSessionUserRoles() {
 		CxboxUserDetailsInterface userDetails = coreSessionService.getSessionUserDetails(true);
-		return userDetails.getUserRoles();
+		Set<String> userRoles = userDetails.getUserRoles();
+		if (userRoles.isEmpty()) {
+			return Set.of(getRequestedRoleOrElseMain(userDetails, null));
+		}
+		return userRoles;
 	}
 
 	private String calculateUserRole(HttpServletRequest request, CxboxUserDetailsInterface userDetails) {
-		String mainRole = userDetails.getUserRoles().stream().findFirst().orElse(null);
 		String requestedRole = request.getHeader("RequestedUserRole");
+		return getRequestedRoleOrElseMain(userDetails, requestedRole);
+	}
+
+	private static String getRequestedRoleOrElseMain(CxboxUserDetailsInterface userDetails, String requestedRole) {
+		String mainRole = userDetails.getUserRoles().stream().findFirst().orElse(null);
 		if (StringUtils.isBlank(requestedRole)) {
 			return mainRole;
 		}
