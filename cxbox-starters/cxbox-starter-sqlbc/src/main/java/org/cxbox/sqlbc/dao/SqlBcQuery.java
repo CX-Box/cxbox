@@ -220,7 +220,7 @@ public final class SqlBcQuery {
 		private void fillParameterSource(String id, String parentId, QueryParameters queryParameters) {
 			int from = queryParameters.getPageNumber() * queryParameters.getPageSize();
 			int to = from + queryParameters.getPageSize() + 1;
-			String userRole = Optional.ofNullable(sessionService.getSessionUserRole()).orElse("");
+			String userRole = String.join(",", sessionService.getSessionUserRoles());
 			parameterSource
 					.addValue("userid", sessionService.getSessionUser().getId())
 					.addValue("userrole", userRole)

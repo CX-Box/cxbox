@@ -118,7 +118,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 		return responsibilitiesService.getAvailableScreenViews(
 				screenName,
 				sessionService.getSessionUser(),
-				sessionService.getSessionUserRole()
+				sessionService.getSessionUserRoles()
 		);
 	}
 

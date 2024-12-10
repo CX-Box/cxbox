@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -60,7 +61,7 @@ public class UserMetaProvider {
 			cacheNames = CacheConfig.USER_CACHE,
 			key = "{#root.methodName, #user.id, #userRole}"
 	)
-	public Map<String, ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, String userRole) {
+	public Map<String, ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, Set<String> userRole) {
 		Map<String, ScreenResponsibility> allScreens = metaRepository.getAllScreens();
 
 		Map<String, ScreenResponsibility> allUserScreens = SerializationUtils.clone((HashMap<String, ScreenResponsibility>) allScreens);

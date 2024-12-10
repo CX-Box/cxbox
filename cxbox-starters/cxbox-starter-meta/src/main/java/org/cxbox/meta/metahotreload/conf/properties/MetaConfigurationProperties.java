@@ -34,6 +34,10 @@ public class MetaConfigurationProperties {
 
 	private boolean viewAllowedRolesEnabled = false;
 
+	private boolean widgetActionGroupsEnabled = true;
+
+	private boolean widgetActionGroupsCompact = true;
+
 	@NotNull(message = "Path to meta files directory. Supports file: or classpath: prefix. "
 			+ "Example of usage is: applicationContext.getResources(directory + widgetPath)")
 	private String directory = "classpath*:db/migration/liquibase/data/latest";

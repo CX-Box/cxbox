@@ -25,6 +25,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("cxbox.ui")
 public class UIProperties {
 
+	public static final String MULTI_ROLE_ENABLED  = "multiRoleEnabled";
+
 	/**
 	 ** Use only when useServletContextPath = false;
 	 */
@@ -36,5 +38,7 @@ public class UIProperties {
 	private int uiLockTimeoutMs = -1;
 
 	private String systemUrl = null;
+
+	private boolean multiRoleEnabled = false;
 
 }

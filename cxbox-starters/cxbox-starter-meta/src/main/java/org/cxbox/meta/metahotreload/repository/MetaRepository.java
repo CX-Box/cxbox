@@ -18,8 +18,10 @@ package org.cxbox.meta.metahotreload.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
@@ -106,7 +108,7 @@ public class MetaRepository {
 		);
 	}
 
-	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, String userRole,
+	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, @NonNull Set<String> userRole,
 			ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
 
@@ -114,7 +116,7 @@ public class MetaRepository {
 				Responsibilities.class,
 				(root, cq, cb) -> cb.and(
 						cb.equal(root.get(Responsibilities_.departmentId), user.getDepartmentId()),
-						cb.equal(root.get(Responsibilities_.internalRoleCD), userRole),
+						root.get(Responsibilities_.internalRoleCD).in(userRole),
 						cb.equal(root.get(Responsibilities_.responsibilityType), responsibilityType)
 				)
 		);

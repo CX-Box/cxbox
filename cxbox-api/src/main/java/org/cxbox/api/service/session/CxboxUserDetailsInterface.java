@@ -16,6 +16,7 @@
 
 package org.cxbox.api.service.session;
 
+import lombok.NonNull;
 import org.cxbox.api.data.dictionary.LOV;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +33,8 @@ public interface CxboxUserDetailsInterface extends UserDetails, IUser<Long> {
 
 	String getPassword();
 
-	String getUserRole();
+	@NonNull
+	Set<String> getUserRoles();
 
 	LOV getTimezone();
 
@@ -46,7 +48,7 @@ public interface CxboxUserDetailsInterface extends UserDetails, IUser<Long> {
 
 	CxboxUserDetailsInterface setPassword(String password);
 
-	CxboxUserDetailsInterface setUserRole(String userRole);
+	CxboxUserDetailsInterface setUserRoles(Set<String> userRole);
 
 	CxboxUserDetailsInterface setTimezone(LOV timezone);
 

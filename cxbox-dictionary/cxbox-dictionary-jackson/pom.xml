@@ -22,13 +22,13 @@
 
   <artifactId>cxbox-dictionary-jackson</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M12-SNAPSHOT</version>
+  <version>4.0.0-M12-CXBOX-643-Part2-ROLE_ACTION_SNAPSHOT</version>
   <name>IO Cxbox - Dictionary Jackson</name>
 
   <parent>
     <artifactId>cxbox-dictionary</artifactId>
     <groupId>org.cxbox</groupId>
-    <version>4.0.0-M12-SNAPSHOT</version>
+    <version>4.0.0-M12-CXBOX-643-Part2-ROLE_ACTION_SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 

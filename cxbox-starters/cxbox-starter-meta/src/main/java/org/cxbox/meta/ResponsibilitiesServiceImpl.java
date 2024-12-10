@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -60,7 +61,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.USER_CACHE}, key = "{#root.methodName, #user.id, #userRole}")
-	public Map<String, Boolean> getAvailableViews(IUser<Long> user, String userRole) {
+	public Map<String, Boolean> getAvailableViews(IUser<Long> user, @NonNull Set<String> userRole) {
 		return metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.VIEW)
 				.stream()
 				.collect(
@@ -73,7 +74,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 	}
 
 	@SneakyThrows
-	public List<ScreenResponsibility> getOverrideScreensResponsibilities(IUser<Long> user, String userRole) {
+	public List<ScreenResponsibility> getOverrideScreensResponsibilities(IUser<Long> user, @NonNull Set<String> userRole) {
 		String screens = metaRepository.getResponsibilityByUserAndRole(user, userRole, ResponsibilityType.SCREEN)
 				.stream()
 				.map(Responsibilities::getScreens)
@@ -117,7 +118,7 @@ public class ResponsibilitiesServiceImpl implements ResponsibilitiesService {
 			cacheNames = {CacheConfig.USER_CACHE},
 			key = "{#root.methodName, #screenName, #user.id, #userRole}"
 	)
-	public List<String> getAvailableScreenViews(String screenName, IUser<Long> user, String userRole) {
+	public List<String> getAvailableScreenViews(String screenName, IUser<Long> user, @NonNull Set<String> userRole) {
 		final Set<String> availableViews = this.getAvailableViews(user, userRole).keySet();
 		final boolean getAll = Objects.equals(userRole, CoreDictionaries.InternalRole.ADMIN);
 		var screenViews = ((ScreenDTO) metaRepository.getAllScreens().get(screenName).getMeta()).getViews().stream()

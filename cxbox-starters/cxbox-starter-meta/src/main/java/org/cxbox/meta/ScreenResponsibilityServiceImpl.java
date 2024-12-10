@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.ScreenResponsibilityService;
@@ -54,7 +55,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	 * @return JsonNode Available screens
 	 */
 	@Override
-	public List<ScreenResponsibility> getScreens(IUser<Long> user, String userRole) {
+	public List<ScreenResponsibility> getScreens(IUser<Long> user, Set<String> userRole) {
 		var allOverrides = respService.getOverrideScreensResponsibilities(user, userRole);
 		Map<String, ScreenResponsibility> allUserScreens = userMetaProvider.getAvailableScreensResponsibilities(
 				user,
