@@ -22,6 +22,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.*;
@@ -29,6 +30,7 @@ import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.service.ResponseFactory;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.service.action.ActionDescription;
+import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.cxbox.core.service.rowmeta.RowResponseService;
 import lombok.SneakyThrows;
@@ -159,6 +161,15 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	public long count(BusinessComponent bc) {
 		ResponseService<?, ?> responseService = getResponseService(bc.getDescription());
 		return responseService.count(bc);
+	}
+
+	@Override
+	public Actions getActions(BcDescription bcDescription) {
+		if (bcDescription instanceof InnerBcDescription inner) {
+			return respFactory.getService(inner).getActions();
+		} else {
+			return Actions.builder().build();
+		}
 	}
 
 	private ResponseService<?, ?> getResponseService(InnerBcDescription innerBcDescription) {

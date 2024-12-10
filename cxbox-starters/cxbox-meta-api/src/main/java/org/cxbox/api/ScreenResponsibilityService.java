@@ -16,6 +16,7 @@
 
 package org.cxbox.api;
 
+import java.util.Set;
 import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.api.service.session.IUser;
 
@@ -26,6 +27,6 @@ import java.util.List;
  */
 public interface ScreenResponsibilityService {
 
-	List<ScreenResponsibility> getScreens(IUser<Long> user, String userRole);
+	List<ScreenResponsibility> getScreens(IUser<Long> user, Set<String> userRole);
 
 }

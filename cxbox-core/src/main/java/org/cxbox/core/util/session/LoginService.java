@@ -21,6 +21,6 @@ import org.cxbox.core.dto.LoggedUser;
 
 public interface LoginService {
 
-	LoggedUser getLoggedUser(String role);
+	LoggedUser getLoggedUser(String roles);
 
 }
