@@ -34,6 +34,7 @@ import org.cxbox.meta.entity.FilterGroup;
 import org.cxbox.meta.entity.FilterGroup_;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
+import org.cxbox.meta.entity.ResponsibilitiesAction;
 import org.cxbox.meta.entity.Responsibilities_;
 import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
@@ -58,6 +59,11 @@ public class MetaRepository {
 
 	public List<BcSourceDTO> getBcs() {
 		return metaResourceReaderService.getBcs();
+	}
+
+	public void deleteAndSaveResponsibilitiesAction(List<ResponsibilitiesAction> responsibilitiesActions) {
+		jpaDao.delete(ResponsibilitiesAction.class, (root, query, cb) -> cb.and());
+		jpaDao.saveAll(responsibilitiesActions);
 	}
 
 	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities) {
