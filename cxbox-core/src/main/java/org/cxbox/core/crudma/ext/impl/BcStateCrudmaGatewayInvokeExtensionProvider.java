@@ -211,7 +211,7 @@ public class BcStateCrudmaGatewayInvokeExtensionProvider implements CrudmaGatewa
 		}
 	}
 
-	private ResponseService<?, ?> getResponseService(BusinessComponent bc) {
+	public ResponseService<?, ?> getResponseService(BusinessComponent bc) {
 		return respFactory.getService(bc.getDescription());
 	}
 

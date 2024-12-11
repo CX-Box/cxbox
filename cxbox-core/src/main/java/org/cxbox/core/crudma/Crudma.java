@@ -21,12 +21,14 @@ import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.core.crudma.bc.BusinessComponent;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.AssociateResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import java.util.List;
 import java.util.Map;
+import org.cxbox.core.service.action.Actions;
 
 
 public interface Crudma {
@@ -142,5 +144,13 @@ public interface Crudma {
 	 * @return count
 	 */
 	long count(BusinessComponent bc);
+
+
+	/**
+	 * Recommended way to build actions. Usually used in getMeta, getMetaNew, getMetaEmpty implicitly (but can be enriched with other actions not listed in getActions (from external systems for example), so potentially getActions does not return FULL list of actions)
+	 * @param bcDescription
+	 * @return
+	 */
+	Actions getActions(BcDescription bcDescription);
 
 }

@@ -26,6 +26,7 @@ import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.core.crudma.Crudma;
 import org.cxbox.core.crudma.bc.BusinessComponent;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
 import org.cxbox.core.dto.rowmeta.AssociateResultDTO;
@@ -34,6 +35,7 @@ import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.RowMetaDTO;
 import java.util.List;
 import java.util.Map;
+import org.cxbox.core.service.action.Actions;
 
 
 public abstract class AbstractCrudmaService implements Crudma {
@@ -68,6 +70,13 @@ public abstract class AbstractCrudmaService implements Crudma {
 	public ActionResultDTO delete(BusinessComponent bc) {
 		throw new UnsupportedOperationException(errorMessage("error.unsupported_operation"));
 	}
+
+	@Override
+	public Actions getActions(BcDescription bcDescription) {
+		return Actions.builder()
+				.build();
+	}
+
 
 	@Override
 	public ActionResultDTO invokeAction(BusinessComponent bc,

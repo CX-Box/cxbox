@@ -16,6 +16,7 @@
 
 package org.cxbox.core.service.action;
 
+import lombok.Getter;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -28,8 +29,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Actions<T extends DataResponseDTO> {
 
+	@Getter
 	final List<ActionDescription<T>> actionDefinitions;
 
+	@Getter
 	final List<ActionGroupDescription<T>> actionGroupDefinitions;
 
 	public static <T extends DataResponseDTO> ActionsBuilder<T> builder() {
