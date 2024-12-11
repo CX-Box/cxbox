@@ -20,25 +20,22 @@ import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
 import static org.hibernate.id.OptimizableGenerator.INITIAL_PARAM;
 import static org.hibernate.id.OptimizableGenerator.OPT_PARAM;
 
-import java.sql.Types;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import java.util.Objects;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.hbn.ExtSequenceGenerator;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
-import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
@@ -46,42 +43,45 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-@Table(name = "RESPONSIBILITIES")
+@Table(name = "responsibilities_action")
 @ExtSequenceGenerator(
 		parameters = {
 				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
 				@Parameter(name = INITIAL_PARAM, value = "1"),
 				@Parameter(name = INCREMENT_PARAM, value = "100"),
-				@Parameter(name = OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
+				@Parameter(name = OPT_PARAM, value = "pooled-lo")
 		}
 )
 @EqualsAndHashCode(callSuper = true)
-public class Responsibilities extends BaseEntity {
+public class ResponsibilitiesAction extends BaseEntity {
 
+	public static final String ANY_INTERNAL_ROLE_CD = "*";
+
+	public static final String ANY_VIEW = "*";
+
+	/**
+	 * role or *
+	 */
 	@Column(name = "INTERNAL_ROLE_CD")
-	private String internalRoleCD;
+	private String internalRoleCD = ANY_INTERNAL_ROLE_CD;
 
-	@JdbcTypeCode(SqlTypes.NUMERIC)
-	@Column(name = "DEPT_ID")
-	private Long departmentId = 0L;
 
-	@Column(name = "RESPONSIBILITIES")
-	private String view;
+	@Column(name = "ACTION")
+	private String action;
 
-	@Column(name = "RESP_TYPE")
-	@Enumerated(EnumType.STRING)
-	private ResponsibilityType responsibilityType;
+	/**
+	 * .view.json -> name or *
+	 */
+	@Column(name = "VIEW")
+	private String view = ANY_VIEW;
 
-	@Column(name = "READ_ONLY")
-	private boolean readOnly;
+	@Column(name = "WIDGET")
+	private String widget;
 
-	@Lob
-	@JdbcTypeCode(Types.VARCHAR)
-	private String screens;
-
-	public enum ResponsibilityType {
-		VIEW,
-		SCREEN
+	public boolean isAvailable(@NonNull Set<String> roles, @NonNull String view, @NonNull String widget) {
+		return (ANY_INTERNAL_ROLE_CD.equals(this.getInternalRoleCD()) || roles.contains(this.getInternalRoleCD())) &&
+				(ANY_VIEW.equals(this.getView()) || view.contains(this.getView())) &&
+				Objects.equals(widget, this.getWidget());
 	}
 
 }

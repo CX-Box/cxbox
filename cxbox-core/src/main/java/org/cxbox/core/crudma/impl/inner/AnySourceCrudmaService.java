@@ -28,6 +28,7 @@ import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
@@ -39,6 +40,7 @@ import org.cxbox.core.dao.AnySourceBaseDAO;
 import org.cxbox.core.service.AnySourceResponseFactory;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionDescription;
+import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.AnySourceRowResponseService;
 import org.cxbox.core.service.rowmeta.RowMetaType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,6 +173,15 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 
 	private AnySourceResponseService<?, ?> getResponseService(AnySourceBcDescription anySourceBcDescription) {
 		return respFactory.getService(anySourceBcDescription);
+	}
+
+	@Override
+	public Actions getActions(BcDescription bcDescription) {
+		if (bcDescription instanceof AnySourceBcDescription any) {
+			return respFactory.getService(any).getActions();
+		} else {
+			return Actions.builder().build();
+		}
 	}
 
 	@SneakyThrows

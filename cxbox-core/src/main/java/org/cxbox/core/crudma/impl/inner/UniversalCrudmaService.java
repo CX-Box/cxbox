@@ -27,6 +27,7 @@ import org.cxbox.api.data.dto.UniversalDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.crudma.bc.BusinessComponent;
+import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
@@ -161,6 +162,11 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	@Override
 	public MetaDTO getMetaEmpty(BusinessComponent bc) {
 		return buildMeta(Collections.emptyList(), getActions().toDto(bc));
+	}
+
+	@Override
+	public Actions getActions(BcDescription bcDescription) {
+		return getActions();
 	}
 
 	public Actions<D> getActions() {

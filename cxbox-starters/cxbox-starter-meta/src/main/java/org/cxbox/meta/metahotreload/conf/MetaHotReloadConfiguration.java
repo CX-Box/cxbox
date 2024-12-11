@@ -17,10 +17,12 @@
 package org.cxbox.meta.metahotreload.conf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.MetaHotReloadService;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.metahotreload.service.MetaHotReloadServiceImpl;
@@ -49,12 +51,14 @@ public class MetaHotReloadConfiguration {
 			MetaResourceReaderService metaResourceReaderService,
 			InternalAuthorizationService authzService,
 			TransactionService txService,
-			MetaRepository metaRepository) {
+			MetaRepository metaRepository,
+			Optional<DictionaryProvider> dictionaryProvider) {
 		return new MetaHotReloadServiceImpl(
 				config,
 				metaResourceReaderService,
 				authzService,
 				txService,
-				metaRepository);
+				metaRepository,
+				dictionaryProvider);
 	}
 }
