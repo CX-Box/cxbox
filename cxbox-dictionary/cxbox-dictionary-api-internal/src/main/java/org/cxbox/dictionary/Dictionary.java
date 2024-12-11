@@ -112,13 +112,20 @@ import lombok.SneakyThrows;
  * Provide following <code>project level</code> configurations to use dictionary:
  * <br>
  * A.2.1 <code>hibernate</code>: if you microservice uses hibernate, then add dependency, that will allow you to use {@link org.cxbox.dictionary.hibernate.DictionaryType} under entity column, e.g. <code>@Type(DictionaryType.class)</code>:
+ * <br>
+ * <pre>{@code
+ * <dependency>
+ *   <groupId>org.cxbox</groupId>
+ *   <artifactId>cxbox-dictionary-hibernate</artifactId>
+ * </dependency>
+ * }</pre>
+ * Also, you can turn on auto type registration setting org.cxbox.dictionary.enable_types_contributor=true in hibernate properties, e.g. in spring:
  * <pre>{@code
  * <dependency>
  *   <groupId>org.cxbox</groupId>
  *   <artifactId>cxbox-dictionary-api</artifactId>
  * </dependency>
  * }</pre>
- * Also, you can turn on auto type registration setting org.cxbox.dictionary.enable_types_contributor=true in hibernate properties, e.g. in spring:
  * <pre>{@code
  * spring:
  *  jpa:

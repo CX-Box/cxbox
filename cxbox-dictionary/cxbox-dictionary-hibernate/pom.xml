@@ -41,7 +41,7 @@
   <dependencies>
     <dependency>
       <groupId>org.cxbox</groupId>
-      <artifactId>cxbox-dictionary-api</artifactId>
+      <artifactId>cxbox-dictionary-api-internal</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
