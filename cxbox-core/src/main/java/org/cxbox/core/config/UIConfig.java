@@ -36,25 +36,15 @@ public class UIConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		if (uiProperties.getUseServletContextPath()) {
-			registry.addResourceHandler("/**").addResourceLocations("classpath:/ui/");
-		} else {
-			registry.addResourceHandler(uiProperties.getPath() + "/**").addResourceLocations("classpath:/ui/");
-		}
+		registry.addResourceHandler(uiProperties.getPath() + "/**").addResourceLocations("classpath:/ui/");
 	}
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		if (uiProperties.getUseServletContextPath()) {
-			registry.addRedirectViewController("/ui", "/ui/");
-			registry.addViewController("/").setViewName("index");
-			registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		} else {
-			registry.addRedirectViewController("/", uiProperties.getPath() + "/");
-			registry.addRedirectViewController(uiProperties.getPath(), uiProperties.getPath() + "/");
-			registry.addViewController(uiProperties.getPath() + "/").setViewName("index");
-			registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		}
+		registry.addRedirectViewController("/", uiProperties.getPath() + "/");
+		registry.addRedirectViewController(uiProperties.getPath(), uiProperties.getPath() + "/");
+		registry.addViewController(uiProperties.getPath() + "/").setViewName("index");
+		registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
 	}
 
 	@Bean

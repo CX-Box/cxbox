@@ -81,10 +81,10 @@ public class DictionaryCacheImpl implements DictionaryCache {
 	}
 
 	/**
-	 * @param type dictionary type
-	 * @param key dictionary key
-	 * @return SimpleDictionary
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
 	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public SimpleDictionary get(IDictionaryType type, String key) {
 		return getDictByKey(type.getName(), key);
@@ -96,9 +96,10 @@ public class DictionaryCacheImpl implements DictionaryCache {
 	}
 
 	/**
-	 * @param dictionaryType dictionary type
-	 * @return SimpleDictionary
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
 	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public Collection<SimpleDictionary> getAll(IDictionaryType dictionaryType) {
 		return getAll(dictionaryType.getName());
@@ -112,12 +113,10 @@ public class DictionaryCacheImpl implements DictionaryCache {
 	}
 
 	/**
-	 * Finding dictionary values by key
-	 *
-	 * @param key key
-	 * @param type dictionary type
-	 * @return value of the dictionary
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
 	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public String lookupValue(LOV key, IDictionaryType type) {
 		if (key == null || type == null) {
@@ -126,6 +125,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return lookupValue(key, type.getName());
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public String lookupValue(LOV key, String type) {
 		if (key == null || type == null) {
@@ -138,6 +142,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return dto.getValue();
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public String lookupValueNullable(LOV key, IDictionaryType type) {
 		if (key == null || type == null) {
@@ -147,6 +156,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return dto != null ? dto.getValue() : null;
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	private SimpleDictionary getDictByKey(IDictionaryType type, String key) {
 		if (key == null || type == null) {
 			return null;
@@ -165,6 +179,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 				.orElse(null);
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	private SimpleDictionary getDictByVal(IDictionaryType type, String val) {
 		if (val == null || type == null) {
 			return null;
@@ -184,12 +203,10 @@ public class DictionaryCacheImpl implements DictionaryCache {
 	}
 
 	/**
-	 * Finding a key in the dictionary by value
-	 *
-	 * @param val value
-	 * @param type dictionary type
-	 * @return dictionary key
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
 	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public LOV lookupName(String val, IDictionaryType type) {
 		if (val == null || type == null) {
@@ -198,6 +215,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return lookupName(val, type.getName());
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public LOV lookupName(String val, String type) {
 		if (val == null || type == null) {
@@ -210,6 +232,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return new LOV(dto.getKey());
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public boolean containsKey(String key, IDictionaryType type) {
 		if (key == null || type == null) {
@@ -218,6 +245,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return getDictByKey(type, key) != null;
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public boolean containsKey(LOV key, IDictionaryType type) {
 		if (key == null || type == null) {
@@ -226,6 +258,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return containsKey(key.getKey(), type);
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public boolean containsValue(String value, IDictionaryType type) {
 		if (value == null || type == null) {
@@ -234,6 +271,11 @@ public class DictionaryCacheImpl implements DictionaryCache {
 		return getDictByVal(type, value) != null;
 	}
 
+	/**
+	 * @deprecated
+	 * LOV is deprecated. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+	 */
+	@Deprecated(since = "4.0.0-M12", forRemoval = true)
 	@Override
 	public String getDescription(String key, IDictionaryType type) {
 		if (key == null || type == null) {

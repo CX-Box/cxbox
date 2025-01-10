@@ -16,6 +16,7 @@
 
 package org.cxbox.core.file.service;
 
+import java.io.IOException;
 import org.cxbox.core.file.dto.FileDownloadDto;
 import jakarta.annotation.Nullable;
 import lombok.NonNull;
@@ -25,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface CxboxFileService {
 
 	/**
-	 *
 	 * @param file entity to be saved
 	 * @param source (deprecated)
 	 * @return unique file id
@@ -33,14 +33,19 @@ public interface CxboxFileService {
 	<D extends FileDownloadDto> String upload(@NonNull D file, @Nullable String source);
 
 	/**
-	 *
 	 * @param file entity to be saved
 	 * @param source (deprecated)
 	 * @return unique file id
 	 */
 	@SneakyThrows
 	default String upload(@NonNull MultipartFile file, @Nullable String source) {
-		return upload(new FileDownloadDto(file.getBytes(), file.getOriginalFilename(), file.getContentType()), source);
+		return upload(new FileDownloadDto(() -> {
+			try {
+				return file.getInputStream();
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
+		}, file.getSize(), file.getOriginalFilename(), file.getContentType()), source);
 	}
 
 	/**
@@ -48,13 +53,13 @@ public interface CxboxFileService {
 	 * @param source (deprecated)
 	 * @return file entity
 	 */
-	<D extends FileDownloadDto> D download(@NonNull String id, @Nullable String source);
+	FileDownloadDto download(@NonNull String id, @Nullable String source);
 
 
 	/**
 	 * @param id unique file id, that was returned by upload(...) method
 	 * @param source (deprecated)
 	 */
-	void remove(@NonNull  String id, @Nullable  String source);
+	void remove(@NonNull String id, @Nullable String source);
 
 }

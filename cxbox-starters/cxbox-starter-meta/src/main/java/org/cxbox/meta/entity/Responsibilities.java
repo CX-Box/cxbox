@@ -21,7 +21,6 @@ import static org.hibernate.id.OptimizableGenerator.INITIAL_PARAM;
 import static org.hibernate.id.OptimizableGenerator.OPT_PARAM;
 
 import java.sql.Types;
-import org.cxbox.api.data.dictionary.LOV;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,6 +28,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -55,14 +55,15 @@ import org.hibernate.type.SqlTypes;
 				@Parameter(name = OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
 		}
 )
+@EqualsAndHashCode(callSuper = true)
 public class Responsibilities extends BaseEntity {
 
 	@Column(name = "INTERNAL_ROLE_CD")
-	private LOV internalRoleCD;
+	private String internalRoleCD;
 
 	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column(name = "DEPT_ID")
-	private Long departmentId;
+	private Long departmentId = 0L;
 
 	@Column(name = "RESPONSIBILITIES")
 	private String view;
@@ -75,7 +76,7 @@ public class Responsibilities extends BaseEntity {
 	private boolean readOnly;
 
 	@Lob
-	@JdbcTypeCode(Types.CLOB)
+	@JdbcTypeCode(Types.VARCHAR)
 	private String screens;
 
 	public enum ResponsibilityType {

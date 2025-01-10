@@ -16,7 +16,8 @@
 
 package org.cxbox.core.util.session;
 
-import org.cxbox.api.data.dictionary.LOV;
+import java.util.Set;
+import lombok.NonNull;
 import org.cxbox.api.service.session.IUser;
 
 
@@ -26,7 +27,10 @@ public interface SessionService {
 
 	Long getSessionUserDepartmentId();
 
-	LOV getSessionUserRole();
+	String getSessionUserRole();
+
+	@NonNull
+	Set<String> getSessionUserRoles();
 
 	String getSessionId();
 

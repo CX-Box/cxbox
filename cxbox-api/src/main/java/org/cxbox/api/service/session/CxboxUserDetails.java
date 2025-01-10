@@ -48,7 +48,7 @@ public class CxboxUserDetails implements CxboxUserDetailsInterface {
 
 	private String password;
 
-	private LOV userRole;
+	private Set<String> userRoles;
 
 	private LOV timezone;
 

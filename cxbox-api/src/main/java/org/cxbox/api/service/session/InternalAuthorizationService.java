@@ -16,8 +16,9 @@
 
 package org.cxbox.api.service.session;
 
-import org.cxbox.api.data.dictionary.LOV;
+import java.util.Set;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 
@@ -26,15 +27,15 @@ public interface InternalAuthorizationService {
 
 	SystemUser VANILLA = SystemUsers.VANILLA;
 
-	Authentication createAuthentication(SystemUser systemUser);
+	Authentication createAuthentication(@NonNull SystemUser systemUser);
 
-	Authentication createAuthentication(final String login, final LOV userRole);
+	Authentication createAuthentication(@NonNull final String login, @NonNull final Set<String> userRole);
 
-	void loginAs(SystemUser systemUser);
+	void loginAs(@NonNull SystemUser systemUser);
 
-	void loginAs(String login, LOV userRole);
+	void loginAs(@NonNull String login, @NonNull Set<String> userRole);
 
-	void loginAs(Authentication authentication);
+	void loginAs(@NonNull Authentication authentication);
 
 	@RequiredArgsConstructor
 	@Getter

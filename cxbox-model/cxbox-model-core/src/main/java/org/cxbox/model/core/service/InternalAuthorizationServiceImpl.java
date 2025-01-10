@@ -16,7 +16,9 @@
 
 package org.cxbox.model.core.service;
 
-import org.cxbox.api.data.dictionary.LOV;
+import java.util.HashSet;
+import java.util.Set;
+import lombok.NonNull;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.session.CxboxAuthenticationService;
 import org.springframework.context.annotation.Lazy;
@@ -36,12 +38,12 @@ public final class InternalAuthorizationServiceImpl implements InternalAuthoriza
 	}
 
 	@Override
-	public Authentication createAuthentication(final SystemUser systemUser) {
-		return createAuthentication(systemUser.getLogin(), null);
+	public Authentication createAuthentication(@NonNull final SystemUser systemUser) {
+		return createAuthentication(systemUser.getLogin(), new HashSet<>());
 	}
 
 	@Override
-	public Authentication createAuthentication(final String login, final LOV userRole) {
+	public Authentication createAuthentication(@NonNull final String login, @NonNull final Set<String> userRole) {
 		final UserDetails userDetails = cxboxAuthenticationService.loadUserByUsername(login, userRole);
 		return new UsernamePasswordAuthenticationToken(
 				userDetails,
@@ -51,17 +53,17 @@ public final class InternalAuthorizationServiceImpl implements InternalAuthoriza
 	}
 
 	@Override
-	public void loginAs(final SystemUser systemUser) {
+	public void loginAs(@NonNull final SystemUser systemUser) {
 		loginAs(createAuthentication(systemUser));
 	}
 
 	@Override
-	public void loginAs(final String login, final LOV userRole) {
+	public void loginAs(@NonNull final String login, @NonNull final Set<String> userRole) {
 		loginAs(createAuthentication(login, userRole));
 	}
 
 	@Override
-	public void loginAs(final Authentication authentication) {
+	public void loginAs(@NonNull final Authentication authentication) {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 

@@ -126,10 +126,20 @@ class CodeGenerator {
 				.map(ExecutableElement.class::cast)
 				.filter(method -> method.getTypeParameters().isEmpty())
 				.anyMatch(method -> Objects.equals(TypeName.get(method.getReturnType()), TypeName.get(field.asType())));
+		TypeName box = TypeName.get(field.asType()).box();
+		String fqn;
+		if (box instanceof ClassName className) {
+			fqn = className.canonicalName();
+		} else if (box instanceof ParameterizedTypeName parameterizedTypeName) {
+			fqn = parameterizedTypeName.rawType.canonicalName();
+		} else {
+			fqn = "null";
+		}
+
 		return StringSubstitutor.replace(
-				"new DtoField<>($S${getter})",
-				Map.of("getter", getterExist ? ", " + methodReference(getterName) : "")
-		);
+						"new DtoField<>($S${getter}, ${clazz})",
+						Map.of("getter", getterExist ? ", " + methodReference(getterName) : "",
+								"clazz", fqn + ".class"));
 	}
 
 	private String methodReference(final String getterName) {

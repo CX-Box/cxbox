@@ -20,12 +20,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cxbox.dictionary.DictionaryProvider.DictionaryValue;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimpleDictionary {
+public class SimpleDictionary implements DictionaryValue {
 
 	private String type;
 

@@ -42,6 +42,7 @@ import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.service.DTOSecurityUtils;
 import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.session.SessionService;
+import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.cxbox.meta.ui.model.BcField;
@@ -117,7 +118,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 		return responsibilitiesService.getAvailableScreenViews(
 				screenName,
 				sessionService.getSessionUser(),
-				sessionService.getSessionUserRole()
+				sessionService.getSessionUserRoles()
 		);
 	}
 
@@ -147,7 +148,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 		)
 		public Map<String, Set<BcField>> getDtoFieldsAvailableOnCurrentView(final String viewName) {
 			final Set<BcField> fields = new HashSet<>();
-			metaRepository.getAllScreens().forEach((name, screen) -> screen.getViews().forEach(view -> {
+			metaRepository.getAllScreens().forEach((name, screen) -> ((ScreenDTO) screen.getMeta()).getViews().forEach(view -> {
 				if (Objects.equals(view.getName(), viewName)) {
 					view.getWidgets().forEach(widget -> {
 						var widgetFields = new HashSet<>(widgetUtils.extractAllFields(widget));

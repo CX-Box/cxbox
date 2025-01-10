@@ -17,6 +17,7 @@
 package org.cxbox.model.dictionary.entity;
 
 import jakarta.persistence.Convert;
+import jakarta.persistence.UniqueConstraint;
 import org.cxbox.model.core.api.Translatable;
 import org.cxbox.model.core.entity.BaseEntity;
 import java.io.Serializable;
@@ -46,9 +47,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "DICTIONARY_ITEM")
+@Table(name = "DICTIONARY_ITEM", uniqueConstraints = {
+		@UniqueConstraint(name = DictionaryItem.CONSTRAINT_UNIQ_TYPE_KEY, columnNames = {"type", "key"}),
+		@UniqueConstraint(name = DictionaryItem.CONSTRAINT_UNIQ_TYPE_VALUE, columnNames = {"type", "value"})
+})
 public class DictionaryItem extends BaseEntity implements Translatable<DictionaryItem, DictionaryItemTranslation>,
 		Serializable {
+
+	public static final String CONSTRAINT_UNIQ_TYPE_KEY = "DIC_SELECT_UNIQUE_TYPE_KEY";
+
+	public static final String CONSTRAINT_UNIQ_TYPE_VALUE = "DIC_SELECT_UNIQUE_TYPE_VALUE";
 
 	@Column
 	private String type;
@@ -56,8 +64,15 @@ public class DictionaryItem extends BaseEntity implements Translatable<Dictionar
 	@Column
 	private String key;
 
+	/**
+	 * <code>Single-language envs</code>: value field can be used directly (it is actually copied for each language DictionaryItemTranslation.value in this case).
+	 * <br>
+	 * <code>Multi-language envs</code>: this field will be null, so DictionaryItemTranslation.value must be used
+	 */
 	@Column
-	//@Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
+	private String value;
+
+	@Column
 	private boolean active;
 
 	@Column
@@ -71,7 +86,7 @@ public class DictionaryItem extends BaseEntity implements Translatable<Dictionar
 	private Boolean additionFlg;
 
 	@ManyToOne
-	@JoinColumn(name = "DICTIONARY_TYPE_ID", nullable = false)
+	@JoinColumn(name = "DICTIONARY_TYPE_ID")
 	private DictionaryTypeDesc dictionaryTypeId;
 
 	@OneToMany(mappedBy = "primaryEntity",

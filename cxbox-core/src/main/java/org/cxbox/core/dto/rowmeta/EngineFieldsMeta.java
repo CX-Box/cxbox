@@ -20,15 +20,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.dictionary.DictionaryProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
 public class EngineFieldsMeta<T extends DataResponseDTO> extends FieldsMeta<T> {
 
 
-	public EngineFieldsMeta(ObjectMapper objectMapper) {
-		super(objectMapper);
+	public EngineFieldsMeta(@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper, Optional<DictionaryProvider> dictionaryProvider) {
+		super(objectMapper, dictionaryProvider);
 	}
 
 	public final void addEngineFilterValues(String field, List<SimpleDictionary> valuesList) {

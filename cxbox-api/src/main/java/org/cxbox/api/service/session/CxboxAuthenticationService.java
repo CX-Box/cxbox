@@ -16,7 +16,7 @@
 
 package org.cxbox.api.service.session;
 
-import org.cxbox.api.data.dictionary.LOV;
+import java.util.Set;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +27,6 @@ public interface CxboxAuthenticationService extends UserDetailsService {
 	@Override
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 
-	UserDetails loadUserByUsername(String username, LOV userRole) throws UsernameNotFoundException;
+	UserDetails loadUserByUsername(String username, Set<String> userRole) throws UsernameNotFoundException;
 
 }

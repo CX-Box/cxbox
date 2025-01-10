@@ -17,6 +17,11 @@
 package org.cxbox.api.data.dictionary;
 
 
+/**
+ * @deprecated
+ * LOV is deprecated and this LOV infrastructure is deprecated too. Instead, use type safe <code>{@link org.cxbox.dictionary.Dictionary}</code>
+ */
+@Deprecated(since = "4.0.0-M12", forRemoval = true)
 public interface IDictionaryType {
 
 	String getName();

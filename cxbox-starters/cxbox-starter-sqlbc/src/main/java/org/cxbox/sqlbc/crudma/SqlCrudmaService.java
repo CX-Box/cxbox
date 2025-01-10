@@ -54,6 +54,7 @@ import org.cxbox.core.service.action.ActionsBuilder;
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
 import org.cxbox.core.util.DateTimeUtil;
 import org.cxbox.core.util.session.SessionService;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.cxbox.model.core.dao.JpaDao;
 import org.cxbox.sqlbc.dao.SqlBcQuery;
 import org.cxbox.sqlbc.dao.SqlComponentDao;
@@ -91,6 +92,8 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 
 	@Qualifier(CxboxBeanProperties.OBJECT_MAPPER)
 	private final ObjectMapper objectMapper;
+
+	private final Optional<DictionaryProvider> dictionaryProvider;
 
 	@Qualifier("primaryDatabase")
 	private final Database primaryDatabase;
@@ -274,7 +277,7 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 						: FieldDTO.disabledFilterableField(field.getFieldName())
 				)
 				.collect(Collectors.toList());
-		EngineFieldsMeta meta = new EngineFieldsMeta(objectMapper);
+		EngineFieldsMeta meta = new EngineFieldsMeta(objectMapper, dictionaryProvider);
 		fields.forEach(meta::add);
 		linkedDictionaryService.ifPresent(
 				linkedDictSrvc -> linkedDictSrvc.fillRowMetaWithLinkedDictionaries(meta, bc,

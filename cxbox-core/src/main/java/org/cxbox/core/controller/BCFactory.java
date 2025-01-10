@@ -70,19 +70,12 @@ public class BCFactory {
 	}
 
 	private Deque<String> getRequestParts(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		if (apiProperties.getUseServletContextPath()) {
-			for (String prefix : new String[]{request.getContextPath(), request.getServletPath(), "/",}) {
-				uri = StringUtils.removeStart(uri, prefix);
-			}
-			return new LinkedList<>(Arrays.asList(uri.split("/")));
-		} else {
-			uri = StringUtils
-					.removeStart(new UrlPathHelper().getPathWithinApplication(request), apiProperties.getPath());
-			uri = StringUtils
-					.removeStart(uri, "/");
-			return new LinkedList<>(Arrays.asList(uri.split("/")));
-		}
+		String uri;
+		uri = StringUtils
+				.removeStart(new UrlPathHelper().getPathWithinApplication(request), apiProperties.getPath());
+		uri = StringUtils
+				.removeStart(uri, "/");
+		return new LinkedList<>(Arrays.asList(uri.split("/")));
 	}
 
 	BusinessComponent getBusinessComponent(HttpServletRequest request, QueryParameters queryParameters) {

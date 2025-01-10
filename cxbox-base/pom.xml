@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-base</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M12-SNAPSHOT</version>
+  <version>4.0.0-M13-SNAPSHOT</version>
   <name>IO Cxbox - Base</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-bom</artifactId>
-    <version>4.0.0-M12-SNAPSHOT</version>
+    <version>4.0.0-M13-SNAPSHOT</version>
     <relativePath>../cxbox-bom/pom.xml</relativePath>
   </parent>
 
@@ -70,9 +70,12 @@
     <!-- dependencies versions -->
     <hibernate-commons-annotations.version>6.0.6.Final</hibernate-commons-annotations.version>
     <javapoet.version>1.13.0</javapoet.version>
+    <hibernate.version>6.4.10.Final</hibernate.version> <!--Do not change. BaseEntity redesign needed due to 6.5.* annotation checks changes -->
 
     <!-- plugins versions -->
     <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+    <auto-service.version>1.1.1</auto-service.version>
+    <guava.version>33.3.0-jre</guava.version>
   </properties>
 
   <dependencyManagement>
@@ -81,6 +84,11 @@
         <groupId>com.squareup</groupId>
         <artifactId>javapoet</artifactId>
         <version>${javapoet.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auto.service</groupId>
+        <artifactId>auto-service</artifactId>
+        <version>${auto-service.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

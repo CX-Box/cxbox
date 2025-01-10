@@ -18,7 +18,8 @@ package org.cxbox.core.service;
 
 import java.util.List;
 import java.util.Map;
-import org.cxbox.api.data.dictionary.LOV;
+import java.util.Set;
+import lombok.NonNull;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.dto.ScreenResponsibility;
 
@@ -27,11 +28,11 @@ import org.cxbox.dto.ScreenResponsibility;
  */
 public interface ResponsibilitiesService {
 
-	Map<String, Boolean> getAvailableViews(IUser<Long> user, LOV userRole);
+	Map<String, Boolean> getAvailableViews(IUser<Long> user, @NonNull Set<String> userRole);
 
-	List<ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, LOV userRole);
+	List<ScreenResponsibility> getOverrideScreensResponsibilities(IUser<Long> user, @NonNull Set<String> userRole);
 
-	List<String> getAvailableScreenViews(String screenName, IUser<Long> user, LOV userRole);
+	List<String> getAvailableScreenViews(String screenName, IUser<Long> user, @NonNull Set<String> userRole);
 
 	void invalidateCache();
 }

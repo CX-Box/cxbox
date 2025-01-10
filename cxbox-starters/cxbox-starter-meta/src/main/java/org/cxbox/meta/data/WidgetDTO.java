@@ -41,6 +41,9 @@ import org.cxbox.meta.additionalFields.AdditionalFieldsDTO;
 @Accessors(chain = true)
 public class WidgetDTO extends DataResponseDTO implements BcSource, Serializable {
 
+
+
+
 	@SearchParameter
 	private String name;
 
@@ -130,6 +133,7 @@ public class WidgetDTO extends DataResponseDTO implements BcSource, Serializable
 	private Long gridBreak;
 
 	private Boolean hide;
+
 
 
 

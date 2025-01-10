@@ -20,19 +20,22 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-dictionary</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M12-SNAPSHOT</version>
+  <version>4.0.0-M13-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>4.0.0-M12-SNAPSHOT</version>
+    <version>4.0.0-M13-SNAPSHOT</version>
     <relativePath>../cxbox-base/pom.xml</relativePath>
   </parent>
 
   <modules>
+    <module>cxbox-dictionary-api-internal</module>
+    <module>cxbox-dictionary-api</module>
+    <module>cxbox-dictionary-jackson</module>
+    <module>cxbox-dictionary-hibernate</module>
     <module>cxbox-dictionary-model</module>
-    <module>cxbox-dictionary-crudma</module>
     <module>cxbox-dictionary-cache</module>
     <module>cxbox-dictionary-all</module>
   </modules>

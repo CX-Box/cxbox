@@ -37,6 +37,7 @@ import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.dto.rowmeta.RowMetaDTO;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.linkedlov.LinkedDictionaryService;
+import org.cxbox.dictionary.DictionaryProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -70,9 +71,10 @@ public class AnySourceRowResponseService extends RowResponseService {
 	public AnySourceRowResponseService(ApplicationContext ctx, Optional<List<BcDisabler>> bcDisablers,
 			Optional<LinkedDictionaryService> linkedDictionaryService,
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
+			Optional<DictionaryProvider> dictionaryProvider,
 			WidgetFieldsIdResolverProperties properties,
 			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
-		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, properties, objectMapper);
+		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, dictionaryProvider, properties, objectMapper);
 	}
 
 	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,

@@ -24,6 +24,7 @@ import org.cxbox.core.dto.LovUtils;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import lombok.EqualsAndHashCode;
+import org.cxbox.dictionary.Dictionary;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
@@ -35,6 +36,11 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.controller.param.SearchOperation.CONTAINS_ONE_OF;
 import static org.cxbox.core.controller.param.SearchOperation.EQUALS_ONE_OF;
 
+/**
+ * @deprecated
+ * LOV is deprecated and this Provider too. Instead, use type safe <code>{@link Dictionary}</code> and its provide <code>{@link DictionaryValueProvider}</code>.
+ */
+@Deprecated(since = "4.0.0-M12", forRemoval = true)
 @Component
 @EqualsAndHashCode(callSuper = false)
 public class LovValueProvider extends AbstractClassifyDataProvider implements ClassifyDataProvider {

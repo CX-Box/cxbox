@@ -33,6 +33,9 @@ public class UIProperties {
 	 */
 	@Deprecated
 	private Boolean useServletContextPath = false;
+	public static final String DRILL_DOWN_TOOLTIP_NAME = "drillDownTooltip";
+
+	public static final String MULTI_ROLE_ENABLED  = "multiRoleEnabled";
 
 	/**
 	 * * Use only when useServletContextPath = false;
@@ -50,5 +53,9 @@ public class UIProperties {
 	 * Enabled the transfer of long names of side menu values
 	 */
 	private String sideBarWordBreak = "none";
+
+	private String drillDownTooltip = null;
+
+	private boolean multiRoleEnabled = false;
 
 }

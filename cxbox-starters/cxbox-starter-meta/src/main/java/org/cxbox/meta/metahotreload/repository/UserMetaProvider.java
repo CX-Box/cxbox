@@ -21,22 +21,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SerializationUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.service.ResponsibilitiesService;
+import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.additionalFields.AdditionalFieldsDTO;
 import org.cxbox.meta.data.FilterGroupDTO;
 import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.AdditionalFields;
 import org.cxbox.meta.entity.AdditionalFields_;
-import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.model.core.dao.JpaDao;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
@@ -61,34 +61,37 @@ public class UserMetaProvider {
 			cacheNames = CacheConfig.USER_CACHE,
 			key = "{#root.methodName, #user.id, #userRole}"
 	)
-	public Map<String, ScreenDTO> getScreens(IUser<Long> user, LOV userRole) {
-		Map<String, ScreenDTO> allScreens = metaRepository.getAllScreens();
+	public Map<String, ScreenResponsibility> getAvailableScreensResponsibilities(IUser<Long> user, Set<String> userRole) {
+		Map<String, ScreenResponsibility> allScreens = metaRepository.getAllScreens();
 
-		Map<String, ScreenDTO> allUserScreens = SerializationUtils.clone((HashMap<String, ScreenDTO>) allScreens);
+		Map<String, ScreenResponsibility> allUserScreens = SerializationUtils.clone((HashMap<String, ScreenResponsibility>) allScreens);
 
 		Map<String, Boolean> userViewToReadOnlyFlg = responsibilitiesService.getAvailableViews(user, userRole);
 		allUserScreens.values().forEach(s -> {
-			List<ViewDTO> userViews = s.getViews().stream()
+			List<ViewDTO> userViews = ((ScreenDTO) s.getMeta()).getViews().stream()
 					.filter(v -> v.getName() != null && userViewToReadOnlyFlg.containsKey(v.getName())).toList();
-			s.setViews(userViews);
+			((ScreenDTO) s.getMeta()).setViews(userViews);
 		});
 
 		Map<String, List<FilterGroupDTO>> personalFilterGroups = metaRepository.getPersonalFilterGroups(user);
 		allUserScreens.values()
-				.forEach(s -> s.getBo().getBc()
+				.forEach(s -> ((ScreenDTO) s.getMeta()).getBo().getBc()
 						.forEach(bc -> bc.getFilterGroups()
 								.addAll(personalFilterGroups.getOrDefault(bc.getName(), new ArrayList<>()))));
 
 		List<AdditionalFieldsDTO> additionalFieldsDTO = getAdditionalFieldsDTO(user);
 		allUserScreens.values()
-				.forEach(s -> s.getViews()
+				.forEach(s -> ((ScreenDTO) s.getMeta()).getViews()
 						.forEach(v -> v.getWidgets()
 								.forEach(w -> {
 									var pers = additionalFieldsDTO.stream().filter(add -> v.getName().equals(add.getView()) && w.getName().equals(add.getWidget())).findFirst().orElse(null);
 									w.setPersonalFields(pers);
 								})));
 
-		return allUserScreens;
+		return allUserScreens.entrySet().stream().filter(e -> {
+			List<ViewDTO> views = ((ScreenDTO) e.getValue().getMeta()).getViews();
+			return views != null && !views.isEmpty();
+		}).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 

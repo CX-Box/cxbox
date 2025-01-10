@@ -18,14 +18,15 @@ package org.cxbox.meta.metahotreload.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.service.session.IUser;
 import org.cxbox.core.config.cache.CacheConfig;
+import org.cxbox.dto.ScreenResponsibility;
 import org.cxbox.meta.data.FilterGroupDTO;
-import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.BcProperties;
 import org.cxbox.meta.entity.BcProperties_;
@@ -33,6 +34,7 @@ import org.cxbox.meta.entity.FilterGroup;
 import org.cxbox.meta.entity.FilterGroup_;
 import org.cxbox.meta.entity.Responsibilities;
 import org.cxbox.meta.entity.Responsibilities.ResponsibilityType;
+import org.cxbox.meta.entity.ResponsibilitiesAction;
 import org.cxbox.meta.entity.Responsibilities_;
 import org.cxbox.meta.metahotreload.dto.BcSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
@@ -57,6 +59,11 @@ public class MetaRepository {
 
 	public List<BcSourceDTO> getBcs() {
 		return metaResourceReaderService.getBcs();
+	}
+
+	public void deleteAndSaveResponsibilitiesAction(List<ResponsibilitiesAction> responsibilitiesActions) {
+		jpaDao.delete(ResponsibilitiesAction.class, (root, query, cb) -> cb.and());
+		jpaDao.saveAll(responsibilitiesActions);
 	}
 
 	public void deleteAndSaveResponsibilities(List<Responsibilities> responsibilities) {
@@ -107,14 +114,15 @@ public class MetaRepository {
 		);
 	}
 
-	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, LOV userRole,
+	public List<Responsibilities> getResponsibilityByUserAndRole(IUser<Long> user, @NonNull Set<String> userRole,
 			ResponsibilityType responsibilityType) {
 		// В листе может быть не более одной записи
+
 		return jpaDao.getList(
 				Responsibilities.class,
 				(root, cq, cb) -> cb.and(
 						cb.equal(root.get(Responsibilities_.departmentId), user.getDepartmentId()),
-						cb.equal(root.get(Responsibilities_.internalRoleCD), userRole),
+						root.get(Responsibilities_.internalRoleCD).in(userRole),
 						cb.equal(root.get(Responsibilities_.responsibilityType), responsibilityType)
 				)
 		);
@@ -125,7 +133,7 @@ public class MetaRepository {
 			cacheNames = CacheConfig.UI_CACHE,
 			key = "{#root.methodName}"
 	)
-	public Map<String, ScreenDTO> getAllScreens() {
+	public Map<String, ScreenResponsibility> getAllScreens() {
 		//load data
 		var screens = metaResourceReaderService.getScreens();
 		var widgets = metaResourceReaderService.getWidgets();
@@ -142,7 +150,7 @@ public class MetaRepository {
 				.collect(Collectors.toMap(ViewDTO::getName, e -> e));
 		return screens.stream()
 				.map(screenSourceDto -> screenMapper.map(screenSourceDto, viewNameToView, bcProps, filterGroups))
-				.collect(Collectors.toMap(ScreenDTO::getName, e -> e));
+				.collect(Collectors.toMap(ScreenResponsibility::getName, e -> e));
 	}
 
 }
