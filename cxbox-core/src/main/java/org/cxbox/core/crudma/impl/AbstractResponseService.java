@@ -35,7 +35,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
@@ -73,6 +72,7 @@ import org.cxbox.core.service.action.PreActionEvent;
 import org.cxbox.core.service.action.PreActionEventChecker;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.core.service.rowmeta.RowMetaType;
+import org.cxbox.core.util.ClassTypeUtil;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.entity.BaseEntity_;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +83,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
-@RequiredArgsConstructor
 public abstract class AbstractResponseService<T extends DataResponseDTO, E extends BaseEntity> implements
 		ResponseService<T, E> {
 
@@ -95,6 +94,12 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	protected final SingularAttribute<? super E, ? extends BaseEntity> parentSpec;
 
+	/**
+	 * <p>When using the no-argument constructor, the field
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#metaBuilder}
+	 * will be null. This field should only be accessed through
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getFieldMetaBuilder()}.</p>
+	 */
 	private final Class<? extends FieldMetaBuilder<T>> metaBuilder;
 
 	@Autowired
@@ -182,7 +187,8 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param entitySetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField, final Consumer<V> entitySetter) {
+	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField,
+			final Consumer<V> entitySetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
 	}
 
@@ -213,7 +219,10 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		/*Specification<E> getOneSpecification = Specification.where(specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc)))
 				.and((root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
 		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, getOneSpecification);*/
-		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, (root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
+		E entity = baseDAO.getFirstResultOrNull(
+				typeOfEntity,
+				(root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong())
+		);
 		if (entity == null) {
 			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getId());
 		}
@@ -312,11 +321,12 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				record = doGetOne(bc);
 			}
 		}
-		return action.invoke(bc, Optional.ofNullable(record).orElse((T)data));
+		return action.invoke(bc, Optional.ofNullable(record).orElse((T) data));
 	}
 
 
-	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data, AssociateDTO associateDTO) {
+	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data,
+			AssociateDTO associateDTO) {
 		List<String> preInvokeParameters = bc.getPreInvokeParameters();
 		List<PreInvokeEvent> preInvokeEvents = new ArrayList<>();
 		if (nonNull(preActionEvents)) {
@@ -325,7 +335,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 						(data == null ? getCheckerAssoc(preActionEvent.getPreActionCondition())
 								.check(new AssocPreActionEventParameters(associateDTO, bc, preInvokeParameters))
 								: getCheckerData(preActionEvent.getPreActionCondition())
-								.check(new DataResponsePreActionEventParameters(data, bc, preInvokeParameters)))) {
+										.check(new DataResponsePreActionEventParameters(data, bc, preInvokeParameters)))) {
 					preInvokeEvents.add(PreInvokeEvent.of(
 							preActionEvent.getKey(),
 							preActionEvent.getType().getKey(),
@@ -385,7 +395,8 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				typeOfEntity,
 				typeOfDTO,
 				(root, cq, cb) -> {
-					Predicate pr = specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc)).toPredicate(root, cq, cb);
+					Predicate pr = specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc))
+							.toPredicate(root, cq, cb);
 					cq.orderBy();
 					return pr;
 				},
@@ -401,7 +412,8 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		if (nonNull(save)) {
 			popup(save.validate(bc, data, entityDto));
 			List<PreActionEvent> preActionEvents = save.withPreActionEvents(bc);
-			preInvoke(bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
+			preInvoke(
+					bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
 					data, null
 			);
 		}
@@ -588,6 +600,41 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	@Override
 	public BusinessComponent getBc() {
 		return platformRequest.getBc();
+	}
+
+	/**
+	 * To use {@link lombok.RequiredArgsConstructor} and/or a constructor without parameters, you need to add the field
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#metaBuilder} :
+	 * <pre>
+	 * {@code @Getter
+	 * private final Class<? extends FieldMetaBuilder<ExampleDTO>> fieldMetaBuilder = ExampleMeta.class;
+	 * }</pre><br>
+	 * Alternatively, you can override the method
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getFieldMetaBuilder()}
+	 * <pre>
+	 * {@code public final Class<? extends FieldMetaBuilder<ExampleDTO>> getFieldMetaBuilder() {
+	 *     return ExampleMeta.class;
+	 * }
+	 * }<br></pre>
+	 * to your subclass.<br>
+	 *
+	 * @deprecated
+	 */
+	@Deprecated
+	public AbstractResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity,
+			SingularAttribute<? super E, ? extends BaseEntity> parentSpec, Class<? extends FieldMetaBuilder<T>> metaBuilder) {
+		this.typeOfDTO = typeOfDTO;
+		this.typeOfEntity = typeOfEntity;
+		this.parentSpec = parentSpec;
+		this.metaBuilder = metaBuilder;
+	}
+
+	@SuppressWarnings("unchecked")
+	public AbstractResponseService() {
+		this.metaBuilder = getFieldMetaBuilder();
+		this.typeOfDTO = (Class<T>) ClassTypeUtil.getGenericType(this.getClass(), 0);
+		this.typeOfEntity = (Class<E>) ClassTypeUtil.getGenericType(this.getClass(), 1);
+		this.parentSpec = null;
 	}
 
 }

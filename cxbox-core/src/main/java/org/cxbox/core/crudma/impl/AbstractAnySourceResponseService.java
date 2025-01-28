@@ -31,7 +31,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
@@ -45,6 +44,7 @@ import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceCrudmaImplementation;
 import org.cxbox.core.crudma.impl.inner.AnySourceCrudmaService;
+import org.cxbox.core.dao.AnySourceBaseDAO;
 import org.cxbox.core.dto.PreInvokeEvent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.ActionType;
@@ -55,9 +55,7 @@ import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.EntityNotFoundException;
 import org.cxbox.core.exception.UnconfirmedException;
-import org.cxbox.core.dao.AnySourceBaseDAO;
 import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
-import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
 import org.cxbox.core.service.AnySourceDTOMapper;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionDescription;
@@ -69,7 +67,9 @@ import org.cxbox.core.service.action.PreActionConditionHolderAssoc;
 import org.cxbox.core.service.action.PreActionConditionHolderDataResponse;
 import org.cxbox.core.service.action.PreActionEvent;
 import org.cxbox.core.service.action.PreActionEventChecker;
+import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
 import org.cxbox.core.service.rowmeta.RowMetaType;
+import org.cxbox.core.util.ClassTypeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
@@ -78,7 +78,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
-@RequiredArgsConstructor
 @AnySourceCrudmaImplementation(AnySourceCrudmaService.class)
 public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO, E> implements
 		AnySourceResponseService<T, E> {
@@ -89,8 +88,21 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	@Getter
 	protected final Class<E> typeOfEntity;
 
+	/**
+	 * <p>When using the no-argument constructor, the field
+	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#metaBuilder}
+	 * will be null. This field should only be accessed through
+	 * {@link AbstractAnySourceResponseService#getMetaBuilder()}.</p>
+	 */
+	@Getter
 	private final Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder;
 
+	/**
+	 * <p>When using the no-argument constructor, the field
+	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#anySourceBaseDAOClass}
+	 * will be null. This field should only be accessed through
+	 * {@link AbstractAnySourceResponseService#getAnySourceBaseDAOClass()} ()}.</p>
+	 */
 	@Getter
 	protected final Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass;
 
@@ -118,7 +130,8 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Override
 	public AnySourceBaseDAO<E> getBaseDao() {
-		return anySourceBaseDAOs.stream().filter(dao -> anySourceBaseDAOClass.isAssignableFrom(dao.getClass())).findFirst()
+		return anySourceBaseDAOs.stream().filter(dao -> getAnySourceBaseDAOClass().isAssignableFrom(dao.getClass()))
+				.findFirst()
 				.orElseThrow();
 	}
 
@@ -348,7 +361,8 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 		if (nonNull(save)) {
 			popup(save.validate(bc, data, entityDto));
 			List<PreActionEvent> preActionEvents = save.withPreActionEvents(bc);
-			preInvoke(bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
+			preInvoke(
+					bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
 					data, null
 			);
 		}
@@ -511,6 +525,53 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	@Override
 	public BusinessComponent getBc() {
 		return platformRequest.getBc();
+	}
+
+	/**
+	 * To use {@link lombok.RequiredArgsConstructor} and/or a constructor without parameters, you need to add fields
+	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#metaBuilder},
+	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#anySourceBaseDAOClass}:
+	 * <pre>
+	 * {@code @Getter
+	 * @Getter
+	 * private final Class<? extends AnySourceFieldMetaBuilder<ExampleDTO>> metaBuilder = ExampleMeta.class;
+	 *
+	 * @Getter
+	 * private final Class<? extends AnySourceBaseDAO<ExampleDTO>> anySourceBaseDAOClass = ExampleDao.class;
+	 * }</pre><br>
+	 * Alternatively, you can override methods
+	 * {@link AbstractAnySourceResponseService#getMetaBuilder()}
+	 * {@link AbstractAnySourceResponseService#getAnySourceBaseDAOClass()}
+	 * <pre>
+	 * {@code
+	 * public final Class<? extends AnySourceFieldMetaBuilder<ExampleDTO>> getMetaBuilder() {
+	 *      return ExampleMeta.class;
+	 * }
+	 * public final Class<? extends AnySourceBaseDAO<ExampleDTO>> getAnySourceBaseDAOClass() {
+	 * 	 return ExampleDao.class;
+	 * }
+	 *
+	 * }<br></pre>
+	 * to your subclass.<br>
+	 *
+	 * @deprecated
+	 */
+	@Deprecated
+	public AbstractAnySourceResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity,
+			Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder,
+			Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass) {
+		this.typeOfDTO = typeOfDTO;
+		this.typeOfEntity = typeOfEntity;
+		this.anySourceBaseDAOClass = anySourceBaseDAOClass;
+		this.metaBuilder = metaBuilder;
+	}
+
+	@SuppressWarnings("unchecked")
+	public AbstractAnySourceResponseService() {
+		this.typeOfDTO = (Class<T>) ClassTypeUtil.getGenericType(this.getClass(), 0);
+		this.typeOfEntity = (Class<E>) ClassTypeUtil.getGenericType(this.getClass(), 1);
+		this.anySourceBaseDAOClass = getAnySourceBaseDAOClass();
+		this.metaBuilder = getMetaBuilder();
 	}
 
 }

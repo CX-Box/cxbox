@@ -19,6 +19,9 @@ package org.cxbox.source.service.data.impl;
 import static org.cxbox.core.controller.param.SearchOperation.CONTAINS;
 import static org.cxbox.core.controller.param.SearchOperation.EQUALS;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dictionary.DictionaryCache;
 import org.cxbox.core.controller.param.FilterParameter;
@@ -32,9 +35,6 @@ import org.cxbox.model.dictionary.links.entity.DictionaryLnkRuleValue;
 import org.cxbox.source.dto.DictionaryLnkRuleValueDto;
 import org.cxbox.source.service.data.DictionaryLnkRuleValueAssocService;
 import org.cxbox.source.service.meta.DictionaryLnkRuleValueFieldMetaBuilder;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
