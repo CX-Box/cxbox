@@ -32,7 +32,7 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostAction {
 
-	private final Map<String, String> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
 	public static PostAction refreshBc(BcIdentifier bcIdentifier) {
 		return new PostAction()
@@ -147,26 +147,28 @@ public class PostAction {
 	}
 
 	@JsonAnyGetter
-	public Map<String, String> getAttributes() {
+	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
 	@JsonAnyGetter
-	public String getAttribute(String key) {
+	public Object getAttribute(String key) {
 		return attributes.get(key);
 	}
 
-	@Deprecated
+	public String getURL() {
+		return (String) attributes.get(BasePostActionField.URL);
+	}
+
 	public String getType() {
-		return attributes.get(BasePostActionField.TYPE);
+		return (String) attributes.get(BasePostActionField.TYPE);
 	}
 
-	@Deprecated
-	public String getBc() {
-		return attributes.get(BasePostActionField.BC);
+	public String getDrillDownType() {
+		return (String) attributes.get(BasePostActionField.DRILL_DOWN_TYPE);
 	}
 
-	public PostAction add(String key, String value) {
+	public PostAction add(String key, Object value) {
 		attributes.put(key, value);
 		return this;
 	}
@@ -196,7 +198,7 @@ public class PostAction {
 
 		private String successMessage;
 
-		private Duration timeout = Duration.ofSeconds(5000);
+		private Duration timeout = Duration.ofSeconds(5);
 
 		private int timeoutMaxRequests = 3;
 
@@ -274,7 +276,7 @@ public class PostAction {
 					.add(BasePostActionField.TYPE, type)
 					.add(BasePostActionField.SUCCESS_CONDITION_BC, successConditionBc)
 					.add(BasePostActionField.SUCCESS_CONDITION_FIELD, successConditionField.getName())
-					.add(BasePostActionField.SUCCESS_CONDITION_VALUE, String.valueOf(successConditionValue))
+					.add(BasePostActionField.SUCCESS_CONDITION_VALUE, successConditionValue)
 					.add(BasePostActionField.IN_PROGRESS_MESSAGE, inProgressMessage)
 					.add(BasePostActionField.SUCCESS_MESSAGE, successMessage)
 					.add(BasePostActionField.TIMEOUT, String.valueOf(timeout.toMillis()))
