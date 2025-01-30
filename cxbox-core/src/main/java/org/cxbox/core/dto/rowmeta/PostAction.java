@@ -205,7 +205,7 @@ public class PostAction {
 		private WaitUntilBuilder(@NonNull DrillDownTypeSpecifier drillDownType, @NonNull String url,
 				@NonNull BcIdentifier successConditionBc, @NonNull DtoField<? super T, V> successConditionField,
 				@NonNull V successConditionValue) {
-			this.type = BasePostActionType.DRILLDOWN_AND_WAIT_UNTIL;
+			this.type = BasePostActionType.DRILL_DOWN_AND_WAIT_UNTIL;
 			this.drillDownType = drillDownType;
 			this.url = url;
 			this.successConditionBc = successConditionBc.getName();
@@ -314,7 +314,7 @@ public class PostAction {
 
 		public static final String WAIT_UNTIL = "waitUntil";
 
-		public static final String DRILLDOWN_AND_WAIT_UNTIL = "drilldownAndWaitUntil";
+		public static final String DRILL_DOWN_AND_WAIT_UNTIL = "drillDownAndWaitUntil";
 
 	}
 
