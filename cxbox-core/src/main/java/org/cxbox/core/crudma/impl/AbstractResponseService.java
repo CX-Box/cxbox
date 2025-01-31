@@ -607,7 +607,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#metaBuilder} :
 	 * <pre>
 	 * {@code @Getter
-	 * private final Class<? extends FieldMetaBuilder<ExampleDTO>> fieldMetaBuilder = ExampleMeta.class;
+	 * private final Class<ExampleMeta> fieldMetaBuilder = ExampleMeta.class;
 	 * }</pre><br>
 	 * Alternatively, you can override the method
 	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getFieldMetaBuilder()}

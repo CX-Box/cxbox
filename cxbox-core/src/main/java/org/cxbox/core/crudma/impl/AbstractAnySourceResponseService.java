@@ -532,12 +532,12 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#metaBuilder},
 	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#anySourceBaseDAOClass}:
 	 * <pre>
-	 * {@code @Getter
+	 * {@code
 	 * @Getter
-	 * private final Class<? extends AnySourceFieldMetaBuilder<ExampleDTO>> metaBuilder = ExampleMeta.class;
+	 * private final Class<ExampleMeta> fieldMetaBuilder = ExampleMeta.class;
 	 *
 	 * @Getter
-	 * private final Class<? extends AnySourceBaseDAO<ExampleDTO>> anySourceBaseDAOClass = ExampleDao.class;
+	 * private final Class<ExampleDao> anySourceBaseDAOClass = ExampleDao.class;
 	 * }</pre><br>
 	 * Alternatively, you can override methods
 	 * {@link AbstractAnySourceResponseService#getMetaBuilder()}
