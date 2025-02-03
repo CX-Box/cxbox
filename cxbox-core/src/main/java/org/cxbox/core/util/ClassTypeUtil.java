@@ -14,11 +14,11 @@ public class ClassTypeUtil {
 			if (actualType instanceof Class<?> actualClass) {
 				return actualClass;
 			} else {
-				throw new IllegalArgumentException("Тип дженерика не является классом");
+				throw new IllegalArgumentException("The generic type is not a class");
 			}
 		}
 
-		throw new IllegalArgumentException("Не удалось получить тип дженерика");
+		throw new IllegalArgumentException("Couldn't get the generic type");
 	}
 
 }
