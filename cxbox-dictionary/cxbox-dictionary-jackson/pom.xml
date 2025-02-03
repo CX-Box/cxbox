@@ -20,13 +20,13 @@
 
   <artifactId>cxbox-dictionary-jackson</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M14</version>
+  <version>4.0.0-M15-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary Jackson</name>
 
   <parent>
     <artifactId>cxbox-dictionary</artifactId>
     <groupId>org.cxbox</groupId>
-    <version>4.0.0-M14</version>
+    <version>4.0.0-M15-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
