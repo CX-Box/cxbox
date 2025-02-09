@@ -187,8 +187,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param entitySetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField,
-			final Consumer<V> entitySetter) {
+	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField, final Consumer<V> entitySetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
 	}
 
@@ -219,10 +218,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		/*Specification<E> getOneSpecification = Specification.where(specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc)))
 				.and((root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
 		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, getOneSpecification);*/
-		E entity = baseDAO.getFirstResultOrNull(
-				typeOfEntity,
-				(root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong())
-		);
+		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, (root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
 		if (entity == null) {
 			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getId());
 		}
@@ -321,12 +317,11 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				record = doGetOne(bc);
 			}
 		}
-		return action.invoke(bc, Optional.ofNullable(record).orElse((T) data));
+		return action.invoke(bc, Optional.ofNullable(record).orElse((T)data));
 	}
 
 
-	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data,
-			AssociateDTO associateDTO) {
+	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data, AssociateDTO associateDTO) {
 		List<String> preInvokeParameters = bc.getPreInvokeParameters();
 		List<PreInvokeEvent> preInvokeEvents = new ArrayList<>();
 		if (nonNull(preActionEvents)) {
@@ -335,7 +330,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 						(data == null ? getCheckerAssoc(preActionEvent.getPreActionCondition())
 								.check(new AssocPreActionEventParameters(associateDTO, bc, preInvokeParameters))
 								: getCheckerData(preActionEvent.getPreActionCondition())
-										.check(new DataResponsePreActionEventParameters(data, bc, preInvokeParameters)))) {
+								.check(new DataResponsePreActionEventParameters(data, bc, preInvokeParameters)))) {
 					preInvokeEvents.add(PreInvokeEvent.of(
 							preActionEvent.getKey(),
 							preActionEvent.getType().getKey(),
@@ -395,8 +390,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				typeOfEntity,
 				typeOfDTO,
 				(root, cq, cb) -> {
-					Predicate pr = specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc))
-							.toPredicate(root, cq, cb);
+					Predicate pr = specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc)).toPredicate(root, cq, cb);
 					cq.orderBy();
 					return pr;
 				},
@@ -412,8 +406,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		if (nonNull(save)) {
 			popup(save.validate(bc, data, entityDto));
 			List<PreActionEvent> preActionEvents = save.withPreActionEvents(bc);
-			preInvoke(
-					bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
+			preInvoke(bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
 					data, null
 			);
 		}

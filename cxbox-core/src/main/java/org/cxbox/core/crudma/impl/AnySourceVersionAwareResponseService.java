@@ -31,8 +31,7 @@ import org.cxbox.core.service.rowmeta.AnySourceFieldMetaBuilder;
 public abstract class AnySourceVersionAwareResponseService<T extends DataResponseDTO, E> extends
 		AbstractAnySourceResponseService<T, E> {
 
-	protected AnySourceVersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity,
-			Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder,
+	protected AnySourceVersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity, Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder,
 			Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass) {
 		super(typeOfDTO, typeOfEntity, metaBuilder, anySourceBaseDAOClass);
 	}
@@ -51,8 +50,8 @@ public abstract class AnySourceVersionAwareResponseService<T extends DataRespons
 
 	/**
 	 * При переопределении метода обязательно добавить сохранение результата в First Level Cache - getBaseDao().setWithFirstLevelCache()
-	 *
 	 * @param bc businessComponent
+	 * @return
 	 */
 	@Override
 	public CreateResult<T> createEntity(BusinessComponent bc) {
@@ -78,8 +77,8 @@ public abstract class AnySourceVersionAwareResponseService<T extends DataRespons
 
 	/**
 	 * При переопределении метода обязательно добавить сохранение результата в First Level Cache - getBaseDao().setWithFirstLevelCache()
-	 *
 	 * @param bc businessComponent
+	 * @return
 	 */
 	@Override
 	public ActionResultDTO<T> updateEntity(BusinessComponent bc, DataResponseDTO data) {

@@ -130,8 +130,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Override
 	public AnySourceBaseDAO<E> getBaseDao() {
-		return anySourceBaseDAOs.stream().filter(dao -> getAnySourceBaseDAOClass().isAssignableFrom(dao.getClass()))
-				.findFirst()
+		return anySourceBaseDAOs.stream().filter(dao -> getAnySourceBaseDAOClass().isAssignableFrom(dao.getClass())).findFirst()
 				.orElseThrow();
 	}
 
@@ -361,8 +360,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 		if (nonNull(save)) {
 			popup(save.validate(bc, data, entityDto));
 			List<PreActionEvent> preActionEvents = save.withPreActionEvents(bc);
-			preInvoke(
-					bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
+			preInvoke(bc, nonNull(preActionEvents) ? preActionEvents : getPreActionsForSave(),
 					data, null
 			);
 		}

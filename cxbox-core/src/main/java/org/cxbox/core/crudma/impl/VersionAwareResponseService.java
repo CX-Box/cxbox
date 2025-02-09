@@ -33,13 +33,15 @@ import org.cxbox.core.exception.UnableToLockException;
 import org.cxbox.core.exception.VersionMismatchException;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.model.core.entity.BaseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Slf4j
 public abstract class VersionAwareResponseService<T extends DataResponseDTO, E extends BaseEntity> extends
 		AbstractResponseService<T, E> {
 
-	private UIProperties uiProperties = new UIProperties();
+	@Autowired
+	private UIProperties uiProperties;
 
 	public VersionAwareResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity,
 			SingularAttribute<? super E, ? extends BaseEntity> parentSpec,
