@@ -42,7 +42,6 @@ import org.cxbox.core.crudma.ext.CrudmaGatewayInvokeExtensionProvider;
 import org.cxbox.core.crudma.state.BcState;
 import org.cxbox.core.crudma.state.BcStateAware;
 import org.cxbox.core.dto.rowmeta.*;
-import org.cxbox.core.dto.rowmeta.PostAction.BasePostActionField;
 import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.AnySourceResponseFactory;
 import org.cxbox.core.service.AnySourceResponseService;
@@ -175,9 +174,9 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 
 	private BusinessComponent getBcForState(final BusinessComponent bc, final List<PostAction> postActions) {
 		for (final PostAction postAction : postActions) {
-			if (DRILL_DOWN.equals(postAction.getAttribute(BasePostActionField.TYPE)) && INNER.getValue()
-					.equals(postAction.getAttribute(BasePostActionField.DRILL_DOWN_TYPE))) {
-				final String[] url = postAction.getAttribute(BasePostActionField.URL).split("/");
+			if (DRILL_DOWN.equals(postAction.getType()) && INNER.getValue()
+					.equals(postAction.getDrillDownType())) {
+				final String[] url = postAction.getURL().split("/");
 				if (Objects.equals(bc.getId(), url[url.length - 1])) {
 					return new BusinessComponent(
 							bc.getId(),
