@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -45,6 +46,33 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 
 	public FieldDTO get(final DtoField<? super T, ?> field) {
 		return fields.get(field.getName());
+	}
+
+	/**
+	 * <br>
+	 * @param field  field ref
+	 * @return  currentValue of field. Optional.empty() if value is null or field is not present.
+	 * @param <F>  field type
+	 */
+	@NonNull
+	public <F> Optional<F> getCurrentValue(@NonNull final DtoField<? super T, F> field) {
+		if (field.getValueClazz() != null) {
+			return Optional.ofNullable(this.get(field))
+					.filter(e -> e.getCurrentValue() != null)
+					.filter(e -> field.getValueClazz().isInstance(e.getCurrentValue()))
+					.map(e -> field.getValueClazz().cast(e.getCurrentValue()));
+		} else {
+			return Optional.ofNullable(this.get(field))
+					.filter(e -> e.getCurrentValue() != null)
+					.map(e -> {
+						try {
+							return (F) e.getCurrentValue();
+						} catch (ClassCastException ignored) {
+							//skip
+						}
+						return null;
+					});
+		}
 	}
 
 	/**
