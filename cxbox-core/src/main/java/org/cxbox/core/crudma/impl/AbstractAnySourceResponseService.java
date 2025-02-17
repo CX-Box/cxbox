@@ -483,7 +483,7 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	}
 
 	public Class<? extends AnySourceFieldMetaBuilder<T>> getAnySourceFieldMetaBuilder() {
-		return this.metaBuilder;
+		return getMetaBuilder();
 	}
 
 	@Override
