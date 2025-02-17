@@ -582,8 +582,8 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	public AbstractAnySourceResponseService() {
 		this.typeOfDTO = (Class<T>) ClassTypeUtil.getGenericType(this.getClass(), 0);
 		this.typeOfEntity = (Class<E>) ClassTypeUtil.getGenericType(this.getClass(), 1);
-		this.anySourceBaseDAOClass = getAnySourceBaseDAOClass();
-		this.metaBuilder = getMetaBuilder();
+		this.anySourceBaseDAOClass = null;
+		this.metaBuilder = null;
 	}
 
 }
