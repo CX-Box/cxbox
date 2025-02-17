@@ -98,7 +98,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * <p>When using the no-argument constructor, the field
 	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#metaBuilder}
 	 * will be null. This field should only be accessed through
-	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getFieldMetaBuilder()}.</p>
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getMeta()}.</p>
 	 */
 	private final Class<? extends FieldMetaBuilder<T>> metaBuilder;
 
@@ -549,6 +549,10 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 	public Class<? extends FieldMetaBuilder<T>> getFieldMetaBuilder() {
+		return getMeta();
+	}
+
+	public Class<? extends FieldMetaBuilder<T>> getMeta() {
 		return this.metaBuilder;
 	}
 
@@ -624,7 +628,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	@SuppressWarnings("unchecked")
 	public AbstractResponseService() {
-		this.metaBuilder = getFieldMetaBuilder();
+		this.metaBuilder = null;
 		this.typeOfDTO = (Class<T>) ClassTypeUtil.getGenericType(this.getClass(), 0);
 		this.typeOfEntity = (Class<E>) ClassTypeUtil.getGenericType(this.getClass(), 1);
 		this.parentSpec = null;
