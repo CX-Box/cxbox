@@ -49,6 +49,10 @@ public abstract class VersionAwareResponseService<T extends DataResponseDTO, E e
 		super(typeOfDTO, typeOfEntity, parentSpec, metaBuilder);
 	}
 
+	public VersionAwareResponseService() {
+		super();
+	}
+
 	@Override
 	public CreateResult<T> createEntity(BusinessComponent bc) {
 		// todo: add a check that the service returns actual data
