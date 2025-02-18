@@ -92,18 +92,16 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	 * <p>When using the no-argument constructor, the field
 	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#metaBuilder}
 	 * will be null. This field should only be accessed through
-	 * {@link AbstractAnySourceResponseService#getMetaBuilder()}.</p>
+	 * {@link AbstractAnySourceResponseService#getMeta()}.</p>
 	 */
-	@Getter
 	private final Class<? extends AnySourceFieldMetaBuilder<T>> metaBuilder;
 
 	/**
 	 * <p>When using the no-argument constructor, the field
 	 * {@link org.cxbox.core.crudma.impl.AbstractAnySourceResponseService#anySourceBaseDAOClass}
 	 * will be null. This field should only be accessed through
-	 * {@link AbstractAnySourceResponseService#getAnySourceBaseDAOClass()} ()}.</p>
+	 * {@link AbstractAnySourceResponseService#getDao()}.</p>
 	 */
-	@Getter
 	protected final Class<? extends AnySourceBaseDAO<E>> anySourceBaseDAOClass;
 
 	protected Class<? extends PreActionConditionHolderDataResponse<T>> preActionConditionHolderDataResponse = null;
@@ -486,6 +484,22 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 		return getMetaBuilder();
 	}
 
+	public Class<? extends AnySourceFieldMetaBuilder<T>> getMetaBuilder() {
+		return getMeta();
+	}
+
+	public Class<? extends AnySourceBaseDAO<E>> getAnySourceBaseDAOClass() {
+		return getDao();
+	}
+
+	public Class<? extends AnySourceFieldMetaBuilder<T>> getMeta() {
+		return this.metaBuilder;
+	}
+
+	public Class<? extends AnySourceBaseDAO<E>> getDao() {
+		return this.anySourceBaseDAOClass;
+	}
+
 	@Override
 	public ActionResultDTO<T> updateEntity(BusinessComponent bc, DataResponseDTO data) {
 		throw new UnsupportedOperationException();
@@ -568,8 +582,8 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 	public AbstractAnySourceResponseService() {
 		this.typeOfDTO = (Class<T>) ClassTypeUtil.getGenericType(this.getClass(), 0);
 		this.typeOfEntity = (Class<E>) ClassTypeUtil.getGenericType(this.getClass(), 1);
-		this.anySourceBaseDAOClass = getAnySourceBaseDAOClass();
-		this.metaBuilder = getMetaBuilder();
+		this.anySourceBaseDAOClass = null;
+		this.metaBuilder = null;
 	}
 
 }
