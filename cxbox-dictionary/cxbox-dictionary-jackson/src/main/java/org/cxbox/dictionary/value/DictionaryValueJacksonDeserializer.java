@@ -37,14 +37,14 @@ public class DictionaryValueJacksonDeserializer<T extends Dictionary> extends Js
 
 	@Override
 	public JsonDeserializer<?> createContextual(final DeserializationContext ctxt, final BeanProperty property) {
-		if (property != null) {
-			//infer target type from Class field type
-			elementType = (Class<T>) property.getType().getRawClass();
-		} else if (ctxt.getContextualType() != null && Dictionary.class.isAssignableFrom(ctxt.getContextualType().getRawClass())) {
+		if (ctxt.getContextualType() != null && Dictionary.class.isAssignableFrom(ctxt.getContextualType().getRawClass())) {
 			//infer target type from context
 			elementType = (Class<T>) ctxt.getContextualType().getRawClass();
 		}
-
+		if (elementType == null && property != null) {
+			//infer target type from Class field type
+			elementType = (Class<T>) property.getType().getRawClass();
+		}
 		if (elementType == null) {
 			throw new IllegalStateException("target class MUST extend " + Dictionary.class.getCanonicalName() + ", but was null");
 		}
@@ -53,9 +53,9 @@ public class DictionaryValueJacksonDeserializer<T extends Dictionary> extends Js
 
 	@Override
 	@SneakyThrows
-	public T deserialize(JsonParser p, DeserializationContext ctxt) {
-		String value = p.readValueAs(String.class);
-		return dictionaryProvider.map(e -> e.lookupName(elementType, (DictionaryValue) () -> value)).orElse(null);
+	public T deserialize(final JsonParser p, final DeserializationContext ctxt) {
+		final String value = p.readValueAs(String.class);
+		return value == null || value.isEmpty() ? null : dictionaryProvider.map(e -> e.lookupName(elementType, (DictionaryValue) () -> value)).orElse(null);
 	}
 
 }

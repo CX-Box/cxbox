@@ -193,6 +193,31 @@ import lombok.SneakyThrows;
  *    };
  *  }
  * }</pre>
+ * A.2.3 if you use Spring @RestController and want to pass Dictionary as @RequestParam, please add bean {@link org.cxbox.core.config.JacksonConfig#dictionaryWebMvcConfigurer()},
+ * that will convert query param empty/non-present values to null instead of Dictionary(key=null) just like spring do with enums (see {@link org.springframework.core.convert.support.StringToEnumConverterFactory})
+ * <pre>{@code
+ * 	@Bean
+ * 	public WebMvcConfigurer dictionaryWebMvcConfigurer() {
+ * 		return new WebMvcConfigurer() {
+ *      @Override
+ *      public void addFormatters(@NonNull final FormatterRegistry registry) {
+ * 				registry.addConverterFactory(new StringToDictionaryConverterFactory());
+ *      }
+ *    };
+ *  }
+ *
+ * 	public static class StringToDictionaryConverterFactory implements ConverterFactory<String, Dictionary> {
+ *    @Override
+ *    @NonNull
+ *    public <T extends Dictionary> Converter<String, T> getConverter(@NonNull final Class<T> targetType) {
+ * 			if (!Dictionary.class.isAssignableFrom(targetType)) {
+ * 				throw new IllegalArgumentException(
+ * 						"Target type " + targetType.getName() + " does not refer to dictionary");
+ *      }
+ * 			return source -> source.isEmpty() ? null : Dictionary.of(targetType, source);
+ *    }
+ *  }
+ * }</pre>
  * <br>
  * ---------------------inside cxbox usage---------------------
  * <br>
