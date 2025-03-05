@@ -16,6 +16,7 @@
 
 package org.cxbox.core.dto.rowmeta;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import org.apache.logging.log4j.util.Strings;
 
 
 @Builder
@@ -86,7 +88,10 @@ public class PreAction {
 	}
 
 	public String getMessage(String action) {
-		return isBlank(message) && nonNull(preActionType) ? preActionType.getMessage(trimToEmpty(action)) : message;
+		if (nonNull(message) && isBlank(message)) {
+			return Strings.EMPTY;
+		}
+		return isNull(message) && nonNull(preActionType) ? preActionType.getMessage(trimToEmpty(action)) : message;
 	}
 
 }
