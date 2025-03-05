@@ -35,7 +35,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
@@ -73,6 +72,7 @@ import org.cxbox.core.service.action.PreActionEvent;
 import org.cxbox.core.service.action.PreActionEventChecker;
 import org.cxbox.core.service.rowmeta.FieldMetaBuilder;
 import org.cxbox.core.service.rowmeta.RowMetaType;
+import org.cxbox.core.util.ClassTypeUtil;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.cxbox.model.core.entity.BaseEntity_;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +83,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
-@RequiredArgsConstructor
 public abstract class AbstractResponseService<T extends DataResponseDTO, E extends BaseEntity> implements
 		ResponseService<T, E> {
 
@@ -95,6 +94,12 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	protected final SingularAttribute<? super E, ? extends BaseEntity> parentSpec;
 
+	/**
+	 * <p>When using the no-argument constructor, the field
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#metaBuilder}
+	 * will be null. This field should only be accessed through
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getMeta()}.</p>
+	 */
 	private final Class<? extends FieldMetaBuilder<T>> metaBuilder;
 
 	@Autowired
@@ -544,6 +549,10 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 	public Class<? extends FieldMetaBuilder<T>> getFieldMetaBuilder() {
+		return getMeta();
+	}
+
+	public Class<? extends FieldMetaBuilder<T>> getMeta() {
 		return this.metaBuilder;
 	}
 
@@ -588,6 +597,41 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	@Override
 	public BusinessComponent getBc() {
 		return platformRequest.getBc();
+	}
+
+	/**
+	 * To use {@link lombok.RequiredArgsConstructor} and/or a constructor without parameters, you need to add the field
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#metaBuilder} :
+	 * <pre>
+	 * {@code @Getter
+	 * private final Class<ExampleMeta> fieldMetaBuilder = ExampleMeta.class;
+	 * }</pre><br>
+	 * Alternatively, you can override the method
+	 * {@link org.cxbox.core.crudma.impl.AbstractResponseService#getFieldMetaBuilder()}
+	 * <pre>
+	 * {@code public final Class<? extends FieldMetaBuilder<ExampleDTO>> getFieldMetaBuilder() {
+	 *     return ExampleMeta.class;
+	 * }
+	 * }<br></pre>
+	 * to your subclass.<br>
+	 *
+	 * @deprecated
+	 */
+	@Deprecated
+	public AbstractResponseService(Class<T> typeOfDTO, Class<E> typeOfEntity,
+			SingularAttribute<? super E, ? extends BaseEntity> parentSpec, Class<? extends FieldMetaBuilder<T>> metaBuilder) {
+		this.typeOfDTO = typeOfDTO;
+		this.typeOfEntity = typeOfEntity;
+		this.parentSpec = parentSpec;
+		this.metaBuilder = metaBuilder;
+	}
+
+	@SuppressWarnings("unchecked")
+	public AbstractResponseService() {
+		this.metaBuilder = null;
+		this.typeOfDTO = (Class<T>) ClassTypeUtil.getGenericType(this.getClass(), 0);
+		this.typeOfEntity = (Class<E>) ClassTypeUtil.getGenericType(this.getClass(), 1);
+		this.parentSpec = null;
 	}
 
 }
