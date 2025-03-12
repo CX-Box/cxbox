@@ -111,13 +111,14 @@ public class ResponseFactory {
 						.setEntity(entity);
 			}
 		}
-
 		Set<String> fields = new HashSet<>(map.keySet());
 		// штамп времени и id за поле не считаем
 		fields.remove(DataResponseDTO_.vstamp.getName());
 		fields.remove(DataResponseDTO_.id.getName());
 		DataResponseDTO result = (DataResponseDTO) objectResult;
 		result.setChangedFields(fields);
+		result.setChangedFieldsSequence(((DataResponseDTO) objectResult).getChangedFieldsSequence());
+		result.setChangedFieldsStep(((DataResponseDTO) objectResult).getChangedFieldsStep());
 		// Чтобы можно было назад возвращать
 		result.setId(bc.getId());
 		if (entity != null && !entity.getFields().isEmpty()) {
