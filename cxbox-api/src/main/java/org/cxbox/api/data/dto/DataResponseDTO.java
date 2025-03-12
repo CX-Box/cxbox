@@ -18,6 +18,8 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
+import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.IDataContainer;
@@ -44,6 +46,10 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@DtoMetamodelIgnore
 	protected Set<String> changedFields = new TreeSet<>();
 
+	protected ArrayList<Map<String, String>> changedFieldsSequence = new ArrayList<>();
+
+	protected long changedFieldsStep = 0;
+
 	protected String id;
 
 	protected Entity errors;
@@ -67,8 +73,18 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 		return isFieldChanged(dtoField.getName());
 	}
 
+	public boolean isFieldChangedCurrentIteration(final DtoField<?, ?> dtoField) {
+		return isFieldChangedCurrentIteration(dtoField.getName());
+	}
+
 	public boolean isFieldChanged(final String fieldName) {
 		return changedFields.contains(fieldName);
+	}
+
+	public boolean isFieldChangedCurrentIteration(final String fieldName) {
+		Map<String, String> fieldChangedList = changedFieldsSequence.stream()
+				.filter(map -> Long.toString(changedFieldsStep).equals(map.get("id"))).findFirst().orElseThrow();
+		return fieldChangedList.containsKey(fieldName);
 	}
 
 	public void addChangedField(String fieldName) {
