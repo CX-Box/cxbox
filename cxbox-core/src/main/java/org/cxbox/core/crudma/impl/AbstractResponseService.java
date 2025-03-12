@@ -149,6 +149,25 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 	/**
+	 * Changing the value of the DTO field (when it changes in this iteration) in the entity field (using the custom DTO-getter).
+	 *
+	 * @param <D> type of DTO field value to be saved in the entity field
+	 * @param <V> type of entity field to the value is to be saved
+	 * @param dto DTO-object, which value to be saved to the entity field
+	 * @param dtoField the DTO-object field, which value to be saved to the entity field
+	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 * @param dtoGetter method for retrieving a value (when it changes) from the DTO
+	 * @param mapper converts the saving value into the corresponding entity field type
+	 */
+	public final <D, V> void setMappedIfChangedCurrentIteration(
+			final T dto, final DtoField<? super T, D> dtoField,
+			final Consumer<V> entitySetter, final Supplier<D> dtoGetter, final Function<D, V> mapper) {
+		if (dto.isFieldChangedCurrentIteration(dtoField)) {
+			entitySetter.accept(mapper.apply(dtoGetter.get()));
+		}
+	}
+
+	/**
 	 * Saving the value of the DTO field (when it changes) in the entity field (using the custom DTO-getter).
 	 *
 	 * @param <V> type of entity field to the value is to be saved
@@ -180,6 +199,20 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 	/**
+	 * Changing the value of the DTO field (when it changes in current iteration) in the entity field.
+	 *
+	 * @param <V> type of entity field to the value is to be saved
+	 * @param dto DTO-object, which value to be saved to the entity field
+	 * @param dtoField the DTO-object field, which value to be saved to the entity field
+	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 */
+	public final <D, V> void setMappedIfChangedCurrentIteration(
+			final T dto, final DtoField<? super T, D> dtoField,
+			final Consumer<V> entitySetter, final Function<D, V> mapper) {
+		setMappedIfChangedCurrentIteration(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
+	}
+
+	/**
 	 * Saving the value of the DTO field (when it changes) in the entity field.
 	 *
 	 * @param <V> type of entity field to the value is to be saved
@@ -187,8 +220,22 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param entitySetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField, final Consumer<V> entitySetter) {
+	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField,
+			final Consumer<V> entitySetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
+	}
+
+	/**
+	 * Changing the value of the DTO field (when it changes in current iteration) in the entity field.
+	 *
+	 * @param <V> type of entity field to the value is to be saved
+	 * @param dto DTO-object, which value to be saved to the entity field
+	 * @param dtoField the DTO-object field, which value to be saved to the entity field
+	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 */
+	public final <V> void setIfChangedCurrentIteration(final T dto, final DtoField<? super T, V> dtoField,
+			final Consumer<V> entitySetter) {
+		setMappedIfChangedCurrentIteration(dto, dtoField, entitySetter, Function.identity());
 	}
 
 	@Override
@@ -218,7 +265,10 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		/*Specification<E> getOneSpecification = Specification.where(specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc)))
 				.and((root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
 		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, getOneSpecification);*/
-		E entity = baseDAO.getFirstResultOrNull(typeOfEntity, (root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong()));
+		E entity = baseDAO.getFirstResultOrNull(
+				typeOfEntity,
+				(root, cq, cb) -> cb.equal(root.get(BaseEntity_.id), bc.getIdAsLong())
+		);
 		if (entity == null) {
 			throw new EntityNotFoundException(typeOfEntity.getSimpleName(), bc.getId());
 		}
@@ -317,11 +367,12 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				record = doGetOne(bc);
 			}
 		}
-		return action.invoke(bc, Optional.ofNullable(record).orElse((T)data));
+		return action.invoke(bc, Optional.ofNullable(record).orElse((T) data));
 	}
 
 
-	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data, AssociateDTO associateDTO) {
+	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data,
+			AssociateDTO associateDTO) {
 		List<String> preInvokeParameters = bc.getPreInvokeParameters();
 		List<PreInvokeEvent> preInvokeEvents = new ArrayList<>();
 		if (nonNull(preActionEvents)) {
@@ -330,7 +381,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 						(data == null ? getCheckerAssoc(preActionEvent.getPreActionCondition())
 								.check(new AssocPreActionEventParameters(associateDTO, bc, preInvokeParameters))
 								: getCheckerData(preActionEvent.getPreActionCondition())
-								.check(new DataResponsePreActionEventParameters(data, bc, preInvokeParameters)))) {
+										.check(new DataResponsePreActionEventParameters(data, bc, preInvokeParameters)))) {
 					preInvokeEvents.add(PreInvokeEvent.of(
 							preActionEvent.getKey(),
 							preActionEvent.getType().getKey(),
@@ -390,7 +441,8 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				typeOfEntity,
 				typeOfDTO,
 				(root, cq, cb) -> {
-					Predicate pr = specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc)).toPredicate(root, cq, cb);
+					Predicate pr = specificationBuilder.buildBcSpecification(bc, getParentSpecification(bc), getSpecification(bc))
+							.toPredicate(root, cq, cb);
 					cq.orderBy();
 					return pr;
 				},
