@@ -48,9 +48,9 @@ public class DictionaryKeyJacksonDeserializer<T extends Dictionary> extends Json
 
 	@Override
 	@SneakyThrows
-	public T deserialize(JsonParser p, DeserializationContext ctxt) {
-		String key = p.readValueAs(String.class);
-		return Dictionary.of(elementType, key);
+	public T deserialize(final JsonParser p, final DeserializationContext ctxt) {
+		final String key = p.readValueAs(String.class);
+		return key == null || key.isEmpty() ? null : Dictionary.of(elementType, key);
 	}
 
 }
