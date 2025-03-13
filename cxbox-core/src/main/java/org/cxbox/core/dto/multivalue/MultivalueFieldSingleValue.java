@@ -16,16 +16,16 @@
 
 package org.cxbox.core.dto.multivalue;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-@AllArgsConstructor
 @JsonDeserialize(using = MultivalueFieldSingleValueDeserializer.class)
 public class MultivalueFieldSingleValue {
 
@@ -34,6 +34,14 @@ public class MultivalueFieldSingleValue {
 	private final String value;
 
 	private Map<String, String> options = new HashMap<>();
+
+	@java.beans.ConstructorProperties({"id", "value", "options"})
+	@JsonCreator(mode = Mode.PROPERTIES)
+	public MultivalueFieldSingleValue(String id, String value, Map<String, String> options) {
+		this.id = id;
+		this.value = value;
+		this.options = options;
+	}
 
 	public MultivalueFieldSingleValue addOption(MultivalueOptionType key, String value) {
 		options.put(key.getValue(), value);
