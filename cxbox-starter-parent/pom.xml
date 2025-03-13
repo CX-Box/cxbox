@@ -68,13 +68,13 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.4</version>
+    <version>3.3.8</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
   <properties>
     <cxbox.version>4.0.0-M16-SNAPSHOT</cxbox.version>
-    <spring-boot.version>3.3.4</spring-boot.version>
+    <spring-boot.version>3.3.8</spring-boot.version>
   </properties>
 
   <dependencyManagement>
