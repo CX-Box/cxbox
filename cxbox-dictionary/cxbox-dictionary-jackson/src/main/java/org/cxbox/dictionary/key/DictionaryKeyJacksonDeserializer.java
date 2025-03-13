@@ -32,14 +32,14 @@ public class DictionaryKeyJacksonDeserializer<T extends Dictionary> extends Json
 
 	@Override
 	public JsonDeserializer<?> createContextual(final DeserializationContext ctxt, final BeanProperty property) {
-		if (property != null) {
-			//infer target type from Class field type
-			elementType = (Class<T>) property.getType().getRawClass();
-		} else if (ctxt.getContextualType() != null && Dictionary.class.isAssignableFrom(ctxt.getContextualType().getRawClass())) {
+		if (ctxt.getContextualType() != null && Dictionary.class.isAssignableFrom(ctxt.getContextualType().getRawClass())) {
 			//infer target type from context
 			elementType = (Class<T>) ctxt.getContextualType().getRawClass();
 		}
-
+		if (elementType == null && property != null) {
+			//infer target type from Class field type
+			elementType = (Class<T>) property.getType().getRawClass();
+		}
 		if (elementType == null) {
 			throw new IllegalStateException("target class MUST extend " + Dictionary.class.getCanonicalName() + ", but was null");
 		}
@@ -48,9 +48,9 @@ public class DictionaryKeyJacksonDeserializer<T extends Dictionary> extends Json
 
 	@Override
 	@SneakyThrows
-	public T deserialize(JsonParser p, DeserializationContext ctxt) {
-		String key = p.readValueAs(String.class);
-		return Dictionary.of(elementType, key);
+	public T deserialize(final JsonParser p, final DeserializationContext ctxt) {
+		final String key = p.readValueAs(String.class);
+		return key == null || key.isEmpty() ? null : Dictionary.of(elementType, key);
 	}
 
 }
