@@ -29,6 +29,7 @@ public class UIProperties {
 
 	public static final String SIDE_BAR_SEARCH_ENABLE = "sideBarSearchEnabled";
 
+	public static final String NOTIFICATION_MODE = "notificationMode";
 	/**
 	 * * useServletContextPath = true is deprecated, and it means you will create 2 servlets (for api with context-path = '/api/v1' and for ui with context-path = '/ui'). This is very complex and non-common approach for springboot apps.
 	 * useServletContextPath = false, means your app have only 1 servlet with context-path = '' , so cxbox needs to add '/api/v1' prefix to rest controllers explicitly. Also cxbox will configure ui static content delivery in a slightly different way
@@ -57,6 +58,8 @@ public class UIProperties {
 	private String sideBarWordBreak = "none";
 
 	private Boolean sideBarSearchEnabled = true;
+
+	private String notificationMode = "single";
 
 	private String drillDownTooltip = null;
 
