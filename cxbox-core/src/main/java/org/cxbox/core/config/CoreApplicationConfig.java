@@ -17,6 +17,7 @@
 package org.cxbox.core.config;
 
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.core.config.properties.APPProperties;
 import org.cxbox.core.file.conf.CxboxFileConfiguration;
 import org.cxbox.model.core.api.CurrentUserAware;
 import org.cxbox.model.core.service.BaseEntityListenerDelegate;
@@ -35,7 +36,7 @@ import org.springframework.context.annotation.aspectj.EnableSpringConfigured;
 @Import({
 		CxboxFileConfiguration.class
 })
-@EnableConfigurationProperties(CxboxBeanProperties.class)
+@EnableConfigurationProperties({CxboxBeanProperties.class, APPProperties.class})
 public class CoreApplicationConfig {
 
 	@Bean
