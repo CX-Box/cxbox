@@ -30,6 +30,13 @@ public class UIProperties {
 	public static final String SIDE_BAR_SEARCH_ENABLE = "sideBarSearchEnabled";
 
 	public static final String NOTIFICATION_MODE = "notificationMode";
+
+	public static final String APP_INFO_DESCRIPTION = "infoDescription";
+
+	public static final String APP_INFO_ENV = "infoEnv";
+
+	public static final String APP_INFO_COLOR = "infoColor";
+
 	/**
 	 * * useServletContextPath = true is deprecated, and it means you will create 2 servlets (for api with context-path = '/api/v1' and for ui with context-path = '/ui'). This is very complex and non-common approach for springboot apps.
 	 * useServletContextPath = false, means your app have only 1 servlet with context-path = '' , so cxbox needs to add '/api/v1' prefix to rest controllers explicitly. Also cxbox will configure ui static content delivery in a slightly different way
@@ -54,15 +61,53 @@ public class UIProperties {
 
 	/**
 	 * Enabled the transfer of long names of side menu values
+	 *
+   * Available values:
+   * - NONE: Default setting. No word breaking occurs; text will not wrap.
+   * - AUTO: Automatic word breaking. Text in the sidebar will wrap to the next line as needed.
 	 */
 	private String sideBarWordBreak = "none";
 
 	private Boolean sideBarSearchEnabled = true;
+
+	/**
+	 * The mode of notification display in the application.
+	 *
+	 * Available values:
+	 * - single: Displays a single notification panel that updates with new notifications.
+	 * - column: Displays each notification in a separate panel stacked vertically.
+	 * - stack: Displays notifications in overlapping panels.
+	 */
 
 	private String notificationMode = "single";
 
 	private String drillDownTooltip = null;
 
 	private boolean multiRoleEnabled = false;
+
+	/**
+	 * Description of the application, including the version or any other relevant information.
+	 *
+	 * @return a string containing information about the application, e.g., "Version 1.0.0"
+	 */
+
+	private String appInfoDescription = "";
+
+	/**
+	 * The type of environment in which the application is running.
+	 * For example, it could be "staging", "production", or "testing".
+	 *
+	 * @return a string representing the type of environment
+	 */
+	private String appInfoEnv = "";
+
+	/**
+	 * The background color used in the application. This parameter is optional.
+	 *
+	 * @return a string representing the background color in HEX format or a named color
+	 *         (e.g., "#FFFFFF" for white or "red" for red).
+	 *         Returns null if the color is not specified.
+	 */
+	private String appInfoColor = "";
 
 }
