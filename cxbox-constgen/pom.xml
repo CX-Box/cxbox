@@ -34,14 +34,26 @@
       <groupId>com.squareup</groupId>
       <artifactId>javapoet</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.testing.compile</groupId>
+      <artifactId>compile-testing</artifactId>
+      <version>0.21.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <!-- Disable annotation processing for ourselves.-->
-          <compilerArgument>-proc:none</compilerArgument>
+          <!--Had to configure a fake annotationProcessorPaths element instead of "-proc:none" option as a workaround. With it Maven & auto-configured project in IDEA both work:-->
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.testing.compile</groupId>
+              <artifactId>compile-testing</artifactId>
+              <version>0.21.0</version>
+            </path>
+          </annotationProcessorPaths>
+          <!--<compilerArgument>-proc:none</compilerArgument> Fails in IDEA -->
         </configuration>
       </plugin>
     </plugins>
