@@ -61,10 +61,10 @@ public class UIProperties {
 
 	/**
 	 * Enabled the transfer of long names of side menu values
-	 *
-   * Available values:
-   * - NONE: Default setting. No word breaking occurs; text will not wrap.
-   * - AUTO: Automatic word breaking. Text in the sidebar will wrap to the next line as needed.
+	 * <br>
+   * Available values:<br>
+   * - none: Default setting. No word breaking occurs; text will not wrap.<br>
+   * - auto: Automatic word breaking. Text in the sidebar will wrap to the next line as needed.
 	 */
 	private String sideBarWordBreak = "none";
 
@@ -72,11 +72,11 @@ public class UIProperties {
 
 	/**
 	 * The mode of notification display in the application.
-	 *
-	 * Available values:
-	 * - single: Displays a single notification panel that updates with new notifications.
-	 * - column: Displays each notification in a separate panel stacked vertically.
-	 * - stack: Displays notifications in overlapping panels.
+	 *<br>
+	 * Available values:<br>
+	 * - single: Displays a single notification panel that updates with new notifications.<br>
+	 * - column: Displays each notification in a separate panel stacked vertically.<br>
+	 * - stack: Displays notifications in overlapping panels.<br>
 	 */
 
 	private String notificationMode = "single";
@@ -87,27 +87,27 @@ public class UIProperties {
 
 	/**
 	 * Description of the application, including the version or any other relevant information.
-	 *
-	 * @return a string containing information about the application, e.g., "Version 1.0.0"
+	 * <br>
+	 * A string containing information about the application, e.g., "Version 1.0.0"<br>
+	 * If the value is null, it will not be displayed on the frontend
 	 */
 
-	private String appInfoDescription = "";
+	private String appInfoDescription = null;
 
 	/**
-	 * The type of environment in which the application is running.
-	 * For example, it could be "staging", "production", or "testing".
-	 *
-	 * @return a string representing the type of environment
+	 * The type of environment in which the application is running.<br>
+	 * For example, it could be "staging", "production", or "testing".<br>
+	 * If the value is null, it will not be displayed on the frontend
 	 */
-	private String appInfoEnv = "";
+	private String appInfoEnv = null;
 
 	/**
 	 * The background color used in the application. This parameter is optional.
-	 *
-	 * @return a string representing the background color in HEX format or a named color
-	 *         (e.g., "#FFFFFF" for white or "red" for red).
-	 *         Returns null if the color is not specified.
+	 * <br>
+	 * A string representing the background color in HEX format or a named color
+	 *         (e.g., "#FFFFFF" for white or "red" for red).<br>
+	 * If the value is null, the color will be set to #262626, matching the sidebar.
 	 */
-	private String appInfoColor = "";
+	private String appInfoColor = null;
 
 }
