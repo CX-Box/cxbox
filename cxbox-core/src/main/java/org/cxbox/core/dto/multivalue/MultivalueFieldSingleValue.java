@@ -19,6 +19,7 @@ package org.cxbox.core.dto.multivalue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -27,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 @JsonDeserialize(using = MultivalueFieldSingleValueDeserializer.class)
-public class MultivalueFieldSingleValue {
+public class MultivalueFieldSingleValue implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private final String id;
 
@@ -54,4 +57,3 @@ public class MultivalueFieldSingleValue {
 	}
 
 }
-

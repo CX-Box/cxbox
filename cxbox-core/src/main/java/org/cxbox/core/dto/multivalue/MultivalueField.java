@@ -18,6 +18,7 @@ package org.cxbox.core.dto.multivalue;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -34,7 +35,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @AllArgsConstructor
-public class MultivalueField implements Iterable<MultivalueFieldSingleValue> {
+public class MultivalueField implements Iterable<MultivalueFieldSingleValue>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private List<MultivalueFieldSingleValue> values = new ArrayList<>();
 
