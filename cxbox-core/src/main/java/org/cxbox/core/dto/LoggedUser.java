@@ -69,4 +69,8 @@ public class LoggedUser {
 
 	private boolean devPanelEnabled;
 
+	public static SimpleDictionary feature(String key, Object value) {
+		return value != null ? new SimpleDictionary(key, String.valueOf(value)) : null;
+	}
+
 }
