@@ -107,7 +107,7 @@ public final class ActionDescription<T extends DataResponseDTO> {
 				.showOnlyIcon(this.isShowOnlyIcon())
 				.preActionDTO(nonNull(preAction) ? PreActionDTO.builder()
 						.type(preAction.getType())
-						.message(preAction.getMessage(this.getKey()))
+						.message(preAction.getMessage(this.getText()))
 						.customParameter(preAction.getCustomParameters())
 						.build() : null)
 				.scope(this.getActionScope().toString().toLowerCase())

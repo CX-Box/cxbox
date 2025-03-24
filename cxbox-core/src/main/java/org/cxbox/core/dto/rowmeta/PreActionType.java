@@ -28,14 +28,14 @@ public enum PreActionType {
 	CONFIRMATION("confirm", "Подтвердить действие '%s'?"),
 	INFORMATION("info", "Выполняется действие '%s'"),
 	ERROR("error", "Действие '%s' не может быть выполнено"),
-	CUSTOM("custom", "");
+	CUSTOM("custom", null);
 
 	private final String type;
 
 	private final String message;
 
 	public String getMessage(String... actionName) {
-		return format(message, (Object[]) actionName);
+		return message != null ? format(message, (Object[]) actionName) : message;
 	}
 
 }
