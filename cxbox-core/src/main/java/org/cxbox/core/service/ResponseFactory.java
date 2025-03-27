@@ -117,8 +117,6 @@ public class ResponseFactory {
 		fields.remove(DataResponseDTO_.id.getName());
 		DataResponseDTO result = (DataResponseDTO) objectResult;
 		result.setChangedFields(fields);
-		result.setChangedFieldsSequence(((DataResponseDTO) objectResult).getChangedFieldsSequence());
-		result.setChangedFieldsStep(((DataResponseDTO) objectResult).getChangedFieldsStep());
 		// Чтобы можно было назад возвращать
 		result.setId(bc.getId());
 		if (entity != null && !entity.getFields().isEmpty()) {
