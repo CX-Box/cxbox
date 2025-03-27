@@ -148,6 +148,14 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		}
 	}
 
+	public final <D, V> void setMappedIfChangedNow(
+			final T dto, final DtoField<? super T, D> dtoField,
+			final Consumer<V> entitySetter, final Supplier<D> dtoGetter, final Function<D, V> mapper) {
+		if (dto.isFieldChanged(dtoField)) {
+			entitySetter.accept(mapper.apply(dtoGetter.get()));
+		}
+	}
+
 	/**
 	 * Changing the value of the DTO field (when it changes in this iteration) in the entity field (using the custom DTO-getter).
 	 *
@@ -198,6 +206,12 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		setMappedIfChanged(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
 	}
 
+	public final <D, V> void setMappedIfChangedNow(
+			final T dto, final DtoField<? super T, D> dtoField,
+			final Consumer<V> entitySetter, final Function<D, V> mapper) {
+		setMappedIfChangedNow(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
+	}
+
 	/**
 	 * Changing the value of the DTO field (when it changes in current iteration) in the entity field.
 	 *
@@ -223,6 +237,19 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	public final <V> void setIfChanged(final T dto, final DtoField<? super T, V> dtoField,
 			final Consumer<V> entitySetter) {
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
+	}
+
+	/**
+	 * Saving the value of the DTO field (when it changes) in the entity field.
+	 *
+	 * @param <V> type of entity field to the value is to be saved
+	 * @param dto DTO-object, which value to be saved to the entity field
+	 * @param dtoField the DTO-object field, which value to be saved to the entity field
+	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 */
+	public final <V> void setIfChangedNow(final T dto, final DtoField<? super T, V> dtoField,
+			final Consumer<V> entitySetter) {
+		setMappedIfChangedNow(dto, dtoField, entitySetter, Function.identity());
 	}
 
 	/**
@@ -610,6 +637,11 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	@Override
 	public ActionResultDTO<T> updateEntity(BusinessComponent bc, DataResponseDTO data) {
+		return updateEntityNow(bc, data);
+	}
+
+	@Override
+	public ActionResultDTO<T> updateEntityNow(BusinessComponent bc, DataResponseDTO data) {
 		throw new UnsupportedOperationException();
 	}
 

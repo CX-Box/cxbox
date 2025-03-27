@@ -65,6 +65,11 @@ public class TestReponseService implements ResponseService {
 	}
 
 	@Override
+	public ActionResultDTO updateEntityNow(BusinessComponent bc, DataResponseDTO data) {
+		return null;
+	}
+
+	@Override
 	public ActionResultDTO preview(BusinessComponent bc, DataResponseDTO data) {
 		return null;
 	}
