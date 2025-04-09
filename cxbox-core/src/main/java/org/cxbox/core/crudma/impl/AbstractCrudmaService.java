@@ -120,7 +120,7 @@ public abstract class AbstractCrudmaService implements Crudma {
 	}
 
 	protected MetaDTO buildMeta(List<FieldDTO> fields, ActionsDTO actions) {
-		return new MetaDTO(new RowMetaDTO(actions, FieldsDTO.of(fields)));
+		return new MetaDTO(new RowMetaDTO(actions, FieldsDTO.of(fields), null, 0));
 	}
 
 }

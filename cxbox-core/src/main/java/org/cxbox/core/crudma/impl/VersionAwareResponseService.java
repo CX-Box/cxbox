@@ -74,7 +74,10 @@ public abstract class VersionAwareResponseService<T extends DataResponseDTO, E e
 	@Override
 	public ActionResultDTO<T> updateEntity(BusinessComponent bc, DataResponseDTO data) {
 		// todo: добавить проверку что сервис возвращает актуальные данные
-		return doUpdateEntity(loadEntity(bc, data), typeOfDTO.cast(data), bc);
+		ActionResultDTO<T> dto = doUpdateEntity(loadEntity(bc, data), typeOfDTO.cast(data), bc);
+		dto.getRecord().setSteps(data.getSteps());
+		dto.getRecord().setStep(data.getStep());
+		return doUpdateNow(dto.getRecord());
 	}
 
 	@Override
@@ -109,7 +112,10 @@ public abstract class VersionAwareResponseService<T extends DataResponseDTO, E e
 	protected abstract ActionResultDTO<T> doUpdateEntity(E entity, T data, BusinessComponent bc);
 
 	protected ActionResultDTO<T> doPreview(E entity, T data, BusinessComponent bc) {
-		return doUpdateEntity(entity, data, bc);
+		ActionResultDTO<T> dto = doUpdateEntity(entity, data, bc);
+		dto.getRecord().setSteps(data.getSteps());
+		dto.getRecord().setStep(data.getStep());
+		return doUpdateNow(dto.getRecord());
 	}
 
 	protected int getLockTimeout() {

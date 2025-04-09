@@ -136,7 +136,9 @@ class BcStateCrudmaGatewayInvokeExtensionProviderTest {
 		MetaDTO metaDTO = new MetaDTO(
 				new RowMetaDTO(
 						new ActionsDTO(),
-						new FieldsDTO()
+						new FieldsDTO(),
+						null,
+						0
 				)
 		);
 		metaDTO.setPostActions(Collections.singletonList(
@@ -161,7 +163,9 @@ class BcStateCrudmaGatewayInvokeExtensionProviderTest {
 		MetaDTO metaDTO = new MetaDTO(
 				new RowMetaDTO(
 						new ActionsDTO(),
-						new FieldsDTO()
+						new FieldsDTO(),
+						null,
+						0
 				)
 		);
 		metaDTO.setPostActions(Collections.emptyList());
@@ -183,7 +187,9 @@ class BcStateCrudmaGatewayInvokeExtensionProviderTest {
 		MetaDTO metaDTO = new MetaDTO(
 				new RowMetaDTO(
 						new ActionsDTO(),
-						fields
+						fields,
+						null,
+						0
 				)
 		);
 		metaDTO.setPostActions(Collections.emptyList());

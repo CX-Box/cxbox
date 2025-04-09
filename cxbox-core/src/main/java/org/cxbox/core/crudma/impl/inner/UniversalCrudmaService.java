@@ -126,7 +126,7 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 		for (FieldDTO fieldDTO : meta) {
 			fieldDTO.setDisabled(!editable.contains(fieldDTO.getKey()));
 		}
-		return new MetaDTO(new RowMetaDTO(getActions().toDto(bc), meta));
+		return new MetaDTO(new RowMetaDTO(getActions().toDto(bc), meta,null,0));
 	}
 
 	protected EngineFieldsMeta getMeta(BcIdentifier bc, RowMetaType type, D dataDto, boolean visibleOnly) {
@@ -154,7 +154,7 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 		for (FieldDTO fieldDTO : meta) {
 			fieldDTO.setDisabled(!attributes.contains(fieldDTO.getKey()));
 		}
-		MetaDTO result = new MetaDTO(new RowMetaDTO(getActions().toDto(bc), meta));
+		MetaDTO result = new MetaDTO(new RowMetaDTO(getActions().toDto(bc), meta,null,0));
 		result.setPostActions(data.getPostActions());
 		return result;
 	}
