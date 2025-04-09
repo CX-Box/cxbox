@@ -82,14 +82,14 @@ public interface ResponseService<T extends DataResponseDTO, E extends BaseEntity
 	 */
 	ActionResultDTO<T> updateEntity(BusinessComponent bc, DataResponseDTO data);
 
+
 	/**
-	 * Updates an entity now based on a business component by DTO
+	 * Updates DTO based on current DTO
 	 *
-	 * @param bc businessComponent
 	 * @param data information about entity, it's changed fields, errors
 	 * @return {@link ActionResultDTO} class with DataResponseDTO and postactions
 	 */
-	ActionResultDTO<T> updateEntityNow(BusinessComponent bc, DataResponseDTO data);
+	ActionResultDTO<T> updateEntityNow(DataResponseDTO data);
 
 	/**
 	 * Updates an entity based on a business component by DTO

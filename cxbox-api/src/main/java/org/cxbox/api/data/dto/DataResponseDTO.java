@@ -18,9 +18,12 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serial;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.IDataContainer;
@@ -74,18 +77,41 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 		return isFieldChanged(dtoField.getName());
 	}
 
-	public boolean isFieldChangedCurrentIteration(final DtoField<?, ?> dtoField) {
-		return isFieldChangedCurrentIteration(dtoField.getName());
-	}
-
 	public boolean isFieldChanged(final String fieldName) {
 		return changedFields.contains(fieldName);
 	}
 
-	public boolean isFieldChangedCurrentIteration(final String fieldName) {
-		Steps fieldChangedList =
-				steps.stream().filter(map -> step == map.getStep()).findFirst().orElseThrow();
-		return fieldChangedList.getData().containsKey(fieldName);
+	public  <V, T extends DataResponseDTO> void addStepsList(final DtoField<? super T, V> dtoField, V value) {
+		Optional<Steps> fieldChangedList =
+				steps.stream().filter(map -> step == map.getStep()).findFirst();
+		fieldChangedList.ifPresent(v -> v.addDataBE(dtoField,value));
+	}
+
+	public boolean isFieldChangedNow(final DtoField<?, ?> dtoField) {
+		return isFieldChangedNow(dtoField.getName(), ChangedByCode.FRONTEND_AND_BACKEND);
+	}
+
+	public boolean isFieldChangedNowByBE(final DtoField<?, ?> dtoField) {
+		return isFieldChangedNow(dtoField.getName(), ChangedByCode.BACKEND);
+	}
+
+	public boolean isFieldChangedNowByFE(final DtoField<?, ?> dtoField) {
+		return isFieldChangedNow(dtoField.getName(), ChangedByCode.FRONTEND);
+	}
+
+	public boolean isFieldChangedNow(final String fieldName, final ChangedByCode changedBy) {
+		return steps.stream()
+				.filter(map -> step == map.getStep())
+				.findFirst()
+				.map(value -> {
+					return switch (changedBy) {
+						case FRONTEND -> value.getDataFE().containsKey(fieldName);
+						case BACKEND -> value.getDataBE().containsKey(fieldName);
+						default -> value.getDataBE().containsKey(fieldName) ||
+								value.getDataFE().containsKey(fieldName);
+					};
+				})
+				.orElse(false);
 	}
 
 	public void addChangedField(String fieldName) {
@@ -122,9 +148,17 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 
 		private long step;
 
-		private Map<String, Object> data;
+		private Map<String, Object> dataBE = new HashMap<>();
+
+		private Map<String, Object> dataFE = new HashMap<>();
+
+		public <V, T extends DataResponseDTO> void addDataBE(DtoField<? super T, V> dtoFieldChange, V value) {
+			dataBE.put(dtoFieldChange.getName(),value);
+		}
 
 	}
+
+
 
 
 }

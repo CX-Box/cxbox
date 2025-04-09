@@ -140,38 +140,15 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoGetter method for retrieving a value (when it changes) from the DTO
 	 * @param mapper converts the saving value into the corresponding entity field type
 	 */
-	public final <D, V> void setMappedIfChanged(
-			final T dto, final DtoField<? super T, D> dtoField,
+	public final <D, V> void setMappedIfChanged(final T dto, final DtoField<? super T, D> dtoField,
 			final Consumer<V> entitySetter, final Supplier<D> dtoGetter, final Function<D, V> mapper) {
 		if (dto.isFieldChanged(dtoField)) {
 			entitySetter.accept(mapper.apply(dtoGetter.get()));
-		}
-	}
 
-	public final <D, V> void setMappedIfChangedNow(
-			final T dto, final DtoField<? super T, D> dtoField,
-			final Consumer<V> entitySetter, final Supplier<D> dtoGetter, final Function<D, V> mapper) {
-		if (dto.isFieldChanged(dtoField)) {
-			entitySetter.accept(mapper.apply(dtoGetter.get()));
-		}
-	}
-
-	/**
-	 * Changing the value of the DTO field (when it changes in this iteration) in the entity field (using the custom DTO-getter).
-	 *
-	 * @param <D> type of DTO field value to be saved in the entity field
-	 * @param <V> type of entity field to the value is to be saved
-	 * @param dto DTO-object, which value to be saved to the entity field
-	 * @param dtoField the DTO-object field, which value to be saved to the entity field
-	 * @param entitySetter method for saving a value (when it changes) to an entity
-	 * @param dtoGetter method for retrieving a value (when it changes) from the DTO
-	 * @param mapper converts the saving value into the corresponding entity field type
-	 */
-	public final <D, V> void setMappedIfChangedCurrentIteration(
-			final T dto, final DtoField<? super T, D> dtoField,
-			final Consumer<V> entitySetter, final Supplier<D> dtoGetter, final Function<D, V> mapper) {
-		if (dto.isFieldChangedCurrentIteration(dtoField)) {
-			entitySetter.accept(mapper.apply(dtoGetter.get()));
+			//	if (dto.isFieldChangedNowByBE(dtoField)) {
+			//add field in Steps Changes BE List
+			//		dto.addStepsList(dtoField, dtoGetter.get());
+			//	}
 		}
 	}
 
@@ -206,24 +183,53 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		setMappedIfChanged(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
 	}
 
-	public final <D, V> void setMappedIfChangedNow(
-			final T dto, final DtoField<? super T, D> dtoField,
-			final Consumer<V> entitySetter, final Function<D, V> mapper) {
-		setMappedIfChangedNow(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
-	}
 
 	/**
 	 * Changing the value of the DTO field (when it changes in current iteration) in the entity field.
 	 *
-	 * @param <V> type of entity field to the value is to be saved
+	 * @param <V> The entity type on which we check whether the field was modified in the current iteration
+	 * @param <V1> type of entity field to the value is to be saved
 	 * @param dto DTO-object, which value to be saved to the entity field
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
-	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 * @param dataSetter method for saving a value (when it changes) to an entity
 	 */
-	public final <D, V> void setMappedIfChangedCurrentIteration(
-			final T dto, final DtoField<? super T, D> dtoField,
-			final Consumer<V> entitySetter, final Function<D, V> mapper) {
-		setMappedIfChangedCurrentIteration(dto, dtoField, entitySetter, () -> dtoField.getValue(dto), mapper);
+	public <V, V1> void setMappedIfChangedNow(T dto, final DtoField<? super T, V> dtoField,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 value) {
+		if (dto.isFieldChangedNow(dtoField)) {
+			dataSetter.accept(value);
+			//add field in  Steps Changes BE List
+			dto.addStepsList(dtoFieldChanged, value);
+		}
+	}
+
+	public <V> void setMappedNow(T dto, final DtoField<? super T, V> dtoField, final Consumer<V> dataSetter, V value) {
+		dataSetter.accept(value);
+		//add field in  Steps Changes BE List
+		dto.addStepsList(dtoField, value);
+	}
+
+
+	public <V, V1> void setMappedIfChangedNowBE(T dto, final DtoField<? super T, V> dtoField,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 value) {
+		if (dto.isFieldChangedNowByBE(dtoField)) {
+			dataSetter.accept(value);
+			//add field in Steps Changes BE List
+			dto.addStepsList(dtoFieldChanged, value);
+		}
+	}
+
+
+	public <V, V1> void setMappedIfChangedNowFE(T dto, final DtoField<? super T, V> dtoField,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 value) {
+		if (dto.isFieldChangedNowByFE(dtoField)) {
+			dataSetter.accept(value);
+			//add field in Steps Changes List
+			//add field in Steps Changes BE List
+			dto.addStepsList(dtoFieldChanged, value);
+		}
 	}
 
 	/**
@@ -239,30 +245,51 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		setMappedIfChanged(dto, dtoField, entitySetter, Function.identity());
 	}
 
+
 	/**
 	 * Saving the value of the DTO field (when it changes) in the entity field.
 	 *
 	 * @param <V> type of entity field to the value is to be saved
 	 * @param dto DTO-object, which value to be saved to the entity field
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
-	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 * @param dataSetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChangedNow(final T dto, final DtoField<? super T, V> dtoField,
-			final Consumer<V> entitySetter) {
-		setMappedIfChangedNow(dto, dtoField, entitySetter, Function.identity());
+	public final <V, V1> void setIfChangedNow(T dto, final DtoField<? super T, V> dtoField,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 value) {
+		setMappedIfChangedNow(dto, dtoField, dtoFieldChanged, dataSetter, value);
+	}
+
+	public final <V> void setNow(T dto, final DtoField<? super T, V> dtoField, final Consumer<V> dataSetter, V value) {
+		setMappedNow(dto, dtoField, dataSetter, value);
 	}
 
 	/**
-	 * Changing the value of the DTO field (when it changes in current iteration) in the entity field.
+	 * Saving the value of the DTO field (when it changes) in the entity field.
 	 *
 	 * @param <V> type of entity field to the value is to be saved
 	 * @param dto DTO-object, which value to be saved to the entity field
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
-	 * @param entitySetter method for saving a value (when it changes) to an entity
+	 * @param dataSetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V> void setIfChangedCurrentIteration(final T dto, final DtoField<? super T, V> dtoField,
-			final Consumer<V> entitySetter) {
-		setMappedIfChangedCurrentIteration(dto, dtoField, entitySetter, Function.identity());
+	public final <V, V1> void setIfChangedNowFE(T dto, final DtoField<? super T, V> dtoField,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 value) {
+		setMappedIfChangedNowFE(dto, dtoField, dtoFieldChanged, dataSetter, value);
+	}
+
+	/**
+	 * Saving the value of the DTO field (when it changes) in the entity field.
+	 *
+	 * @param <V> type of entity field to the value is to be saved
+	 * @param dto DTO-object, which value to be saved to the entity field
+	 * @param dtoField the DTO-object field, which value to be saved to the entity field
+	 * @param dataSetter method for saving a value (when it changes) to an entity
+	 */
+	public final <V, V1> void setIfChangedNowBE(T dto, final DtoField<? super T, V> dtoField,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 value) {
+		setMappedIfChangedNowBE(dto, dtoField, dtoFieldChanged, dataSetter, value);
 	}
 
 	@Override
@@ -637,11 +664,11 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	@Override
 	public ActionResultDTO<T> updateEntity(BusinessComponent bc, DataResponseDTO data) {
-		return updateEntityNow(bc, data);
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public ActionResultDTO<T> updateEntityNow(BusinessComponent bc, DataResponseDTO data) {
+	public ActionResultDTO<T> updateEntityNow(DataResponseDTO data) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -666,6 +693,10 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 	protected AssociateResultDTO doAssociate(List<AssociateDTO> data, BusinessComponent bc) {
+		throw new UnsupportedOperationException();
+	}
+
+	protected ActionResultDTO<T> doUpdateNow(T dto) {
 		throw new UnsupportedOperationException();
 	}
 

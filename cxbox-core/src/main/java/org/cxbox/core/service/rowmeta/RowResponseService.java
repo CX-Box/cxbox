@@ -16,10 +16,14 @@
 
 package org.cxbox.core.service.rowmeta;
 
+import static org.cxbox.core.service.rowmeta.RowMetaType.META;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Stream;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
@@ -111,8 +115,21 @@ public class RowResponseService {
 	public MetaDTO getResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc, ActionsDTO actionDTO,
 			Class<? extends FieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
+
+		//add Step and Steps for method updateNow
+		Stream.of(DataResponseDTO_.steps, DataResponseDTO_.step)
+				.forEach(f -> {
+					Field field = FieldUtils.getField(dataDTO.getClass(), f.getName(), true);
+					fieldsNode.add(getDTOFromField(META, field, dataDTO));
+				});
+
 		if (linkedDictionaryService != null) {
-			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
+			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(
+					fieldsNode,
+					bc,
+					dataDTO,
+					type == RowMetaType.META_EMPTY
+			);
 		}
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			FieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
@@ -129,7 +146,7 @@ public class RowResponseService {
 			}
 		}
 
-		return new MetaDTO(new RowMetaDTO(actionDTO, fieldsNode));
+		return new MetaDTO(new RowMetaDTO(actionDTO, fieldsNode, dataDTO.getSteps(), dataDTO.getStep()));
 	}
 
 	public MetaDTO getExtremeResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
@@ -139,7 +156,7 @@ public class RowResponseService {
 			FieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildRowDependentMeta(fieldsNode, bc);
 		}
-		return new MetaDTO(new RowMetaDTO(new ActionsDTO(), fieldsNode));
+		return new MetaDTO(new RowMetaDTO(new ActionsDTO(), fieldsNode, dataDTO.getSteps(), dataDTO.getStep()));
 	}
 
 	public EngineFieldsMeta getMeta(BcIdentifier bc, RowMetaType type, DataResponseDTO dataDto, boolean visibleOnly) {

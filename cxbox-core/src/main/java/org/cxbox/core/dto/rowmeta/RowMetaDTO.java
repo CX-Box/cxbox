@@ -16,6 +16,9 @@
 
 package org.cxbox.core.dto.rowmeta;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.cxbox.api.data.dto.DataResponseDTO.Steps;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -37,5 +40,7 @@ public class RowMetaDTO {
 
 	private final FieldsDTO fields;
 
+	protected List<Steps> steps = new ArrayList<>();
 
+	protected long step = 0;
 }

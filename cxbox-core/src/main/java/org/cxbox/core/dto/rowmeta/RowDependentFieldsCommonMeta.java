@@ -26,7 +26,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.ChangedByCode;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO.Steps;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.constgen.DtoField;
@@ -50,9 +53,10 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 
 	/**
 	 * <br>
-	 * @param field  field ref
-	 * @return  currentValue of field. Optional.empty() if value is null or field is not present.
-	 * @param <F>  field type
+	 *
+	 * @param field field ref
+	 * @param <F> field type
+	 * @return currentValue of field. Optional.empty() if value is null or field is not present.
 	 */
 	@NonNull
 	public <F> Optional<F> getCurrentValue(@NonNull final DtoField<? super T, F> field) {
@@ -186,5 +190,45 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> fieldDTO.setPlaceholder(placeholder));
 	}
+
+	public <V> boolean isFieldChangedNow(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return isFieldChangedNow(fields, field, ChangedByCode.FRONTEND_AND_BACKEND);
+	}
+
+	public <V> boolean isFieldChangedNowFE(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return isFieldChangedNow(fields, field, ChangedByCode.FRONTEND);
+	}
+
+	public <V> boolean isFieldChangedNowBE(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return isFieldChangedNow(fields, field, ChangedByCode.BACKEND);
+	}
+
+	private <V> boolean isFieldChangedNow(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field, ChangedByCode changedBy) {
+		Optional<?> currentStep = fields.getCurrentValue(DataResponseDTO_.step);
+		Optional<?> currentSteps = fields.getCurrentValue(DataResponseDTO_.steps);
+
+		if (currentStep.isPresent() && currentSteps.isPresent()) {
+			return ((List<Steps>) currentSteps.get()).stream()
+					.filter(a -> currentStep.get().equals(a.getStep()))
+					.findFirst()
+					.map(steps -> {
+								return
+										switch (changedBy) {
+											case FRONTEND -> steps.getDataFE().containsKey(field.getName());
+											case BACKEND -> steps.getDataBE().containsKey(field.getName());
+											default -> steps.getDataFE().containsKey(field.getName()) ||
+													steps.getDataBE().containsKey(field.getName());
+										};
+							}
+					)
+					.orElse(false);
+		}
+		return false;
+	}
+
 
 }

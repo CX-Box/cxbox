@@ -258,7 +258,7 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 	}
 
 	private SQLMetaDTO buildMeta(BusinessComponent bc, List<FieldDTO> fields, ActionsDTO actions) {
-		SQLMetaDTO metaDTO = new SQLMetaDTO(new RowMetaDTO(actions, FieldsDTO.of(fields)));
+		SQLMetaDTO metaDTO = new SQLMetaDTO(new RowMetaDTO(actions, FieldsDTO.of(fields),null,0));
 		if (bc.getParameters().isDebug()) {
 			setDebugParameters(bc, metaDTO);
 		}

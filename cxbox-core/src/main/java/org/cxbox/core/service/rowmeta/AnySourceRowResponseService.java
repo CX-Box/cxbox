@@ -102,7 +102,7 @@ public class AnySourceRowResponseService extends RowResponseService {
 			}
 		}
 
-		return new MetaDTO(new RowMetaDTO(actionDTO, fieldsNode));
+		return new MetaDTO(new RowMetaDTO(actionDTO, fieldsNode,null,0));
 	}
 
 	public MetaDTO getAnySourceResponse(RowMetaType type, CreateResult createResult, BusinessComponent bc,
