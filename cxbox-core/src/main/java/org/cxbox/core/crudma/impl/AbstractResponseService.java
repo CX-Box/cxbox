@@ -203,6 +203,16 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		}
 	}
 
+	public <V, V1> void setMappedIfChangedNow(T dto, final DtoField<? super T, V> dtoField, V value,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 valueChanged) {
+		if (dto.isFieldChangedNow(dtoField) && dtoField.getValue(dto).equals(value)) {
+			dataSetter.accept(valueChanged);
+			//add field in  Steps Changes BE List
+			dto.addStepsList(dtoFieldChanged, valueChanged);
+		}
+	}
+
 	public <V> void setMappedNow(T dto, final DtoField<? super T, V> dtoField, final Consumer<V> dataSetter, V value) {
 		dataSetter.accept(value);
 		//add field in  Steps Changes BE List
@@ -210,7 +220,7 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	}
 
 
-	public <V, V1> void setMappedIfChangedNowBE(T dto, final DtoField<? super T, V> dtoField,
+	public <V, V1> void setMappedIfChangedNowByBE(T dto, final DtoField<? super T, V> dtoField,
 			final DtoField<? super T, V1> dtoFieldChanged,
 			final Consumer<V1> dataSetter, V1 value) {
 		if (dto.isFieldChangedNowByBE(dtoField)) {
@@ -220,8 +230,17 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		}
 	}
 
+	public <V, V1> void setMappedIfChangedNowByBE(T dto, final DtoField<? super T, V> dtoField, V value,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 valueChanged) {
+		if (dto.isFieldChangedNowByBE(dtoField) && dtoField.getValue(dto).equals(value)) {
+			dataSetter.accept(valueChanged);
+			//add field in  Steps Changes BE List
+			dto.addStepsList(dtoFieldChanged, valueChanged);
+		}
+	}
 
-	public <V, V1> void setMappedIfChangedNowFE(T dto, final DtoField<? super T, V> dtoField,
+	public <V, V1> void setMappedIfChangedNowByFE(T dto, final DtoField<? super T, V> dtoField,
 			final DtoField<? super T, V1> dtoFieldChanged,
 			final Consumer<V1> dataSetter, V1 value) {
 		if (dto.isFieldChangedNowByFE(dtoField)) {
@@ -229,6 +248,16 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 			//add field in Steps Changes List
 			//add field in Steps Changes BE List
 			dto.addStepsList(dtoFieldChanged, value);
+		}
+	}
+
+	public <V, V1> void setMappedIfChangedNowByFE(T dto, final DtoField<? super T, V> dtoField, V value,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 valueChanged) {
+		if (dto.isFieldChangedNowByFE(dtoField) && dtoField.getValue(dto).equals(value)) {
+			dataSetter.accept(valueChanged);
+			//add field in  Steps Changes BE List
+			dto.addStepsList(dtoFieldChanged, valueChanged);
 		}
 	}
 
@@ -260,6 +289,12 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 		setMappedIfChangedNow(dto, dtoField, dtoFieldChanged, dataSetter, value);
 	}
 
+	public final <V, V1> void setIfChangedNow(T dto, final DtoField<? super T, V> dtoField, V value,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 valueChanged) {
+		setMappedIfChangedNow(dto, dtoField, value, dtoFieldChanged, dataSetter, valueChanged);
+	}
+
 	public final <V> void setNow(T dto, final DtoField<? super T, V> dtoField, final Consumer<V> dataSetter, V value) {
 		setMappedNow(dto, dtoField, dataSetter, value);
 	}
@@ -272,11 +307,18 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param dataSetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V, V1> void setIfChangedNowFE(T dto, final DtoField<? super T, V> dtoField,
+	public final <V, V1> void setIfChangedNowByFE(T dto, final DtoField<? super T, V> dtoField,
 			final DtoField<? super T, V1> dtoFieldChanged,
 			final Consumer<V1> dataSetter, V1 value) {
-		setMappedIfChangedNowFE(dto, dtoField, dtoFieldChanged, dataSetter, value);
+		setMappedIfChangedNowByFE(dto, dtoField, dtoFieldChanged, dataSetter, value);
 	}
+
+	public final <V, V1> void setIfChangedNowByFE(T dto, final DtoField<? super T, V> dtoField, V value,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 valueChanged) {
+		setMappedIfChangedNowByFE(dto, dtoField, value, dtoFieldChanged, dataSetter, valueChanged);
+	}
+
 
 	/**
 	 * Saving the value of the DTO field (when it changes) in the entity field.
@@ -286,10 +328,16 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 	 * @param dtoField the DTO-object field, which value to be saved to the entity field
 	 * @param dataSetter method for saving a value (when it changes) to an entity
 	 */
-	public final <V, V1> void setIfChangedNowBE(T dto, final DtoField<? super T, V> dtoField,
+	public final <V, V1> void setIfChangedNowByBE(T dto, final DtoField<? super T, V> dtoField,
 			final DtoField<? super T, V1> dtoFieldChanged,
 			final Consumer<V1> dataSetter, V1 value) {
-		setMappedIfChangedNowBE(dto, dtoField, dtoFieldChanged, dataSetter, value);
+		setMappedIfChangedNowByBE(dto, dtoField, dtoFieldChanged, dataSetter, value);
+	}
+
+	public final <V, V1> void setIfChangedNowByBE(T dto, final DtoField<? super T, V> dtoField, V value,
+			final DtoField<? super T, V1> dtoFieldChanged,
+			final Consumer<V1> dataSetter, V1 valueChanged) {
+		setMappedIfChangedNowByBE(dto, dtoField, value, dtoFieldChanged, dataSetter, valueChanged);
 	}
 
 	@Override
