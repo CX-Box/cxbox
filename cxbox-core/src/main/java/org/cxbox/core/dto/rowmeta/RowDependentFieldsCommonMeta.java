@@ -230,5 +230,12 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 		return false;
 	}
 
+	public <V> void setIfFieldChangedNowMeta(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> fieldDTO, V value,
+			final Runnable runnable) {
+		if (isFieldChangedNow(fields, fieldDTO) && fields.getCurrentValue(fieldDTO).equals(value)) {
+			runnable.run();
+		}
+	}
 
 }
