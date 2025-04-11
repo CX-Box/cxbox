@@ -16,10 +16,13 @@
 
 package org.cxbox.core.service.rowmeta;
 
+import static org.cxbox.core.service.rowmeta.RowMetaType.META;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
@@ -114,6 +117,15 @@ public class RowResponseService {
 		if (linkedDictionaryService != null) {
 			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
 		}
+		//add RqChangedNowFE for MetaBuilder
+		if (!dataDTO.getRqChangedNowFE().isEmpty()) {
+			fieldsNode.add(getDTOFromField(META, FieldUtils.getField(
+					dataDTO.getClass(),
+					DataResponseDTO_.rqChangedNowFE.getName(),
+					true
+			), dataDTO));
+		}
+
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			FieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildIndependentMeta(fieldsNode, bc);
