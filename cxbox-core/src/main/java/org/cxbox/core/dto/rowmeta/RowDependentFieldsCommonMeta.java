@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.constgen.DtoField;
@@ -185,6 +186,16 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	public final void setPlaceholder(DtoField<? super T, ?> field, String placeholder) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> fieldDTO.setPlaceholder(placeholder));
+	}
+
+	/**
+	 * Checks whether the field was modified by the user in the UI during the current iteration.
+	 *
+	 * @param field DTO field to verify for recent user modifications
+	 */
+	public <V> boolean isFieldChangedNowFE(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return  fields.getCurrentValue(DataResponseDTO_.rqChangedNowFE).map(objectMap -> objectMap.containsKey(field.getName())).orElse(false);
 	}
 
 }
