@@ -18,6 +18,8 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.IDataContainer;
@@ -58,6 +60,8 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@JsonIgnore
 	@DtoMetamodelIgnore
 	private Set<String> computedFields;
+
+	private Map<String, Object> rqChangedNowFE = new HashMap<>();
 
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;
