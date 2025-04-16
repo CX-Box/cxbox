@@ -54,7 +54,8 @@ public interface BaseDAO extends JpaDao {
 
 	<T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
-			FilterParameters searchParams);
+			FilterParameters searchParams,
+			String dialect);
 
 
 }

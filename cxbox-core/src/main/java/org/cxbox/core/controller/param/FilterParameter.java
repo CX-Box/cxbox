@@ -16,13 +16,14 @@
 
 package org.cxbox.core.controller.param;
 
-import org.cxbox.core.util.TypeConverter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.function.BiFunction;
 import lombok.Getter;
 import lombok.ToString;
+import org.cxbox.core.util.TypeConverter;
 
 
 @Getter
@@ -70,6 +71,10 @@ public class FilterParameter extends AbstractQueryParameter {
 
 	public LocalDateTime getDateValue() {
 		return TypeConverter.toLocalDateTime(stringValue);
+	}
+
+	public LocalTime getTimeValue() {
+		return getDateValue().toLocalTime();
 	}
 
 	public List<String> getStringValuesAsList() {

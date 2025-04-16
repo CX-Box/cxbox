@@ -16,6 +16,7 @@
 
 package org.cxbox.model.core.dao.impl;
 
+import autovalue.shaded.org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Objects;
 import org.cxbox.api.data.PageSpecification;
 import org.cxbox.api.data.ResultPage;
@@ -67,6 +68,10 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.OracleDialect;
+import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.Query;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
@@ -107,6 +112,16 @@ public class JpaDaoImpl implements JpaDao {
 		} else {
 			throw new IllegalArgumentException("Can't find unique EntityManager for entity: " + entityClazz);
 		}
+	}
+
+	@Nullable
+	public String getDialect(EntityManager entityManager) {
+		var sessionFactory = entityManager.unwrap(Session.class).getSessionFactory();
+		if (sessionFactory instanceof SessionFactoryImpl factory) {
+			Dialect dialect = factory.getJdbcServices().getDialect();
+			return dialect instanceof OracleDialect ? "Oracle" : (dialect instanceof PostgreSQLDialect ? "PostgreSQL" : null);
+		}
+		return null;
 	}
 
 	@Override
