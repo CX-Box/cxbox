@@ -88,6 +88,7 @@ public class CrudmaGateway {
 	}
 
 	public MetaDTO preview(CrudmaAction crudmaAction, Map<String, Object> data) {
+
 		BusinessComponent bc = crudmaAction.getBc();
 		boolean readOnly = isReadOnly(crudmaAction);
 		final InterimResult result = invoke(crudmaAction, () -> {

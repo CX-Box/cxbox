@@ -16,6 +16,7 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
+import java.util.HashMap;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -74,13 +75,19 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
+		Map<String, Object> changedNow = new HashMap<>();
+		data = (Map) data.get("data");
+		if (data != null || data.get("changedNow") != null ||
+				data.get("changedNow") instanceof Map) {
+			changedNow = (Map<String, Object>) data.get("changedNow");
+		}
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		responseDto.setRqChangedNowFE(requestDto.getRqChangedNowFE());
+		responseDto.setRqChangedNowFE(changedNow);
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
