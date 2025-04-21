@@ -101,10 +101,9 @@ public class UniversalRowMetaController {
 			HttpServletRequest request,
 			QueryParameters queryParameters,
 			@RequestBody Map<String, Object> requestBody) {
+
 		if (requestBody == null || requestBody.get("data") == null || !(requestBody.get("data") instanceof Map)) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
-		} else {
-			requestBody = (Map) requestBody.get("data");
 		}
 		BusinessComponent bc = bcFactory.getBusinessComponent(request, queryParameters);
 		CrudmaAction crudmaAction = crudmaActionHolder.of(CrudmaActionType.PREVIEW)

@@ -80,6 +80,8 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		final AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
+		data = (Map) data.get("data");
+
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
