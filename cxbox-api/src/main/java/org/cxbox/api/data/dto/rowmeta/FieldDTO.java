@@ -18,6 +18,8 @@ package org.cxbox.api.data.dto.rowmeta;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +64,12 @@ public class FieldDTO {
 	@JsonIgnore
 	boolean tzAware;
 
+	@JsonIgnore
+	boolean hasSerializerAnnotation;
+
+	@JsonIgnore
+	Class<? extends JsonSerializer> fieldLevelSerializer;
+
 	String drillDown;
 
 	String drillDownType;
@@ -69,6 +77,7 @@ public class FieldDTO {
 	String dictionaryName;
 
 	@JsonInclude
+	@JsonSerialize(using = FieldsDTOCurrentValueSerializer.class)
 	Object currentValue;
 
 	Set<DictValue> values = new LinkedHashSet<>();
@@ -97,6 +106,8 @@ public class FieldDTO {
 		this.key = field.getName();
 		this.tzAware = isTzAware(field);
 		this.sortable = false;
+		this.hasSerializerAnnotation = hasSerializerAnnotation(field);
+		this.fieldLevelSerializer = getSerializerFromSerializerAnnotation(field);
 	}
 
 	public void addOption(String key, String value) {
@@ -160,6 +171,16 @@ public class FieldDTO {
 		return tzAware != null || TimeZoneUtil.hasTzAwareSuffix(field.getName());
 	}
 
+	public static boolean hasSerializerAnnotation(Field field) {
+		JsonSerialize jsonSerialize = field.getDeclaredAnnotation(JsonSerialize.class);
+		return jsonSerialize != null;
+	}
+
+	private static Class<? extends JsonSerializer> getSerializerFromSerializerAnnotation(Field field) {
+		JsonSerialize jsonSerialize = field.getDeclaredAnnotation(JsonSerialize.class);
+		return jsonSerialize == null ? null : jsonSerialize.using();
+	}
+
 	public static boolean isEphemeral(Field field) {
 		return field.getDeclaredAnnotation(Ephemeral.class) != null;
 	}
@@ -214,7 +235,7 @@ public class FieldDTO {
 	 * @deprecated Since 4.0.0-M11
 	 * use {@link FieldDTO#setIconWithValue(String, Icon)}
 	 */
-	@Deprecated(since = "4.0.0-M11",forRemoval = true)
+	@Deprecated(since = "4.0.0-M11", forRemoval = true)
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
 		Set<DictValue> dictValues = isFilterValue ? filterValues : values;
 		dictValues.add(new DictValue(val, icon.code));
@@ -237,6 +258,32 @@ public class FieldDTO {
 	@Deprecated()
 	public void setCurrentValue(Object currentValue) {
 		this.currentValue = currentValue;
+	}
+
+	public FieldDTO copy() {
+		FieldDTO copy = new FieldDTO();
+		copy.key = this.key;
+		copy.disabled = this.disabled;
+		copy.forceActive = this.forceActive;
+		copy.ephemeral = this.ephemeral;
+		copy.hidden = this.hidden;
+		copy.required = this.required;
+		copy.filterable = this.filterable;
+		copy.sortable = this.sortable;
+		copy.placeholder = this.placeholder;
+		copy.tzAware = this.tzAware;
+		copy.hasSerializerAnnotation = this.hasSerializerAnnotation;
+		copy.drillDown = this.drillDown;
+		copy.drillDownType = this.drillDownType;
+		copy.dictionaryName = this.dictionaryName;
+		copy.currentValue = this.currentValue;
+		copy.values = new LinkedHashSet<>(this.values);
+		copy.filterValues = new LinkedHashSet<>(this.filterValues);
+		copy.allValues = new LinkedHashSet<>(this.allValues);
+		copy.fileAccept = this.fileAccept;
+		copy.options = new HashMap<>(this.options);
+		copy.defaultGroupingHierarchy = this.defaultGroupingHierarchy;
+		return copy;
 	}
 
 	@AllArgsConstructor

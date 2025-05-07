@@ -88,7 +88,7 @@ class SearchSpecificationTest {
 	@Test
 	void searchSpecTest() {
 		FilterParameters fp = FilterParameters.fromMap(successMap);
-		Assertions.assertEquals(MetadataUtils.mapSearchParamsToPOJO(TestResponseDto.class, fp, providers).size(), 31);
+		Assertions.assertEquals(MetadataUtils.mapSearchParamsToPOJO(TestResponseDto.class, fp, "", providers).size(), 31);
 	}
 
 	@Test
@@ -117,7 +117,7 @@ class SearchSpecificationTest {
 		FilterParameters fp = FilterParameters.fromList(
 				Collections.singletonList(new FilterParameter("number", SearchOperation.CONTAINS, "str"))
 		);
-		Assertions.assertEquals(MetadataUtils.mapSearchParamsToPOJO(TestResponseDto.class, fp, providers).size(), 0);
+		Assertions.assertEquals(MetadataUtils.mapSearchParamsToPOJO(TestResponseDto.class, fp, "", providers).size(), 0);
 	}
 
 	@Test
@@ -125,7 +125,7 @@ class SearchSpecificationTest {
 		FilterParameters fp = FilterParameters.fromList(
 				Collections.singletonList(new FilterParameter("name", SearchOperation.GREATER_OR_EQUAL_THAN, "33"))
 		);
-		Assertions.assertEquals(MetadataUtils.mapSearchParamsToPOJO(TestResponseDto.class, fp, providers).size(), 0);
+		Assertions.assertEquals(MetadataUtils.mapSearchParamsToPOJO(TestResponseDto.class, fp, "", providers).size(), 0);
 	}
 
 	@AfterEach

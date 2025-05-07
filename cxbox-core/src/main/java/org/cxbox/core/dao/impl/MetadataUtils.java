@@ -21,15 +21,7 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.controller.param.SortType.ASC;
 import static org.cxbox.core.controller.param.SortType.DESC;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import autovalue.shaded.org.checkerframework.checker.nullness.qual.Nullable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -46,10 +38,20 @@ import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.ManagedType;
+import java.lang.reflect.Field;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
-import org.cxbox.api.data.Period;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -64,7 +66,9 @@ import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
+import org.cxbox.core.util.filter.provider.impl.TimeValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
+import org.springframework.data.jpa.domain.Specification;
 
 
 @Slf4j
@@ -72,6 +76,7 @@ import org.cxbox.model.core.entity.BaseEntity;
 public class MetadataUtils {
 
 	public List<ClassifyDataParameter> mapSearchParamsToPOJO(Class dtoClazz, FilterParameters filterParameters,
+			String dialect,
 			List<ClassifyDataProvider> providers) {
 
 		List<ClassifyDataParameter> result = new ArrayList<>();
@@ -207,7 +212,8 @@ public class MetadataUtils {
 		return root.get(fieldName);
 	}
 
-	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb) {
+	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
+			String dialect) {
 		try {
 			Object value = criteria.getValue();
 
@@ -215,7 +221,10 @@ public class MetadataUtils {
 
 			switch (criteria.getOperator()) {
 				case EQUALS:
-					if (value instanceof String) {
+					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+						return cb.equal(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+
+					} else if (value instanceof String) {
 						return cb.equal(cb.upper(field), requireString(value).toUpperCase());
 					} else {
 						return cb.equal(field, value);
@@ -223,21 +232,25 @@ public class MetadataUtils {
 				case CONTAINS:
 					return cb.like(cb.upper(field), "%" + requireString(value).toUpperCase() + "%");
 				case GREATER_THAN:
+					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+						return cb.greaterThan(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					}
 					return cb.greaterThan(field, requireComparable(value));
 				case LESS_THAN:
+					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+						return cb.lessThan(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					}
 					return cb.lessThan(field, requireComparable(value));
 				case GREATER_OR_EQUAL_THAN:
+					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+						return cb.greaterThanOrEqualTo(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case LESS_OR_EQUAL_THAN:
-					return cb.lessThanOrEqualTo(field, requireComparable(value));
-				case INTERVALS:
-					return cb.or(((List<Period>) value).stream()
-							.map(object ->
-									cb.and(
-											cb.greaterThanOrEqualTo(field, requireComparable(object.getStart())),
-											cb.lessThanOrEqualTo(field, requireComparable(object.getEnd()))
-									))
-							.toArray(Predicate[]::new));
+					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+						return cb.lessThanOrEqualTo(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					}
+					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case SPECIFIED:
 					boolean isSpecified = BooleanUtils.isTrue((Boolean) value);
 					if (BooleanValueProvider.class.equals(criteria.getProvider())) {
@@ -256,6 +269,12 @@ public class MetadataUtils {
 						return cb.or(((List<Object>) value).stream()
 								.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
 								.toArray(Predicate[]::new));
+					} else if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+						return cb
+								.or(((List<Object>) value).stream().map(object -> cb.equal(
+										getExpressionForTime(cb, field, dialect, valueLT),
+										requireComparable(value)
+								)).toArray(Predicate[]::new));
 					} else {
 						return cb
 								.or(((List<Object>) value).stream().map(object -> cb.equal(field, object)).toArray(Predicate[]::new));
@@ -270,14 +289,25 @@ public class MetadataUtils {
 					throw new IllegalArgumentException();
 			}
 		} catch (Exception e) {
-			log.warn("error when try to parse search expr: "
-					+ criteria.getField() + "." + criteria.getOperator() + "=" + criteria.getValue(), e);
+			log.warn(
+					"error when try to parse search expr: "
+							+ criteria.getField() + "." + criteria.getOperator() + "=" + criteria.getValue(), e
+			);
 			return null;
 		}
 	}
 
+
+	private Expression getExpressionForTime(CriteriaBuilder cb, Path field, String dialect, LocalTime value) {
+		if (dialect != null && dialect.contains("Oracle")) {
+			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
+		}
+		//for default dialect = PostgreSQL
+		return field.as(LocalTime.class);
+	}
+
 	public static <T> void addSorting(final Class dtoClazz, final Root<?> root, final CriteriaQuery<T> query,
-			CriteriaBuilder builder, final SortParameters sort) {
+			CriteriaBuilder builder, final SortParameters sort, String dialect) {
 		List<Order> orderList = new ArrayList<>();
 		if (!query.getOrderList().isEmpty()) {
 			orderList.addAll(query.getOrderList());
@@ -290,6 +320,7 @@ public class MetadataUtils {
 				Path fieldPath = getFieldPath(field, root);
 				IDictionaryType lovType = getLovType(dtoClazz, p);
 				Expression<?> order;
+				SearchParameter searchParameter = getSearchParameter(dtoClazz, p);
 				if (lovType != null) {
 					Collection<SimpleDictionary> dictDTOS = dictionary().getAll(lovType);
 					CriteriaBuilder.Case<String> selectCase = builder.selectCase();
@@ -297,6 +328,10 @@ public class MetadataUtils {
 							builder.equal(fieldPath, new LOV(dictDTO.getKey())), dictDTO.getValue()
 					));
 					order = selectCase.otherwise("");
+				} else if (searchParameter != null &&
+						searchParameter.provider() != null &&
+				searchParameter.provider().equals(TimeValueProvider.class)) {
+					order = getExpressionSortByTimePart(dialect, fieldPath, builder);
 				} else {
 					order = fieldPath;
 				}
@@ -324,12 +359,7 @@ public class MetadataUtils {
 		if (dtoClazz == null) {
 			field = parameter.getName();
 		} else {
-			Field dtoField = CxReflectionUtils.findField(dtoClazz, parameter.getName());
-			if (dtoField == null) {
-				throw new IllegalArgumentException(
-						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
-			}
-			SearchParameter fieldParameter = dtoField.getDeclaredAnnotation(org.cxbox.core.util.filter.SearchParameter.class);
+			SearchParameter fieldParameter = getSearchParameter(dtoClazz, parameter);
 			if (fieldParameter != null && !"".equals(fieldParameter.name())) {
 				field = fieldParameter.name();
 			} else {
@@ -337,6 +367,16 @@ public class MetadataUtils {
 			}
 		}
 		return field;
+	}
+
+	private static SearchParameter getSearchParameter(@NonNull Class dtoClazz, SortParameter parameter) {
+		Field dtoField = CxReflectionUtils.findField(dtoClazz, parameter.getName());
+		if (dtoField == null) {
+			throw new IllegalArgumentException(
+					"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
+		}
+		return dtoField.getDeclaredAnnotation(org.cxbox.core.util.filter.SearchParameter.class);
+
 	}
 
 	private static IDictionaryType getLovType(Class dtoClazz, SortParameter parameter) {
@@ -353,12 +393,18 @@ public class MetadataUtils {
 
 	public static <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
-			FilterParameters searchParams, List<ClassifyDataProvider> providers) {
+			FilterParameters searchParams,
+			String dialect, List<ClassifyDataProvider> providers) {
 
 		if (searchParams == null) {
 			return cb.and();
 		}
-		List<ClassifyDataParameter> criteriaStrings = mapSearchParamsToPOJO(dtoClazz, searchParams, providers);
+		List<ClassifyDataParameter> criteriaStrings = mapSearchParamsToPOJO(
+				dtoClazz,
+				searchParams,
+				dialect,
+				providers
+		);
 		boolean joinRequired = criteriaStrings.stream()
 				.anyMatch(param -> param.getField().contains("."));
 
@@ -367,33 +413,34 @@ public class MetadataUtils {
 			Subquery<Long> filterSubquery = cq.subquery(Long.class);
 			Class<T> rootClass = root.getModel().getJavaType();
 			Root<T> subRoot = filterSubquery.from(rootClass);
-			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings);
+			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings, dialect);
 			filterSubquery.select(subRoot.get("id"))
 					.where(searchParamsRestriction);
 			filterPredicate = cb.in(root.get("id")).value(filterSubquery);
 		} else {
-			filterPredicate = getAllSpecifications(cb, root, criteriaStrings);
+			filterPredicate = getAllSpecifications(cb, root, criteriaStrings, dialect);
 		}
 		return filterPredicate;
 	}
 
 	public static Predicate getAllSpecifications(CriteriaBuilder cb, Root<?> root,
-			List<ClassifyDataParameter> criteriaStrings) {
+			List<ClassifyDataParameter> criteriaStrings, String dialect) {
 		return cb.and(criteriaStrings.stream()
-				.map(criteria -> getSingleSpecification(cb, root, criteria))
+				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect))
 				.filter(Objects::nonNull).toArray(Predicate[]::new));
 	}
 
-	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria) {
+	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria,
+			String dialect) {
 		if (MultisourceValueProvider.class.equals(criteria.getProvider())) {
 			List criteriaValue = (List) criteria.getValue();
 			List<Predicate> predicates = new ArrayList<>();
 			for (Object innerList : criteriaValue) {
-				predicates.add(getAllSpecifications(cb, root, (List) innerList));
+				predicates.add(getAllSpecifications(cb, root, (List) innerList, dialect));
 			}
 			return cb.or(predicates.stream().filter(Objects::nonNull).toArray(Predicate[]::new));
 		} else {
-			return createPredicate(root, criteria, cb);
+			return createPredicate(root, criteria, cb, dialect);
 		}
 	}
 
@@ -415,4 +462,112 @@ public class MetadataUtils {
 				);
 	}
 
-}
+	//TODO REFACTORING
+
+//	/**
+//	 * Filters entity column by time fraction greaterThen (LocalDateTime TODO>>other supported types??? Types used in projects? Which types from projects are not supported?)
+//	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
+//	 * <br>
+//	 * <h6>dialect = PostgreSQL</h6>
+//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
+//	 * <br>
+//	 * Actual SQL:
+//	 * <br>
+//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where cast(a1_0.created_date as time)>?"]}
+//	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
+//	 * <br>
+//	 * <h6>dialect = Oracle</h6>
+//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
+//	 * <br>
+//	 * Actual SQL:
+//	 * <br>
+//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where to_char(a1_0.created_date,'HH24:MI:SS')>?"]}
+//	 * so always add functional index ?????????;
+//	 * <br>
+//	 */
+//	static Specification byTimeAfter(@NonNull LocalTime time, @Nullable String dialect, @NonNull Path field) {
+//		if (dialect.contains("Oracle")) {
+//			return (root, query, cb) -> {
+//				Expression<String> timeExpr = cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
+//				return cb.greaterThan(timeExpr, time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+//			};
+//		}
+//		return (root, query, cb) -> cb.greaterThan(field.as(LocalTime.class), time);
+//	}/**
+//	 * Filters entity column by time fraction greaterThen (LocalDateTime TODO>>other supported types??? Types used in projects? Which types from projects are not supported?)
+//	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
+//	 * <br>
+//	 * <h6>dialect = PostgreSQL</h6>
+//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
+//	 * <br>
+//	 * Actual SQL:
+//	 * <br>
+//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where cast(a1_0.created_date as time)>?"]}
+//	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
+//	 * <br>
+//	 * <h6>dialect = Oracle</h6>
+//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
+//	 * <br>
+//	 * Actual SQL:
+//	 * <br>
+//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where to_char(a1_0.created_date,'HH24:MI:SS')>?"]}
+//	 * so always add functional index ?????????;
+//	 * <br>
+//	 */
+//	static Specification byTimeAfter(@NonNull LocalTime time, @Nullable String dialect, @NonNull Path field) {
+//		if (dialect.contains("Oracle")) {
+//			return (root, query, cb) -> {
+//				Expression<String> timeExpr = cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
+//				return cb.greaterThan(timeExpr, time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+//			};
+//		}
+//		return (root, query, cb) -> cb.greaterThan(field.as(LocalTime.class), time);
+//	}
+
+	/**
+	 * Sorts entity column by time fraction (LocalDateTime TODO>>other supported types??? Types used in projects? Which types from projects are not supported?)
+	 * <br>
+	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
+	 * <br>
+	 * <h6>dialect = PostgreSQL</h6>
+	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
+	 * <br>
+	 * Actual SQL:
+	 * <br>
+	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by cast(a1_0.created_date as time) asc"]}
+	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
+	 * <br>
+	 * <h6>dialect = Oracle</h6>
+	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
+	 * <br>
+	 * Actual SQL:
+	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
+	 * so always add functional index ???????????;
+	 * <br>
+	 */
+	static Specification sortByTimePart(@Nullable String dialect, @NonNull Path field) {
+		if (dialect.contains("Oracle")) {
+			return (root, query, cb) -> {
+				Expression<String> timeExpr = cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
+				query.orderBy(cb.asc(timeExpr));
+				return null;
+			};
+		}
+		//for default dialect = PostgreSQL
+		return (root, query, builder) -> {
+			query.orderBy(builder.asc(field.as(LocalTime.class)));
+			return null;
+		};
+
+	}
+
+	static Expression getExpressionSortByTimePart(@Nullable String dialect, @NonNull Path field, CriteriaBuilder cb) {
+		if (dialect.contains("Oracle")) {
+				return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
+		}
+		//for default dialect = PostgreSQL
+		return field.as(LocalTime.class);
+		}
+
+	}
+

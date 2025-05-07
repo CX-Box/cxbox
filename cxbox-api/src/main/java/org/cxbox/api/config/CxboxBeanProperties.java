@@ -16,9 +16,11 @@
 
 package org.cxbox.api.config;
 
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
@@ -26,6 +28,24 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "cxbox.bean")
 public class CxboxBeanProperties {
+
+	/**
+	 * Default date used for filling in time sorting.
+	 * <p>
+	 * This variable holds the maximum possible date {@link LocalDate}, which can be used
+	 * in situations where the actual date is not specified or when a baseline date is needed
+	 * for sorting. The value {@link LocalDate#EPOCH} = '1970-01-01'  represents the latest possible day in the calendar,
+	 * helping to avoid errors when comparing dates.
+	 * </p>
+	 *
+	 * <p>
+	 * This variable is passed to the front end to ensure the correct functioning
+	 * of the user interface and time sorting within the application.
+	 * It is important to document the use of this date clearly
+	 * to prevent confusion when handling data on the client side.
+	 * </p>
+	 */
+	public static final String DEFAULT_DATE  = "defaultDate";
 
 	/**
 	 * We use "cxboxObjectMapper" to allow projects to define separate object mappers on project level and to avoid conflicts in this cases
@@ -44,4 +64,6 @@ public class CxboxBeanProperties {
 	 */
 	private String entityManagerFactory = "entityManagerFactory";
 
+	@DateTimeFormat(pattern = "yyyy.MM.dd")
+	private LocalDate defaultDate = LocalDate.EPOCH;
 }
