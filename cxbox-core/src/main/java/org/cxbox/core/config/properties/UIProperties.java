@@ -31,6 +31,8 @@ public class UIProperties {
 
 	public static final String SIDE_BAR_WORD_BREAK = "sideBarWordBreak";
 
+	public static final String APP_EXPORT_EXCEL_LIMIT = "appExportExcelLimit";
+
 	public static final String SIDE_BAR_SEARCH_ENABLE = "sideBarSearchEnabled";
 
 	public static final String NOTIFICATION_MODE = "notificationMode";
@@ -123,4 +125,13 @@ public class UIProperties {
 	 */
 	private String appInfoColor = null;
 
+	/**
+	 * The export limit for Excel tables.
+	 *
+	 * This variable defines the maximum number of records that can be exported
+	 * to an Excel file. The default value is set to 500. Users can modify this
+	 * limit in the application settings to optimize the export process based
+	 * on their requirements.
+	 */
+	private Long  appExportExcelLimit = 500L;
 }
