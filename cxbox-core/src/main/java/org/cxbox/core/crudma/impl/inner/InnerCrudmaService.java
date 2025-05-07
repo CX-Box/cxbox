@@ -80,7 +80,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-
+		responseDto.setRqChangedNowFE(requestDto.getRqChangedNowFE());
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
