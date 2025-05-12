@@ -260,32 +260,6 @@ public class FieldDTO {
 		this.currentValue = currentValue;
 	}
 
-	public FieldDTO copy() {
-		FieldDTO copy = new FieldDTO();
-		copy.key = this.key;
-		copy.disabled = this.disabled;
-		copy.forceActive = this.forceActive;
-		copy.ephemeral = this.ephemeral;
-		copy.hidden = this.hidden;
-		copy.required = this.required;
-		copy.filterable = this.filterable;
-		copy.sortable = this.sortable;
-		copy.placeholder = this.placeholder;
-		copy.tzAware = this.tzAware;
-		copy.hasSerializerAnnotation = this.hasSerializerAnnotation;
-		copy.drillDown = this.drillDown;
-		copy.drillDownType = this.drillDownType;
-		copy.dictionaryName = this.dictionaryName;
-		copy.currentValue = this.currentValue;
-		copy.values = new LinkedHashSet<>(this.values);
-		copy.filterValues = new LinkedHashSet<>(this.filterValues);
-		copy.allValues = new LinkedHashSet<>(this.allValues);
-		copy.fileAccept = this.fileAccept;
-		copy.options = new HashMap<>(this.options);
-		copy.defaultGroupingHierarchy = this.defaultGroupingHierarchy;
-		return copy;
-	}
-
 	@AllArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Getter
