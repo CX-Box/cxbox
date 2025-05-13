@@ -57,7 +57,7 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 	@Nullable
-	public static Expression<?> getOrder(SearchParameter searchParameter, String dialect, Path fieldPath,
+	public Expression<?> getOrder(SearchParameter searchParameter, String dialect, Path fieldPath,
 			CriteriaBuilder builder) {
 		if (searchParameter != null &&
 				searchParameter.provider() != null &&
@@ -70,7 +70,7 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	@NonNull
 	public Expression getFilterPredicate(CriteriaBuilder cb,
 			ClassifyDataParameter criteria, Path field, String dialect, Object value) {
-		if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+		if (value instanceof LocalTime valueLT) {
 			return
 					getExpressionByTimePart(dialect, field, cb);
 		}

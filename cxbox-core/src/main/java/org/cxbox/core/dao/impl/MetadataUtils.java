@@ -66,7 +66,6 @@ import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
-import org.cxbox.core.util.filter.provider.impl.TimeValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
@@ -220,9 +219,7 @@ public class MetadataUtils {
 
 			Path field = getFieldPath(criteria.getField(), root);
 
-			Class<? extends ClassifyDataProvider> provider = criteria.getProvider();
-
-			ClassifyDataProvider classifyDataProvider = provider == null ? null : getProviderFromParam(criteria, applicationContext);
+			ClassifyDataProvider classifyDataProvider = getProviderFromParam(criteria.getProvider(), applicationContext);
 			Expression filterPredicate = classifyDataProvider.getFilterPredicate(cb, criteria, field, dialect, value);
 
 					switch (criteria.getOperator()) {
@@ -306,8 +303,7 @@ public class MetadataUtils {
 	}
 
 	private ClassifyDataProvider getProviderFromParam(
-			ClassifyDataParameter criteria, ApplicationContext applicationContext) {
-		Class<? extends ClassifyDataProvider> provider = criteria.getProvider();
+			Class<? extends ClassifyDataProvider> provider, ApplicationContext applicationContext) {
 		if (provider == null) {
 			return null;
 		}
@@ -324,7 +320,7 @@ public class MetadataUtils {
 	}
 
 	public static <T> void addSorting(final Class dtoClazz, final Root<?> root, final CriteriaQuery<T> query,
-			CriteriaBuilder builder, final SortParameters sort, String dialect) {
+			CriteriaBuilder builder, final SortParameters sort, String dialect, ApplicationContext applicationContext) {
 		List<Order> orderList = new ArrayList<>();
 		if (!query.getOrderList().isEmpty()) {
 			orderList.addAll(query.getOrderList());
@@ -346,7 +342,9 @@ public class MetadataUtils {
 					));
 					order = selectCase.otherwise("");
 				} else {
-					order = TimeValueProvider.getOrder(searchParameter, dialect, fieldPath, builder);
+					Class<? extends ClassifyDataProvider> provider = searchParameter.provider();
+					ClassifyDataProvider providerFromParam = getProviderFromParam(provider, applicationContext);
+					order = providerFromParam == null ? null : providerFromParam.getOrder(searchParameter, dialect, fieldPath, builder);
 					if (order == null) {
 						order = fieldPath;
 					}

@@ -38,7 +38,14 @@ public interface ClassifyDataProvider {
 			SearchParameter searchParam, List<ClassifyDataProvider> providers);
 
 
-	Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
-			Object value);
+	default Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
+			Object value) {
+		return null;
+	}
+
+	default Expression<?> getOrder(SearchParameter searchParameter, String dialect, Path fieldPath,
+			CriteriaBuilder builder) {
+		return null;
+	}
 
 }

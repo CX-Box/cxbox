@@ -16,25 +16,21 @@
 
 package org.cxbox.core.util.filter.provider.impl;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Path;
-import org.cxbox.core.controller.param.FilterParameter;
-import org.cxbox.core.dao.ClassifyDataParameter;
-import org.cxbox.core.exception.ClientException;
-import org.cxbox.core.util.filter.MultisourceSearchParameter;
-import org.cxbox.core.util.filter.SearchParameter;
-import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
-import lombok.EqualsAndHashCode;
-import org.springframework.stereotype.Component;
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+import lombok.EqualsAndHashCode;
+import org.cxbox.core.controller.param.FilterParameter;
+import org.cxbox.core.dao.ClassifyDataParameter;
+import org.cxbox.core.exception.ClientException;
+import org.cxbox.core.util.filter.MultisourceSearchParameter;
+import org.cxbox.core.util.filter.SearchParameter;
+import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.springframework.stereotype.Component;
 
 @Component
 @EqualsAndHashCode
@@ -61,12 +57,6 @@ public class MultisourceValueProvider implements ClassifyDataProvider {
 				.build();
 		return Collections.singletonList(cdParameter);
 
-	}
-
-	@Override
-	public Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
-			Object value) {
-		return null;
 	}
 
 }

@@ -16,9 +16,12 @@
 
 package org.cxbox.core.util.filter.provider.impl;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Path;
+import static org.cxbox.core.controller.param.SearchOperation.SPECIFIED;
+
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.SearchOperation;
@@ -26,13 +29,6 @@ import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.util.DateTimeUtil;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
-
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.cxbox.core.controller.param.SearchOperation.SPECIFIED;
 
 public abstract class AbstractClassifyDataProvider implements ClassifyDataProvider {
 
@@ -135,12 +131,6 @@ public abstract class AbstractClassifyDataProvider implements ClassifyDataProvid
 				dataParameter.setValue(param.getDateValue().with(DateTimeUtil.fromSession(tzAware)));
 				break;
 		}
-	}
-
-	@Override
-	public Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
-			Object value) {
-		return null;
 	}
 
 }

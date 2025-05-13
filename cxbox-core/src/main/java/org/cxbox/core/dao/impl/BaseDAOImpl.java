@@ -191,7 +191,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 					pdqSearchSpec.toPredicate(root, cq, cb)
 			));
 		}
-		MetadataUtils.addSorting(dtoClazz, root, cq, cb, sort, dialect);
+		MetadataUtils.addSorting(dtoClazz, root, cq, cb, sort, dialect, applicationContext);
 		applyGraph(root, fetchGraph);
 
 		Query<T> query = entityManager.unwrap(Session.class).createQuery(cq);
