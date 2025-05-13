@@ -456,6 +456,27 @@ public class MetadataUtils {
 				);
 	}
 
+	/**
+	 * Sorts entity column by time fraction (LocalDateTime and LocalTime)
+	 * <br>
+	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
+	 * <br>
+	 * <h6>dialect = PostgreSQL</h6>
+	 * Column in DB: TIMESTAMP/TIME
+	 * <br>
+	 * Actual SQL:
+	 * <br>
+	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by cast(a1_0.created_date as time) asc"]}
+	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
+	 * <br>
+	 * <h6>dialect = Oracle</h6>
+	 * Column in DB: TIMESTAMP
+	 * <br>
+	 * Actual SQL:
+	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
+	 * so always add functional index ???????????;
+	 * <br>
+	 */
 	static Specification sortByTimePart(@Nullable String dialect, @NonNull Path field) {
 		if (dialect.contains("Oracle")) {
 			return (root, query, cb) -> {
