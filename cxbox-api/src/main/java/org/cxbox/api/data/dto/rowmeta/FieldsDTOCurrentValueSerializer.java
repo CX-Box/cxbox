@@ -37,7 +37,7 @@ class FieldsDTOCurrentValueSerializer extends JsonSerializer<Object> {
 	public void serialize(Object toSerialize, JsonGenerator jgen, SerializerProvider provider)
 			throws IOException {
 		if (jgen.getOutputContext().getCurrentValue() instanceof FieldDTO fieldDTO
-				&& fieldDTO.isHasSerializerAnnotation()) {
+				&& fieldDTO.hasSerializerAnnotation()) {
 			Class<? extends JsonSerializer> fieldLevelSerializer = fieldDTO.getFieldLevelSerializer();
 			var jsonSerializer = getSerializerFromSerializerAnnotation(fieldLevelSerializer);
 			var serialize = Arrays.stream(fieldLevelSerializer.getMethods())

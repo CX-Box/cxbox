@@ -65,9 +65,6 @@ public class FieldDTO {
 	boolean tzAware;
 
 	@JsonIgnore
-	boolean hasSerializerAnnotation;
-
-	@JsonIgnore
 	Class<? extends JsonSerializer> fieldLevelSerializer;
 
 	String drillDown;
@@ -106,7 +103,6 @@ public class FieldDTO {
 		this.key = field.getName();
 		this.tzAware = isTzAware(field);
 		this.sortable = false;
-		this.hasSerializerAnnotation = hasSerializerAnnotation(field);
 		this.fieldLevelSerializer = getSerializerFromSerializerAnnotation(field);
 	}
 
@@ -225,6 +221,10 @@ public class FieldDTO {
 		if (SimpleDictionary != null) {
 			filterValues.remove(new DictValue(SimpleDictionary.getValue()));
 		}
+	}
+
+	public boolean hasSerializerAnnotation() {
+		return fieldLevelSerializer != null;
 	}
 
 	public void clearFilterValues() {

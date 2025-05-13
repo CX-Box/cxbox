@@ -219,11 +219,11 @@ public class MetadataUtils {
 
 			Path field = getFieldPath(criteria.getField(), root);
 
+			Expression filterPredicateForTime = TimeValueProvider.getFilterPredicate(cb, criteria, field, dialect, value);
 			switch (criteria.getOperator()) {
 				case EQUALS:
-					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
-						return cb.equal(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
-
+					if (filterPredicateForTime != null) {
+						return cb.equal(filterPredicateForTime, requireComparable(value));
 					} else if (value instanceof String) {
 						return cb.equal(cb.upper(field), requireString(value).toUpperCase());
 					} else {
@@ -232,23 +232,26 @@ public class MetadataUtils {
 				case CONTAINS:
 					return cb.like(cb.upper(field), "%" + requireString(value).toUpperCase() + "%");
 				case GREATER_THAN:
-					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
-						return cb.greaterThan(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					if (filterPredicateForTime != null) {
+						return cb.greaterThan(filterPredicateForTime, requireComparable(value));
 					}
-					return cb.greaterThan(field, requireComparable(value));
+					return cb.greaterThan(
+							filterPredicateForTime != null ? filterPredicateForTime : field,
+							requireComparable(value)
+					);
 				case LESS_THAN:
-					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
-						return cb.lessThan(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					if (filterPredicateForTime != null) {
+						return cb.lessThan(filterPredicateForTime, requireComparable(value));
 					}
 					return cb.lessThan(field, requireComparable(value));
 				case GREATER_OR_EQUAL_THAN:
-					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
-						return cb.greaterThanOrEqualTo(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					if (filterPredicateForTime != null) {
+						return cb.greaterThanOrEqualTo(filterPredicateForTime, requireComparable(value));
 					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case LESS_OR_EQUAL_THAN:
-					if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
-						return cb.lessThanOrEqualTo(getExpressionForTime(cb, field, dialect, valueLT), requireComparable(value));
+					if (filterPredicateForTime != null) {
+						return cb.lessThanOrEqualTo(filterPredicateForTime, requireComparable(value));
 					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case SPECIFIED:
@@ -269,10 +272,10 @@ public class MetadataUtils {
 						return cb.or(((List<Object>) value).stream()
 								.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
 								.toArray(Predicate[]::new));
-					} else if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+					} else if (filterPredicateForTime != null) {
 						return cb
 								.or(((List<Object>) value).stream().map(object -> cb.equal(
-										getExpressionForTime(cb, field, dialect, valueLT),
+										filterPredicateForTime,
 										requireComparable(value)
 								)).toArray(Predicate[]::new));
 					} else {
@@ -297,15 +300,6 @@ public class MetadataUtils {
 		}
 	}
 
-
-	private Expression getExpressionForTime(CriteriaBuilder cb, Path field, String dialect, LocalTime value) {
-		if (dialect != null && dialect.contains("Oracle")) {
-			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
-		}
-		//for default dialect = PostgreSQL
-		return field.as(LocalTime.class);
-	}
-
 	public static <T> void addSorting(final Class dtoClazz, final Root<?> root, final CriteriaQuery<T> query,
 			CriteriaBuilder builder, final SortParameters sort, String dialect) {
 		List<Order> orderList = new ArrayList<>();
@@ -328,13 +322,13 @@ public class MetadataUtils {
 							builder.equal(fieldPath, new LOV(dictDTO.getKey())), dictDTO.getValue()
 					));
 					order = selectCase.otherwise("");
-				} else if (searchParameter != null &&
-						searchParameter.provider() != null &&
-				searchParameter.provider().equals(TimeValueProvider.class)) {
-					order = getExpressionSortByTimePart(dialect, fieldPath, builder);
 				} else {
-					order = fieldPath;
+					order = TimeValueProvider.getOrder(searchParameter, dialect, fieldPath, builder);
+					if (order == null) {
+						order = fieldPath;
+					}
 				}
+
 				if (ASC.equals(p.getType())) {
 					orderList.add(builder.asc(order));
 				} else if (DESC.equals(p.getType())) {
@@ -462,89 +456,6 @@ public class MetadataUtils {
 				);
 	}
 
-	//TODO REFACTORING
-
-//	/**
-//	 * Filters entity column by time fraction greaterThen (LocalDateTime TODO>>other supported types??? Types used in projects? Which types from projects are not supported?)
-//	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
-//	 * <br>
-//	 * <h6>dialect = PostgreSQL</h6>
-//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
-//	 * <br>
-//	 * Actual SQL:
-//	 * <br>
-//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where cast(a1_0.created_date as time)>?"]}
-//	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
-//	 * <br>
-//	 * <h6>dialect = Oracle</h6>
-//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
-//	 * <br>
-//	 * Actual SQL:
-//	 * <br>
-//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where to_char(a1_0.created_date,'HH24:MI:SS')>?"]}
-//	 * so always add functional index ?????????;
-//	 * <br>
-//	 */
-//	static Specification byTimeAfter(@NonNull LocalTime time, @Nullable String dialect, @NonNull Path field) {
-//		if (dialect.contains("Oracle")) {
-//			return (root, query, cb) -> {
-//				Expression<String> timeExpr = cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
-//				return cb.greaterThan(timeExpr, time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-//			};
-//		}
-//		return (root, query, cb) -> cb.greaterThan(field.as(LocalTime.class), time);
-//	}/**
-//	 * Filters entity column by time fraction greaterThen (LocalDateTime TODO>>other supported types??? Types used in projects? Which types from projects are not supported?)
-//	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
-//	 * <br>
-//	 * <h6>dialect = PostgreSQL</h6>
-//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
-//	 * <br>
-//	 * Actual SQL:
-//	 * <br>
-//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where cast(a1_0.created_date as time)>?"]}
-//	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
-//	 * <br>
-//	 * <h6>dialect = Oracle</h6>
-//	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
-//	 * <br>
-//	 * Actual SQL:
-//	 * <br>
-//	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 where to_char(a1_0.created_date,'HH24:MI:SS')>?"]}
-//	 * so always add functional index ?????????;
-//	 * <br>
-//	 */
-//	static Specification byTimeAfter(@NonNull LocalTime time, @Nullable String dialect, @NonNull Path field) {
-//		if (dialect.contains("Oracle")) {
-//			return (root, query, cb) -> {
-//				Expression<String> timeExpr = cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
-//				return cb.greaterThan(timeExpr, time.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-//			};
-//		}
-//		return (root, query, cb) -> cb.greaterThan(field.as(LocalTime.class), time);
-//	}
-
-	/**
-	 * Sorts entity column by time fraction (LocalDateTime TODO>>other supported types??? Types used in projects? Which types from projects are not supported?)
-	 * <br>
-	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
-	 * <br>
-	 * <h6>dialect = PostgreSQL</h6>
-	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
-	 * <br>
-	 * Actual SQL:
-	 * <br>
-	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by cast(a1_0.created_date as time) asc"]}
-	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
-	 * <br>
-	 * <h6>dialect = Oracle</h6>
-	 * Column in DB: TIMESTAMP/ TODO>>other supported types??? Types used in projects? Which types from projects are not supported?
-	 * <br>
-	 * Actual SQL:
-	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
-	 * so always add functional index ???????????;
-	 * <br>
-	 */
 	static Specification sortByTimePart(@Nullable String dialect, @NonNull Path field) {
 		if (dialect.contains("Oracle")) {
 			return (root, query, cb) -> {
@@ -553,7 +464,6 @@ public class MetadataUtils {
 				return null;
 			};
 		}
-		//for default dialect = PostgreSQL
 		return (root, query, builder) -> {
 			query.orderBy(builder.asc(field.as(LocalTime.class)));
 			return null;
@@ -561,13 +471,5 @@ public class MetadataUtils {
 
 	}
 
-	static Expression getExpressionSortByTimePart(@Nullable String dialect, @NonNull Path field, CriteriaBuilder cb) {
-		if (dialect.contains("Oracle")) {
-				return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
-		}
-		//for default dialect = PostgreSQL
-		return field.as(LocalTime.class);
-		}
-
-	}
+}
 

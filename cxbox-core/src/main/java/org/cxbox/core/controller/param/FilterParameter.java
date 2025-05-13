@@ -74,7 +74,7 @@ public class FilterParameter extends AbstractQueryParameter {
 	}
 
 	public LocalTime getTimeValue() {
-		return getDateValue().toLocalTime();
+		return getDateValue() == null ? null : getDateValue().toLocalTime();
 	}
 
 	public List<String> getStringValuesAsList() {

@@ -20,12 +20,18 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.controller.param.SearchOperation.CONTAINS_ONE_OF;
 import static org.cxbox.core.controller.param.SearchOperation.EQUALS_ONE_OF;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.exception.ClientException;
@@ -48,6 +54,36 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 		dataParameter.setValue(filterParam.getTimeValue());
 		result = Collections.singletonList(dataParameter);
 		return result;
+	}
+
+	@Nullable
+	public static Expression<?> getOrder(SearchParameter searchParameter, String dialect, Path fieldPath,
+			CriteriaBuilder builder) {
+		if (searchParameter != null &&
+				searchParameter.provider() != null &&
+				searchParameter.provider().equals(TimeValueProvider.class)) {
+			return getExpressionByTimePart(dialect, fieldPath, builder);
+		}
+		return null;
+	}
+
+	@NonNull
+	public static Expression getFilterPredicate(CriteriaBuilder cb,
+			ClassifyDataParameter criteria, Path field, String dialect, Object value) {
+		if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
+			return
+					getExpressionByTimePart(dialect, field, cb);
+		}
+		return null;
+	}
+
+
+	private static Expression getExpressionByTimePart(String dialect, Path field, CriteriaBuilder cb) {
+		if (dialect.contains("Oracle")) {
+			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
+
+		}
+		return field.as(LocalTime.class);
 	}
 
 }
