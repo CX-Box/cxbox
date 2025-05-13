@@ -90,6 +90,10 @@ public class JpaDaoImpl implements JpaDao {
 	@Lazy
 	protected final TransactionService txService;
 
+	private static final String ORACLE = "Oracle";
+
+	private static final String POSTGRE_SQL = "PostgreSQL";
+
 	public JpaDaoImpl(
 			Set<EntityManager> entityManagers,
 			TransactionService txService
@@ -118,9 +122,9 @@ public class JpaDaoImpl implements JpaDao {
 		var sessionFactory = entityManager.unwrap(Session.class).getSessionFactory();
 		if (sessionFactory instanceof SessionFactoryImpl factory) {
 			Dialect dialect = factory.getJdbcServices().getDialect();
-			return dialect instanceof OracleDialect ? "Oracle" : "PostgreSQL";
+			return dialect instanceof OracleDialect ? JpaDaoImpl.ORACLE : JpaDaoImpl.POSTGRE_SQL;
 		}
-		return "PostgreSQL";
+		return JpaDaoImpl.POSTGRE_SQL;
 	}
 
 	@Override

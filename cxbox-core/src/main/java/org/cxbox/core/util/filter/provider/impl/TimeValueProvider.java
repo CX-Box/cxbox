@@ -71,19 +71,13 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 	@Nullable
-	public Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root, @NotNull CriteriaBuilder cb,
+	public Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root,
+			@NotNull CriteriaBuilder cb,
 			@NotNull ClassifyDataParameter criteria, @NotNull Path field, @NotNull String dialect, @NotNull Object value) {
 		if (value instanceof LocalTime) {
 			switch (operator) {
 				case EQUALS:
 					return cb.equal(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
-				case CONTAINS:
-					return cb.like(cb.upper(field), "%" + MetadataUtils.requireString(value).toUpperCase() + "%");
-				case GREATER_THAN:
-					return cb.greaterThan(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
-
-				case LESS_THAN:
-					return cb.lessThan(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
 				case GREATER_OR_EQUAL_THAN:
 					return cb.greaterThanOrEqualTo(
 							getExpressionByTimePart(dialect, field, cb),
@@ -94,12 +88,6 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 							getExpressionByTimePart(dialect, field, cb),
 							MetadataUtils.requireComparable(value)
 					);
-				case EQUALS_ONE_OF:
-					return cb
-							.or(((List<Object>) value).stream().map(object -> cb.equal(
-									getExpressionByTimePart(dialect, field, cb),
-									MetadataUtils.requireComparable(value)
-							)).toArray(Predicate[]::new));
 				default:
 					return null;
 			}

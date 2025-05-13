@@ -52,6 +52,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
+import org.cxbox.api.data.Period;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
@@ -241,7 +242,15 @@ public class MetadataUtils {
 				case GREATER_OR_EQUAL_THAN:
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case LESS_OR_EQUAL_THAN:
-					return cb.greaterThanOrEqualTo(field, requireComparable(value));
+					return cb.lessThanOrEqualTo(field, requireComparable(value));
+				case INTERVALS:
+					return cb.or(((List<Period>) value).stream()
+							.map(object ->
+									cb.and(
+											cb.greaterThanOrEqualTo(field, requireComparable(object.getStart())),
+											cb.lessThanOrEqualTo(field, requireComparable(object.getEnd()))
+									))
+							.toArray(Predicate[]::new));
 				case SPECIFIED:
 					boolean isSpecified = BooleanUtils.isTrue((Boolean) value);
 					if (BooleanValueProvider.class.equals(criteria.getProvider())) {
