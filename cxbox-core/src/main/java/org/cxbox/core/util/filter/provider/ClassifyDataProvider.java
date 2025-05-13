@@ -19,11 +19,16 @@ package org.cxbox.core.util.filter.provider;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.util.List;
 import org.cxbox.core.controller.param.FilterParameter;
+import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.util.filter.SearchParameter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface ClassifyDataProvider {
 
@@ -37,14 +42,15 @@ public interface ClassifyDataProvider {
 	List<ClassifyDataParameter> getClassifyDataParameters(Field dtoField, FilterParameter filterParam,
 			SearchParameter searchParam, List<ClassifyDataProvider> providers);
 
-
-	default Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
-			Object value) {
+	@Nullable
+	default Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root, @NotNull CriteriaBuilder cb,
+			@NotNull ClassifyDataParameter criteria, @NotNull Path field, @NotNull String dialect, @NotNull Object value) {
 		return null;
 	}
 
-	default Expression<?> getOrder(SearchParameter searchParameter, String dialect, Path fieldPath,
-			CriteriaBuilder builder) {
+	@Nullable
+	default Expression<?> getOrder(@NotNull SearchParameter searchParameter, @NotNull String dialect, @NotNull Path fieldPath,
+			@NotNull CriteriaBuilder builder) {
 		return null;
 	}
 

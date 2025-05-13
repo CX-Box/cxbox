@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class FieldsDTOCurrentValueSerializer extends JsonSerializer<Object> {
 
-	private final ApplicationContext applicationContext;
+	private final BeanFactory beanFactory;
 
 	@Override
 	public void serialize(Object toSerialize, JsonGenerator jgen, SerializerProvider provider)
@@ -59,7 +59,7 @@ class FieldsDTOCurrentValueSerializer extends JsonSerializer<Object> {
 	private JsonSerializer<Object> getSerializerFromSerializerAnnotation(
 			Class<? extends JsonSerializer> fieldLevelSerializer) {
 		try {
-			return applicationContext.getBean(fieldLevelSerializer);
+			return beanFactory.getBean(fieldLevelSerializer);
 		} catch (Exception e) {
 			try {
 				return fieldLevelSerializer.getDeclaredConstructor().newInstance();

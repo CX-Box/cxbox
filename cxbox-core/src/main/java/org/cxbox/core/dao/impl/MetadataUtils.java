@@ -61,13 +61,13 @@ import org.cxbox.core.controller.param.SortParameter;
 import org.cxbox.core.controller.param.SortParameters;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.dto.LovUtils;
+import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.filter.MultisourceSearchParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 
 
@@ -76,7 +76,6 @@ import org.springframework.data.jpa.domain.Specification;
 public class MetadataUtils {
 
 	public List<ClassifyDataParameter> mapSearchParamsToPOJO(Class dtoClazz, FilterParameters filterParameters,
-			String dialect,
 			List<ClassifyDataProvider> providers) {
 
 		List<ClassifyDataParameter> result = new ArrayList<>();
@@ -213,20 +212,22 @@ public class MetadataUtils {
 	}
 
 	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
-			String dialect, ApplicationContext applicationContext) {
+			String dialect) {
 		try {
 			Object value = criteria.getValue();
 
 			Path field = getFieldPath(criteria.getField(), root);
 
-			ClassifyDataProvider classifyDataProvider = getProviderFromParam(criteria.getProvider(), applicationContext);
-			Expression filterPredicate = classifyDataProvider.getFilterPredicate(cb, criteria, field, dialect, value);
+			ClassifyDataProvider classifyDataProvider = getProviderFromParam(criteria.getProvider());
+			Predicate filterPredicate = classifyDataProvider == null ? null
+					: classifyDataProvider.getFilterPredicate(criteria.getOperator(), root, cb, criteria, field, dialect, value);
 
-					switch (criteria.getOperator()) {
+			if (filterPredicate != null) {
+				return filterPredicate;
+			}
+			switch (criteria.getOperator()) {
 				case EQUALS:
-					if (filterPredicate != null) {
-						return cb.equal(filterPredicate, requireComparable(value));
-					} else if (value instanceof String) {
+					if (value instanceof String) {
 						return cb.equal(cb.upper(field), requireString(value).toUpperCase());
 					} else {
 						return cb.equal(field, value);
@@ -234,27 +235,12 @@ public class MetadataUtils {
 				case CONTAINS:
 					return cb.like(cb.upper(field), "%" + requireString(value).toUpperCase() + "%");
 				case GREATER_THAN:
-					if (filterPredicate != null) {
-						return cb.greaterThan(filterPredicate, requireComparable(value));
-					}
-					return cb.greaterThan(
-							filterPredicate != null ? filterPredicate : field,
-							requireComparable(value)
-					);
+					return cb.greaterThan(field, requireComparable(value));
 				case LESS_THAN:
-					if (filterPredicate != null) {
-						return cb.lessThan(filterPredicate, requireComparable(value));
-					}
 					return cb.lessThan(field, requireComparable(value));
 				case GREATER_OR_EQUAL_THAN:
-					if (filterPredicate != null) {
-						return cb.greaterThanOrEqualTo(filterPredicate, requireComparable(value));
-					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case LESS_OR_EQUAL_THAN:
-					if (filterPredicate != null) {
-						return cb.lessThanOrEqualTo(filterPredicate, requireComparable(value));
-					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case SPECIFIED:
 					boolean isSpecified = BooleanUtils.isTrue((Boolean) value);
@@ -274,12 +260,6 @@ public class MetadataUtils {
 						return cb.or(((List<Object>) value).stream()
 								.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
 								.toArray(Predicate[]::new));
-					} else if (filterPredicate != null) {
-						return cb
-								.or(((List<Object>) value).stream().map(object -> cb.equal(
-										filterPredicate,
-										requireComparable(value)
-								)).toArray(Predicate[]::new));
 					} else {
 						return cb
 								.or(((List<Object>) value).stream().map(object -> cb.equal(field, object)).toArray(Predicate[]::new));
@@ -303,12 +283,12 @@ public class MetadataUtils {
 	}
 
 	private ClassifyDataProvider getProviderFromParam(
-			Class<? extends ClassifyDataProvider> provider, ApplicationContext applicationContext) {
+			Class<? extends ClassifyDataProvider> provider) {
 		if (provider == null) {
 			return null;
 		}
 		try {
-			return applicationContext.getBean(provider);
+			return SpringBeanUtils.getBean(provider);
 		} catch (Exception e) {
 			try {
 				return provider.getDeclaredConstructor().newInstance();
@@ -320,7 +300,7 @@ public class MetadataUtils {
 	}
 
 	public static <T> void addSorting(final Class dtoClazz, final Root<?> root, final CriteriaQuery<T> query,
-			CriteriaBuilder builder, final SortParameters sort, String dialect, ApplicationContext applicationContext) {
+			CriteriaBuilder builder, final SortParameters sort, String dialect) {
 		List<Order> orderList = new ArrayList<>();
 		if (!query.getOrderList().isEmpty()) {
 			orderList.addAll(query.getOrderList());
@@ -343,7 +323,7 @@ public class MetadataUtils {
 					order = selectCase.otherwise("");
 				} else {
 					Class<? extends ClassifyDataProvider> provider = searchParameter.provider();
-					ClassifyDataProvider providerFromParam = getProviderFromParam(provider, applicationContext);
+					ClassifyDataProvider providerFromParam = getProviderFromParam(provider);
 					order = providerFromParam == null ? null : providerFromParam.getOrder(searchParameter, dialect, fieldPath, builder);
 					if (order == null) {
 						order = fieldPath;
@@ -409,8 +389,7 @@ public class MetadataUtils {
 	public static <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
 			FilterParameters searchParams,
-			String dialect, List<ClassifyDataProvider> providers,
-			ApplicationContext applicationContext) {
+			String dialect, List<ClassifyDataProvider> providers) {
 
 		if (searchParams == null) {
 			return cb.and();
@@ -418,7 +397,6 @@ public class MetadataUtils {
 		List<ClassifyDataParameter> criteriaStrings = mapSearchParamsToPOJO(
 				dtoClazz,
 				searchParams,
-				dialect,
 				providers
 		);
 		boolean joinRequired = criteriaStrings.stream()
@@ -429,34 +407,34 @@ public class MetadataUtils {
 			Subquery<Long> filterSubquery = cq.subquery(Long.class);
 			Class<T> rootClass = root.getModel().getJavaType();
 			Root<T> subRoot = filterSubquery.from(rootClass);
-			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings, dialect, applicationContext);
+			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings, dialect);
 			filterSubquery.select(subRoot.get("id"))
 					.where(searchParamsRestriction);
 			filterPredicate = cb.in(root.get("id")).value(filterSubquery);
 		} else {
-			filterPredicate = getAllSpecifications(cb, root, criteriaStrings, dialect, applicationContext);
+			filterPredicate = getAllSpecifications(cb, root, criteriaStrings, dialect);
 		}
 		return filterPredicate;
 	}
 
 	public static Predicate getAllSpecifications(CriteriaBuilder cb, Root<?> root,
-			List<ClassifyDataParameter> criteriaStrings, String dialect, ApplicationContext applicationContext) {
+			List<ClassifyDataParameter> criteriaStrings, String dialect) {
 		return cb.and(criteriaStrings.stream()
-				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect, applicationContext))
+				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect))
 				.filter(Objects::nonNull).toArray(Predicate[]::new));
 	}
 
 	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria,
-			String dialect, ApplicationContext applicationContext) {
+			String dialect) {
 		if (MultisourceValueProvider.class.equals(criteria.getProvider())) {
 			List criteriaValue = (List) criteria.getValue();
 			List<Predicate> predicates = new ArrayList<>();
 			for (Object innerList : criteriaValue) {
-				predicates.add(getAllSpecifications(cb, root, (List) innerList, dialect, applicationContext));
+				predicates.add(getAllSpecifications(cb, root, (List) innerList, dialect));
 			}
 			return cb.or(predicates.stream().filter(Objects::nonNull).toArray(Predicate[]::new));
 		} else {
-			return createPredicate(root, criteria, cb, dialect, applicationContext);
+			return createPredicate(root, criteria, cb, dialect);
 		}
 	}
 
@@ -489,14 +467,13 @@ public class MetadataUtils {
 	 * Actual SQL:
 	 * <br>
 	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by cast(a1_0.created_date as time) asc"]}
-	 * so always add functional index CREATE INDEX idx_apple_created_date_time ON apple ((created_date::time));
+	 * so always add functional index CREATE INDEX idx_apple ON my_entity (cast(field as time(6)));
 	 * <br>
 	 * <h6>dialect = Oracle</h6>
 	 * Column in DB: TIMESTAMP
 	 * <br>
 	 * Actual SQL:
 	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
-	 * so always add functional index ???????????;
 	 * <br>
 	 */
 	static Specification sortByTimePart(@Nullable String dialect, @NonNull Path field) {

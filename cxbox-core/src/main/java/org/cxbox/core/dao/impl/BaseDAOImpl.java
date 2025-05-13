@@ -16,23 +16,6 @@
 
 package org.cxbox.core.dao.impl;
 
-import org.cxbox.api.data.ResultPage;
-import org.cxbox.api.service.tx.TransactionService;
-import org.cxbox.core.controller.param.FilterParameters;
-import org.cxbox.core.controller.param.QueryParameters;
-import org.cxbox.core.controller.param.SortParameters;
-import org.cxbox.core.dao.BaseDAO;
-import org.cxbox.core.dao.IPdqExtractor;
-import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
-import org.cxbox.model.core.dao.impl.JpaDaoImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
-import org.springframework.context.ApplicationContext;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -44,6 +27,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.data.ResultPage;
+import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.core.controller.param.FilterParameters;
+import org.cxbox.core.controller.param.QueryParameters;
+import org.cxbox.core.controller.param.SortParameters;
+import org.cxbox.core.dao.BaseDAO;
+import org.cxbox.core.dao.IPdqExtractor;
+import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.cxbox.model.core.dao.impl.JpaDaoImpl;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Repository
@@ -54,19 +52,15 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 
 	private final List<ClassifyDataProvider> providers;
 
-	private final ApplicationContext applicationContext;
-
 	public BaseDAOImpl(
 			Set<EntityManager> entityManagers,
 			TransactionService txService,
 			Optional<IPdqExtractor> pdqExtractor,
-			List<ClassifyDataProvider> providers,
-			ApplicationContext applicationContext
+			List<ClassifyDataProvider> providers
 	) {
 		super(entityManagers, txService);
 		this.pdqExtractor = pdqExtractor;
 		this.providers = providers;
-		this.applicationContext = applicationContext;
 	}
 
 	private Specification getPdqSearchSpec(final QueryParameters queryParameters) {
@@ -96,7 +90,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			FilterParameters searchParams,
 			String dialect
 	) {
-		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, dialect, providers, applicationContext);
+		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, dialect, providers);
 	}
 
 	@Override
@@ -191,7 +185,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 					pdqSearchSpec.toPredicate(root, cq, cb)
 			));
 		}
-		MetadataUtils.addSorting(dtoClazz, root, cq, cb, sort, dialect, applicationContext);
+		MetadataUtils.addSorting(dtoClazz, root, cq, cb, sort, dialect);
 		applyGraph(root, fetchGraph);
 
 		Query<T> query = entityManager.unwrap(Session.class).createQuery(cq);

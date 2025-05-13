@@ -23,6 +23,8 @@ import static org.cxbox.core.controller.param.SearchOperation.EQUALS_ONE_OF;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -31,12 +33,14 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import org.cxbox.core.controller.param.FilterParameter;
+import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.ClassifyDataParameter;
+import org.cxbox.core.dao.impl.MetadataUtils;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -57,22 +61,48 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 	@Nullable
-	public Expression<?> getOrder(SearchParameter searchParameter, String dialect, Path fieldPath,
-			CriteriaBuilder builder) {
-		if (searchParameter != null &&
-				searchParameter.provider() != null &&
+	public Expression<?> getOrder(@NotNull SearchParameter searchParameter, @NotNull String dialect, @NotNull Path fieldPath,
+			@NotNull CriteriaBuilder builder) {
+		if (searchParameter.provider() != null &&
 				searchParameter.provider().equals(TimeValueProvider.class)) {
 			return getExpressionByTimePart(dialect, fieldPath, builder);
 		}
 		return null;
 	}
 
-	@NonNull
-	public Expression getFilterPredicate(CriteriaBuilder cb,
-			ClassifyDataParameter criteria, Path field, String dialect, Object value) {
-		if (value instanceof LocalTime valueLT) {
-			return
-					getExpressionByTimePart(dialect, field, cb);
+	@Nullable
+	public Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root, @NotNull CriteriaBuilder cb,
+			@NotNull ClassifyDataParameter criteria, @NotNull Path field, @NotNull String dialect, @NotNull Object value) {
+		if (value instanceof LocalTime) {
+			switch (operator) {
+				case EQUALS:
+					return cb.equal(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
+				case CONTAINS:
+					return cb.like(cb.upper(field), "%" + MetadataUtils.requireString(value).toUpperCase() + "%");
+				case GREATER_THAN:
+					return cb.greaterThan(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
+
+				case LESS_THAN:
+					return cb.lessThan(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
+				case GREATER_OR_EQUAL_THAN:
+					return cb.greaterThanOrEqualTo(
+							getExpressionByTimePart(dialect, field, cb),
+							MetadataUtils.requireComparable(value)
+					);
+				case LESS_OR_EQUAL_THAN:
+					return cb.lessThanOrEqualTo(
+							getExpressionByTimePart(dialect, field, cb),
+							MetadataUtils.requireComparable(value)
+					);
+				case EQUALS_ONE_OF:
+					return cb
+							.or(((List<Object>) value).stream().map(object -> cb.equal(
+									getExpressionByTimePart(dialect, field, cb),
+									MetadataUtils.requireComparable(value)
+							)).toArray(Predicate[]::new));
+				default:
+					return null;
+			}
 		}
 		return null;
 	}
