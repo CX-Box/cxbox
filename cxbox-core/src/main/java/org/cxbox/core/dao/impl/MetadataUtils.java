@@ -68,6 +68,7 @@ import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.core.util.filter.provider.impl.TimeValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 
 
@@ -213,17 +214,21 @@ public class MetadataUtils {
 	}
 
 	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
-			String dialect) {
+			String dialect, ApplicationContext applicationContext) {
 		try {
 			Object value = criteria.getValue();
 
 			Path field = getFieldPath(criteria.getField(), root);
 
-			Expression filterPredicateForTime = TimeValueProvider.getFilterPredicate(cb, criteria, field, dialect, value);
-			switch (criteria.getOperator()) {
+			Class<? extends ClassifyDataProvider> provider = criteria.getProvider();
+
+			ClassifyDataProvider classifyDataProvider = provider == null ? null : getProviderFromParam(criteria, applicationContext);
+			Expression filterPredicate = classifyDataProvider.getFilterPredicate(cb, criteria, field, dialect, value);
+
+					switch (criteria.getOperator()) {
 				case EQUALS:
-					if (filterPredicateForTime != null) {
-						return cb.equal(filterPredicateForTime, requireComparable(value));
+					if (filterPredicate != null) {
+						return cb.equal(filterPredicate, requireComparable(value));
 					} else if (value instanceof String) {
 						return cb.equal(cb.upper(field), requireString(value).toUpperCase());
 					} else {
@@ -232,26 +237,26 @@ public class MetadataUtils {
 				case CONTAINS:
 					return cb.like(cb.upper(field), "%" + requireString(value).toUpperCase() + "%");
 				case GREATER_THAN:
-					if (filterPredicateForTime != null) {
-						return cb.greaterThan(filterPredicateForTime, requireComparable(value));
+					if (filterPredicate != null) {
+						return cb.greaterThan(filterPredicate, requireComparable(value));
 					}
 					return cb.greaterThan(
-							filterPredicateForTime != null ? filterPredicateForTime : field,
+							filterPredicate != null ? filterPredicate : field,
 							requireComparable(value)
 					);
 				case LESS_THAN:
-					if (filterPredicateForTime != null) {
-						return cb.lessThan(filterPredicateForTime, requireComparable(value));
+					if (filterPredicate != null) {
+						return cb.lessThan(filterPredicate, requireComparable(value));
 					}
 					return cb.lessThan(field, requireComparable(value));
 				case GREATER_OR_EQUAL_THAN:
-					if (filterPredicateForTime != null) {
-						return cb.greaterThanOrEqualTo(filterPredicateForTime, requireComparable(value));
+					if (filterPredicate != null) {
+						return cb.greaterThanOrEqualTo(filterPredicate, requireComparable(value));
 					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case LESS_OR_EQUAL_THAN:
-					if (filterPredicateForTime != null) {
-						return cb.lessThanOrEqualTo(filterPredicateForTime, requireComparable(value));
+					if (filterPredicate != null) {
+						return cb.lessThanOrEqualTo(filterPredicate, requireComparable(value));
 					}
 					return cb.greaterThanOrEqualTo(field, requireComparable(value));
 				case SPECIFIED:
@@ -272,10 +277,10 @@ public class MetadataUtils {
 						return cb.or(((List<Object>) value).stream()
 								.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
 								.toArray(Predicate[]::new));
-					} else if (filterPredicateForTime != null) {
+					} else if (filterPredicate != null) {
 						return cb
 								.or(((List<Object>) value).stream().map(object -> cb.equal(
-										filterPredicateForTime,
+										filterPredicate,
 										requireComparable(value)
 								)).toArray(Predicate[]::new));
 					} else {
@@ -297,6 +302,24 @@ public class MetadataUtils {
 							+ criteria.getField() + "." + criteria.getOperator() + "=" + criteria.getValue(), e
 			);
 			return null;
+		}
+	}
+
+	private ClassifyDataProvider getProviderFromParam(
+			ClassifyDataParameter criteria, ApplicationContext applicationContext) {
+		Class<? extends ClassifyDataProvider> provider = criteria.getProvider();
+		if (provider == null) {
+			return null;
+		}
+		try {
+			return applicationContext.getBean(provider);
+		} catch (Exception e) {
+			try {
+				return provider.getDeclaredConstructor().newInstance();
+			} catch (Exception ex) {
+				log.error("Error getting a provider instance. Exception message: " + e.getMessage());
+				return null;
+			}
 		}
 	}
 
@@ -388,7 +411,8 @@ public class MetadataUtils {
 	public static <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
 			FilterParameters searchParams,
-			String dialect, List<ClassifyDataProvider> providers) {
+			String dialect, List<ClassifyDataProvider> providers,
+			ApplicationContext applicationContext) {
 
 		if (searchParams == null) {
 			return cb.and();
@@ -407,34 +431,34 @@ public class MetadataUtils {
 			Subquery<Long> filterSubquery = cq.subquery(Long.class);
 			Class<T> rootClass = root.getModel().getJavaType();
 			Root<T> subRoot = filterSubquery.from(rootClass);
-			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings, dialect);
+			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings, dialect, applicationContext);
 			filterSubquery.select(subRoot.get("id"))
 					.where(searchParamsRestriction);
 			filterPredicate = cb.in(root.get("id")).value(filterSubquery);
 		} else {
-			filterPredicate = getAllSpecifications(cb, root, criteriaStrings, dialect);
+			filterPredicate = getAllSpecifications(cb, root, criteriaStrings, dialect, applicationContext);
 		}
 		return filterPredicate;
 	}
 
 	public static Predicate getAllSpecifications(CriteriaBuilder cb, Root<?> root,
-			List<ClassifyDataParameter> criteriaStrings, String dialect) {
+			List<ClassifyDataParameter> criteriaStrings, String dialect, ApplicationContext applicationContext) {
 		return cb.and(criteriaStrings.stream()
-				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect))
+				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect, applicationContext))
 				.filter(Objects::nonNull).toArray(Predicate[]::new));
 	}
 
 	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria,
-			String dialect) {
+			String dialect, ApplicationContext applicationContext) {
 		if (MultisourceValueProvider.class.equals(criteria.getProvider())) {
 			List criteriaValue = (List) criteria.getValue();
 			List<Predicate> predicates = new ArrayList<>();
 			for (Object innerList : criteriaValue) {
-				predicates.add(getAllSpecifications(cb, root, (List) innerList, dialect));
+				predicates.add(getAllSpecifications(cb, root, (List) innerList, dialect, applicationContext));
 			}
 			return cb.or(predicates.stream().filter(Objects::nonNull).toArray(Predicate[]::new));
 		} else {
-			return createPredicate(root, criteria, cb, dialect);
+			return createPredicate(root, criteria, cb, dialect, applicationContext);
 		}
 	}
 

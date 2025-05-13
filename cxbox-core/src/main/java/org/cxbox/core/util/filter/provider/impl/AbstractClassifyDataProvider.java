@@ -16,6 +16,9 @@
 
 package org.cxbox.core.util.filter.provider.impl;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.SearchOperation;
@@ -134,5 +137,10 @@ public abstract class AbstractClassifyDataProvider implements ClassifyDataProvid
 		}
 	}
 
+	@Override
+	public Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
+			Object value) {
+		return null;
+	}
 
 }

@@ -16,12 +16,14 @@
 
 package org.cxbox.core.util.filter.provider;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
+import java.lang.reflect.Field;
+import java.util.List;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.util.filter.SearchParameter;
-
-import java.lang.reflect.Field;
-import java.util.List;
 
 public interface ClassifyDataProvider {
 
@@ -34,5 +36,9 @@ public interface ClassifyDataProvider {
 	 */
 	List<ClassifyDataParameter> getClassifyDataParameters(Field dtoField, FilterParameter filterParam,
 			SearchParameter searchParam, List<ClassifyDataProvider> providers);
+
+
+	Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
+			Object value);
 
 }

@@ -16,6 +16,9 @@
 
 package org.cxbox.core.util.filter.provider.impl;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.exception.ClientException;
@@ -58,6 +61,12 @@ public class MultisourceValueProvider implements ClassifyDataProvider {
 				.build();
 		return Collections.singletonList(cdParameter);
 
+	}
+
+	@Override
+	public Expression getFilterPredicate(CriteriaBuilder cb, ClassifyDataParameter criteria, Path field, String dialect,
+			Object value) {
+		return null;
 	}
 
 }

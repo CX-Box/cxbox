@@ -28,6 +28,7 @@ import org.cxbox.model.core.dao.impl.JpaDaoImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,15 +54,19 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 
 	private final List<ClassifyDataProvider> providers;
 
+	private final ApplicationContext applicationContext;
+
 	public BaseDAOImpl(
 			Set<EntityManager> entityManagers,
 			TransactionService txService,
 			Optional<IPdqExtractor> pdqExtractor,
-			List<ClassifyDataProvider> providers
+			List<ClassifyDataProvider> providers,
+			ApplicationContext applicationContext
 	) {
 		super(entityManagers, txService);
 		this.pdqExtractor = pdqExtractor;
 		this.providers = providers;
+		this.applicationContext = applicationContext;
 	}
 
 	private Specification getPdqSearchSpec(final QueryParameters queryParameters) {
@@ -91,7 +96,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			FilterParameters searchParams,
 			String dialect
 	) {
-		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, dialect, providers);
+		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, dialect, providers, applicationContext);
 	}
 
 	@Override

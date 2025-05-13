@@ -224,7 +224,7 @@ public class FieldDTO {
 	}
 
 	public boolean hasSerializerAnnotation() {
-		return fieldLevelSerializer != null;
+		return this.fieldLevelSerializer != null;
 	}
 
 	public void clearFilterValues() {

@@ -68,7 +68,7 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 	@NonNull
-	public static Expression getFilterPredicate(CriteriaBuilder cb,
+	public Expression getFilterPredicate(CriteriaBuilder cb,
 			ClassifyDataParameter criteria, Path field, String dialect, Object value) {
 		if (TimeValueProvider.class.equals(criteria.getProvider()) && value instanceof LocalTime valueLT) {
 			return
