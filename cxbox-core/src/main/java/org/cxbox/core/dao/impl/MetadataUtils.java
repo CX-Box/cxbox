@@ -21,7 +21,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.controller.param.SortType.ASC;
 import static org.cxbox.core.controller.param.SortType.DESC;
 
-import autovalue.shaded.org.checkerframework.checker.nullness.qual.Nullable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -39,7 +38,6 @@ import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.ManagedType;
 import java.lang.reflect.Field;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -69,7 +67,6 @@ import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.model.core.entity.BaseEntity;
-import org.springframework.data.jpa.domain.Specification;
 
 
 @Slf4j
@@ -331,12 +328,11 @@ public class MetadataUtils {
 					));
 					order = selectCase.otherwise("");
 				} else {
-					Class<? extends ClassifyDataProvider> provider = searchParameter.provider();
-					ClassifyDataProvider providerFromParam = getProviderFromParam(provider);
-					order = providerFromParam == null ? null : providerFromParam.getOrder(searchParameter, dialect, fieldPath, builder);
-					if (order == null) {
-						order = fieldPath;
-					}
+					var provider = getProviderFromParam(searchParameter.provider());
+					Expression expression = provider != null
+							? provider.getSortExpression(searchParameter, builder, query, root, dtoClazz, dialect, fieldPath)
+							: fieldPath;
+					order = expression == null ? fieldPath : expression;
 				}
 
 				if (ASC.equals(p.getType())) {
@@ -463,41 +459,6 @@ public class MetadataUtils {
 								)
 						)
 				);
-	}
-
-	/**
-	 * Sorts entity column by time fraction (LocalDateTime and LocalTime)
-	 * <br>
-	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
-	 * <br>
-	 * <h6>dialect = PostgreSQL</h6>
-	 * Column in DB: TIMESTAMP/TIME
-	 * <br>
-	 * Actual SQL:
-	 * <br>
-	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by cast(a1_0.created_date as time) asc"]}
-	 * so always add functional index CREATE INDEX idx_apple ON my_entity (cast(field as time(6)));
-	 * <br>
-	 * <h6>dialect = Oracle</h6>
-	 * Column in DB: TIMESTAMP
-	 * <br>
-	 * Actual SQL:
-	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
-	 * <br>
-	 */
-	static Specification sortByTimePart(@Nullable String dialect, @NonNull Path field) {
-		if (dialect.contains("Oracle")) {
-			return (root, query, cb) -> {
-				Expression<String> timeExpr = cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
-				query.orderBy(cb.asc(timeExpr));
-				return null;
-			};
-		}
-		return (root, query, builder) -> {
-			query.orderBy(builder.asc(field.as(LocalTime.class)));
-			return null;
-		};
-
 	}
 
 }

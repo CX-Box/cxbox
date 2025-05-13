@@ -90,9 +90,9 @@ public class JpaDaoImpl implements JpaDao {
 	@Lazy
 	protected final TransactionService txService;
 
-	private static final String ORACLE = "Oracle";
+	public static final String ORACLE = "Oracle";
 
-	private static final String POSTGRE_SQL = "PostgreSQL";
+	public static final String POSTGRE_SQL = "PostgreSQL";
 
 	public JpaDaoImpl(
 			Set<EntityManager> entityManagers,

@@ -21,6 +21,7 @@ import static org.cxbox.core.controller.param.SearchOperation.CONTAINS_ONE_OF;
 import static org.cxbox.core.controller.param.SearchOperation.EQUALS_ONE_OF;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -40,6 +41,7 @@ import org.cxbox.core.dao.impl.MetadataUtils;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.cxbox.model.core.dao.impl.JpaDaoImpl;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -60,12 +62,35 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 		return result;
 	}
 
+	/**
+	 * Sorts entity column by time fraction (LocalDateTime and LocalTime)
+	 * <br>
+	 * {@code dialect (Oracle/PostgreSQL)} - entityManager.getEntityManagerFactory().getProperties().get("hibernate.dialect").toString();
+	 * <br>
+	 * <h6>dialect = PostgreSQL</h6>
+	 * Column in DB: TIMESTAMP/TIME
+	 * <br>
+	 * Actual SQL:
+	 * <br>
+	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by cast(a1_0.created_date as time) asc"]}
+	 * so always add functional index CREATE INDEX idx_apple ON my_entity (cast(field as time(6)));
+	 * <br>
+	 * <h6>dialect = Oracle</h6>
+	 * Column in DB: TIMESTAMP
+	 * <br>
+	 * Actual SQL:
+	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
+	 * <br>
+	 */
 	@Nullable
-	public Expression<?> getOrder(@NotNull SearchParameter searchParameter, @NotNull String dialect, @NotNull Path fieldPath,
-			@NotNull CriteriaBuilder builder) {
+	public Expression<?> getSortExpression(@NotNull final SearchParameter searchParameter, @NotNull final CriteriaBuilder builder,
+			@NotNull final CriteriaQuery query, @NotNull final Root<?> root, @NotNull final Class dtoClazz,  @NotNull String dialect, @NotNull Path fieldPath) {
 		if (searchParameter.provider() != null &&
 				searchParameter.provider().equals(TimeValueProvider.class)) {
-			return getExpressionByTimePart(dialect, fieldPath, builder);
+			if (dialect.contains(JpaDaoImpl.ORACLE)) {
+				return builder.function("TO_CHAR", String.class, fieldPath, builder.literal("HH24:MI:SS"));
+			}
+			return fieldPath.as(LocalTime.class);
 		}
 		return null;
 	}
@@ -97,7 +122,7 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 
 
 	private static Expression getExpressionByTimePart(String dialect, Path field, CriteriaBuilder cb) {
-		if (dialect.contains("Oracle")) {
+		if (dialect.contains(JpaDaoImpl.ORACLE)) {
 			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
 
 		}

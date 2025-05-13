@@ -17,6 +17,7 @@
 package org.cxbox.core.util.filter.provider;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
@@ -49,8 +50,8 @@ public interface ClassifyDataProvider {
 	}
 
 	@Nullable
-	default Expression<?> getOrder(@NotNull SearchParameter searchParameter, @NotNull String dialect, @NotNull Path fieldPath,
-			@NotNull CriteriaBuilder builder) {
+	default Expression<?> getSortExpression(@NotNull final SearchParameter searchParameter, @NotNull final CriteriaBuilder builder,
+			@Nullable final CriteriaQuery query, @Nullable final Root<?> root, @Nullable final Class dtoClazz,  @Nullable String dialect, @NotNull Path fieldPath) {
 		return null;
 	}
 
