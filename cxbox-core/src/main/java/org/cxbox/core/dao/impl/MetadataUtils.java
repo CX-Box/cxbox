@@ -329,7 +329,7 @@ public class MetadataUtils {
 					));
 					order = selectCase.otherwise("");
 				} else {
-					var provider = getProviderFromParam(searchParameter.provider());
+					var provider = searchParameter == null ? null : getProviderFromParam(searchParameter.provider());
 					Expression expression = provider != null
 							? provider.getSortExpression(searchParameter, builder, query, root, dtoClazz, fieldPath, dialect)
 							: fieldPath;
