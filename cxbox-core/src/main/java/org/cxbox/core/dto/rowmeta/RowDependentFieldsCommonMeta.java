@@ -195,7 +195,7 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	 */
 	public <V> boolean isFieldChangedNowFE(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, V> field) {
-		return  fields.getCurrentValue(DataResponseDTO_.rqChangedNowFE).map(objectMap -> objectMap.containsKey(field.getName())).orElse(false);
+		return  fields.getCurrentValue(DataResponseDTO_.changedNow).map(objectMap -> objectMap.containsKey(field.getName())).orElse(false);
 	}
 
 }
