@@ -20,6 +20,7 @@ import org.cxbox.api.data.ResultPage;
 import org.cxbox.core.controller.param.FilterParameters;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.model.core.dao.impl.DialectName;
 import org.springframework.data.jpa.domain.Specification;
 
 import jakarta.persistence.EntityGraph;
@@ -54,7 +55,8 @@ public interface BaseDAO extends JpaDao {
 
 	<T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
-			FilterParameters searchParams);
+			FilterParameters searchParams,
+			DialectName dialect);
 
 
 }

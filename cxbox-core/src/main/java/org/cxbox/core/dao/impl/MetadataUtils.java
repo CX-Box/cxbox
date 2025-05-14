@@ -21,15 +21,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.controller.param.SortType.ASC;
 import static org.cxbox.core.controller.param.SortType.DESC;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -46,6 +37,16 @@ import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.ManagedType;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -59,11 +60,13 @@ import org.cxbox.core.controller.param.SortParameter;
 import org.cxbox.core.controller.param.SortParameters;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.dto.LovUtils;
+import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.filter.MultisourceSearchParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
+import org.cxbox.model.core.dao.impl.DialectName;
 import org.cxbox.model.core.entity.BaseEntity;
 
 
@@ -207,12 +210,20 @@ public class MetadataUtils {
 		return root.get(fieldName);
 	}
 
-	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb) {
+	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
+			DialectName dialect) {
 		try {
 			Object value = criteria.getValue();
 
 			Path field = getFieldPath(criteria.getField(), root);
 
+			ClassifyDataProvider classifyDataProvider = getProviderFromParam(criteria.getProvider());
+			Predicate filterPredicate = classifyDataProvider == null ? null
+					: classifyDataProvider.getFilterPredicate(criteria.getOperator(), root, cb, criteria, field, value, dialect);
+
+			if (filterPredicate != null) {
+				return filterPredicate;
+			}
 			switch (criteria.getOperator()) {
 				case EQUALS:
 					if (value instanceof String) {
@@ -270,14 +281,33 @@ public class MetadataUtils {
 					throw new IllegalArgumentException();
 			}
 		} catch (Exception e) {
-			log.warn("error when try to parse search expr: "
-					+ criteria.getField() + "." + criteria.getOperator() + "=" + criteria.getValue(), e);
+			log.warn(
+					"error when try to parse search expr: "
+							+ criteria.getField() + "." + criteria.getOperator() + "=" + criteria.getValue(), e
+			);
 			return null;
 		}
 	}
 
+	private ClassifyDataProvider getProviderFromParam(
+			Class<? extends ClassifyDataProvider> provider) {
+		if (provider == null) {
+			return null;
+		}
+		try {
+			return SpringBeanUtils.getBean(provider);
+		} catch (Exception e) {
+			try {
+				return provider.getDeclaredConstructor().newInstance();
+			} catch (Exception ex) {
+				log.error("Error getting a provider instance. Exception message: " + e.getMessage());
+				return null;
+			}
+		}
+	}
+
 	public static <T> void addSorting(final Class dtoClazz, final Root<?> root, final CriteriaQuery<T> query,
-			CriteriaBuilder builder, final SortParameters sort) {
+			CriteriaBuilder builder, final SortParameters sort, DialectName dialect) {
 		List<Order> orderList = new ArrayList<>();
 		if (!query.getOrderList().isEmpty()) {
 			orderList.addAll(query.getOrderList());
@@ -290,6 +320,7 @@ public class MetadataUtils {
 				Path fieldPath = getFieldPath(field, root);
 				IDictionaryType lovType = getLovType(dtoClazz, p);
 				Expression<?> order;
+				SearchParameter searchParameter = getSearchParameter(dtoClazz, p);
 				if (lovType != null) {
 					Collection<SimpleDictionary> dictDTOS = dictionary().getAll(lovType);
 					CriteriaBuilder.Case<String> selectCase = builder.selectCase();
@@ -298,8 +329,13 @@ public class MetadataUtils {
 					));
 					order = selectCase.otherwise("");
 				} else {
-					order = fieldPath;
+					var provider = getProviderFromParam(searchParameter.provider());
+					Expression expression = provider != null
+							? provider.getSortExpression(searchParameter, builder, query, root, dtoClazz, fieldPath, dialect)
+							: fieldPath;
+					order = expression == null ? fieldPath : expression;
 				}
+
 				if (ASC.equals(p.getType())) {
 					orderList.add(builder.asc(order));
 				} else if (DESC.equals(p.getType())) {
@@ -324,12 +360,7 @@ public class MetadataUtils {
 		if (dtoClazz == null) {
 			field = parameter.getName();
 		} else {
-			Field dtoField = CxReflectionUtils.findField(dtoClazz, parameter.getName());
-			if (dtoField == null) {
-				throw new IllegalArgumentException(
-						"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
-			}
-			SearchParameter fieldParameter = dtoField.getDeclaredAnnotation(org.cxbox.core.util.filter.SearchParameter.class);
+			SearchParameter fieldParameter = getSearchParameter(dtoClazz, parameter);
 			if (fieldParameter != null && !"".equals(fieldParameter.name())) {
 				field = fieldParameter.name();
 			} else {
@@ -337,6 +368,16 @@ public class MetadataUtils {
 			}
 		}
 		return field;
+	}
+
+	private static SearchParameter getSearchParameter(@NonNull Class dtoClazz, SortParameter parameter) {
+		Field dtoField = CxReflectionUtils.findField(dtoClazz, parameter.getName());
+		if (dtoField == null) {
+			throw new IllegalArgumentException(
+					"Couldn't find field " + parameter.getName() + " in class " + dtoClazz.getName());
+		}
+		return dtoField.getDeclaredAnnotation(org.cxbox.core.util.filter.SearchParameter.class);
+
 	}
 
 	private static IDictionaryType getLovType(Class dtoClazz, SortParameter parameter) {
@@ -353,12 +394,18 @@ public class MetadataUtils {
 
 	public static <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
-			FilterParameters searchParams, List<ClassifyDataProvider> providers) {
+			FilterParameters searchParams,
+			List<ClassifyDataProvider> providers,
+			DialectName dialect) {
 
 		if (searchParams == null) {
 			return cb.and();
 		}
-		List<ClassifyDataParameter> criteriaStrings = mapSearchParamsToPOJO(dtoClazz, searchParams, providers);
+		List<ClassifyDataParameter> criteriaStrings = mapSearchParamsToPOJO(
+				dtoClazz,
+				searchParams,
+				providers
+		);
 		boolean joinRequired = criteriaStrings.stream()
 				.anyMatch(param -> param.getField().contains("."));
 
@@ -367,33 +414,34 @@ public class MetadataUtils {
 			Subquery<Long> filterSubquery = cq.subquery(Long.class);
 			Class<T> rootClass = root.getModel().getJavaType();
 			Root<T> subRoot = filterSubquery.from(rootClass);
-			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings);
+			Predicate searchParamsRestriction = getAllSpecifications(cb, subRoot, criteriaStrings, dialect);
 			filterSubquery.select(subRoot.get("id"))
 					.where(searchParamsRestriction);
 			filterPredicate = cb.in(root.get("id")).value(filterSubquery);
 		} else {
-			filterPredicate = getAllSpecifications(cb, root, criteriaStrings);
+			filterPredicate = getAllSpecifications(cb, root, criteriaStrings, dialect);
 		}
 		return filterPredicate;
 	}
 
 	public static Predicate getAllSpecifications(CriteriaBuilder cb, Root<?> root,
-			List<ClassifyDataParameter> criteriaStrings) {
+			List<ClassifyDataParameter> criteriaStrings, DialectName dialect) {
 		return cb.and(criteriaStrings.stream()
-				.map(criteria -> getSingleSpecification(cb, root, criteria))
+				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect))
 				.filter(Objects::nonNull).toArray(Predicate[]::new));
 	}
 
-	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria) {
+	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria,
+			DialectName dialect) {
 		if (MultisourceValueProvider.class.equals(criteria.getProvider())) {
 			List criteriaValue = (List) criteria.getValue();
 			List<Predicate> predicates = new ArrayList<>();
 			for (Object innerList : criteriaValue) {
-				predicates.add(getAllSpecifications(cb, root, (List) innerList));
+				predicates.add(getAllSpecifications(cb, root, (List) innerList, dialect));
 			}
 			return cb.or(predicates.stream().filter(Objects::nonNull).toArray(Predicate[]::new));
 		} else {
-			return createPredicate(root, criteria, cb);
+			return createPredicate(root, criteria, cb, dialect);
 		}
 	}
 
@@ -416,3 +464,4 @@ public class MetadataUtils {
 	}
 
 }
+

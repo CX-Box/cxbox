@@ -16,22 +16,6 @@
 
 package org.cxbox.core.dao.impl;
 
-import org.cxbox.api.data.ResultPage;
-import org.cxbox.api.service.tx.TransactionService;
-import org.cxbox.core.controller.param.FilterParameters;
-import org.cxbox.core.controller.param.QueryParameters;
-import org.cxbox.core.controller.param.SortParameters;
-import org.cxbox.core.dao.BaseDAO;
-import org.cxbox.core.dao.IPdqExtractor;
-import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
-import org.cxbox.model.core.dao.impl.JpaDaoImpl;
-import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
-import org.hibernate.query.Query;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -43,6 +27,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.cxbox.api.data.ResultPage;
+import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.core.controller.param.FilterParameters;
+import org.cxbox.core.controller.param.QueryParameters;
+import org.cxbox.core.controller.param.SortParameters;
+import org.cxbox.core.dao.BaseDAO;
+import org.cxbox.core.dao.IPdqExtractor;
+import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.cxbox.model.core.dao.impl.DialectName;
+import org.cxbox.model.core.dao.impl.JpaDaoImpl;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Repository
@@ -88,9 +88,10 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 
 	public <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
-			FilterParameters searchParams
+			FilterParameters searchParams,
+			DialectName dialect
 	) {
-		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, providers);
+		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, providers, dialect);
 	}
 
 	@Override
@@ -102,6 +103,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			QueryParameters queryParameters
 	) {
 		EntityManager entityManager = getSupportedEntityManager(root.getModel().getBindableJavaType().getName());
+		DialectName dialect = getDialect(entityManager);
 		queryParameters = emptyIfNull(queryParameters);
 		FilterParameters searchParams = queryParameters.getFilter();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -113,7 +115,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			pdqSearchSpec = (root1, cq1, cb1) -> cb1.and();
 		}
 		cq.select(cb.count(root));
-		Predicate searchParamsPredicate = getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams);
+		Predicate searchParamsPredicate = getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, dialect);
 		cq.where(cb.and(defaultSearchSpec, searchParamsPredicate, pdqSearchSpec.toPredicate(root, cq, cb)));
 		return entityManager.createQuery(cq).getSingleResult();
 	}
@@ -126,6 +128,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			QueryParameters queryParameters
 	) {
 		EntityManager entityManager = getSupportedEntityManager(entityClass.getName());
+		DialectName dialect = getDialect(entityManager);
 		queryParameters = emptyIfNull(queryParameters);
 		FilterParameters parameters = queryParameters.getFilter();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -140,7 +143,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 		if (pdqSearchSpec != null) {
 			predicates.add(pdqSearchSpec.toPredicate(root, cq, cb));
 		}
-		predicates.add(getPredicateFromSearchParams(root, cq, cb, dtoClazz, parameters));
+		predicates.add(getPredicateFromSearchParams(root, cq, cb, dtoClazz, parameters, dialect));
 		cq.where(cb.and(predicates.toArray(new Predicate[0])));
 		return entityManager.createQuery(cq).getSingleResult();
 	}
@@ -155,6 +158,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			EntityGraph<? super T> fetchGraph
 	) {
 		EntityManager entityManager = getSupportedEntityManager(root.getModel().getBindableJavaType().getName());
+		DialectName dialect = getDialect(entityManager);
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		SortParameters sort = parameters.getSort();
 		FilterParameters filter = parameters.getFilter();
@@ -166,7 +170,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			pdqSearchSpec = (root1, cq1, cb1) -> cb1.and();
 		}
 
-		Predicate searchParamsPredicate = getPredicateFromSearchParams(root, cq, cb, dtoClazz, filter);
+		Predicate searchParamsPredicate = getPredicateFromSearchParams(root, cq, cb, dtoClazz, filter, dialect);
 
 		if (cq.getRestriction() != null) {
 			cq.where(cb.and(
@@ -182,7 +186,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 					pdqSearchSpec.toPredicate(root, cq, cb)
 			));
 		}
-		MetadataUtils.addSorting(dtoClazz, root, cq, cb, sort);
+		MetadataUtils.addSorting(dtoClazz, root, cq, cb, sort, dialect);
 		applyGraph(root, fetchGraph);
 
 		Query<T> query = entityManager.unwrap(Session.class).createQuery(cq);

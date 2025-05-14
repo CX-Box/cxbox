@@ -39,7 +39,7 @@ public class UIProperties {
 
 	public static final String DRILL_DOWN_TOOLTIP_NAME = "drillDownTooltip";
 
-	public static final String MULTI_ROLE_ENABLED  = "multiRoleEnabled";
+	public static final String MULTI_ROLE_ENABLED = "multiRoleEnabled";
 
 	public static final String APP_INFO_ENV = "appInfoEnv";
 
@@ -74,8 +74,8 @@ public class UIProperties {
 	/**
 	 * Enabled to transfer long screen names in a sidebar menu
 	 * <br>Supported standard values:</br>
-   * - "none": default setting. No word breaking occurs; text will not wrap.<br>
-   * - "auto": automatic word breaking. Text in the sidebar will wrap to the next line as needed.
+	 * - "none": default setting. No word breaking occurs; text will not wrap.<br>
+	 * - "auto": automatic word breaking. Text in the sidebar will wrap to the next line as needed.
 	 */
 	@NotBlank
 	private String sideBarWordBreak = "none";

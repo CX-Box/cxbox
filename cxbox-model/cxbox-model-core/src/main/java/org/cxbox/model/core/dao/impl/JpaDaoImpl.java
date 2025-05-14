@@ -16,29 +16,7 @@
 
 package org.cxbox.model.core.dao.impl;
 
-import java.util.Objects;
-import org.cxbox.api.data.PageSpecification;
-import org.cxbox.api.data.ResultPage;
-import org.cxbox.api.data.dao.Selector;
-import org.cxbox.api.data.dao.UpdateSpecification;
-import org.cxbox.api.exception.ServerException;
-import org.cxbox.api.service.tx.TransactionService;
-import org.cxbox.model.core.api.EmbeddedKeyable;
-import org.cxbox.model.core.dao.JpaDao;
-import org.cxbox.model.core.dao.util.JpaUtils;
-import org.cxbox.model.core.entity.AbstractEntity;
-import org.cxbox.model.core.entity.BaseEntity;
-import org.cxbox.model.core.entity.BaseEntity_;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import autovalue.shaded.org.checkerframework.checker.nullness.qual.Nullable;
 import jakarta.persistence.AttributeNode;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -60,13 +38,39 @@ import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.persistence.metamodel.ManagedType;
 import jakarta.persistence.metamodel.SingularAttribute;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.cxbox.api.data.PageSpecification;
+import org.cxbox.api.data.ResultPage;
+import org.cxbox.api.data.dao.Selector;
+import org.cxbox.api.data.dao.UpdateSpecification;
+import org.cxbox.api.exception.ServerException;
+import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.model.core.api.EmbeddedKeyable;
+import org.cxbox.model.core.dao.JpaDao;
+import org.cxbox.model.core.dao.util.JpaUtils;
+import org.cxbox.model.core.entity.AbstractEntity;
+import org.cxbox.model.core.entity.BaseEntity;
+import org.cxbox.model.core.entity.BaseEntity_;
 import org.hibernate.Hibernate;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.cfg.AvailableSettings;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.OracleDialect;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.hibernate.query.Query;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
@@ -107,6 +111,16 @@ public class JpaDaoImpl implements JpaDao {
 		} else {
 			throw new IllegalArgumentException("Can't find unique EntityManager for entity: " + entityClazz);
 		}
+	}
+
+	@Nullable
+	public DialectName getDialect(EntityManager entityManager) {
+		var sessionFactory = entityManager.unwrap(Session.class).getSessionFactory();
+		if (sessionFactory instanceof SessionFactoryImpl factory) {
+			Dialect dialect = factory.getJdbcServices().getDialect();
+			return dialect instanceof OracleDialect ? DialectName.ORACLE : DialectName.POSTGRESQL;
+		}
+		return DialectName.POSTGRESQL;
 	}
 
 	@Override

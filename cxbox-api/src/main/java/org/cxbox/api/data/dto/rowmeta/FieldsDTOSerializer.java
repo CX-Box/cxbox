@@ -20,7 +20,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 class FieldsDTOSerializer extends JsonSerializer<FieldsDTO> {
 
 	@Override
