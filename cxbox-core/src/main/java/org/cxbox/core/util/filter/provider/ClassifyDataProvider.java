@@ -30,7 +30,6 @@ import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.model.core.dao.impl.DialectName;
-import org.jetbrains.annotations.Nullable;
 
 public interface ClassifyDataProvider {
 
@@ -44,13 +43,11 @@ public interface ClassifyDataProvider {
 	List<ClassifyDataParameter> getClassifyDataParameters(Field dtoField, FilterParameter filterParam,
 			SearchParameter searchParam, List<ClassifyDataProvider> providers);
 
-	@Nullable
 	default Predicate getFilterPredicate(@NonNull SearchOperation operator, @NonNull Root<?> root, @NonNull CriteriaBuilder cb,
 			@NonNull ClassifyDataParameter criteria, @NonNull Path field, @NonNull Object value, @NonNull DialectName dialect) {
 		return null;
 	}
 
-	@Nullable
 	default Expression<?> getSortExpression(@NonNull final SearchParameter searchParameter, @NonNull final CriteriaBuilder builder,
 			@NonNull final CriteriaQuery query, @NonNull final Root<?> root, @NonNull final Class dtoClazz, @NonNull Path fieldPath, @NonNull DialectName dialect) {
 		return null;

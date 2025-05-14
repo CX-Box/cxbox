@@ -32,7 +32,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import org.cxbox.core.controller.param.FilterParameter;
@@ -82,7 +81,6 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	 * {@code Query:["select a1_0.id,a1_0.commend,a1_0.created_date from apple a1_0 order by to_char(a1_0.created_date,'HH24:MI:SS') asc"]}
 	 * <br>
 	 */
-	@Nullable
 	public Expression<?> getSortExpression(@NonNull final SearchParameter searchParameter, @NonNull final CriteriaBuilder builder,
 			@NonNull final CriteriaQuery query, @NonNull final Root<?> root, @NonNull final Class dtoClazz,  @NonNull Path fieldPath, @NonNull DialectName dialect) {
 		if (searchParameter.provider() != null &&
@@ -95,7 +93,6 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 		return null;
 	}
 
-	@Nullable
 	public Predicate getFilterPredicate(@NonNull SearchOperation operator, @NonNull Root<?> root,
 			@NonNull CriteriaBuilder cb,
 			@NonNull ClassifyDataParameter criteria, @NonNull Path field,  @NonNull Object value, @NonNull DialectName dialect) {
