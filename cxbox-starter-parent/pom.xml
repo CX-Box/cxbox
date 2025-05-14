@@ -21,7 +21,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox-starter-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M17-1-SNAPSHOT</version>
+  <version>4.0.0-M17</version>
   <name>IO Cxbox - Starter Parent</name>
 
   <url>http://cxbox.org</url>
@@ -51,7 +51,7 @@
     <connection>scm:git:git@github.com:CX-Box.git</connection>
     <developerConnection>scm:git:git@github.com:CX-Box/cxbox.git</developerConnection>
     <url>https://github.com/CX-Box/cxbox</url>
-    <tag>4.0.0-M10-SNAPSHOT</tag>
+    <tag>cxbox-4.0.0-M17</tag>
   </scm>
 
   <distributionManagement>
@@ -73,7 +73,7 @@
   </parent>
 
   <properties>
-    <cxbox.version>4.0.0-M17-1-SNAPSHOT</cxbox.version>
+    <cxbox.version>4.0.0-M17</cxbox.version>
     <spring-boot.version>3.3.11</spring-boot.version>
   </properties>
 
