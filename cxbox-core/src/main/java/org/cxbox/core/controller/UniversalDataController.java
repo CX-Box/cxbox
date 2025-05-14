@@ -88,8 +88,6 @@ public class UniversalDataController {
 			@RequestBody Map<String, Object> requestBody) {
 		if (requestBody == null || requestBody.get("data") == null || !(requestBody.get("data") instanceof Map)) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
-		} else {
-			requestBody = (Map) requestBody.get("data");
 		}
 		final String action = queryParameters.getParameter("_action");
 		BusinessComponent bc = bcFactory.getBusinessComponent(request, queryParameters);

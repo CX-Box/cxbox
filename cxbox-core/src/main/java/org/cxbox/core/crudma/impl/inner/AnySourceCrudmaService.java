@@ -93,6 +93,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
+		data = (Map) data.get("data");
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);

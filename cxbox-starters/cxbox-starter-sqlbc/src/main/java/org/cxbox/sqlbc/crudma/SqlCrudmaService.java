@@ -117,6 +117,7 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
+		data = (Map) data.get("data");
 
 		SqlBcEditFieldDTO dto = (SqlBcEditFieldDTO) respFactory.getDTOFromMap(data, SqlBcEditFieldDTO.class, bc);
 

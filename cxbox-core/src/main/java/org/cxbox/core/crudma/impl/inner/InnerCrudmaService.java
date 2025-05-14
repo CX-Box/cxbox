@@ -16,10 +16,10 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
-import java.util.HashMap;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -74,31 +74,50 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
-		Map<String, Object> changedNow = new HashMap<>();
-		data = (Map) data.get("data");
-		if (data != null || data.get("changedNow") != null ||
-				data.get("changedNow") instanceof Map) {
-			changedNow = (Map<String, Object>) data.get("changedNow");
+	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataIn) {
+		DataResponseDTO changedNowDTO = null;
+		Map<String, Object> data = (Map) dataIn.get("data");
+		if (data != null || dataIn.get("changedNow") != null ||
+				dataIn.get("changedNow") instanceof Map) {
+			changedNowDTO = respFactory.getDTOFromMapInner2(
+					(Map<String, Object>) dataIn.get("changedNow"), respFactory.getDTOFromService(bc.getDescription()), bc, true);
 		}
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
-		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		responseDto.setRqChangedNowFE(changedNow);
+		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord(); //LoadEntity
+		responseDto.setChangedNowDTO(changedNowDTO);
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
 
 	@Override
-	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
+	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataIn) {
+		DataResponseDTO requestDTO;
+		Map<String, Object> data = (Map) dataIn.get("data");
+		boolean isChangedNowData = data != null || dataIn.get("changedNow") != null ||
+				dataIn.get("changedNow") instanceof Map;
+
+		if (isChangedNowData) {
+			PreviewResult previewResult = preview(bc, dataIn);//при загрузке через update меняется vstamp
+			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getRequestDto());
+			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
+			data.clear();
+			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
+		}
+
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
-		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
+
+		requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
+		if (isChangedNowData) {
+			requestDTO.setVstamp(requestDTO.getVstamp() + 1);
+			requestDTO.getChangedFields().clear();
+		}
 		return responseService.updateEntity(bc, requestDTO);
 	}
 

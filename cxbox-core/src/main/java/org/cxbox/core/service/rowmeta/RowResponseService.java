@@ -115,13 +115,18 @@ public class RowResponseService {
 			Class<? extends FieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (linkedDictionaryService != null) {
-			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
+			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(
+					fieldsNode,
+					bc,
+					dataDTO,
+					type == RowMetaType.META_EMPTY
+			);
 		}
-		//add RqChangedNowFE for MetaBuilder
-		if (!dataDTO.getRqChangedNowFE().isEmpty()) {
+		//add changedNow for MetaBuilder
+		if (dataDTO.getChangedNow() != null && !dataDTO.getChangedNow().isEmpty()) {
 			fieldsNode.add(getDTOFromField(META, FieldUtils.getField(
 					dataDTO.getClass(),
-					DataResponseDTO_.rqChangedNowFE.getName(),
+					DataResponseDTO_.changedNow.getName(),
 					true
 			), dataDTO));
 		}
