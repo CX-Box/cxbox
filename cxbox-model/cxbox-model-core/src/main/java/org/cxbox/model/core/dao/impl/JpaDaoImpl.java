@@ -16,7 +16,6 @@
 
 package org.cxbox.model.core.dao.impl;
 
-import autovalue.shaded.org.checkerframework.checker.nullness.qual.Nullable;
 import jakarta.persistence.AttributeNode;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -49,6 +48,7 @@ import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.data.PageSpecification;
@@ -113,8 +113,8 @@ public class JpaDaoImpl implements JpaDao {
 		}
 	}
 
-	@Nullable
-	public DialectName getDialect(EntityManager entityManager) {
+	@NonNull
+	public DialectName getDialect(@NonNull EntityManager entityManager) {
 		var sessionFactory = entityManager.unwrap(Session.class).getSessionFactory();
 		if (sessionFactory instanceof SessionFactoryImpl factory) {
 			Dialect dialect = factory.getJdbcServices().getDialect();

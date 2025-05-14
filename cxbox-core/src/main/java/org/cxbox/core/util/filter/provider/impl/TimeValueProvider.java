@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.ClassifyDataParameter;
@@ -42,7 +43,6 @@ import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.model.core.dao.impl.DialectName;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -83,8 +83,8 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	 * <br>
 	 */
 	@Nullable
-	public Expression<?> getSortExpression(@NotNull final SearchParameter searchParameter, @NotNull final CriteriaBuilder builder,
-			@NotNull final CriteriaQuery query, @NotNull final Root<?> root, @NotNull final Class dtoClazz,  @NotNull Path fieldPath, @NotNull DialectName dialect) {
+	public Expression<?> getSortExpression(@NonNull final SearchParameter searchParameter, @NonNull final CriteriaBuilder builder,
+			@NonNull final CriteriaQuery query, @NonNull final Root<?> root, @NonNull final Class dtoClazz,  @NonNull Path fieldPath, @NonNull DialectName dialect) {
 		if (searchParameter.provider() != null &&
 				searchParameter.provider().equals(TimeValueProvider.class)) {
 			if (dialect.equals(DialectName.ORACLE)) {
@@ -96,9 +96,9 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 	@Nullable
-	public Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root,
-			@NotNull CriteriaBuilder cb,
-			@NotNull ClassifyDataParameter criteria, @NotNull Path field,  @NotNull Object value, @NotNull DialectName dialect) {
+	public Predicate getFilterPredicate(@NonNull SearchOperation operator, @NonNull Root<?> root,
+			@NonNull CriteriaBuilder cb,
+			@NonNull ClassifyDataParameter criteria, @NonNull Path field,  @NonNull Object value, @NonNull DialectName dialect) {
 		if (value instanceof LocalTime) {
 			switch (operator) {
 				case EQUALS:
@@ -121,7 +121,8 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 
-	private static Expression getExpressionByTimePart(Path field, CriteriaBuilder cb, DialectName dialect) {
+	@NonNull
+	private static Expression getExpressionByTimePart(@NonNull Path field, @NonNull CriteriaBuilder cb, @NonNull DialectName dialect) {
 		if (dialect.equals(DialectName.ORACLE)) {
 			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
 
