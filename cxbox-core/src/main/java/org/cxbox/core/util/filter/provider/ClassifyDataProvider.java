@@ -24,13 +24,12 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.util.List;
+import lombok.NonNull;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.controller.param.SearchOperation;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.model.core.dao.impl.DialectName;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface ClassifyDataProvider {
 
@@ -44,15 +43,13 @@ public interface ClassifyDataProvider {
 	List<ClassifyDataParameter> getClassifyDataParameters(Field dtoField, FilterParameter filterParam,
 			SearchParameter searchParam, List<ClassifyDataProvider> providers);
 
-	@Nullable
-	default Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root, @NotNull CriteriaBuilder cb,
-			@NotNull ClassifyDataParameter criteria, @NotNull Path field, @NotNull Object value, @NotNull DialectName dialect) {
+	default Predicate getFilterPredicate(@NonNull SearchOperation operator, @NonNull Root<?> root, @NonNull CriteriaBuilder cb,
+			@NonNull ClassifyDataParameter criteria, @NonNull Path field, @NonNull Object value, @NonNull DialectName dialect) {
 		return null;
 	}
 
-	@Nullable
-	default Expression<?> getSortExpression(@NotNull final SearchParameter searchParameter, @NotNull final CriteriaBuilder builder,
-			@Nullable final CriteriaQuery query, @Nullable final Root<?> root, @Nullable final Class dtoClazz, @NotNull Path fieldPath, @Nullable DialectName dialect) {
+	default Expression<?> getSortExpression(@NonNull final SearchParameter searchParameter, @NonNull final CriteriaBuilder builder,
+			@NonNull final CriteriaQuery query, @NonNull final Root<?> root, @NonNull final Class dtoClazz, @NonNull Path fieldPath, @NonNull DialectName dialect) {
 		return null;
 	}
 

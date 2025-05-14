@@ -46,6 +46,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -289,8 +290,9 @@ public class MetadataUtils {
 		}
 	}
 
+	@Nullable
 	private ClassifyDataProvider getProviderFromParam(
-			Class<? extends ClassifyDataProvider> provider) {
+			@NonNull Class<? extends ClassifyDataProvider> provider) {
 		if (provider == null) {
 			return null;
 		}
@@ -329,7 +331,7 @@ public class MetadataUtils {
 					));
 					order = selectCase.otherwise("");
 				} else {
-					var provider = getProviderFromParam(searchParameter.provider());
+					var provider = searchParameter == null ? null : getProviderFromParam(searchParameter.provider());
 					Expression expression = provider != null
 							? provider.getSortExpression(searchParameter, builder, query, root, dtoClazz, fieldPath, dialect)
 							: fieldPath;
