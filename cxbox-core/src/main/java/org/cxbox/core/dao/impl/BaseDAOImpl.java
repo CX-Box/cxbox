@@ -36,6 +36,7 @@ import org.cxbox.core.controller.param.SortParameters;
 import org.cxbox.core.dao.BaseDAO;
 import org.cxbox.core.dao.IPdqExtractor;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.cxbox.model.core.dao.impl.DialectName;
 import org.cxbox.model.core.dao.impl.JpaDaoImpl;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -88,9 +89,9 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 	public <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
 			FilterParameters searchParams,
-			String dialect
+			DialectName dialect
 	) {
-		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, dialect, providers);
+		return MetadataUtils.getPredicateFromSearchParams(root, cq, cb, dtoClazz, searchParams, providers, dialect);
 	}
 
 	@Override
@@ -102,7 +103,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			QueryParameters queryParameters
 	) {
 		EntityManager entityManager = getSupportedEntityManager(root.getModel().getBindableJavaType().getName());
-		String dialect = getDialect(entityManager);
+		DialectName dialect = getDialect(entityManager);
 		queryParameters = emptyIfNull(queryParameters);
 		FilterParameters searchParams = queryParameters.getFilter();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -127,7 +128,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			QueryParameters queryParameters
 	) {
 		EntityManager entityManager = getSupportedEntityManager(entityClass.getName());
-		String dialect = getDialect(entityManager);
+		DialectName dialect = getDialect(entityManager);
 		queryParameters = emptyIfNull(queryParameters);
 		FilterParameters parameters = queryParameters.getFilter();
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -157,7 +158,7 @@ public class BaseDAOImpl extends JpaDaoImpl implements BaseDAO {
 			EntityGraph<? super T> fetchGraph
 	) {
 		EntityManager entityManager = getSupportedEntityManager(root.getModel().getBindableJavaType().getName());
-		String dialect = getDialect(entityManager);
+		DialectName dialect = getDialect(entityManager);
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		SortParameters sort = parameters.getSort();
 		FilterParameters filter = parameters.getFilter();

@@ -41,7 +41,7 @@ import org.cxbox.core.dao.impl.MetadataUtils;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
-import org.cxbox.model.core.dao.impl.JpaDaoImpl;
+import org.cxbox.model.core.dao.impl.DialectName;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -84,10 +84,10 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	 */
 	@Nullable
 	public Expression<?> getSortExpression(@NotNull final SearchParameter searchParameter, @NotNull final CriteriaBuilder builder,
-			@NotNull final CriteriaQuery query, @NotNull final Root<?> root, @NotNull final Class dtoClazz,  @NotNull String dialect, @NotNull Path fieldPath) {
+			@NotNull final CriteriaQuery query, @NotNull final Root<?> root, @NotNull final Class dtoClazz,  @NotNull Path fieldPath, @NotNull DialectName dialect) {
 		if (searchParameter.provider() != null &&
 				searchParameter.provider().equals(TimeValueProvider.class)) {
-			if (dialect.contains(JpaDaoImpl.ORACLE)) {
+			if (dialect.equals(DialectName.ORACLE)) {
 				return builder.function("TO_CHAR", String.class, fieldPath, builder.literal("HH24:MI:SS"));
 			}
 			return fieldPath.as(LocalTime.class);
@@ -98,19 +98,19 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	@Nullable
 	public Predicate getFilterPredicate(@NotNull SearchOperation operator, @NotNull Root<?> root,
 			@NotNull CriteriaBuilder cb,
-			@NotNull ClassifyDataParameter criteria, @NotNull Path field, @NotNull String dialect, @NotNull Object value) {
+			@NotNull ClassifyDataParameter criteria, @NotNull Path field,  @NotNull Object value, @NotNull DialectName dialect) {
 		if (value instanceof LocalTime) {
 			switch (operator) {
 				case EQUALS:
-					return cb.equal(getExpressionByTimePart(dialect, field, cb), MetadataUtils.requireComparable(value));
+					return cb.equal(getExpressionByTimePart(field, cb, dialect), MetadataUtils.requireComparable(value));
 				case GREATER_OR_EQUAL_THAN:
 					return cb.greaterThanOrEqualTo(
-							getExpressionByTimePart(dialect, field, cb),
+							getExpressionByTimePart(field, cb, dialect),
 							MetadataUtils.requireComparable(value)
 					);
 				case LESS_OR_EQUAL_THAN:
 					return cb.lessThanOrEqualTo(
-							getExpressionByTimePart(dialect, field, cb),
+							getExpressionByTimePart(field, cb, dialect),
 							MetadataUtils.requireComparable(value)
 					);
 				default:
@@ -121,8 +121,8 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 	}
 
 
-	private static Expression getExpressionByTimePart(String dialect, Path field, CriteriaBuilder cb) {
-		if (dialect.contains(JpaDaoImpl.ORACLE)) {
+	private static Expression getExpressionByTimePart(Path field, CriteriaBuilder cb, DialectName dialect) {
+		if (dialect.equals(DialectName.ORACLE)) {
 			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
 
 		}

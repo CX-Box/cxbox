@@ -66,6 +66,7 @@ import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
+import org.cxbox.model.core.dao.impl.DialectName;
 import org.cxbox.model.core.entity.BaseEntity;
 
 
@@ -210,7 +211,7 @@ public class MetadataUtils {
 	}
 
 	public static Predicate createPredicate(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
-			String dialect) {
+			DialectName dialect) {
 		try {
 			Object value = criteria.getValue();
 
@@ -218,7 +219,7 @@ public class MetadataUtils {
 
 			ClassifyDataProvider classifyDataProvider = getProviderFromParam(criteria.getProvider());
 			Predicate filterPredicate = classifyDataProvider == null ? null
-					: classifyDataProvider.getFilterPredicate(criteria.getOperator(), root, cb, criteria, field, dialect, value);
+					: classifyDataProvider.getFilterPredicate(criteria.getOperator(), root, cb, criteria, field, value, dialect);
 
 			if (filterPredicate != null) {
 				return filterPredicate;
@@ -306,7 +307,7 @@ public class MetadataUtils {
 	}
 
 	public static <T> void addSorting(final Class dtoClazz, final Root<?> root, final CriteriaQuery<T> query,
-			CriteriaBuilder builder, final SortParameters sort, String dialect) {
+			CriteriaBuilder builder, final SortParameters sort, DialectName dialect) {
 		List<Order> orderList = new ArrayList<>();
 		if (!query.getOrderList().isEmpty()) {
 			orderList.addAll(query.getOrderList());
@@ -330,7 +331,7 @@ public class MetadataUtils {
 				} else {
 					var provider = getProviderFromParam(searchParameter.provider());
 					Expression expression = provider != null
-							? provider.getSortExpression(searchParameter, builder, query, root, dtoClazz, dialect, fieldPath)
+							? provider.getSortExpression(searchParameter, builder, query, root, dtoClazz, fieldPath, dialect)
 							: fieldPath;
 					order = expression == null ? fieldPath : expression;
 				}
@@ -394,7 +395,8 @@ public class MetadataUtils {
 	public static <T> Predicate getPredicateFromSearchParams(Root<T> root, CriteriaQuery<?> cq, CriteriaBuilder cb,
 			Class dtoClazz,
 			FilterParameters searchParams,
-			String dialect, List<ClassifyDataProvider> providers) {
+			List<ClassifyDataProvider> providers,
+			DialectName dialect) {
 
 		if (searchParams == null) {
 			return cb.and();
@@ -423,14 +425,14 @@ public class MetadataUtils {
 	}
 
 	public static Predicate getAllSpecifications(CriteriaBuilder cb, Root<?> root,
-			List<ClassifyDataParameter> criteriaStrings, String dialect) {
+			List<ClassifyDataParameter> criteriaStrings, DialectName dialect) {
 		return cb.and(criteriaStrings.stream()
 				.map(criteria -> getSingleSpecification(cb, root, criteria, dialect))
 				.filter(Objects::nonNull).toArray(Predicate[]::new));
 	}
 
 	private static Predicate getSingleSpecification(CriteriaBuilder cb, Root<?> root, ClassifyDataParameter criteria,
-			String dialect) {
+			DialectName dialect) {
 		if (MultisourceValueProvider.class.equals(criteria.getProvider())) {
 			List criteriaValue = (List) criteria.getValue();
 			List<Predicate> predicates = new ArrayList<>();
