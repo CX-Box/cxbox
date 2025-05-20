@@ -43,11 +43,26 @@ public interface ClassifyDataProvider {
 	List<ClassifyDataParameter> getClassifyDataParameters(Field dtoField, FilterParameter filterParam,
 			SearchParameter searchParam, List<ClassifyDataProvider> providers);
 
+	/**
+	 * Retrieves a filter predicate based on the provided search operation and criteria.
+	 *
+	 * <p>This method is intended to be overridden in the implementing class (Provider)
+	 * if custom filtering logic is required. If this method is not implemented,
+	 * the default filtering mechanism will be used.</p>
+	 */
 	default Predicate getFilterPredicate(@NonNull SearchOperation operator, @NonNull Root<?> root, @NonNull CriteriaBuilder cb,
 			@NonNull ClassifyDataParameter criteria, @NonNull Path field, @NonNull Object value, @NonNull DialectName dialect) {
 		return null;
 	}
 
+	/**
+	 * Retrieves a sort expression based on the provided search parameter and criteria.
+	 *
+	 * <p>This method is intended to be overridden in the implementing class (Provider)
+	 * if custom sorting logic is required. If this method is not implemented,
+	 * the default sorting mechanism will be used.</p>
+	 *
+	 */
 	default Expression<?> getSortExpression(@NonNull final SearchParameter searchParameter, @NonNull final CriteriaBuilder builder,
 			@NonNull final CriteriaQuery query, @NonNull final Root<?> root, @NonNull final Class dtoClazz, @NonNull Path fieldPath, @NonNull DialectName dialect) {
 		return null;
