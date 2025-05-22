@@ -122,8 +122,9 @@ public class RowResponseService {
 					type == RowMetaType.META_EMPTY
 			);
 		}
+
 		//add changedNow for MetaBuilder
-		if (dataDTO.getChangedNow() != null && !dataDTO.getChangedNow().isEmpty()) {
+		if (dataDTO.getChangedNowDTO() != null) {
 			fieldsNode.add(getDTOFromField(META, FieldUtils.getField(
 					dataDTO.getClass(),
 					DataResponseDTO_.changedNow.getName(),
