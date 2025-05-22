@@ -69,15 +69,15 @@ public class ResponseFactory {
 	}
 
 	public DataResponseDTO getDTOFromMap(Map<String, Object> map, Class<?> clazz, BusinessComponent bc) {
-		return getDTOFromMapInner(map, clazz, bc, false);
+		return getDataResponseDTOFromMapInner(map, clazz, bc, false);
 	}
 
 	public DataResponseDTO getDTOFromMapIgnoreBusinessErrors(Map<String, Object> map, Class<?> clazz,
 			BusinessComponent bc) {
-		return getDTOFromMapInner(map, clazz, bc, true);
+		return getDataResponseDTOFromMapInner(map, clazz, bc, true);
 	}
 
-	public DataResponseDTO getDTOFromMapInner2(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
+	public DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
 		DtoDeserializationHandler handler = new DtoDeserializationHandler();
 		mapper.addHandler(handler);
@@ -118,9 +118,9 @@ public class ResponseFactory {
 		return result;
 	}
 
-	private DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
+	private DataResponseDTO getDataResponseDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
-		DataResponseDTO result = getDTOFromMapInner2(map, clazz, bc, ignoreBusinessErrors);
+		DataResponseDTO result = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
 		Set<String> fields = new HashSet<>(map.keySet());
 		// штамп времени и id за поле не считаем
 		fields.remove(DataResponseDTO_.vstamp.getName());

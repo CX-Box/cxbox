@@ -130,7 +130,7 @@ import lombok.SneakyThrows;
  * spring:
  *  jpa:
  *    properties:
- *      org:F
+ *      org:
  *        cxbox:
  *          dictionary:
  *            enable_types_contributor: true

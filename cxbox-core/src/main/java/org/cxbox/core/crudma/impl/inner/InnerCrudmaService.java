@@ -54,6 +54,9 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Autowired
 	private RowResponseService rowMeta;
 
+	private static final String DATA = "data";
+	private static final String CHANGED_NOW = "changedNow";
+
 	@Override
 	public CreateResult create(BusinessComponent bc) {
 		ResponseService<?, ?> responseService = getResponseService(bc.getDescription());
@@ -76,11 +79,11 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Override
 	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataIn) {
 		DataResponseDTO changedNowDTO = null;
-		Map<String, Object> data = (Map) dataIn.get("data");
-		if (data != null || dataIn.get("changedNow") != null ||
-				dataIn.get("changedNow") instanceof Map) {
-			changedNowDTO = respFactory.getDTOFromMapInner2(
-					(Map<String, Object>) dataIn.get("changedNow"), respFactory.getDTOFromService(bc.getDescription()), bc, true);
+		Map<String, Object> data = (Map) dataIn.get(DATA);
+		if (data != null || dataIn.get(CHANGED_NOW) != null ||
+				dataIn.get(CHANGED_NOW) instanceof Map) {
+			changedNowDTO = respFactory.getDTOFromMapInner(
+					(Map<String, Object>) dataIn.get(CHANGED_NOW), respFactory.getDTOFromService(bc.getDescription()), bc, true);
 		}
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
@@ -96,16 +99,18 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataIn) {
 		DataResponseDTO requestDTO;
-		Map<String, Object> data = (Map) dataIn.get("data");
-		boolean isChangedNowData = data != null || dataIn.get("changedNow") != null ||
-				dataIn.get("changedNow") instanceof Map;
+		Map<String, Object> data = (Map) dataIn.get(DATA);
+		boolean isChangedNowData = data != null || dataIn.get(CHANGED_NOW) != null ||
+				dataIn.get(CHANGED_NOW) instanceof Map;
 
 		if (isChangedNowData) {
 			PreviewResult previewResult = preview(bc, dataIn);//при загрузке через update меняется vstamp
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getRequestDto());
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
-			data.clear();
-			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
+			if (data != null) {
+				data.clear();
+				fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
+			}
 		}
 
 		final InnerBcDescription bcDescription = bc.getDescription();
