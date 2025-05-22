@@ -19,6 +19,7 @@ package org.cxbox.core.service.rowmeta;
 import static org.cxbox.core.service.rowmeta.RowMetaType.META;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.stream.Stream;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -124,12 +125,24 @@ public class RowResponseService {
 		}
 
 		//add changedNow for MetaBuilder
-		if (dataDTO.getChangedNowDTO() != null) {
+		if (dataDTO.getChangedNow() != null && !dataDTO.getChangedNow().isEmpty() && dataDTO.getChangedNowDTO() != null) {
+			//add Step and Steps for method updateNow
+			Stream.of(DataResponseDTO_.changedNow, DataResponseDTO_.step)
+					.forEach(f -> {
+						Field field = FieldUtils.getField(dataDTO.getClass(), f.getName(), true);
+						fieldsNode.add(getDTOFromField(META, field, dataDTO));
+					});
 			fieldsNode.add(getDTOFromField(META, FieldUtils.getField(
 					dataDTO.getClass(),
 					DataResponseDTO_.changedNow.getName(),
 					true
 			), dataDTO));
+
+			fieldsNode.add(getDTOFromField(META, FieldUtils.getField(
+					dataDTO.getClass(),
+					DataResponseDTO_.changedNowDTO.getName(),
+					true
+			), dataDTO.getChangedNowDTO()));
 		}
 
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
