@@ -79,11 +79,13 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Override
 	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataIn) {
 		DataResponseDTO changedNowDTO = null;
+		Map<String, Object> changeNowMap = null;
 		Map<String, Object> data = (Map) dataIn.get(DATA);
 		if (data != null || dataIn.get(CHANGED_NOW) != null ||
 				dataIn.get(CHANGED_NOW) instanceof Map) {
+			changeNowMap = (Map<String, Object>) dataIn.get(CHANGED_NOW);
 			changedNowDTO = respFactory.getDTOFromMapInner(
-					(Map<String, Object>) dataIn.get(CHANGED_NOW), respFactory.getDTOFromService(bc.getDescription()), bc, true);
+					changeNowMap, respFactory.getDTOFromService(bc.getDescription()), bc, true);
 		}
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
@@ -92,6 +94,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord(); //LoadEntity
 		responseDto.setChangedNowDTO(changedNowDTO);
+		responseDto.setChangedNow(changeNowMap);
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
@@ -104,7 +107,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 				dataIn.get(CHANGED_NOW) instanceof Map;
 
 		if (isChangedNowData) {
-			PreviewResult previewResult = preview(bc, dataIn);//при загрузке через update меняется vstamp
+			PreviewResult previewResult = preview(bc, dataIn); //при загрузке через update меняется vstamp
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getRequestDto());
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
 			if (data != null) {
