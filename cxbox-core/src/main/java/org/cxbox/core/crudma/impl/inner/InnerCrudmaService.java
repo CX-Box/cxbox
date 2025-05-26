@@ -103,7 +103,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		if (isChangedNowData) {
 			//If a field has been changed, need to reload the metadata to update the values that depend on it
 			PreviewResult previewResult = preview(bc, data); // In doUpdateEntity, the vstamp changes when loading the entity.
-			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getRequestDto());
+			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto());
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
 
 			data.clear();
@@ -117,7 +117,6 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
 		if (isChangedNowData) {
-			requestDTO.setVstamp(requestDTO.getVstamp() + 1); //для корректности поднимаем
 			requestDTO.getChangedFields().clear();
 		}
 		return responseService.updateEntity(bc, requestDTO);
