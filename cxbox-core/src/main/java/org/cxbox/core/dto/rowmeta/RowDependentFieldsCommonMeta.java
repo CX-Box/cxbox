@@ -189,13 +189,18 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	}
 
 	/**
-	 * Checks whether the field was modified by the user in the UI during the current iteration.
+	 * Сhecks whether the specified field was modified by the user in the UI (Frontend) during the current iteration.
 	 *
-	 * @param field DTO field to verify for recent user modifications
+	 * @param fields Current state of field metadata.
+	 * @param field DTO field to check
+	 * @return boolean. true – If the field was changed in the UI during the current iteration. false – If the field remains unchanged.
+	 *
 	 */
 	public <V> boolean isFieldChangedNowFE(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, V> field) {
-		return  fields.getCurrentValue(DataResponseDTO_.changedNow).map(objectMap -> objectMap.containsKey(field.getName())).orElse(false);
+		return fields.getCurrentValue(DataResponseDTO_.changedNow)
+				.map(objectMap -> objectMap.containsKey(field.getName()))
+				.orElse(false);
 	}
 
 }

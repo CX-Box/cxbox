@@ -69,15 +69,15 @@ public class ResponseFactory {
 	}
 
 	public DataResponseDTO getDTOFromMap(Map<String, Object> map, Class<?> clazz, BusinessComponent bc) {
-		return getDataResponseDTOFromMapInner(map, clazz, bc, false);
+		return getDTOFromMapInner(map, clazz, bc, false);
 	}
 
 	public DataResponseDTO getDTOFromMapIgnoreBusinessErrors(Map<String, Object> map, Class<?> clazz,
 			BusinessComponent bc) {
-		return getDataResponseDTOFromMapInner(map, clazz, bc, true);
+		return getDTOFromMapInner(map, clazz, bc, true);
 	}
 
-	public DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
+	private DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
 		DtoDeserializationHandler handler = new DtoDeserializationHandler();
 		mapper.addHandler(handler);
@@ -111,24 +111,18 @@ public class ResponseFactory {
 						.setEntity(entity);
 			}
 		}
-		DataResponseDTO result = (DataResponseDTO) objectResult;
-		if (entity != null && !entity.getFields().isEmpty()) {
-			result.setErrors(entity);
-		}
-		return result;
-	}
 
-	private DataResponseDTO getDataResponseDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
-			boolean ignoreBusinessErrors) {
-		DataResponseDTO result = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
 		Set<String> fields = new HashSet<>(map.keySet());
 		// штамп времени и id за поле не считаем
 		fields.remove(DataResponseDTO_.vstamp.getName());
 		fields.remove(DataResponseDTO_.id.getName());
+		DataResponseDTO result = (DataResponseDTO) objectResult;
 		result.setChangedFields(fields);
 		// Чтобы можно было назад возвращать
 		result.setId(bc.getId());
-
+		if (entity != null && !entity.getFields().isEmpty()) {
+			result.setErrors(entity);
+		}
 		return result;
 	}
 

@@ -101,7 +101,6 @@ public class UniversalRowMetaController {
 			HttpServletRequest request,
 			QueryParameters queryParameters,
 			@RequestBody Map<String, Object> requestBody) {
-
 		if (requestBody == null || requestBody.get("data") == null || !(requestBody.get("data") instanceof Map)) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
 		}

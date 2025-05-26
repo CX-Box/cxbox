@@ -54,7 +54,6 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Autowired
 	private RowResponseService rowMeta;
 
-	private static final String DATA = "data";
 	private static final String CHANGED_NOW = "changedNow";
 
 	@Override
@@ -77,24 +76,20 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataIn) {
-		DataResponseDTO changedNowDTO = null;
-		Map<String, Object> changeNowMap = null;
-		Map<String, Object> data = (Map) dataIn.get(DATA);
-		if (data != null || dataIn.get(CHANGED_NOW) != null ||
-				dataIn.get(CHANGED_NOW) instanceof Map) {
-			changeNowMap = (Map<String, Object>) dataIn.get(CHANGED_NOW);
-			changedNowDTO = respFactory.getDTOFromMapInner(
-					changeNowMap, respFactory.getDTOFromService(bc.getDescription()), bc, true);
-		}
+	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
-		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord(); //LoadEntity
-		responseDto.setChangedNowDTO(changedNowDTO);
-		responseDto.setChangedNow(changeNowMap);
+		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
+		Map<String, Object> changeNowMap = requestDto.getChangedNow();
+		if (!changeNowMap.isEmpty()) {
+			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
+					changeNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
+			responseDto.setChangedNowDTO(changedNowDTO);
+			responseDto.setChangedNow(changeNowMap);
+		}
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
@@ -102,17 +97,16 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataIn) {
 		DataResponseDTO requestDTO;
-		Map<String, Object> data = (Map) dataIn.get(DATA);
-		boolean isChangedNowData = data != null || dataIn.get(CHANGED_NOW) != null ||
+		boolean isChangedNowData = !dataIn.isEmpty() && dataIn.get(CHANGED_NOW) != null &&
 				dataIn.get(CHANGED_NOW) instanceof Map;
 
 		if (isChangedNowData) {
 			PreviewResult previewResult = preview(bc, dataIn); //при загрузке через update меняется vstamp
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getRequestDto());
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
-			if (data != null) {
-				data.clear();
-				fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
+			if (!dataIn.isEmpty()) {
+				dataIn.clear();
+				fieldsDTO.forEach(a -> dataIn.put(a.getKey(), a.getCurrentValue()));
 			}
 		}
 
@@ -120,7 +114,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 
-		requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
+		requestDTO = respFactory.getDTOFromMap(dataIn, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
 		if (isChangedNowData) {
 			requestDTO.setVstamp(requestDTO.getVstamp() + 1);
