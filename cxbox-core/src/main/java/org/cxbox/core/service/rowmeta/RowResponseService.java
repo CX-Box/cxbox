@@ -119,7 +119,7 @@ public class RowResponseService {
 		}
 
 		//add changedNow in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
-		if (dataDTO.getChangedNow() != null && dataDTO.getChangedNowDTO() != null && !dataDTO.getChangedNow().isEmpty()) {
+		if (dataDTO.getChangedNow() != null &&  dataDTO.getChangedNowDTO() != null && !dataDTO.getChangedNow().isEmpty()) {
 						Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNow.getName(), true);
 						fieldsNode.add(getDTOFromField(META, field, dataDTO));
 		}
