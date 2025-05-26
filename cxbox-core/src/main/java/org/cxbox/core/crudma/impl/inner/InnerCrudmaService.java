@@ -95,29 +95,29 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataIn) {
+	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
 		DataResponseDTO requestDTO;
-		boolean isChangedNowData = !dataIn.isEmpty() && dataIn.get(CHANGED_NOW) != null &&
-				dataIn.get(CHANGED_NOW) instanceof Map;
+		boolean isChangedNowData = !data.isEmpty() && data.get(CHANGED_NOW) != null &&
+				data.get(CHANGED_NOW) instanceof Map;
 
 		if (isChangedNowData) {
-			PreviewResult previewResult = preview(bc, dataIn); //при загрузке через update меняется vstamp
+			//If a field has been changed, need to reload the metadata to update the values that depend on it
+			PreviewResult previewResult = preview(bc, data); // In doUpdateEntity, the vstamp changes when loading the entity.
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getRequestDto());
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
-			if (!dataIn.isEmpty()) {
-				dataIn.clear();
-				fieldsDTO.forEach(a -> dataIn.put(a.getKey(), a.getCurrentValue()));
-			}
+
+			data.clear();
+			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
 		}
 
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 
-		requestDTO = respFactory.getDTOFromMap(dataIn, respFactory.getDTOFromService(bcDescription), bc);
+		requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
 		if (isChangedNowData) {
-			requestDTO.setVstamp(requestDTO.getVstamp() + 1);
+			requestDTO.setVstamp(requestDTO.getVstamp() + 1); //для корректности поднимаем
 			requestDTO.getChangedFields().clear();
 		}
 		return responseService.updateEntity(bc, requestDTO);
