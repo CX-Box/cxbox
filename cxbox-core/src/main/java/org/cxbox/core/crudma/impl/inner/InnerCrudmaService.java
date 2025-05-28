@@ -16,6 +16,8 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
+import java.util.HashMap;
+import java.util.Set;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -49,6 +51,9 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 
 	@Autowired
 	private ResponseFactory respFactory;
+
+	@Autowired
+	private RowResponseService rowResponseService;
 
 	@Lazy
 	@Autowired
@@ -95,29 +100,42 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
-		DataResponseDTO requestDTO;
-		boolean isChangedNowData = !data.isEmpty() && data.get(CHANGED_NOW) != null &&
-				data.get(CHANGED_NOW) instanceof Map;
-
+	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataFE) {
+		boolean isChangedNowData = !dataFE.isEmpty() && dataFE.get(CHANGED_NOW) != null &&
+				dataFE.get(CHANGED_NOW) instanceof Map;
+		Map<String, Object> data;
 		if (isChangedNowData) {
+			data = new HashMap<>();
 			//If a field has been changed, need to reload the metadata to update the values that depend on it
-			PreviewResult previewResult = preview(bc, data); // In doUpdateEntity, the vstamp changes when loading the entity.
+			PreviewResult previewResult = preview(bc, dataFE); //   doUpdateEntity and Meta
+			previewResult.getResponseDto().setVstamp(previewResult.getResponseDto().getVstamp() + 1);
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto());
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
-
-			data.clear();
+			Set<String> visibleFields = rowResponseService.getVisibleOnlyFields(bc, previewResult.getResponseDto());
 			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
+			//only visible fields
+			fieldsDTO.forEach(a -> {
+				if (!visibleFields.contains(a.getKey())) {
+					data.remove(a.getKey());
+				}
+			});
+		} else {
+			data = dataFE;
 		}
 
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 
-		requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
+		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
 		if (isChangedNowData) {
-			requestDTO.getChangedFields().clear();
+			DataResponseDTO changeNowDTO = respFactory.getDTOFromMap(
+					(Map) dataFE.get(CHANGED_NOW),
+					respFactory.getDTOFromService(bcDescription),
+					bc
+			);
+			requestDTO.setChangedNowDTO(changeNowDTO);
 		}
 		return responseService.updateEntity(bc, requestDTO);
 	}
