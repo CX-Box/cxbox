@@ -115,13 +115,18 @@ public class RowResponseService {
 			Class<? extends FieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (linkedDictionaryService != null) {
-			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
+			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(
+					fieldsNode,
+					bc,
+					dataDTO,
+					type == RowMetaType.META_EMPTY
+			);
 		}
 
 		//add changedNow in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
-		if (dataDTO.getChangedNow() != null &&  dataDTO.getChangedNowDTO() != null && !dataDTO.getChangedNow().isEmpty()) {
-						Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNow.getName(), true);
-						fieldsNode.add(getDTOFromField(META, field, dataDTO));
+		if (dataDTO.getChangedNow() != null && dataDTO.getChangedNowDTO() != null && !dataDTO.getChangedNow().isEmpty()) {
+			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNow.getName(), true);
+			fieldsNode.add(getDTOFromField(META, field, dataDTO));
 		}
 
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
@@ -165,6 +170,10 @@ public class RowResponseService {
 			}
 		}
 		return fieldsNode;
+	}
+
+	public Set<String> getVisibleOnlyFields(BcIdentifier bc, DataResponseDTO dataDTO) {
+		return getFields(bc, dataDTO, true);
 	}
 
 	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
