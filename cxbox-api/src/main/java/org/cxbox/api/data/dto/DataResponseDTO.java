@@ -61,11 +61,10 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@DtoMetamodelIgnore
 	private Set<String> computedFields;
 
+	private CnangedNowParam changedNowParam;
 
+	@DtoMetamodelIgnore
 	private Map<String, Object> changedNow = new HashMap<>();
-
-	@JsonIgnore
-	private DataResponseDTO changedNowDTO;
 
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;
@@ -105,6 +104,26 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@Override
 	public void transformData(Function<DataResponseDTO, DataResponseDTO> function) {
 		function.apply(this);
+	}
+
+	@Getter
+	@Setter
+	public static class CnangedNowParam {
+
+		OperationType operationType;
+
+		String actionNameOperationType;
+
+		private Set<String>  changedNow;
+
+		private DataResponseDTO changedNowDTO;
+
+	}
+
+	public enum OperationType {
+		ACTION,
+		META,
+		DATA
 	}
 
 }

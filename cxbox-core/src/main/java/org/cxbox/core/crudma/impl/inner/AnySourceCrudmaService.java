@@ -18,12 +18,17 @@ package org.cxbox.core.crudma.impl.inner;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.SneakyThrows;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
+import org.cxbox.api.data.dto.DataResponseDTO.OperationType;
+import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -57,6 +62,8 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	@Autowired
 	private AnySourceRowResponseService rowMeta;
 
+	private static final String CHANGED_NOW = "changedNow";
+
 	@Override
 	public CreateResult create(BusinessComponent bc) {
 		AnySourceResponseService<?, ?> responseService = getResponseService(bc.getDescription());
@@ -77,23 +84,33 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
+	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataFE) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		final AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
-		data = (Map) data.get("data");
-
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
-				data, respFactory.getDTOFromService(bcDescription), bc
+				dataFE, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-
+		boolean isChangedNowData = !dataFE.isEmpty() && dataFE.get(CHANGED_NOW) != null &&
+				dataFE.get(CHANGED_NOW) instanceof Map;
+		if (isChangedNowData) {
+			Map<String, Object> changedNow = (Map<String, Object>) dataFE.get(CHANGED_NOW);
+			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
+					changedNow, respFactory.getDTOFromService(bc.getDescription()), bc);
+			CnangedNowParam cnangedNowParam = new CnangedNowParam();
+			cnangedNowParam.setChangedNowDTO(changedNowDTO);
+			cnangedNowParam.setChangedNow(changedNow.keySet());
+			responseDto.setChangedNowParam(cnangedNowParam);
+		}
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
 
 	@Override
-	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
-		data = (Map) data.get("data");
+	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataFE) {
+		//If a field has been changed, need to reload the metadata to update the values that depend on it
+		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE, OperationType.DATA, null);
+
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
@@ -121,9 +138,11 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> data) {
+	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> dataFE) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
+		//If a field has been changed, need to reload the metadata to update the values that depend on it
+		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE, OperationType.ACTION, actionName);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
 	}
@@ -203,6 +222,34 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 					errorMessage("error.action_unavailable", actionName)
 			);
 		}
+	}
+
+	private Map<String, Object> callDoUpdateAndReloadMeta(BusinessComponent bc, Map<String, Object> dataFE,
+			OperationType operationType, String actionName) {
+		//If a field has been changed, need to reload the metadata to update the values that depend on it
+		Map<String, Object> dataChangedFE = (Map<String, Object>) dataFE.get(CHANGED_NOW);
+		boolean isChangedNowData = dataChangedFE != null && !dataChangedFE.isEmpty();
+		Map<String, Object> data;
+		if (isChangedNowData) {
+			data = new HashMap<>();
+			PreviewResult previewResult = preview(bc, dataFE); //doUpdateEntity
+			previewResult.getResponseDto().getChangedNowParam().setOperationType(operationType);
+			previewResult.getResponseDto().getChangedNowParam().setActionNameOperationType(actionName);
+
+			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto()); //Reload Meta
+			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
+			Set<String> visibleFields = rowMeta.getVisibleOnlyFields(bc, previewResult.getResponseDto());
+			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
+			//only visible fields
+			fieldsDTO.forEach(a -> {
+				if (!visibleFields.contains(a.getKey())) {
+					data.remove(a.getKey());
+				}
+			});
+		} else {
+			data = dataFE;
+		}
+		return data;
 	}
 
 }

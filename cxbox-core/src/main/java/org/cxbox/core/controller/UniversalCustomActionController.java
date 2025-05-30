@@ -18,6 +18,7 @@ package org.cxbox.core.controller;
 
 import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
 
+import java.util.HashMap;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
@@ -52,9 +53,10 @@ public class UniversalCustomActionController {
 	public ResponseDTO invoke(HttpServletRequest request,
 			QueryParameters queryParameters,
 			@RequestBody Map<String, Map<String, Object>> requestBody) {
-		if (requestBody == null || requestBody.get("data") == null) {
+		if (requestBody == null || requestBody.get("data") == null || !(requestBody.get("data") instanceof Map)) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
 		}
+
 		final BusinessComponent bc = bcFactory.getBusinessComponent(request, queryParameters);
 		final String action = queryParameters.getParameter("_action");
 		CrudmaAction crudmaAction = crudmaActionHolder.of(CrudmaActionType.INVOKE)
@@ -67,7 +69,16 @@ public class UniversalCustomActionController {
 								bc.getParentId()
 						)
 				).getAction();
-		return ResponseBuilder.build(crudmaGateway.invokeAction(crudmaAction, requestBody.get("data")));
+
+		Map<String, Object> data = new HashMap<>();
+
+		if (!requestBody.isEmpty() && requestBody.get("changedNow") != null) {
+			data.put("changedNow", requestBody.get("changedNow"));
+			data.put("data", requestBody.get("data"));
+		} else {
+			data = requestBody.get("data");
+		}
+		return ResponseBuilder.build(crudmaGateway.invokeAction(crudmaAction, data));
 	}
 
 }

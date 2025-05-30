@@ -16,18 +16,29 @@
 
 package org.cxbox.core.service.rowmeta;
 
+import static org.cxbox.core.service.rowmeta.RowMetaType.META;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
+import org.cxbox.api.data.dto.rowmeta.FieldDTO;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
@@ -44,6 +55,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @Primary
 public class AnySourceRowResponseService extends RowResponseService {
@@ -55,6 +67,10 @@ public class AnySourceRowResponseService extends RowResponseService {
 	public Optional<List<BcDisabler>> bcDisablersList;
 
 	public final Map<String, List<BcDisabler>> bcDisablers = new HashMap<>();
+
+	private final Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService;
+
+	private final WidgetFieldsIdResolverProperties properties;
 
 	//TODO сделать getter
 	@PostConstruct
@@ -73,8 +89,20 @@ public class AnySourceRowResponseService extends RowResponseService {
 			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService,
 			Optional<DictionaryProvider> dictionaryProvider,
 			WidgetFieldsIdResolverProperties properties,
-			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
-		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, dictionaryProvider, properties, objectMapper);
+			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper,
+			Optional<ExtendedDtoFieldLevelSecurityService> extendedDtoFieldLevelSecurityService1,
+			WidgetFieldsIdResolverProperties properties1) {
+		super(
+				ctx,
+				bcDisablers,
+				linkedDictionaryService,
+				extendedDtoFieldLevelSecurityService,
+				dictionaryProvider,
+				properties,
+				objectMapper
+		);
+		this.extendedDtoFieldLevelSecurityService = extendedDtoFieldLevelSecurityService1;
+		this.properties = properties1;
 	}
 
 	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
@@ -87,6 +115,10 @@ public class AnySourceRowResponseService extends RowResponseService {
 			ActionsDTO actionDTO,
 			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
+		if (dataDTO.getChangedNowParam() != null) {
+			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
+			fieldsNode.add(getDTOFromField(META, field, dataDTO));
+		}
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			AnySourceFieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildIndependentMeta(fieldsNode, bc);
@@ -112,6 +144,42 @@ public class AnySourceRowResponseService extends RowResponseService {
 		MetaDTO metaDTO = getAnySourceResponse(type, newRecord, newBc, responseService);
 		metaDTO.setPostActions(createResult.getPostActions());
 		return metaDTO;
+	}
+
+	@Override
+	public Set<String> getVisibleOnlyFields(BcIdentifier bc, DataResponseDTO dataDTO) {
+		return getFields(bc, dataDTO, true);
+	}
+
+	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
+		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
+			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
+		}
+		return CxReflectionUtils.getAllNonSyntheticFieldsList(dataDTO.getClass()).stream()
+				.map(Field::getName).collect(Collectors.toSet());
+	}
+
+	private FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+		field.setAccessible(true);
+		if (field.getAnnotation(JsonIgnore.class) != null) {
+			return null;
+		}
+		FieldDTO fieldDTO = new FieldDTO(field);
+		fieldDTO.setSortable(properties.isSortEnabledDefault());
+		try {
+			switch (type) {
+				case META_NEW:
+				case ON_FIELD_UPDATE_META:
+				case META:
+					fieldDTO.setCurrentValue(field.get(dataDTO));
+					break;
+				default:
+					break;
+			}
+		} catch (IllegalAccessException e) {
+			log.error(e.getLocalizedMessage(), e);
+		}
+		return fieldDTO;
 	}
 
 }

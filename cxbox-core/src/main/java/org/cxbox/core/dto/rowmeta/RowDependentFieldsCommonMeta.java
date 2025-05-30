@@ -17,16 +17,19 @@
 package org.cxbox.core.dto.rowmeta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO.OperationType;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
@@ -51,9 +54,10 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 
 	/**
 	 * <br>
-	 * @param field  field ref
-	 * @return  currentValue of field. Optional.empty() if value is null or field is not present.
-	 * @param <F>  field type
+	 *
+	 * @param field field ref
+	 * @param <F> field type
+	 * @return currentValue of field. Optional.empty() if value is null or field is not present.
 	 */
 	@NonNull
 	public <F> Optional<F> getCurrentValue(@NonNull final DtoField<? super T, F> field) {
@@ -194,13 +198,101 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	 * @param fields Current state of field metadata.
 	 * @param field DTO field to check
 	 * @return boolean. true – If the field was changed in the UI during the current iteration. false – If the field remains unchanged.
-	 *
 	 */
 	public <V> boolean isFieldChangedNowFE(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, V> field) {
-		return fields.getCurrentValue(DataResponseDTO_.changedNow)
-				.map(objectMap -> objectMap.containsKey(field.getName()))
+		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
+				.map(objectMap -> objectMap.getChangedNow().contains(field.getName()))
 				.orElse(false);
+	}
+
+	/**
+	 * Checks if the field was changed in the UI during /data operation.
+	 *
+	 * @param fields Current state of field metadata
+	 * @param field DTO field to check
+	 * @param <V> Type of the field value
+	 * @return true if the field was changed in the UI during data operation, false otherwise
+	 */
+	public <V> boolean isFieldChangedNowFEForData(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return checkFieldChangedForOperation(fields, field, OperationType.DATA);
+	}
+
+	/**
+	 * Checks if the field was changed in the UI during /row-meta operation.
+	 *
+	 * @param fields Current state of field metadata
+	 * @param field DTO field to check
+	 * @param <V> Type of the field value
+	 * @return true if the field was changed in the UI during metadata operation, false otherwise
+	 */
+	public <V> boolean isFieldChangedNowFEForRowMeta(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return checkFieldChangedForOperation(fields, field, OperationType.META);
+	}
+
+	/**
+	 * Checks if the field was changed in the UI during standard action operation.
+	 *
+	 * @param fields Current state of field metadata
+	 * @param field DTO field to check
+	 * @param <V> Type of the field value
+	 * @return true if the field was changed in the UI during action operation, false otherwise
+	 */
+	public <V> boolean isFieldChangedNowFEForAction(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return checkFieldChangedForOperation(fields, field, OperationType.ACTION);
+	}
+
+	/**
+	 * Checks if the field was changed in the UI during a specific custom action.
+	 *
+	 * @param fields Current state of field metadata
+	 * @param field DTO field to check
+	 * @param actionName Name of the action
+	 * @param <V> Type of the field value
+	 * @return true if the field was changed in the UI during the specified action, false otherwise
+	 */
+	public <V> boolean isFieldChangedNowFEForCustomAction(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field, String actionName) {
+		return checkFieldChangedForOperationAndAction(fields, field, OperationType.ACTION, actionName);
+	}
+
+	/**
+	 * method to check field change for a specific operation type.
+	 */
+	private <V> boolean checkFieldChangedForOperation(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field, OperationType operationType) {
+		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
+				.map(objectMap -> objectMap.getChangedNow().contains(field.getName())
+						&& objectMap.getOperationType().equals(operationType))
+				.orElse(false);
+	}
+
+	/**
+	 * method to check field change for a specific operation type and action.
+	 */
+	private <V> boolean checkFieldChangedForOperationAndAction(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field, OperationType operationType, String actionName) {
+		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
+				.map(objectMap -> objectMap.getChangedNow().contains(field.getName())
+						&& objectMap.getOperationType().equals(operationType)
+						&& objectMap.getActionNameOperationType().equals(actionName))
+				.orElse(false);
+	}
+
+	public <F> Optional<F> getCurrentValueChangedNowFE(RowDependentFieldsMeta<T> fields,
+			final DtoField<? super T, F> field) {
+		DataResponseDTO dto = fields.getCurrentValue(DataResponseDTO_.changedNowParam).get().getChangedNowDTO();
+		return (Optional<F>) getFieldValue(dto, field.getName());
+	}
+
+	@SneakyThrows
+	private Object getFieldValue(Object dto, String fieldName) {
+		Field field = dto.getClass().getDeclaredField(fieldName);
+		field.setAccessible(true);
+		return field.get(dto);
 	}
 
 }
