@@ -81,11 +81,12 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
+	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataFE) {
+
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
-				data, respFactory.getDTOFromService(bcDescription), bc
+				dataFE, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
 		Map<String, Object> changeNowMap = requestDto.getChangedNow();
@@ -122,21 +123,12 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		} else {
 			data = dataFE;
 		}
-
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
-		if (isChangedNowData) {
-			DataResponseDTO changeNowDTO = respFactory.getDTOFromMap(
-					(Map) dataFE.get(CHANGED_NOW),
-					respFactory.getDTOFromService(bcDescription),
-					bc
-			);
-			requestDTO.setChangedNowDTO(changeNowDTO);
-		}
 		return responseService.updateEntity(bc, requestDTO);
 	}
 
