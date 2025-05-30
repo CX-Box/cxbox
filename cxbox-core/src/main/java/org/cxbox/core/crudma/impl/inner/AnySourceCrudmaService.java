@@ -80,6 +80,8 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		final AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
+		data = (Map) data.get("data");
+
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
@@ -91,6 +93,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
+		data = (Map) data.get("data");
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
