@@ -117,6 +117,7 @@ public class RowResponseService {
 		if (linkedDictionaryService != null) {
 				linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
 		}
+
 		//add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
 		if (dataDTO.getChangedNowParam() != null) {
 			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
@@ -178,7 +179,7 @@ public class RowResponseService {
 				.map(Field::getName).collect(Collectors.toSet());
 	}
 
-	private FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+	public FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
 		field.setAccessible(true);
 		if (field.getAnnotation(JsonIgnore.class) != null) {
 			return null;
