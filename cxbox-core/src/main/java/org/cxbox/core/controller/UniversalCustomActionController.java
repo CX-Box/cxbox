@@ -53,7 +53,7 @@ public class UniversalCustomActionController {
 	public ResponseDTO invoke(HttpServletRequest request,
 			QueryParameters queryParameters,
 			@RequestBody Map<String, Map<String, Object>> requestBody) {
-		if (requestBody == null || requestBody.get("data") == null || !(requestBody.get("data") instanceof Map)) {
+		if (requestBody == null || requestBody.get("data") == null) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
 		}
 

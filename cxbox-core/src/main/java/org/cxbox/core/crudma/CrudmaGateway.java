@@ -71,45 +71,39 @@ public class CrudmaGateway {
 	public MetaDTO create(CrudmaAction crudmaAction) {
 		BusinessComponent bc = crudmaAction.getBc();
 		boolean readOnly = isReadOnly(crudmaAction);
-		final InterimResult result = invoke(
-				crudmaAction, () -> {
-					final Crudma crudmaService = getCrudmaService(bc);
-					final CreateResult<DataResponseDTO> createResult = crudmaService.create(bc);
-					if (readOnly) {
-						// мы откатываем транзакцию, помечаем DTO специальным флагом
-						createResult.getRecord().setVstamp(-1L);
-					}
-					final MetaDTO metaNew = crudmaService.getMetaNew(bc, createResult);
-					return new InterimResult(
-							bc,
-							createResult.getRecord(),
-							metaNew
-					);
-				}, readOnly
-		);
+		final InterimResult result = invoke(crudmaAction, () -> {
+			final Crudma crudmaService = getCrudmaService(bc);
+			final CreateResult<DataResponseDTO> createResult = crudmaService.create(bc);
+			if (readOnly) {
+				// мы откатываем транзакцию, помечаем DTO специальным флагом
+				createResult.getRecord().setVstamp(-1L);
+			}
+			final MetaDTO metaNew = crudmaService.getMetaNew(bc, createResult);
+			return new InterimResult(
+					bc,
+					createResult.getRecord(),
+					metaNew
+			);
+		}, readOnly);
 		return result.getMeta();
 	}
 
 	public MetaDTO preview(CrudmaAction crudmaAction, Map<String, Object> data) {
 		BusinessComponent bc = crudmaAction.getBc();
 		boolean readOnly = isReadOnly(crudmaAction);
-		final InterimResult result = invoke(
-				crudmaAction, () -> {
-					final Crudma crudmaService = getCrudmaService(bc);
-					final PreviewResult previewResult = crudmaService.preview(bc, data);
-					if (readOnly) {
-						// мы откатываем транзакцию, поэтому ставим старую версию
-						previewResult.getResponseDto().setVstamp(previewResult.getRequestDto().getVstamp());
-					}
-
-					if (data.get("changedNow") != null) {
-						previewResult.getResponseDto().getChangedNowParam().setOperationType(OperationType.META);
-					}
-					final MetaDTO metaNew = crudmaService.getOnFieldUpdateMeta(bc, previewResult.getResponseDto());
-
-					return new InterimResult(bc, previewResult.getRequestDto(), metaNew);
-				}, readOnly
-		);
+		final InterimResult result = invoke(crudmaAction, () -> {
+			final Crudma crudmaService = getCrudmaService(bc);
+			final PreviewResult previewResult = crudmaService.preview(bc, data);
+			if (readOnly) {
+				// мы откатываем транзакцию, поэтому ставим старую версию
+				previewResult.getResponseDto().setVstamp(previewResult.getRequestDto().getVstamp());
+			}
+			if (data.get("changedNow") != null) {
+				previewResult.getResponseDto().getChangedNowParam().setOperationType(OperationType.META);
+			}
+			final MetaDTO metaNew = crudmaService.getOnFieldUpdateMeta(bc, previewResult.getResponseDto());
+			return new InterimResult(bc, previewResult.getRequestDto(), metaNew);
+		}, readOnly);
 		if (result.getDto().getErrors() == null) {
 			return result.getMeta();
 		}

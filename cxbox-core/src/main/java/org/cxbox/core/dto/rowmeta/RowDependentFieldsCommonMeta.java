@@ -54,10 +54,9 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 
 	/**
 	 * <br>
-	 *
-	 * @param field field ref
-	 * @param <F> field type
-	 * @return currentValue of field. Optional.empty() if value is null or field is not present.
+	 * @param field  field ref
+	 * @return  currentValue of field. Optional.empty() if value is null or field is not present.
+	 * @param <F>  field type
 	 */
 	@NonNull
 	public <F> Optional<F> getCurrentValue(@NonNull final DtoField<? super T, F> field) {
