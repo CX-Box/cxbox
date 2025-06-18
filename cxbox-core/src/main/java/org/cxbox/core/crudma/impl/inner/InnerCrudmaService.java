@@ -54,12 +54,14 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Autowired
 	private ResponseFactory respFactory;
 
+	@Lazy
 	@Autowired
 	private RowResponseService rowResponseService;
 
 	@Lazy
 	@Autowired
 	private RowResponseService rowMeta;
+
 
 	private static final String CHANGED_NOW = "changedNow";
 

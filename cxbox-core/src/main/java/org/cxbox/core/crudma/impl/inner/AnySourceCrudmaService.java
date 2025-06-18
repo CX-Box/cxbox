@@ -48,6 +48,7 @@ import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.AnySourceRowResponseService;
 import org.cxbox.core.service.rowmeta.RowMetaType;
+import org.cxbox.core.service.rowmeta.RowResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,10 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	@Lazy
 	@Autowired
 	private AnySourceRowResponseService rowMeta;
+
+	@Lazy
+	@Autowired
+	private  RowResponseService rowResponseService;
 
 	private static final String CHANGED_NOW = "changedNow";
 
@@ -238,7 +243,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto()); //Reload Meta
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
-			Set<String> visibleFields = rowMeta.getVisibleOnlyFields(bc, previewResult.getResponseDto());
+			Set<String> visibleFields = rowResponseService.getVisibleOnlyFields(bc, previewResult.getResponseDto());
 			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
 			//only visible fields
 			fieldsDTO.forEach(a -> {
