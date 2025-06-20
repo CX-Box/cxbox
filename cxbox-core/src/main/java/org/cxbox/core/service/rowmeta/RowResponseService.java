@@ -16,10 +16,13 @@
 
 package org.cxbox.core.service.rowmeta;
 
+import static org.cxbox.core.service.rowmeta.RowMetaType.META;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
@@ -112,8 +115,15 @@ public class RowResponseService {
 			Class<? extends FieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (linkedDictionaryService != null) {
-			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
+				linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
 		}
+
+		//add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		if (dataDTO.getChangedNowParam() != null) {
+			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
+			fieldsNode.add(getDTOFromField(META, field, dataDTO));
+		}
+
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			FieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildIndependentMeta(fieldsNode, bc);
@@ -157,6 +167,10 @@ public class RowResponseService {
 		return fieldsNode;
 	}
 
+	public Set<String> getVisibleOnlyFields(BcIdentifier bc, DataResponseDTO dataDTO) {
+		return getFields(bc, dataDTO, true);
+	}
+
 	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
 		if (visibleOnly && extendedDtoFieldLevelSecurityService.isPresent()) {
 			return extendedDtoFieldLevelSecurityService.get().getBcFieldsForCurrentScreen(bc);
@@ -165,7 +179,7 @@ public class RowResponseService {
 				.map(Field::getName).collect(Collectors.toSet());
 	}
 
-	private FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+	public FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
 		field.setAccessible(true);
 		if (field.getAnnotation(JsonIgnore.class) != null) {
 			return null;
