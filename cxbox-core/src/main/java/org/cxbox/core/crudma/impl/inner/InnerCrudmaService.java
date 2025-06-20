@@ -16,8 +16,11 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -48,6 +51,7 @@ import java.util.Map;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+@Slf4j
 @Service
 public class InnerCrudmaService extends AbstractCrudmaService {
 
@@ -93,12 +97,14 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 				dataFE, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		boolean isChangedNowData = !dataFE.isEmpty() && dataFE.get(CHANGED_NOW) != null &&
-				dataFE.get(CHANGED_NOW) instanceof Map;
+		Map<String, Object> dataChangedFE = (Map<String, Object>) dataFE.get(CHANGED_NOW);
+		boolean isChangedNowData = dataChangedFE != null && !dataChangedFE.isEmpty();
 		if (isChangedNowData) {
 			Map<String, Object> changedNow = (Map<String, Object>) dataFE.get(CHANGED_NOW);
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
 					changedNow, respFactory.getDTOFromService(bc.getDescription()), bc);
+			validateChangedNowFields(changedNow,changedNowDTO,requestDto);
+
 			CnangedNowParam cnangedNowParam = new CnangedNowParam();
 			cnangedNowParam.setChangedNowDTO(changedNowDTO);
 			cnangedNowParam.setChangedNow(changedNow.keySet());
@@ -240,7 +246,6 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 			}
 			dto.getChangedNowParam().setOperationType(operationType);
 			dto.getChangedNowParam().setActionNameOperationType(actionName);
-
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto());//Reload Meta
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
 			Set<String> visibleFields = rowResponseService.getVisibleOnlyFields(bc, previewResult.getResponseDto());
@@ -256,6 +261,27 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		}
 		return data;
 
+	}
+
+	private void validateChangedNowFields(Map<String, ?> changedNow,
+			DataResponseDTO changedNowDTO,
+			DataResponseDTO requestDto) {
+		changedNow.keySet().forEach(key -> {
+			Object newValue = getFieldValue(changedNowDTO, key);
+			Object oldValue = getFieldValue(requestDto, key);
+
+			if (!Objects.equals(newValue, oldValue)) {
+				log.error("Field \"" + key + "\" has different values: "
+						+ newValue + " != " + oldValue);
+			}
+		});
+	}
+
+	@SneakyThrows
+	private Object getFieldValue(Object dto, String fieldName) {
+		Field field = dto.getClass().getDeclaredField(fieldName);
+		field.setAccessible(true);
+		return field.get(dto);
 	}
 
 }
