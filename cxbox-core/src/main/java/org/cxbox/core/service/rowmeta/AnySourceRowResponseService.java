@@ -96,7 +96,7 @@ public class AnySourceRowResponseService extends RowResponseService {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (dataDTO.getChangedNowParam() != null) {
 			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
-			fieldsNode.add(getDTOFromField(META, field, dataDTO));
+			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));
 		}
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			AnySourceFieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);

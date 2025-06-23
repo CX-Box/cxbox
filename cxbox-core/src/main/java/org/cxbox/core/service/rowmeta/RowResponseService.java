@@ -121,7 +121,7 @@ public class RowResponseService {
 		//add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
 		if (dataDTO.getChangedNowParam() != null) {
 			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
-			fieldsNode.add(getDTOFromField(META, field, dataDTO));
+			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));
 		}
 
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
@@ -167,8 +167,8 @@ public class RowResponseService {
 		return fieldsNode;
 	}
 
-	public Set<String> getVisibleOnlyFields(BcIdentifier bc, DataResponseDTO dataDTO) {
-		return getFields(bc, dataDTO, true);
+	public Set<String> getAllFields(BcIdentifier bc, DataResponseDTO dataDTO) {
+		return getFields(bc, dataDTO, false);
 	}
 
 	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
@@ -180,8 +180,17 @@ public class RowResponseService {
 	}
 
 	public FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+		return getDTOFromFieldCheckVisible(type, field, dataDTO, true);
+	}
+
+	public FieldDTO getDTOFromAllField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+		return getDTOFromFieldCheckVisible(type, field, dataDTO, false);
+	}
+
+	private FieldDTO getDTOFromFieldCheckVisible(RowMetaType type, Field field, DataResponseDTO dataDTO,
+			boolean visibleOnly) {
 		field.setAccessible(true);
-		if (field.getAnnotation(JsonIgnore.class) != null) {
+		if (field.getAnnotation(JsonIgnore.class) != null && visibleOnly) {
 			return null;
 		}
 		FieldDTO fieldDTO = new FieldDTO(field);
@@ -201,5 +210,6 @@ public class RowResponseService {
 		}
 		return fieldDTO;
 	}
+
 
 }
