@@ -18,9 +18,6 @@ package org.cxbox.core.crudma;
 
 import java.util.List;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
-import org.cxbox.core.crudma.CrudmaActionType;
-import org.cxbox.core.crudma.CrudmaFactory;
-import org.cxbox.core.crudma.CrudmaGateway;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;

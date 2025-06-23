@@ -16,25 +16,25 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
-import org.cxbox.api.data.dto.DataResponseDTO.OperationType;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.core.crudma.CrudmaActionType;
+import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.*;
 import org.cxbox.core.exception.BusinessException;
+import org.cxbox.core.service.CheckChangeNowService;
 import org.cxbox.core.service.ResponseFactory;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.service.action.ActionDescription;
@@ -56,6 +56,9 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 public class InnerCrudmaService extends AbstractCrudmaService {
 
 	@Autowired
+	private PlatformRequest platformRequest;
+
+	@Autowired
 	private ResponseFactory respFactory;
 
 	@Lazy
@@ -66,6 +69,8 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	@Autowired
 	private RowResponseService rowMeta;
 
+	@Autowired
+	CheckChangeNowService checkChangeNowService;
 
 	private static final String CHANGED_NOW = "changedNow";
 
@@ -97,13 +102,11 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 				dataFE, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		Map<String, Object> dataChangedFE = (Map<String, Object>) dataFE.get(CHANGED_NOW);
-		boolean isChangedNowData = dataChangedFE != null && !dataChangedFE.isEmpty();
-		if (isChangedNowData) {
+		if (checkChangeNowService.isChangedNowData(dataFE)) {
 			Map<String, Object> changedNow = (Map<String, Object>) dataFE.get(CHANGED_NOW);
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
 					changedNow, respFactory.getDTOFromService(bc.getDescription()), bc);
-			validateChangedNowFields(changedNow,changedNowDTO,requestDto);
+			//checkChangeNowService.validateChangedNowFields(changedNow,changedNowDTO,requestDto);
 
 			CnangedNowParam cnangedNowParam = new CnangedNowParam();
 			cnangedNowParam.setChangedNowDTO(changedNowDTO);
@@ -121,7 +124,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
 
 		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE, OperationType.DATA, null);
+		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE);
 
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
@@ -147,7 +150,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE, OperationType.ACTION, actionName);
+		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
 	}
@@ -229,8 +232,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		}
 	}
 
-	private Map<String, Object> callDoUpdateAndReloadMeta(BusinessComponent bc, Map<String, Object> dataFE,
-			OperationType operationType, String actionName) {
+	private Map<String, Object> callDoUpdateAndReloadMeta(BusinessComponent bc, Map<String, Object> dataFE) {
 
 		//If a field has been changed, need to reload the metadata to update the values that depend on it
 		Map<String, Object> dataChangedFE = (Map<String, Object>) dataFE.get(CHANGED_NOW);
@@ -241,11 +243,10 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 			//If a field has been changed, need to reload the metadata to update the values that depend on it
 			PreviewResult previewResult = preview(bc, dataFE); //   doUpdateEntity
 			DataResponseDTO dto = previewResult.getResponseDto();
-			if (operationType.equals(OperationType.DATA)) {
+			if (CrudmaActionType.UPDATE.equals(platformRequest.getCrudmaActionType())) {
 				dto.setVstamp(previewResult.getResponseDto().getVstamp() + 1);
 			}
-			dto.getChangedNowParam().setOperationType(operationType);
-			dto.getChangedNowParam().setActionNameOperationType(actionName);
+
 			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto());//Reload Meta
 			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
 			Set<String> visibleFields = rowResponseService.getVisibleOnlyFields(bc, previewResult.getResponseDto());
@@ -261,27 +262,6 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		}
 		return data;
 
-	}
-
-	private void validateChangedNowFields(Map<String, ?> changedNow,
-			DataResponseDTO changedNowDTO,
-			DataResponseDTO requestDto) {
-		changedNow.keySet().forEach(key -> {
-			Object newValue = getFieldValue(changedNowDTO, key);
-			Object oldValue = getFieldValue(requestDto, key);
-
-			if (!Objects.equals(newValue, oldValue)) {
-				log.error("Field \"" + key + "\" has different values: "
-						+ newValue + " != " + oldValue);
-			}
-		});
-	}
-
-	@SneakyThrows
-	private Object getFieldValue(Object dto, String fieldName) {
-		Field field = dto.getClass().getDeclaredField(fieldName);
-		field.setAccessible(true);
-		return field.get(dto);
 	}
 
 }
