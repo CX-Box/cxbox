@@ -16,8 +16,9 @@
 
 package org.cxbox.core.dto.rowmeta;
 
+import static org.springframework.security.util.FieldUtils.getFieldValue;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,14 +26,11 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
-
-import org.cxbox.api.data.dto.DataResponseDTO.OperationType;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
@@ -210,35 +208,6 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	}
 
 	/**
-	 * Checks if the field was changed in the UI during /row-meta operation.
-	 *
-	 * @param fields Current state of field metadata
-	 * @param field DTO field to check
-	 * @param <V> Type of the field value
-	 * @return true if the field was changed in the UI during metadata operation, false otherwise
-	 */
-	public <V> boolean isFieldChangedNowFEFieldRefreshMetaForceActive(RowDependentFieldsMeta<T> fields,
-			DtoField<? super T, V> field) {
-		return isFieldChangedNowForOperationType(fields, field, map -> map.getOperationType().equals(OperationType.META));
-	}
-
-	/**
-	 * Checks if the field was changed in the UI during /row-meta operation.
-	 *
-	 * @param fields Current state of field metadata
-	 * @return true if the field was changed in the UI during metadata operation, false otherwise
-	 */
-
-	public boolean isFieldChangedNowFERefreshMetaForceActive(RowDependentFieldsMeta<T> fields) {
-
-		if (fields.getCurrentValue(DataResponseDTO_.changedNowParam).isPresent()) {
-			return fields.getCurrentValue(DataResponseDTO_.changedNowParam).get().getOperationType()
-					.equals(OperationType.META);
-		}
-		return false;
-	}
-
-	/**
 	 * Checks if the field was changed during an operation (e.g. CREATE, UPDATE)
 	 *
 	 * @param fields Current state of field metadata
@@ -269,16 +238,17 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	}
 
 	private <F> Optional<F> getCurrentValueChangedNowFE(RowDependentFieldsMeta<T> fields,
-			final DtoField<? super T, F> field) {
-		DataResponseDTO dto = fields.getCurrentValue(DataResponseDTO_.changedNowParam).get().getChangedNowDTO();
-		return (Optional<F>) getFieldValue(dto, field.getName());
-	}
-
-	@SneakyThrows
-	private Object getFieldValue(Object dto, String fieldName) {
-		Field field = dto.getClass().getDeclaredField(fieldName);
-		field.setAccessible(true);
-		return field.get(dto);
+			DtoField<? super T, F> field)  {
+		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
+				.map(param -> {
+					DataResponseDTO dto = param.getChangedNowDTO();
+					try {
+						return (Optional<F>) getFieldValue(dto, field.getName());
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.orElse(Optional.empty());
 	}
 
 }

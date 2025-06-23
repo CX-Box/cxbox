@@ -63,6 +63,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 
 	private CnangedNowParam changedNowParam;
 
+	//Object - >
 	@DtoMetamodelIgnore
 	private Map<String, Object> changedNow = new HashMap<>();
 
@@ -110,20 +111,10 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@Setter
 	public static class CnangedNowParam {
 
-		OperationType operationType;
-
-		String actionNameOperationType;
-
 		private Set<String>  changedNow;
 
 		private DataResponseDTO changedNowDTO;
 
-	}
-
-	public enum OperationType {
-		ACTION,
-		META,
-		DATA
 	}
 
 }

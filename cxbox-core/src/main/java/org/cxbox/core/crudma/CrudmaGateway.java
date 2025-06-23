@@ -21,7 +21,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.DataResponseDTO.OperationType;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
@@ -97,9 +96,6 @@ public class CrudmaGateway {
 			if (readOnly) {
 				// мы откатываем транзакцию, поэтому ставим старую версию
 				previewResult.getResponseDto().setVstamp(previewResult.getRequestDto().getVstamp());
-			}
-			if (data.get("changedNow") != null) {
-				previewResult.getResponseDto().getChangedNowParam().setOperationType(OperationType.META);
 			}
 			final MetaDTO metaNew = crudmaService.getOnFieldUpdateMeta(bc, previewResult.getResponseDto());
 			return new InterimResult(bc, previewResult.getRequestDto(), metaNew);
