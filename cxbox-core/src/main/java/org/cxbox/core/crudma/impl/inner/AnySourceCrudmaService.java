@@ -18,17 +18,13 @@ package org.cxbox.core.crudma.impl.inner;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import lombok.SneakyThrows;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
-import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -49,7 +45,6 @@ import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.AnySourceRowResponseService;
 import org.cxbox.core.service.rowmeta.RowMetaType;
-import org.cxbox.core.service.rowmeta.RowResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -63,10 +58,6 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	@Lazy
 	@Autowired
 	private AnySourceRowResponseService rowMeta;
-
-	@Lazy
-	@Autowired
-	private  RowResponseService rowResponseService;
 
 	@Autowired
 	CheckChangeNowService checkChangeNowService;
@@ -114,17 +105,10 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 		return new PreviewResult(requestDto, responseDto);
 	}
 
-	@SneakyThrows
-	private Object getFieldValue(Object dto, String fieldName) {
-		Field field = dto.getClass().getDeclaredField(fieldName);
-		field.setAccessible(true);
-		return field.get(dto);
-	}
-
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataFE) {
 		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE);
+		Map<String, Object> data = checkChangeNowService.callDoUpdateAndReloadMeta(bc, dataFE,this::preview, this::getOnFieldUpdateMeta);
 
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService responseService = respFactory.getService(bcDescription);
@@ -157,7 +141,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = callDoUpdateAndReloadMeta(bc, dataFE);
+		Map<String, Object> data = checkChangeNowService.callDoUpdateAndReloadMeta(bc, dataFE,this::preview, this::getOnFieldUpdateMeta);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
 	}
@@ -239,30 +223,5 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 		}
 	}
 
-	private Map<String, Object> callDoUpdateAndReloadMeta(BusinessComponent bc, Map<String, Object> dataFE) {
-		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> dataChangedFE = (Map<String, Object>) dataFE.get(CHANGED_NOW);
-		boolean isChangedNowData = dataChangedFE != null && !dataChangedFE.isEmpty();
-		Map<String, Object> data;
-
-		if (isChangedNowData) {
-			data = new HashMap<>();
-			PreviewResult previewResult = preview(bc, dataFE); //doUpdateEntity
-
-			MetaDTO metaDTO = getOnFieldUpdateMeta(bc, previewResult.getResponseDto()); //Reload Meta
-			FieldsDTO fieldsDTO = metaDTO.getRow().getFields();
-			Set<String> visibleFields = rowResponseService.getVisibleOnlyFields(bc, previewResult.getResponseDto());
-			fieldsDTO.forEach(a -> data.put(a.getKey(), a.getCurrentValue()));
-			//only visible fields
-			fieldsDTO.forEach(a -> {
-				if (!visibleFields.contains(a.getKey())) {
-					data.remove(a.getKey());
-				}
-			});
-		} else {
-			data = dataFE;
-		}
-		return data;
-	}
 
 }

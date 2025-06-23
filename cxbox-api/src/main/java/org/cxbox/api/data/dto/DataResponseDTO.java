@@ -61,9 +61,11 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@DtoMetamodelIgnore
 	private Set<String> computedFields;
 
+	@JsonIgnore
 	private CnangedNowParam changedNowParam;
 
 	//Object - >
+	@JsonIgnore
 	@DtoMetamodelIgnore
 	private Map<String, Object> changedNow = new HashMap<>();
 
