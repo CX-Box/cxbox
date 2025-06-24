@@ -17,17 +17,12 @@
 package org.cxbox.core.service;
 
 import jakarta.validation.constraints.NotNull;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
@@ -35,10 +30,12 @@ import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.core.crudma.CrudmaActionType;
 import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
+import org.cxbox.core.dto.multivalue.MultivalueField;
 import org.cxbox.core.dto.rowmeta.MetaDTO;
 import org.cxbox.core.service.rowmeta.RowResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.util.FieldUtils;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -122,42 +119,50 @@ public class CheckChangeNowService {
 		return data;
 	}
 
+	/**
+	 * Checks whether the data received in the changedNow tag from the frontend matches the values
+	 * in the data tag.
+	 *
+	 * <p>
+	 * This method compares the values of each field by name. For standard objects, it uses {@link Objects#equals(Object, Object)}.
+	 * For fields of type {@link MultivalueField}, it verifies whether all values in the new object exist in the old object.
+	 * <p>
+	 * If a mismatch is detected, an error is logged indicating the differing values.
+	 * No exception is thrown to avoid interrupting the application flow.
+	 *
+	 * @param changedNow     a map containing the names of fields to check (values in the map are ignored)
+	 * @param changedNowDTO  an object representing the "new" state of the data
+	 * @param requestDto     an object representing the "old" or original state of the data
+	 */
+
 	public void validateChangedNowFields(Map<String, ?> changedNow, DataResponseDTO changedNowDTO,
 			DataResponseDTO requestDto) {
 		changedNow.keySet().forEach(key -> {
-			Object newValue = getFieldValue(changedNowDTO, key);
-			Object oldValue = getFieldValue(requestDto, key);
+			try {
+				Object newValue = FieldUtils.getFieldValue(changedNowDTO, key);
+				Object oldValue = FieldUtils.getFieldValue(requestDto, key);
 
-			if (!areEqual(newValue, oldValue)) {
-				log.error("Field \"" + key + "\" has different values: " + newValue + " != " + oldValue);
+				boolean isEqual = false;
+
+				if (Objects.equals(newValue, oldValue)) {
+					isEqual = true;
+				} else if (newValue instanceof MultivalueField && oldValue instanceof MultivalueField) {
+					MultivalueField newMV = (MultivalueField) newValue;
+					MultivalueField oldMV = (MultivalueField) oldValue;
+
+					isEqual = newMV.getValues().stream()
+							.allMatch(newItem -> oldMV.getValues().stream()
+									.anyMatch(oldItem -> Objects.equals(oldItem.getValue(), newItem.getValue())));
+				}
+
+				if (!isEqual) {
+					log.error("Field \"{}\" has different values: {} != {}", key, newValue, oldValue);
+				}
+
+			} catch (IllegalAccessException e) {
+				log.error("Error accessing field \"{}\": {}", key, e.getMessage(), e);
 			}
 		});
-	}
-
-	private boolean areEqual(Object newValue, Object oldValue) {
-		if (Objects.equals(newValue, oldValue)) {
-			return true;
-		}
-
-		if (newValue instanceof Collection && oldValue instanceof Collection) {
-			Collection<?> newCol = (Collection<?>) newValue;
-			Collection<?> oldCol = (Collection<?>) oldValue;
-
-			return new HashSet<>(newCol).equals(new HashSet<>(oldCol));
-		}
-
-		if (newValue instanceof Object[] && oldValue instanceof Object[]) {
-			return Arrays.equals((Object[]) newValue, (Object[]) oldValue);
-		}
-
-		return false;
-	}
-
-	@SneakyThrows
-	public Object getFieldValue(Object dto, String fieldName) {
-		Field field = dto.getClass().getDeclaredField(fieldName);
-		field.setAccessible(true);
-		return field.get(dto);
 	}
 
 }
