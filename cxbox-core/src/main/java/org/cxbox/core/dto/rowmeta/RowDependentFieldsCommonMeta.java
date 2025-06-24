@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -30,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
@@ -205,7 +203,7 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 				.map(objectMap -> objectMap.getChangedNow().contains(field.getName()))
 				.orElse(false);
 	}
- 
+
 	private <F> Optional<F> getCurrentValueChangedNowFE(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, F> field)  {
 		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
