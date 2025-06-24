@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
@@ -49,7 +48,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @Primary
 public class AnySourceRowResponseService extends RowResponseService {
