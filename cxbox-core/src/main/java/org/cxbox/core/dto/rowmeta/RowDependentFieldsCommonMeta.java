@@ -55,10 +55,9 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 
 	/**
 	 * <br>
-	 *
-	 * @param field field ref
-	 * @param <F> field type
-	 * @return currentValue of field. Optional.empty() if value is null or field is not present.
+	 * @param field  field ref
+	 * @return  currentValue of field. Optional.empty() if value is null or field is not present.
+	 * @param <F>  field type
 	 */
 	@NonNull
 	public <F> Optional<F> getCurrentValue(@NonNull final DtoField<? super T, F> field) {
@@ -206,37 +205,7 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 				.map(objectMap -> objectMap.getChangedNow().contains(field.getName()))
 				.orElse(false);
 	}
-
-	/**
-	 * Checks if the field was changed during an operation (e.g. CREATE, UPDATE)
-	 *
-	 * @param fields Current state of field metadata
-	 * @param field DTO field to check
-	 * @param condition a predicate that applies additional filtering logic to the metadata object
-	 * (e.g. operation type, action name, etc.)
-	 * @param <V> the type of the field's value
-	 * @return {@code true} if the field is marked as changed and the condition predicate returns {@code true};
-	 * {@code false} otherwise
-	 * // By operation type only:
-	 * isFieldChangedNowForOperationType(fields, field,
-	 * map -> map.getOperationType().equals(OperationType.META));
-	 * // By operation type and action name:
-	 * isFieldChangedNowForOperationType(fields, field,
-	 * map -> map.getOperationType().equals(OperationType.INVOKE)
-	 * && "customSave".equals(map.getActionNameOperationType()));
-	 */
-	public <V> boolean isFieldChangedNowForOperationType(
-			RowDependentFieldsMeta<T> fields,
-			DtoField<? super T, V> field,
-			Predicate<CnangedNowParam> condition
-	) {
-		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
-				.map(objectMap ->
-						objectMap.getChangedNow().contains(field.getName()) && condition.test(objectMap)
-				)
-				.orElse(false);
-	}
-
+ 
 	private <F> Optional<F> getCurrentValueChangedNowFE(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, F> field)  {
 		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
