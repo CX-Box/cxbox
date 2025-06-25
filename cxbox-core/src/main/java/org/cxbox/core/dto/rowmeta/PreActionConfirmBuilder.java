@@ -21,7 +21,7 @@ import static org.cxbox.core.dto.rowmeta.PreAction.WITHOUT_MESSAGE;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.core.dto.rowmeta.PreAction.PreActionBuilder;

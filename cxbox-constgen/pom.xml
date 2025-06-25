@@ -35,24 +35,31 @@
       <artifactId>javapoet</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+    </dependency>
+    <!--<dependency>
       <groupId>com.google.testing.compile</groupId>
       <artifactId>compile-testing</artifactId>
       <version>0.21.0</version>
-    </dependency>
+    </dependency>-->
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
+          <compilerArgs>
+            <arg>-proc:none</arg>
+          </compilerArgs>
           <!--Had to configure a fake annotationProcessorPaths element instead of "-proc:none" option as a workaround. With it Maven & auto-configured project in IDEA both work:-->
-          <annotationProcessorPaths>
+          <!--<annotationProcessorPaths>
             <path>
               <groupId>com.google.testing.compile</groupId>
               <artifactId>compile-testing</artifactId>
               <version>0.21.0</version>
             </path>
-          </annotationProcessorPaths>
+          </annotationProcessorPaths>-->
           <!--<compilerArgument>-proc:none</compilerArgument> Fails in IDEA -->
         </configuration>
       </plugin>
