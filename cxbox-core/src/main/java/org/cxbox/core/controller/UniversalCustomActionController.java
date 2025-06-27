@@ -55,6 +55,7 @@ public class UniversalCustomActionController {
 		if (requestBody == null || requestBody.get("data") == null) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
 		}
+
 		final BusinessComponent bc = bcFactory.getBusinessComponent(request, queryParameters);
 		final String action = queryParameters.getParameter("_action");
 		CrudmaAction crudmaAction = crudmaActionHolder.of(CrudmaActionType.INVOKE)

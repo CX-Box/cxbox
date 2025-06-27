@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
@@ -60,6 +61,10 @@ public class ResponseFactory {
 	@Autowired
 	private ValidatorsProvider validatorsProvider;
 
+	private static final String CHANGED_NOW = "changedNow";
+
+	private static final String DATA = "data";
+
 	/**
 	 * @param innerBcDescription information about BC;
 	 * @return {@link ResponseService} common interface implemented by all services working with the controller
@@ -69,12 +74,31 @@ public class ResponseFactory {
 	}
 
 	public DataResponseDTO getDTOFromMap(Map<String, Object> map, Class<?> clazz, BusinessComponent bc) {
-		return getDTOFromMapInner(map, clazz, bc, false);
+		return getDTOFromMapDataAndChangeNow(map, clazz, bc, false);
 	}
 
 	public DataResponseDTO getDTOFromMapIgnoreBusinessErrors(Map<String, Object> map, Class<?> clazz,
 			BusinessComponent bc) {
-		return getDTOFromMapInner(map, clazz, bc, true);
+		return getDTOFromMapDataAndChangeNow(map, clazz, bc, true);
+	}
+
+	private DataResponseDTO getDTOFromMapDataAndChangeNow(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
+			boolean ignoreBusinessErrors) {
+		Map<String, Object> changedNowMap = (Map<String, Object>) map.get(CHANGED_NOW);
+		Map<String, Object> dataMap = (Map<String, Object>) map.get(DATA);
+
+		DataResponseDTO dataResponseDTO;
+		if (changedNowMap == null) {
+			dataResponseDTO = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
+		} else {
+			dataResponseDTO = getDTOFromMapInner(dataMap, clazz, bc, ignoreBusinessErrors);
+			DataResponseDTO changedNowDTO = getDTOFromMapInner(dataMap,clazz,bc,ignoreBusinessErrors);
+			CnangedNowParam cnangedNowParam = new CnangedNowParam();
+			cnangedNowParam.setChangedNowDTO(changedNowDTO);
+			cnangedNowParam.setChangedNow(changedNowMap.keySet());
+			dataResponseDTO.setChangedNowParam(cnangedNowParam);
+		}
+		return dataResponseDTO;
 	}
 
 	private DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
