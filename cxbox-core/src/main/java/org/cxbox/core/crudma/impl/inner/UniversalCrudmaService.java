@@ -96,7 +96,6 @@ public abstract class UniversalCrudmaService<D extends UniversalDTO, E> extends 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
-		data = (Map) data.get("data");
 		List<Attribute<?, ?>> attributes = getAttributes(bc);
 		E entity = getEntity(bc);
 		Class<? extends D> dtoClass = createDTOClass(attributes);

@@ -16,7 +16,6 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
-import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -46,7 +45,6 @@ import java.util.Map;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
-@Slf4j
 @Service
 public class InnerCrudmaService extends AbstractCrudmaService {
 
@@ -107,14 +105,10 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataFE) {
+	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
-
-		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data =  checkChangeNowService.callDoUpdateAndReloadMeta(bc, dataFE,this::preview, this::getOnFieldUpdateMeta);
-
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		responseService.validate(bc, requestDTO);
 		return responseService.updateEntity(bc, requestDTO);
@@ -135,11 +129,9 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> dataFE) {
+	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> data) {
 		final InnerBcDescription bcDescription = bc.getDescription();
 		ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
-		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = checkChangeNowService.callDoUpdateAndReloadMeta(bc, dataFE,this::preview, this::getOnFieldUpdateMeta);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
 	}
