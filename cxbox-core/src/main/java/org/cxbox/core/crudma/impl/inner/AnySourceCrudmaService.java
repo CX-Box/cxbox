@@ -106,10 +106,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> dataFE) {
-		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = checkChangeNowService.callDoUpdateAndReloadMeta(bc, dataFE,this::preview, this::getOnFieldUpdateMeta);
-
+	public ActionResultDTO update(BusinessComponent bc, Map<String, Object> data) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService responseService = respFactory.getService(bcDescription);
 		availabilityCheck(responseService, ActionType.SAVE.getType(), bc);
@@ -137,11 +134,9 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> dataFE) {
+	public ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> data) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
-		//If a field has been changed, need to reload the metadata to update the values that depend on it
-		Map<String, Object> data = checkChangeNowService.callDoUpdateAndReloadMeta(bc, dataFE,this::preview, this::getOnFieldUpdateMeta);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
 	}
@@ -222,6 +217,5 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 			);
 		}
 	}
-
 
 }
