@@ -20,40 +20,55 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.cxbox.api.util.i18n.LocalizationFormatter;
 import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.json.field.FieldGroup;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SimpleFormFieldExtractor extends BaseFieldExtractor {
+public class SimpleFieldExtractor extends BaseFieldExtractor {
 
-	public SimpleFormFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor) {
+	public SimpleFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor) {
 		super(linkFieldExtractor);
 	}
 
 	@Override
-	public Set<BcField> extract(WidgetDTO widget) {
-		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, widget.getTitle()));
+	public Set<BcField> extract(final WidgetDTO widget) {
+		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(widget.getTitle())));
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));
+		}
+		for (final FieldGroup group : JsonUtils.readValue(FieldGroup[].class, widget.getFields())) {
+			if (group.getChildren() != null) {
+				for (final FieldMeta field : group.getChildren()) {
+					widgetFields.addAll(extract(widget, field));
+				}
+			}
 		}
 		return widgetFields;
 	}
 
 	@Override
 	public List<String> getSupportedTypes() {
-		ArrayList<String> strings = new ArrayList<>();
-		strings.add("Form");
-		return strings;
+		List<String> result = new ArrayList<>();
+		result.add("Info");
+		result.add("AdditionalInfo");
+		result.add("Form");
+		result.add("FormPopup");
+
+		//deprecated
+		result.add("InfoFloat");
+		return result;
 	}
 
 	@Override
 	public int getPriority() {
-		return 2;
+		return 1;
 	}
 
 }
