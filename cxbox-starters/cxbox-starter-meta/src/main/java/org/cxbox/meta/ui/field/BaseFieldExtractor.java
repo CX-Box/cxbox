@@ -48,7 +48,7 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 	protected Set<BcField> extract(final WidgetDTO widget, final FieldMeta fieldMeta) {
 		final Set<BcField> widgetFields = new HashSet<>();
 		final Set<BcField> pickListFields = new HashSet<>();
-		if (fieldMeta instanceof FieldMeta.FieldContainer fieldContainer) {
+		if (fieldMeta instanceof FieldMeta.FieldContainer fieldContainer && fieldContainer.getChildren() != null) {
 			for (final FieldMeta child : fieldContainer.getChildren()) {
 				widgetFields.addAll(extract(widget, child));
 			}
@@ -121,7 +121,8 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 		return null;
 	}
 
-	private List<PickListField> getPickLists(final FieldMeta.FieldMetaBase field) {
+	@NonNull
+	private List<PickListField> getPickLists(@NonNull final FieldMeta.FieldMetaBase field) {
 		final List<PickListField> pickLists = new ArrayList<>();
 		if (field instanceof PickListFieldMeta pickListField) {
 			pickLists.add(new PickListField(pickListField.getPopupBcName(), pickListField.getPickMap()));
