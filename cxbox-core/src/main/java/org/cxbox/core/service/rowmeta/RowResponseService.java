@@ -159,7 +159,7 @@ public class RowResponseService {
 			if (field == null) {
 				continue;
 			}
-			final FieldDTO fieldDTO = getDTOFromField(type, field, dataDto);
+			final FieldDTO fieldDTO = getDTOFromVisibleField(type, field, dataDto);
 			if (fieldDTO != null) {
 				fieldsNode.add(fieldDTO);
 			}
@@ -179,7 +179,7 @@ public class RowResponseService {
 				.map(Field::getName).collect(Collectors.toSet());
 	}
 
-	public FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+	public FieldDTO getDTOFromVisibleField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
 		return getDTOFromFieldCheckVisible(type, field, dataDTO, true);
 	}
 
