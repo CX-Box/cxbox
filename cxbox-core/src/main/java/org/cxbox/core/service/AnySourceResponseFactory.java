@@ -17,6 +17,7 @@
 package org.cxbox.core.service;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+import static org.cxbox.core.service.CheckChangeNowService.CHANGED_NOW;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
@@ -57,8 +58,6 @@ public class AnySourceResponseFactory {
 	private final ObjectMapper mapper;
 
 	private final ApplicationContext ctx;
-
-	private static final String CHANGED_NOW = "changedNow";
 
 	private static final String DATA = "data";
 

@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+import static org.cxbox.core.service.CheckChangeNowService.CHANGED_NOW;
 
 @Service
 public class InnerCrudmaService extends AbstractCrudmaService {
@@ -57,8 +58,6 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 
 	@Autowired
 	CheckChangeNowService checkChangeNowService;
-
-	private static final String CHANGED_NOW = "changedNow";
 
 	@Override
 	public CreateResult create(BusinessComponent bc) {

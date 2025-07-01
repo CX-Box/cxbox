@@ -30,6 +30,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CheckChangeNowService {
 
+
+	public static final String CHANGED_NOW = "changedNow";
+
 	/**
 	 * Checks whether the input data contains fields that have been changed in the current request.
 	 * <p>
