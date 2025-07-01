@@ -92,6 +92,7 @@ public class AnySourceRowResponseService extends RowResponseService {
 			ActionsDTO actionDTO,
 			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
+		//add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
 		if (dataDTO.getChangedNowParam() != null) {
 			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
 			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));
