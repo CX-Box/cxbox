@@ -89,10 +89,10 @@ public class AnySourceResponseFactory {
 
 		DataResponseDTO dataResponseDTO;
 		if (changedNowMap == null) {
-			dataResponseDTO = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
+			dataResponseDTO = getDTOFromMapInner(dataMap == null ? map : dataMap, clazz, bc, ignoreBusinessErrors);
 		} else {
 			dataResponseDTO = getDTOFromMapInner(dataMap, clazz, bc, ignoreBusinessErrors);
-			DataResponseDTO changedNowDTO = getDTOFromMapInner(dataMap,clazz,bc,ignoreBusinessErrors);
+			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
 			CnangedNowParam cnangedNowParam = new CnangedNowParam();
 			cnangedNowParam.setChangedNowDTO(changedNowDTO);
 			cnangedNowParam.setChangedNow(changedNowMap.keySet());
