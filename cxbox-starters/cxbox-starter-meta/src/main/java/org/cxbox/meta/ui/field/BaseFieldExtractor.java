@@ -48,19 +48,17 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 	protected Set<BcField> extract(final WidgetDTO widget, final FieldMeta fieldMeta) {
 		final Set<BcField> widgetFields = new HashSet<>();
 		final Set<BcField> pickListFields = new HashSet<>();
-		if (fieldMeta instanceof FieldMeta.FieldContainer) {
-			final FieldMeta.FieldContainer fieldContainer = (FieldMeta.FieldContainer) fieldMeta;
+		if (fieldMeta instanceof FieldMeta.FieldContainer fieldContainer && fieldContainer.getChildren() != null) {
 			for (final FieldMeta child : fieldContainer.getChildren()) {
 				widgetFields.addAll(extract(widget, child));
 			}
 		}
-		if (fieldMeta instanceof FieldMeta.FieldMetaBase) {
-			final FieldMeta.FieldMetaBase fieldMetaBase = (FieldMeta.FieldMetaBase) fieldMeta;
+		if (fieldMeta instanceof FieldMeta.FieldMetaBase fieldMetaBase) {
 			for (final PickListField pickList : getPickLists(fieldMetaBase)) {
 				if (pickList.getPickMap() != null) {
 					for (final Entry<String, String> entry : pickList.getPickMap().entrySet()) {
 						widgetFields.add(new BcField(widget.getBcName(), entry.getKey())
-								.putAttribute(Attribute.WIDGET_NAME, widget.getWidgetId())
+								.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 						);
 						pickListFields.add(new BcField(pickList.getPickListBc(), entry.getValue())
 								.putAttribute(Attribute.WIDGET_NAME, widget.getName())
@@ -123,10 +121,10 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 		return null;
 	}
 
-	private List<PickListField> getPickLists(final FieldMeta.FieldMetaBase field) {
+	@NonNull
+	private List<PickListField> getPickLists(@NonNull final FieldMeta.FieldMetaBase field) {
 		final List<PickListField> pickLists = new ArrayList<>();
-		if (field.getType().equals("pickList") || field.getType().equals("inline-pickList")) {
-			final PickListFieldMeta pickListField = (PickListFieldMeta) field;
+		if (field instanceof PickListFieldMeta pickListField) {
 			pickLists.add(new PickListField(pickListField.getPopupBcName(), pickListField.getPickMap()));
 		}
 		return pickLists;

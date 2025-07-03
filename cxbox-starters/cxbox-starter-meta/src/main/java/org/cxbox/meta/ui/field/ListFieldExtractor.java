@@ -49,12 +49,32 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 	public List<String> getSupportedTypes() {
 		List<String> result = new ArrayList<>();
 		result.add("List");
-		result.add("DataGrid");
+		result.add("AdditionalList");
+		result.add("StatsBlock");
 		result.add("PickListPopup");
+		result.add("Steps");
+		result.add("GroupingHierarchy");
+		result.add("Pie1D");
+		result.add("Column2D");
+		result.add("Line2D");
+		result.add("DualAxes2D");
+
+		//can be changed in future releases
+		result.add("Funnel");
+		result.add("RingProgress");
+
+		//Deprecated widget types
+		result.add("DashboardList");
+		result.add("DataGrid");
 		result.add("Pivot");
 		result.add("DimFilter");
-		result.add("Steps");
+
 		return result;
+	}
+
+	@Override
+	public int getPriority() {
+		return 1;
 	}
 
 }
