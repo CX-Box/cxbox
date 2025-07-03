@@ -16,6 +16,8 @@
 
 package org.cxbox.core.dto.rowmeta;
 
+import static org.springframework.security.util.FieldUtils.getFieldValue;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.constgen.DtoField;
@@ -185,6 +188,34 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	public final void setPlaceholder(DtoField<? super T, ?> field, String placeholder) {
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> fieldDTO.setPlaceholder(placeholder));
+	}
+
+	/**
+	 * Сhecks whether the specified field was modified by the user in the UI (Frontend) during the current iteration.
+	 *
+	 * @param fields Current state of field metadata.
+	 * @param field DTO field to check
+	 * @return boolean. true – If the field was changed in the UI during the current iteration. false – If the field remains unchanged.
+	 */
+	public <V> boolean isFieldChangedNow(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, V> field) {
+		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
+				.map(objectMap -> objectMap.getChangedNow().contains(field.getName()))
+				.orElse(false);
+	}
+
+	private <F> Optional<F> getCurrentValueChangedNow(RowDependentFieldsMeta<T> fields,
+			DtoField<? super T, F> field)  {
+		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
+				.map(param -> {
+					DataResponseDTO dto = param.getChangedNowDTO();
+					try {
+						return (Optional<F>) getFieldValue(dto, field.getName());
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.orElse(Optional.empty());
 	}
 
 }

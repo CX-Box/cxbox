@@ -18,6 +18,8 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.IDataContainer;
@@ -59,6 +61,29 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@DtoMetamodelIgnore
 	private Set<String> computedFields;
 
+	/**
+	 *  Field changes received from the frontend.
+	 * <p>
+	 * Transfers data from {@code Map<String, Object> changedNow}
+	 */
+	@JsonIgnore
+	private CnangedNowParam changedNowParam;
+
+	/**
+	 * Fields currently being updated by the frontend
+	 *
+	 * <p>Each entry consists of:
+	 * <ul>
+	 *   <li><b>Key</b> - The name of the field being modified</li>
+	 *   <li><b>Value</b> - The new value to be set for the field (Object -> DataResponseDTO) </li>
+	 * </ul>
+	 *
+	 * <p>Note: This map is for transient tracking purposes only and should not be persisted.
+	 */
+	@JsonIgnore
+	@DtoMetamodelIgnore
+	private Map<String, Object> changedNow = new HashMap<>();
+
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;
 	}
@@ -97,6 +122,26 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@Override
 	public void transformData(Function<DataResponseDTO, DataResponseDTO> function) {
 		function.apply(this);
+	}
+
+	@Getter
+	@Setter
+	public static class CnangedNowParam {
+
+		/**
+		 * Set of field names that are currently being modified.
+		 * <p>
+		 * Contains only the names of changed fields.
+		 */
+		private Set<String>  changedNow;
+
+		/**
+		 * Containing the actual new values for changed fields.
+		 * <p>
+		 * Each field in this DTO corresponds to a field name in {@code changedNow} with  value
+		 */
+		private DataResponseDTO changedNowDTO;
+
 	}
 
 }
