@@ -19,6 +19,10 @@ package org.cxbox.core.dto.rowmeta;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 import lombok.NonNull;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -26,8 +30,9 @@ import org.cxbox.constgen.DtoField;
 import org.cxbox.core.dto.DrillDownType;
 import org.cxbox.core.dto.MessageType;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
-import java.util.HashMap;
-import java.util.Map;
+import org.cxbox.core.util.SpringBeanUtils;
+import org.cxbox.core.service.drilldown.PlatformDrilldownService;
+import org.cxbox.core.service.drilldown.filter.FC;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostAction {
@@ -75,6 +80,55 @@ public class PostAction {
 				.add(BasePostActionField.URL_NAME, urlName)
 				.add(BasePostActionField.DRILL_DOWN_TYPE, drillDownType.getValue());
 	}
+
+	/**
+	 * Sets drill-down functionality with filter capabilities for a specific field.
+	 *<p>
+	 * This method configures a drill-down URL with optional filtering parameters for a DTO field.
+	 * It retrieves the {@link PlatformDrilldownService} to generate URL filter parameters and applies them
+	 * to the field's drill-down configuration.
+	 *</p>
+	 * <pre>{@code
+	 * Example:
+	 * 			 // add with default builder
+	 * 			 PostAction.drillDownWithFilterDrillDownType.INNER, "screen/myscreen/view/myview",
+	 * 			 fc -> fc
+	 * 			  .add(RestController.myBc, MyDefaultDTO.class, fb -> fb
+	 *					.dictionaryEnum(MyDefaultDTO_.status, getStatusFilterValues(id))
+	 *					.multiValue(MyDefaultDTO_.multivalueField, myMultivalueField))
+	 *				 // add with custom filter builders
+	 *				.add(RestController.myBc, MyDefaultDTO.class,
+	 *				  new TypeToken<MyCustomFilterBuilder<MyCustomDTO>>() {
+	 *
+	 *				  },
+	 *				  fb -> fb
+	 *				   .dictionaryEnum(MyDTO_.status, getStatusFilterValues(id))
+	 *				   .multiValue(MyDTO_.multivalueField, myMultivalueFilterField)
+	 *				   .myCustomFields(MyDTO_.customField, myCustomFieldFilterValue
+	 * 		);
+	 * }</pre>
+	 * @param drillDownType the type specifier that defines the drill-down behavior
+	 * @param url the base drill-down URL string
+	 * @param fc a consumer that accepts and configures the filter configuration object.
+	 *                   This allows customization of filtering parameters that will be appended
+	 *                   to the drill-down URL
+	 */
+	public static PostAction drillDownWithFilter(DrillDownTypeSpecifier drillDownType,
+			String url,
+			Consumer<FC> fc) {
+		FC fcInstance = new FC();
+		fc.accept(fcInstance);
+		var platformDrilldownService = SpringBeanUtils.getBean(PlatformDrilldownService.class);
+		return new PostAction()
+				.add(BasePostActionField.TYPE, BasePostActionType.DRILL_DOWN)
+				.add(
+						BasePostActionField.URL,
+						url + Optional.ofNullable(platformDrilldownService.formUrlFilterPart(fcInstance)).map(fp -> "?" + fp).orElse("")
+				)
+				.add(BasePostActionField.URL_NAME, null)
+				.add(BasePostActionField.DRILL_DOWN_TYPE, drillDownType.getValue());
+	}
+
 
 	public static PostAction delayedRefreshBC(BcIdentifier bcIdentifier, Number seconds) {
 		return new PostAction()
