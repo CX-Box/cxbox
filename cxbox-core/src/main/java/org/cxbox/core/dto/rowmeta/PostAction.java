@@ -19,6 +19,9 @@ package org.cxbox.core.dto.rowmeta;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import lombok.NonNull;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -26,8 +29,9 @@ import org.cxbox.constgen.DtoField;
 import org.cxbox.core.dto.DrillDownType;
 import org.cxbox.core.dto.MessageType;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
-import java.util.HashMap;
-import java.util.Map;
+import org.cxbox.core.util.SpringBeanUtils;
+import org.cxbox.core.util.filter.drilldowns.DrilldownFilterFormerService;
+import org.cxbox.core.util.filter.drilldowns.FilterConfiguration;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostAction {
@@ -75,6 +79,20 @@ public class PostAction {
 				.add(BasePostActionField.URL_NAME, urlName)
 				.add(BasePostActionField.DRILL_DOWN_TYPE, drillDownType.getValue());
 	}
+
+	public static PostAction drillDownWithFilter(DrillDownTypeSpecifier drillDownType,
+			String url,
+			Consumer<FilterConfiguration> configurer) {
+		FilterConfiguration filterConfiguration = new FilterConfiguration();
+		configurer.accept(filterConfiguration);
+		DrilldownFilterFormerService drilldownFilterFormerService = SpringBeanUtils.getBean(DrilldownFilterFormerService.class);
+		return new PostAction()
+				.add(BasePostActionField.TYPE, BasePostActionType.DRILL_DOWN)
+				.add(BasePostActionField.URL, url + drilldownFilterFormerService.formDrillDownFilter(filterConfiguration))
+				.add(BasePostActionField.URL_NAME, null)
+				.add(BasePostActionField.DRILL_DOWN_TYPE, drillDownType.getValue());
+	}
+
 
 	public static PostAction delayedRefreshBC(BcIdentifier bcIdentifier, Number seconds) {
 		return new PostAction()
@@ -136,7 +154,8 @@ public class PostAction {
 	 * </pre>
 	 */
 	public static <T extends DataResponseDTO, V> WaitUntilBuilder<T, V> drillDownAndWaitUntil(@NonNull String url,
-			@NonNull BcIdentifier successConditionBc, @NonNull DtoField<? super T, V> successConditionField, @NonNull V successConditionValue) {
+			@NonNull BcIdentifier successConditionBc, @NonNull DtoField<? super T, V> successConditionField,
+			@NonNull V successConditionValue) {
 		return new WaitUntilBuilder<>(
 				DrillDownType.INNER,
 				url,
@@ -237,6 +256,7 @@ public class PostAction {
 
 		/**
 		 * Sets the message to displayed when operation successfully completes before timeout and forces UI to wait user to close popup manually. If not set - wait popup will be autoclosed immediately
+		 *
 		 * @param message message displayed when operation complete before timeout (e.g. successConditionField achieved successConditionValue)
 		 * @return The builder instance.
 		 */
@@ -263,6 +283,7 @@ public class PostAction {
 
 		/**
 		 * Sets the message to displayed when operation completes because of timeout and forces UI to wait user to close popup manually. If not set - wait popup will be autoclosed immediately
+		 *
 		 * @param message The message to display if operation completed because timeout reached
 		 * @return The builder instance.
 		 */
