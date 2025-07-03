@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.NonNull;
@@ -32,6 +33,9 @@ import org.cxbox.api.data.dto.rowmeta.FieldsDTO;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.dto.FieldDrillDown;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
+import org.cxbox.core.util.SpringBeanUtils;
+import org.cxbox.core.util.filter.drilldowns.DrilldownFilterFormerService;
+import org.cxbox.core.util.filter.drilldowns.FilterConfiguration;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
@@ -50,9 +54,10 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 
 	/**
 	 * <br>
-	 * @param field  field ref
-	 * @return  currentValue of field. Optional.empty() if value is null or field is not present.
-	 * @param <F>  field type
+	 *
+	 * @param field field ref
+	 * @param <F> field type
+	 * @return currentValue of field. Optional.empty() if value is null or field is not present.
 	 */
 	@NonNull
 	public <F> Optional<F> getCurrentValue(@NonNull final DtoField<? super T, F> field) {
@@ -166,6 +171,35 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 					fieldDTO.setDrillDownType(drillDownType.getValue());
 				});
 	}
+
+//	public final <D extends DataResponseDTO> void setDrilldownWithFilter(DtoField<? super T, ?> field,
+//			DrillDownTypeSpecifier drillDownType, String drillDown,
+//			BcIdentifier bc, Class<D> dtoClass, UnaryOperator<CxboxDrillDownFilterBuilder<D>> filters) {
+//		DrilldownFilterFormerService drilldownFilterFormerService = SpringBeanUtils.getBean(DrilldownFilterFormerService.class);
+//		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+//				.ifPresent(fieldDTO -> {
+//					fieldDTO.setDrillDown(
+//							drillDown + Optional.ofNullable(drilldownFilterFormerService.formDrillDownFilter(bc, dtoClass, filters))
+//									.map(fs -> "?" + fs).orElse(""));
+//					fieldDTO.setDrillDownType(drillDownType.getValue());
+//				});
+//	}
+
+	public final void setDrilldownWithFilter(DtoField<? super T, ?> field,
+			DrillDownTypeSpecifier drillDownType, String drillDown,
+			Consumer<FilterConfiguration> configurer) {
+		DrilldownFilterFormerService drilldownFilterFormerService = SpringBeanUtils.getBean(DrilldownFilterFormerService.class);
+		FilterConfiguration fc = new FilterConfiguration();
+		configurer.accept(fc);
+		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
+				.ifPresent(fieldDTO -> {
+					fieldDTO.setDrillDown(
+							drillDown + Optional.ofNullable(drilldownFilterFormerService.formDrillDownFilter(fc))
+									.map(fs -> "?" + fs).orElse(""));
+					fieldDTO.setDrillDownType(drillDownType.getValue());
+				});
+	}
+
 
 	public final void setDrilldowns(final List<FieldDrillDown> drillDowns) {
 		for (final FieldDrillDown drillDown : drillDowns) {
