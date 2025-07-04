@@ -93,12 +93,12 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 			return Optional.empty();
 		}
 
-		return Optional.of("filters={\"" + bc.getName() +
+		return Optional.of("\"" + bc.getName() +
 				"\":\"" +
 				cleanedList.stream()
 						.map(DrillDownFieldFilter::urlEncodedFieldFilter)
 						.collect(Collectors.joining(AMPERSAND_URL_ENCODED))
-				+ "\"}");
+				+ "\"");
 	}
 
 

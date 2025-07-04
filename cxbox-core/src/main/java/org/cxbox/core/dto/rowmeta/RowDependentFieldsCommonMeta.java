@@ -194,8 +194,7 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> {
 					fieldDTO.setDrillDown(
-							drillDown + Optional.ofNullable(drilldownFilterFormerService.formDrillDownFilter(fc))
-									.map(fs -> "?" + fs).orElse(""));
+							drillDown + Optional.ofNullable(drilldownFilterFormerService.formDrillDownFilter(fc)).orElse(""));
 					fieldDTO.setDrillDownType(drillDownType.getValue());
 				});
 	}

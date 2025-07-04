@@ -16,7 +16,11 @@
 
 package org.cxbox.core.util.filter.drilldowns;
 
-import org.cxbox.api.data.BcIdentifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.cxbox.core.util.filter.drilldowns.FilterConfiguration.FilterConfigurationMain;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,12 +40,24 @@ public class CxboxDrilldownFilterFormerService implements DrilldownFilterFormerS
 
 	@Override
 	public String formDrillDownFilter(FilterConfiguration configurer) {
-		BcIdentifier bcIdentifier = configurer.getBcIdentifier();
-		FilterBuilder<?, ?> fb = configurer.getFb();
-		if (fb instanceof final CxboxDrillDownFilterBuilder<?, ?> cxboxDrillDownFilterBuilder) {
-			return cxboxDrillDownFilterBuilder.build(bcIdentifier).orElse("");
+
+		List<FilterConfigurationMain> filterConfigurationMains = configurer.getFilterConfigurationMains();
+		List<String> filters = new ArrayList<>();
+		filterConfigurationMains.forEach(fc -> {
+					if (fc.getFb() instanceof final CxboxDrillDownFilterBuilder<?, ?> cxboxDrillDownFilterBuilder) {
+						filters.add(cxboxDrillDownFilterBuilder.build(fc.getBcIdentifier()).orElse(null));
+					}
+				}
+		);
+		String filter = filters.stream()
+				.filter(Objects::nonNull)
+				.filter(s -> !s.isBlank())
+				.collect(Collectors.joining(","));
+
+		if (!filter.isBlank()) {
+			return "?filters={" + filter + "}";
 		}
-		throw new RuntimeException("Cannot form drilldowns");
+		return null;
 	}
 
 }

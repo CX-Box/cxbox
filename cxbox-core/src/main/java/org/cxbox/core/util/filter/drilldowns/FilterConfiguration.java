@@ -17,6 +17,8 @@
 package org.cxbox.core.util.filter.drilldowns;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,42 +29,81 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 @Getter(value = AccessLevel.PACKAGE)
 public class FilterConfiguration {
 
-	private BcIdentifier bcIdentifier;
 
-	private FilterBuilder<?, ?> fb;
+	private final List<FilterConfigurationMain> filterConfigurationMains = new ArrayList<>();
 
-	public <DTO extends DataResponseDTO, FB extends FilterBuilder<DTO, FB>> FilterConfigurationFilterBuilderBuilder<DTO, FB> customBuilder(
-			BcIdentifier bc, TypeToken<FB> token) {
-		FB fb = token.newInstance();
-		this.fb = fb;
-		this.bcIdentifier = bc;
-		return new FilterConfigurationFilterBuilderBuilder<DTO, FB>(this, fb);
+	public FilterConfiguration add(Consumer<FilterConfigurationMain> function) {
+		FilterConfigurationMain fcm = new FilterConfigurationMain();
+		function.accept(fcm);
+		filterConfigurationMains.add(fcm);
+		return this;
 	}
 
-	public <DTO extends DataResponseDTO, FB extends CxboxDrillDownFilterBuilder<DTO, FB>> FilterConfigurationFilterBuilderBuilder<DTO, FB> defaultBuilder(
-			BcIdentifier bc, Class<DTO> dtoClass) {
-		FB fb = (FB) new CxboxDrillDownFilterBuilder<DTO, FB>() {
+	public <DTO extends DataResponseDTO> FilterConfiguration add(BcIdentifier bcIdentifier, Class<DTO> dtoClass, Consumer<CxboxDrillDownFilterBuilderDefault<DTO>> consumer) {
+		FilterConfigurationMain filterConfigurationMain = new FilterConfigurationMain();
+		filterConfigurationMain.bcIdentifier = bcIdentifier;
+		CxboxDrillDownFilterBuilderDefault<DTO> cxboxDrillDownFilterBuilderDefault = new CxboxDrillDownFilterBuilderDefault<>() {
 		};
-		this.fb = fb;
-		this.bcIdentifier = bc;
-		return new FilterConfigurationFilterBuilderBuilder<>(this, fb);
+		filterConfigurationMain.fb = cxboxDrillDownFilterBuilderDefault;
+		consumer.accept(cxboxDrillDownFilterBuilderDefault);
+		filterConfigurationMains.add(filterConfigurationMain);
+		return this;
+	}
+
+	public <DTO extends DataResponseDTO, FB extends FilterBuilder<DTO, FB>> FilterConfiguration add(
+			BcIdentifier bcIdentifier, Class<DTO> dtoClass, TypeToken<FB> token, Consumer<FB> consumer) {
+		FilterConfigurationMain filterConfigurationMain = new FilterConfigurationMain();
+		filterConfigurationMain.bcIdentifier = bcIdentifier;
+		FB fb = token.newInstance();
+		filterConfigurationMain.fb = fb;
+		consumer.accept(fb);
+		filterConfigurationMains.add(filterConfigurationMain);
+		return this;
+	}
+
+
+	@Getter
+	public static class FilterConfigurationMain {
+
+		private BcIdentifier bcIdentifier;
+
+		private FilterBuilder<?, ?> fb;
+
+
+		public <DTO extends DataResponseDTO, FB extends FilterBuilder<DTO, FB>> FilterConfigurationFilterBuilderBuilder<DTO, FB> customBuilder(
+				BcIdentifier bc, TypeToken<FB> token) {
+			FB fb = token.newInstance();
+			this.fb = fb;
+			this.bcIdentifier = bc;
+			return new FilterConfigurationFilterBuilderBuilder<DTO, FB>(this, fb);
+		}
+
+		public <DTO extends DataResponseDTO, FB extends CxboxDrillDownFilterBuilder<DTO, FB>> FilterConfigurationFilterBuilderBuilder<DTO, FB> defaultBuilder(
+				BcIdentifier bc, Class<DTO> dtoClass) {
+			FB fb = (FB) new CxboxDrillDownFilterBuilder<DTO, FB>() {
+			};
+			this.fb = fb;
+			this.bcIdentifier = bc;
+			return new FilterConfigurationFilterBuilderBuilder<>(this, fb);
+		}
+
 	}
 
 
 	public static class FilterConfigurationFilterBuilderBuilder<DTO extends DataResponseDTO, FB extends FilterBuilder<DTO, FB>> {
 
-		private final FilterConfiguration filterConfiguration;
+		private final FilterConfigurationMain filterConfigurationMain;
 
 		private final FB fb;
 
-		public FilterConfigurationFilterBuilderBuilder(FilterConfiguration filterConfiguration, FB fb) {
-			this.filterConfiguration = filterConfiguration;
+		public FilterConfigurationFilterBuilderBuilder(FilterConfigurationMain filterConfigurationMain, FB fb) {
+			this.filterConfigurationMain = filterConfigurationMain;
 			this.fb = fb;
 		}
 
-		public FilterConfiguration filters(Consumer<FB> consumer) {
+		public FilterConfigurationMain filters(Consumer<FB> consumer) {
 			consumer.accept(this.fb);
-			return this.filterConfiguration;
+			return this.filterConfigurationMain;
 		}
 
 	}
