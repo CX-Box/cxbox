@@ -35,7 +35,7 @@ import org.cxbox.core.dto.FieldDrillDown;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
 import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.filter.drilldowns.DrilldownFilterFormerService;
-import org.cxbox.core.util.filter.drilldowns.FilterConfiguration;
+import org.cxbox.core.util.filter.drilldowns.FC;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @Slf4j
@@ -172,24 +172,11 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 				});
 	}
 
-//	public final <D extends DataResponseDTO> void setDrilldownWithFilter(DtoField<? super T, ?> field,
-//			DrillDownTypeSpecifier drillDownType, String drillDown,
-//			BcIdentifier bc, Class<D> dtoClass, UnaryOperator<CxboxDrillDownFilterBuilder<D>> filters) {
-//		DrilldownFilterFormerService drilldownFilterFormerService = SpringBeanUtils.getBean(DrilldownFilterFormerService.class);
-//		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
-//				.ifPresent(fieldDTO -> {
-//					fieldDTO.setDrillDown(
-//							drillDown + Optional.ofNullable(drilldownFilterFormerService.formDrillDownFilter(bc, dtoClass, filters))
-//									.map(fs -> "?" + fs).orElse(""));
-//					fieldDTO.setDrillDownType(drillDownType.getValue());
-//				});
-//	}
-
 	public final void setDrilldownWithFilter(DtoField<? super T, ?> field,
 			DrillDownTypeSpecifier drillDownType, String drillDown,
-			Consumer<FilterConfiguration> configurer) {
+			Consumer<FC> configurer) {
 		DrilldownFilterFormerService drilldownFilterFormerService = SpringBeanUtils.getBean(DrilldownFilterFormerService.class);
-		FilterConfiguration fc = new FilterConfiguration();
+		FC fc = new FC();
 		configurer.accept(fc);
 		Optional.ofNullable(field).map(dtoField -> fields.get(dtoField.getName()))
 				.ifPresent(fieldDTO -> {

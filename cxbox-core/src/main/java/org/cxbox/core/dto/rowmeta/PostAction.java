@@ -31,7 +31,7 @@ import org.cxbox.core.dto.MessageType;
 import org.cxbox.core.service.action.DrillDownTypeSpecifier;
 import org.cxbox.core.util.SpringBeanUtils;
 import org.cxbox.core.util.filter.drilldowns.DrilldownFilterFormerService;
-import org.cxbox.core.util.filter.drilldowns.FilterConfiguration;
+import org.cxbox.core.util.filter.drilldowns.FC;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostAction {
@@ -82,13 +82,13 @@ public class PostAction {
 
 	public static PostAction drillDownWithFilter(DrillDownTypeSpecifier drillDownType,
 			String url,
-			Consumer<FilterConfiguration> configurer) {
-		FilterConfiguration filterConfiguration = new FilterConfiguration();
-		configurer.accept(filterConfiguration);
+			Consumer<FC> configurer) {
+		FC fc = new FC();
+		configurer.accept(fc);
 		DrilldownFilterFormerService drilldownFilterFormerService = SpringBeanUtils.getBean(DrilldownFilterFormerService.class);
 		return new PostAction()
 				.add(BasePostActionField.TYPE, BasePostActionType.DRILL_DOWN)
-				.add(BasePostActionField.URL, url + drilldownFilterFormerService.formDrillDownFilter(filterConfiguration))
+				.add(BasePostActionField.URL, url + drilldownFilterFormerService.formDrillDownFilter(fc))
 				.add(BasePostActionField.URL_NAME, null)
 				.add(BasePostActionField.DRILL_DOWN_TYPE, drillDownType.getValue());
 	}

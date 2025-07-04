@@ -16,15 +16,25 @@
 
 package org.cxbox.core.util.filter.drilldowns;
 
+/**
+ *  Service for form filter part of url from {@link FC}
+ */
 public interface DrilldownFilterFormerService {
 
-//	<D extends DataResponseDTO> Supplier<CxboxDrillDownFilterBuilder<D>> supplierDrilldown();
-
-//	<D extends DataResponseDTO> String formDrillDownFilter(BcIdentifier bc,
-//			Class<D> dtoClass,
-//			UnaryOperator<CxboxDrillDownFilterBuilder<D>> configurer);
-
-	String formDrillDownFilter(FilterConfiguration configurer);
+	/**
+	 * Form string with filter params
+	 *
+	 * <pre>
+	 * {@code
+	 * 	String filterPart = drilldownFilterFormerService.formDrillDownFilter(fc);
+	 * 	// filterPart be like "?filter={"bc1": field.]}
+	 * }
+	 * </pre>
+	 *
+	 * @param configurer {@code FC} configurer filter params
+	 * @return {@code String} url part with filter
+	 */
+	String formDrillDownFilter(FC configurer);
 
 }
 

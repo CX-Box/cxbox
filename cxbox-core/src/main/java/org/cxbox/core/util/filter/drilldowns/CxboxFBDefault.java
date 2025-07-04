@@ -18,7 +18,7 @@ package org.cxbox.core.util.filter.drilldowns;
 
 import org.cxbox.api.data.dto.DataResponseDTO;
 
-public class CxboxDrillDownFilterBuilderDefault<D extends DataResponseDTO> extends
-		CxboxDrillDownFilterBuilder<D, CxboxDrillDownFilterBuilderDefault<D>> {
+public class CxboxFBDefault<D extends DataResponseDTO> extends
+		CxboxFB<D, CxboxFBDefault<D>> {
 
 }

@@ -42,8 +42,8 @@ import org.cxbox.core.util.JsonUtils;
 import org.cxbox.dictionary.Dictionary;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SELF extends FilterBuilder<D, SELF>> implements
-		FilterBuilder<D, SELF> {
+public abstract class CxboxFB<D extends DataResponseDTO, S extends FB<D, S>> implements
+		FB<D, S> {
 
 	private static final String AMPERSAND_URL_ENCODED = URLEncoder.encode("&", StandardCharsets.UTF_8);
 
@@ -126,17 +126,17 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public SELF input(@NonNull DtoField<? super D, String> field, @Nullable String value) {
+	public S input(@NonNull DtoField<? super D, String> field, @Nullable String value) {
 		final DrillDownFieldFilter<D, String> drillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.CONTAINS,
 				field,
 				value
 		);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -161,14 +161,14 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public <T extends Dictionary> SELF dictionary(@NonNull DtoField<? super D, T> field, @Nullable T value) {
+	public <T extends Dictionary> S dictionary(@NonNull DtoField<? super D, T> field, @Nullable T value) {
 		DrillDownFieldFilter<D, T> drillDownFieldFilter = formDrillDownFieldFilterArraysValue(
 				SearchOperation.EQUALS_ONE_OF, true, field, value);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -193,14 +193,14 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public <T extends Enum<?>> SELF dictionaryEnum(@NonNull DtoField<? super D, T> field, @Nullable T value) {
+	public <T extends Enum<?>> S dictionaryEnum(@NonNull DtoField<? super D, T> field, @Nullable T value) {
 		DrillDownFieldFilter<D, T> drillDownFieldFilter = formDrillDownFieldFilterArraysValue(
 				SearchOperation.EQUALS_ONE_OF, true, field, value);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -280,7 +280,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public SELF date(@NonNull DtoField<? super D, LocalDateTime> field, @Nullable LocalDate value) {
+	public S date(@NonNull DtoField<? super D, LocalDateTime> field, @Nullable LocalDate value) {
 		return this.dateFromTo(field, value, value);
 	}
 
@@ -324,24 +324,24 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 */
 
 	@NonNull
-	public SELF dateFromTo(@NonNull DtoField<? super D, LocalDateTime> field, @Nullable LocalDate from,
+	public S dateFromTo(@NonNull DtoField<? super D, LocalDateTime> field, @Nullable LocalDate from,
 			@Nullable LocalDate to) {
 		if (from != null && to != null) {
 			this.fieldFilters.add(new DrillDownFieldFilter<>(
 					dateFromFilter(field, from.atStartOfDay()).urlEncodedFieldFilter() +
 							AMPERSAND_URL_ENCODED +
 							dateToFilter(field, to.atTime(23, 59, 59)).urlEncodedFieldFilter()));
-			return (SELF) this;
+			return (S) this;
 		}
 		if (from != null) {
 			this.fieldFilters.add(dateFromFilter(field, from.atStartOfDay()));
-			return (SELF) this;
+			return (S) this;
 		}
 		if (to != null) {
 			this.fieldFilters.add(dateToFilter(field, to.atTime(23, 59, 59)));
-			return (SELF) this;
+			return (S) this;
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -367,7 +367,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
 	@NonNull
-	public SELF dateTime(@NonNull DtoField<? super D, LocalDateTime> field,
+	public S dateTime(@NonNull DtoField<? super D, LocalDateTime> field,
 			@Nullable LocalDateTime value) {
 		return this.dateTimeFromTo(field, value, value);
 	}
@@ -397,7 +397,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder instance for fluent chaining
 	 */
 	@NonNull
-	public SELF dateTimeFromTo(@NonNull DtoField<? super D, LocalDateTime> field,
+	public S dateTimeFromTo(@NonNull DtoField<? super D, LocalDateTime> field,
 			@Nullable LocalDateTime from,
 			@Nullable LocalDateTime to) {
 		if (from != null && to != null) {
@@ -405,17 +405,17 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 					dateFromFilter(field, from).urlEncodedFieldFilter() +
 							AMPERSAND_URL_ENCODED +
 							dateToFilter(field, to).urlEncodedFieldFilter()));
-			return (SELF) this;
+			return (S) this;
 		}
 		if (from != null) {
 			this.fieldFilters.add(dateFromFilter(field, from));
-			return (SELF) this;
+			return (S) this;
 		}
 		if (to != null) {
 			this.fieldFilters.add(dateToFilter(field, to));
-			return (SELF) this;
+			return (S) this;
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 
@@ -441,7 +441,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public SELF multiValue(@NonNull DtoField<? super D, MultivalueField> field,
+	public S multiValue(@NonNull DtoField<? super D, MultivalueField> field,
 			@Nullable MultivalueField value) {
 
 		DrillDownFieldFilter<D, MultivalueField> drillDownFieldFilter = formDrillDownFieldFilterMultivalueFieldValue(
@@ -451,10 +451,10 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 				MultivalueFieldSingleValue::getId
 		);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -480,9 +480,9 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
 	@NonNull
-	public <T extends Number> SELF number(@NonNull DtoField<? super D, T> field, T value) {
+	public <T extends Number> S number(@NonNull DtoField<? super D, T> field, T value) {
 		if (value == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 
 		DrillDownFieldFilter<D, T> numberDrillDownFilter = formDrillDownFieldFilterSingleValue(
@@ -493,7 +493,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 		if (numberDrillDownFilter != null) {
 			this.fieldFilters.add(numberDrillDownFilter);
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -522,10 +522,10 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder instance for fluent chaining
 	 */
 	@NonNull
-	public <T extends Number> SELF numberFromTo(@NonNull DtoField<? super D, T> field, @Nullable T from,
+	public <T extends Number> S numberFromTo(@NonNull DtoField<? super D, T> field, @Nullable T from,
 			@Nullable T to) {
 		if (from == null && to == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 
 		if (from != null && to == null) {
@@ -542,7 +542,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 			));
 		}
 
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -623,7 +623,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
 	@NonNull
-	public <T extends Number> SELF percent(@NonNull DtoField<? super D, T> field, T value) {
+	public <T extends Number> S percent(@NonNull DtoField<? super D, T> field, T value) {
 		return number(field, value);
 	}
 
@@ -653,7 +653,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder instance for fluent chaining
 	 */
 	@NonNull
-	public <T extends Number> SELF percentFromTo(@NonNull DtoField<? super D, T> field, T from, T to) {
+	public <T extends Number> S percentFromTo(@NonNull DtoField<? super D, T> field, T from, T to) {
 		return numberFromTo(field, from, to);
 	}
 
@@ -680,7 +680,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public SELF text(@NonNull DtoField<? super D, String> field, String value) {
+	public S text(@NonNull DtoField<? super D, String> field, String value) {
 		return input(field, value);
 	}
 
@@ -701,7 +701,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param values one or more enum values to match (may be empty)
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Enum<?>> SELF radio(@NotNull DtoField<? super D, T> field, T... values) {
+	public <T extends Enum<?>> S radio(@NotNull DtoField<? super D, T> field, T... values) {
 		DrillDownFieldFilter<D, T> drillDownFieldFilter = formDrillDownFieldFilterArraysValue(
 				SearchOperation.EQUALS_ONE_OF,
 				true,
@@ -709,10 +709,10 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 				values
 		);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -732,17 +732,17 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the boolean value to match (true or false)
 	 * @return this builder instance for fluent chaining
 	 */
-	public SELF checkbox(@NotNull DtoField<? super D, Boolean> field, boolean value) {
+	public S checkbox(@NotNull DtoField<? super D, Boolean> field, boolean value) {
 		DrillDownFieldFilter<D, Boolean> drillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.SPECIFIED,
 				field,
 				value
 		);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -767,7 +767,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field ({@code  nullable})
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
-	public <T extends Number> SELF money(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends Number> S money(@NotNull DtoField<? super D, T> field, T value) {
 		return number(field, value);
 	}
 
@@ -796,7 +796,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param to the end date (inclusive, may be {@code null})
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Number> SELF moneyFromTo(@NotNull DtoField<? super D, T> field, T from, T to) {
+	public <T extends Number> S moneyFromTo(@NotNull DtoField<? super D, T> field, T from, T to) {
 		return numberFromTo(field, from, to);
 	}
 
@@ -820,7 +820,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field (may be {@code null})
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Serializable> SELF fileUpload(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends Serializable> S fileUpload(@NotNull DtoField<? super D, T> field, T value) {
 		DrillDownFieldFilter<D, T> dtDrillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.CONTAINS,
 				field,
@@ -831,7 +831,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 					dtDrillDownFieldFilter
 			);
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -853,7 +853,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field (may be {@code null})
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Serializable> SELF pickList(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends Serializable> S pickList(@NotNull DtoField<? super D, T> field, T value) {
 		DrillDownFieldFilter<D, T> dtDrillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.CONTAINS,
 				field,
@@ -864,7 +864,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 					dtDrillDownFieldFilter
 			);
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 
@@ -887,7 +887,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field (may be {@code null})
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Serializable> SELF inlinePickList(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends Serializable> S inlinePickList(@NotNull DtoField<? super D, T> field, T value) {
 		DrillDownFieldFilter<D, T> dtDrillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.CONTAINS,
 				field,
@@ -898,7 +898,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 					dtDrillDownFieldFilter
 			);
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -920,7 +920,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field (may be {@code null})
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Serializable> SELF multifield(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends Serializable> S multifield(@NotNull DtoField<? super D, T> field, T value) {
 		DrillDownFieldFilter<D, T> dtDrillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.CONTAINS,
 				field,
@@ -931,7 +931,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 					dtDrillDownFieldFilter
 			);
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -953,7 +953,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @param value the value to search for in the field (may be {@code null})
 	 * @return this builder instance for fluent chaining
 	 */
-	public <T extends Serializable> SELF suggestionPickList(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends Serializable> S suggestionPickList(@NotNull DtoField<? super D, T> field, T value) {
 		DrillDownFieldFilter<D, T> dtDrillDownFieldFilter = formDrillDownFieldFilterSingleValue(
 				SearchOperation.CONTAINS,
 				field,
@@ -964,7 +964,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 					dtDrillDownFieldFilter
 			);
 		}
-		return (SELF) this;
+		return (S) this;
 	}
 
 	/**
@@ -990,7 +990,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
 
-	public SELF multivalueHover(@NotNull DtoField<? super D, MultivalueField> field, MultivalueField value) {
+	public S multivalueHover(@NotNull DtoField<? super D, MultivalueField> field, MultivalueField value) {
 		return multiValue(field, value);
 	}
 
@@ -1018,7 +1018,7 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 	 * @return this builder {@code ? extend FilterBuilder} instance for fluent chaining
 	 */
 
-	public <T extends MultivalueField> SELF multipleSelect(@NotNull DtoField<? super D, T> field, T value) {
+	public <T extends MultivalueField> S multipleSelect(@NotNull DtoField<? super D, T> field, T value) {
 		DrillDownFieldFilter<D, T> drillDownFieldFilter = formDrillDownFieldFilterMultivalueFieldValue(
 				SearchOperation.EQUALS_ONE_OF,
 				field,
@@ -1026,10 +1026,10 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 				MultivalueFieldSingleValue::getValue
 		);
 		if (drillDownFieldFilter == null) {
-			return (SELF) this;
+			return (S) this;
 		}
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 
@@ -1149,9 +1149,9 @@ public abstract class CxboxDrillDownFilterBuilder<D extends DataResponseDTO, SEL
 		);
 	}
 
-	protected <T> SELF add(DrillDownFieldFilter<D, T> drillDownFieldFilter) {
+	protected <T> S add(DrillDownFieldFilter<D, T> drillDownFieldFilter) {
 		this.fieldFilters.add(drillDownFieldFilter);
-		return (SELF) this;
+		return (S) this;
 	}
 
 	public record DrillDownFieldFilter<D, T>(String urlEncodedFieldFilter) {

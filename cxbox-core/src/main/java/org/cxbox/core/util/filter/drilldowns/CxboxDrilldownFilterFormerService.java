@@ -16,48 +16,32 @@
 
 package org.cxbox.core.util.filter.drilldowns;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.cxbox.core.util.filter.drilldowns.FilterConfiguration.FilterConfigurationMain;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CxboxDrilldownFilterFormerService implements DrilldownFilterFormerService {
 
-//
-//	@Override
-//	public <D extends DataResponseDTO, FB extends CxboxDrillDownFilterBuilder<D,FB>> Supplier<FB> supplierDrilldown() {
-//		return () -> new CxboxDrillDownFilterBuilder<D,FB>() {};
-//	}
-//
-//	@Override
-//	public <D extends DataResponseDTO> String formDrillDownFilter(BcIdentifier bc, Class<D> dtoClass,
-//			UnaryOperator<CxboxDrillDownFilterBuilder<D>> configurer) {
-//		return configurer.apply((CxboxDrillDownFilterBuilder<D>) supplierDrilldown().get()).build(bc).orElse(null);
-//	}
-
 	@Override
-	public String formDrillDownFilter(FilterConfiguration configurer) {
+	public String formDrillDownFilter(FC configurer) {
 
-		List<FilterConfigurationMain> filterConfigurationMains = configurer.getFilterConfigurationMains();
-		List<String> filters = new ArrayList<>();
-		filterConfigurationMains.forEach(fc -> {
-					if (fc.getFb() instanceof final CxboxDrillDownFilterBuilder<?, ?> cxboxDrillDownFilterBuilder) {
-						filters.add(cxboxDrillDownFilterBuilder.build(fc.getBcIdentifier()).orElse(null));
+		String filters = configurer.getFCRs().stream()
+				.filter(Objects::nonNull)
+				.map(fcr -> {
+					if (fcr.fb() instanceof CxboxFB<?, ?> cxboxFB) {
+						return cxboxFB.build(fcr.bcIdentifier()).orElse(null);
 					}
-				}
-		);
-		String filter = filters.stream()
+					return null;
+				})
 				.filter(Objects::nonNull)
 				.filter(s -> !s.isBlank())
 				.collect(Collectors.joining(","));
 
-		if (!filter.isBlank()) {
-			return "?filters={" + filter + "}";
+		if (!filters.isBlank()) {
+			return "?filters={" + filters + "}";
 		}
-		return null;
+		return "";
 	}
 
 }
