@@ -24,7 +24,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@CxboxWidgetField("pickList")
+@CxboxWidgetField({"pickList", "suggestionPickList"})
 public class PickListFieldMeta extends FieldMetaBase {
 
 	private String popupBcName;
