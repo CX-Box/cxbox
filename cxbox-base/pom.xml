@@ -76,10 +76,16 @@
     <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
     <auto-service.version>1.1.1</auto-service.version>
     <guava.version>33.3.0-jre</guava.version>
+    <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>${jakarta.annotation-api.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.squareup</groupId>
         <artifactId>javapoet</artifactId>
