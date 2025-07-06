@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.service.action;
+package org.cxbox.api.data.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NonNull;
 
-public enum ActionScope {
-	BC,
-	RECORD,
-	MASS
+@Getter
+@AllArgsConstructor
+@EqualsAndHashCode(of = {"id"})
+public class MassDTO implements CheckedDto {
+
+	@NonNull
+	String id;
+
+	@NonNull
+	Boolean success;
+
+	String errorMessage;
 }

@@ -16,9 +16,19 @@
 
 package org.cxbox.core.service.action;
 
+import java.util.Set;
+import lombok.NonNull;
+import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.core.crudma.bc.BusinessComponent;
+import org.cxbox.core.dto.rowmeta.MassActionResultDTO;
 
-public enum ActionScope {
-	BC,
-	RECORD,
-	MASS
+@FunctionalInterface
+public interface MassActionInvoker<T extends DataResponseDTO> {
+
+	MassActionResultDTO<T> massInvoke(@NonNull BusinessComponent bc, @NonNull DataResponseDTO data, @NonNull Set<String> ids);
+
+	default ActionInvoker<T> toInvoker() {
+		return (bc, data) -> massInvoke(bc, data, data.getMassIds().stream().map(String::valueOf).collect(java.util.stream.Collectors.toSet()));
+	}
+
 }
