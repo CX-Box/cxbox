@@ -118,7 +118,9 @@ public class RowResponseService {
 				linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
 		}
 
-		//add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		// Add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		// A separate add is used because the getMeta method collects only visible fields,
+		// and changedNowParam is a internal field that is not marked as visible.
 		if (dataDTO.getChangedNowParam() != null) {
 			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
 			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));
@@ -180,19 +182,18 @@ public class RowResponseService {
 	}
 
 	public FieldDTO getDTOFromVisibleField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
-		return getDTOFromFieldCheckVisible(type, field, dataDTO, true);
+		if (field.getAnnotation(JsonIgnore.class) != null) {
+			return null;
+		}
+		return getDTOFromFieldCheckVisible(type, field, dataDTO);
 	}
 
 	public FieldDTO getDTOFromAllField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
-		return getDTOFromFieldCheckVisible(type, field, dataDTO, false);
+		return getDTOFromFieldCheckVisible(type, field, dataDTO);
 	}
 
-	private FieldDTO getDTOFromFieldCheckVisible(RowMetaType type, Field field, DataResponseDTO dataDTO,
-			boolean visibleOnly) {
+	private FieldDTO getDTOFromFieldCheckVisible(RowMetaType type, Field field, DataResponseDTO dataDTO) {
 		field.setAccessible(true);
-		if (field.getAnnotation(JsonIgnore.class) != null && visibleOnly) {
-			return null;
-		}
 		FieldDTO fieldDTO = new FieldDTO(field);
 		fieldDTO.setSortable(properties.isSortEnabledDefault());
 		try {

@@ -196,6 +196,13 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 	 * @param fields Current state of field metadata.
 	 * @param field DTO field to check
 	 * @return boolean. true – If the field was changed in the UI during the current iteration. false – If the field remains unchanged.
+	 *
+	 * <p>This method differs from {@code isFieldChanged} in that it specifically checks whether the field was changed
+	 * right now, during the current client-side action. It does this by checking the {@code changedNowParam} tag.
+	 *
+	 * <p>In contrast, {@code isFieldChanged} checks for any change to the field, based on the {@code data} tag, which
+	 * accumulates all changes over time (especially during force active), and may include fields that were changed earlier not necessarily in the current iteration.
+	 *
 	 */
 	public <V> boolean isFieldChangedNow(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, V> field) {
@@ -204,6 +211,24 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 				.orElse(false);
 	}
 
+	/**
+	 * Extracts the current value of the specified {@code field} from the {@code changedNowParam} parameter,
+	 * which is populated if the given field was changed "just now".
+	 *
+	 * @param <F>   the type of the field value
+	 * @param fields Current state of field metadata.
+	 * @param field DTO field
+	 * @return an {@link Optional} containing the current value of the field if it was recently changed and is accessible,
+	 *         or an empty Optional if not
+	 *
+	 * <p>This method allows you to extract the value of the field specifically from {@code changedNowParam},
+	 * whereas the {@code getCurrentValue} method returns the value from the {@code data} tag.
+	 * These values are expected to be the same, and any difference should be considered a potential issue.
+	 * <p>Currently, when accessing the {@code changedNowParam} tag, a check is performed to ensure that
+	 * each field in it has the same value as the corresponding field in the {@code data} tag.
+	 * However, this check only logs an error instead of enforcing strict equality.
+	 *
+	 */
 	private <F> Optional<F> getCurrentValueChangedNow(RowDependentFieldsMeta<T> fields,
 			DtoField<? super T, F> field)  {
 		return fields.getCurrentValue(DataResponseDTO_.changedNowParam)
@@ -212,8 +237,9 @@ public class RowDependentFieldsCommonMeta<T extends DataResponseDTO> extends Fie
 					try {
 						return (Optional<F>) getFieldValue(dto, field.getName());
 					} catch (IllegalAccessException e) {
-						throw new RuntimeException(e);
+						//skip
 					}
+					return null;
 				})
 				.orElse(Optional.empty());
 	}

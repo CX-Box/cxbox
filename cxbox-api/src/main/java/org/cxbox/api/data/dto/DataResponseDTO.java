@@ -126,6 +126,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 
 	@Getter
 	@Setter
+	@SuperBuilder
 	public static class CnangedNowParam {
 
 		/**

@@ -92,7 +92,9 @@ public class AnySourceRowResponseService extends RowResponseService {
 			ActionsDTO actionDTO,
 			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
-		//add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		// Add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		// A separate add is used because the getMeta method collects only visible fields,
+		// and changedNowParam is a internal field that is not marked as visible.
 		if (dataDTO.getChangedNowParam() != null) {
 			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
 			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));

@@ -83,21 +83,19 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	}
 
 	@Override
-	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataFE) {
+	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
 		final AnySourceBcDescription bcDescription = bc.getDescription();
 		final AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
-				dataFE, respFactory.getDTOFromService(bcDescription), bc
+				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		if (checkChangeNowService.isChangedNowData(dataFE)) {
-			Map<String, Object> changedNow = (Map<String, Object>) dataFE.get(CHANGED_NOW);
+		if (checkChangeNowService.isChangedNowData(data)) {
+			Map<String, Object> changedNowMap = (Map<String, Object>) data.get(CHANGED_NOW);
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
-					changedNow, respFactory.getDTOFromService(bc.getDescription()), bc);
-			checkChangeNowService.validateChangedNowFields(changedNow,changedNowDTO,requestDto);
-			CnangedNowParam cnangedNowParam = new CnangedNowParam();
-			cnangedNowParam.setChangedNowDTO(changedNowDTO);
-			cnangedNowParam.setChangedNow(changedNow.keySet());
+					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
+			checkChangeNowService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
+			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
 			responseDto.setChangedNowParam(cnangedNowParam);
 		}
 		responseDto.setErrors(requestDto.getErrors());

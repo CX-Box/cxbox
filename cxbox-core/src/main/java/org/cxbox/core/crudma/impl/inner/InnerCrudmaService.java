@@ -89,14 +89,12 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
 		if (checkChangeNowService.isChangedNowData(dataFE)) {
-			Map<String, Object> changedNow = (Map<String, Object>) dataFE.get(CHANGED_NOW);
+			Map<String, Object> changedNowMap = (Map<String, Object>) dataFE.get(CHANGED_NOW);
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
-					changedNow, respFactory.getDTOFromService(bc.getDescription()), bc);
-			checkChangeNowService.validateChangedNowFields(changedNow,changedNowDTO,requestDto);
+					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
+			checkChangeNowService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
 
-			CnangedNowParam cnangedNowParam = new CnangedNowParam();
-			cnangedNowParam.setChangedNowDTO(changedNowDTO);
-			cnangedNowParam.setChangedNow(changedNow.keySet());
+			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
 			responseDto.setChangedNowParam(cnangedNowParam);
 		}
 		responseDto.setErrors(requestDto.getErrors());

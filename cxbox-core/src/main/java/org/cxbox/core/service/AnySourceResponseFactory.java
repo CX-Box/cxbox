@@ -64,6 +64,9 @@ public class AnySourceResponseFactory {
 	@Autowired
 	private ValidatorsProvider validatorsProvider;
 
+	@Autowired
+	CheckChangeNowService checkChangeNowService;
+
 	/**
 	 * @param anySourceBcDescription information about BC;
 	 * @return {@link AnySourceResponseService} common interface implemented by all services working with the controller
@@ -93,9 +96,8 @@ public class AnySourceResponseFactory {
 		} else {
 			dataResponseDTO = getDTOFromMapInner(dataMap, clazz, bc, ignoreBusinessErrors);
 			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
-			CnangedNowParam cnangedNowParam = new CnangedNowParam();
-			cnangedNowParam.setChangedNowDTO(changedNowDTO);
-			cnangedNowParam.setChangedNow(changedNowMap.keySet());
+
+			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
 			dataResponseDTO.setChangedNowParam(cnangedNowParam);
 		}
 		return dataResponseDTO;

@@ -62,6 +62,9 @@ public class ResponseFactory {
 	@Autowired
 	private ValidatorsProvider validatorsProvider;
 
+	@Autowired
+	CheckChangeNowService checkChangeNowService;
+
 	private static final String DATA = "data";
 
 	/**
@@ -92,9 +95,7 @@ public class ResponseFactory {
 		} else {
 			dataResponseDTO = getDTOFromMapInner(dataMap, clazz, bc, ignoreBusinessErrors);
 			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
-			CnangedNowParam cnangedNowParam = new CnangedNowParam();
-			cnangedNowParam.setChangedNowDTO(changedNowDTO);
-			cnangedNowParam.setChangedNow(changedNowMap.keySet());
+			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
 			dataResponseDTO.setChangedNowParam(cnangedNowParam);
 		}
 		return dataResponseDTO;
