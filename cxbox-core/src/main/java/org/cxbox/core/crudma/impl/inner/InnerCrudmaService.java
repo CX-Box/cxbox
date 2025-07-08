@@ -19,7 +19,7 @@ package org.cxbox.core.crudma.impl.inner;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
+import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -28,7 +28,7 @@ import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.crudma.impl.AbstractCrudmaService;
 import org.cxbox.core.dto.rowmeta.*;
 import org.cxbox.core.exception.BusinessException;
-import org.cxbox.core.service.CheckChangeNowService;
+import org.cxbox.core.service.ChangedNowValidationService;
 import org.cxbox.core.service.ResponseFactory;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.service.action.ActionDescription;
@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.service.CheckChangeNowService.CHANGED_NOW;
+import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
 
 @Service
 public class InnerCrudmaService extends AbstractCrudmaService {
@@ -57,7 +57,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 	private RowResponseService rowMeta;
 
 	@Autowired
-	CheckChangeNowService checkChangeNowService;
+	private ChangedNowValidationService changedNowValidationService;
 
 	@Override
 	public CreateResult create(BusinessComponent bc) {
@@ -80,22 +80,22 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 
 
 	@Override
-	public PreviewResult preview(BusinessComponent bc, Map<String, Object> dataFE) {
+	public PreviewResult preview(BusinessComponent bc, Map<String, Object> data) {
 
 		final InnerBcDescription bcDescription = bc.getDescription();
 		final ResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		final DataResponseDTO requestDto = respFactory.getDTOFromMapIgnoreBusinessErrors(
-				dataFE, respFactory.getDTOFromService(bcDescription), bc
+				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		if (checkChangeNowService.isChangedNowData(dataFE)) {
-			Map<String, Object> changedNowMap = (Map<String, Object>) dataFE.get(CHANGED_NOW);
+		if (changedNowValidationService.isChangedNowData(data)) {
+			Map<String, Object> changedNowMap = (Map<String, Object>) data.get(CHANGED_NOW);
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
 					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
-			checkChangeNowService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
+			changedNowValidationService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
 
-			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
-			responseDto.setChangedNowParam(cnangedNowParam);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
+			responseDto.setChangedNowParam(changedNowParam);
 		}
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);

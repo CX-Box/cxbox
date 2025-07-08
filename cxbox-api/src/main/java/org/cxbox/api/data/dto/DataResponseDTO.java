@@ -67,7 +67,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	 * Transfers data from {@code Map<String, Object> changedNow}
 	 */
 	@JsonIgnore
-	private CnangedNowParam changedNowParam;
+	private ChangedNowParam changedNowParam;
 
 	/**
 	 * Fields currently being updated by the frontend
@@ -127,14 +127,19 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@Getter
 	@Setter
 	@SuperBuilder
-	public static class CnangedNowParam {
+	public static class ChangedNowParam {
 
 		/**
 		 * Set of field names that are currently being modified.
 		 * <p>
 		 * Contains only the names of changed fields.
+		 *
+		 * <p>
+		 * Unlike {@code changedFields}, which contains the names of all fields changed
+		 * throughout all iterations of editing the entity, this set ({@code changedNow})
+		 * includes only the fields that were modified during the current operation.
 		 */
-		private Set<String>  changedNow;
+		private Set<String> changedNow;
 
 		/**
 		 * Containing the actual new values for changed fields.

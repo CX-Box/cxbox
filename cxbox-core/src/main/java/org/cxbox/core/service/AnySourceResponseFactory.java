@@ -17,7 +17,8 @@
 package org.cxbox.core.service;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.service.CheckChangeNowService.CHANGED_NOW;
+import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
+import static org.cxbox.core.controller.param.RequestParameters.DATA;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
@@ -36,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
+import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
@@ -59,13 +60,11 @@ public class AnySourceResponseFactory {
 
 	private final ApplicationContext ctx;
 
-	private static final String DATA = "data";
-
 	@Autowired
 	private ValidatorsProvider validatorsProvider;
 
 	@Autowired
-	CheckChangeNowService checkChangeNowService;
+	private ChangedNowValidationService changedNowValidationService;
 
 	/**
 	 * @param anySourceBcDescription information about BC;
@@ -97,8 +96,8 @@ public class AnySourceResponseFactory {
 			dataResponseDTO = getDTOFromMapInner(dataMap, clazz, bc, ignoreBusinessErrors);
 			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
 
-			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
-			dataResponseDTO.setChangedNowParam(cnangedNowParam);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
+			dataResponseDTO.setChangedNowParam(changedNowParam);
 		}
 		return dataResponseDTO;
 	}

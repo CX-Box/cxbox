@@ -17,7 +17,7 @@
 package org.cxbox.core.crudma.impl.inner;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.service.CheckChangeNowService.CHANGED_NOW;
+import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ import lombok.SneakyThrows;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
+import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -41,7 +41,7 @@ import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.dao.AnySourceBaseDAO;
 import org.cxbox.core.service.AnySourceResponseFactory;
 import org.cxbox.core.service.AnySourceResponseService;
-import org.cxbox.core.service.CheckChangeNowService;
+import org.cxbox.core.service.ChangedNowValidationService;
 import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.AnySourceRowResponseService;
@@ -61,7 +61,7 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	private AnySourceRowResponseService rowMeta;
 
 	@Autowired
-	CheckChangeNowService checkChangeNowService;
+	private ChangedNowValidationService changedNowValidationService;
 
 	@Override
 	public CreateResult create(BusinessComponent bc) {
@@ -90,13 +90,13 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		if (checkChangeNowService.isChangedNowData(data)) {
+		if (changedNowValidationService.isChangedNowData(data)) {
 			Map<String, Object> changedNowMap = (Map<String, Object>) data.get(CHANGED_NOW);
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
 					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
-			checkChangeNowService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
-			CnangedNowParam cnangedNowParam = checkChangeNowService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
-			responseDto.setChangedNowParam(cnangedNowParam);
+			changedNowValidationService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
+			responseDto.setChangedNowParam(changedNowParam);
 		}
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);

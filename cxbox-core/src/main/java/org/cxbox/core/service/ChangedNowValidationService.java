@@ -22,7 +22,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dto.DataResponseDTO;
-import org.cxbox.api.data.dto.DataResponseDTO.CnangedNowParam;
+import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.core.dto.multivalue.MultivalueField;
 import org.springframework.security.util.FieldUtils;
 import org.springframework.stereotype.Service;
@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CheckChangeNowService {
-
-
-	public static final String CHANGED_NOW = "changedNow";
+public class ChangedNowValidationService {
 
 	/**
 	 * Checks whether the input data contains fields that have been changed in the current request.
@@ -42,11 +39,11 @@ public class CheckChangeNowService {
 	 * if it exists and is not empty.
 	 * </p>
 	 *
-	 * @param dataFE the input data from the frontend, which may contain changed fields
+	 * @param data the input data from the frontend, which may contain changed fields
 	 * @return {@code true} if there are changed fields under the {@code CHANGED_NOW} key; {@code false} otherwise
 	 */
-	public boolean isChangedNowData(Map<String, Object> dataFE) {
-		Map<String, Object> dataChangedFE = (Map<String, Object>) dataFE.get("changedNow");
+	public boolean isChangedNowData(Map<String, Object> data) {
+		Map<String, Object> dataChangedFE = (Map<String, Object>) data.get("changedNow");
 		return dataChangedFE != null && !dataChangedFE.isEmpty();
 	}
 
@@ -104,8 +101,8 @@ public class CheckChangeNowService {
 	 * @param changedNowDTO the data transfer object containing detailed information about the changes
 	 * @return a fully constructed {@code CnangedNowParam} instance encapsulating the change data
 	 */
-	public CnangedNowParam buildCnangedNowParam(Set<String> changedNowKeys, DataResponseDTO changedNowDTO) {
-		return CnangedNowParam.builder()
+	public ChangedNowParam buildCnangedNowParam(Set<String> changedNowKeys, DataResponseDTO changedNowDTO) {
+		return ChangedNowParam.builder()
 				.changedNowDTO(changedNowDTO)
 				.changedNow(changedNowKeys)
 				.build();

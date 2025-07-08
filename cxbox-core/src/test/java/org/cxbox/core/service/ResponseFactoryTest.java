@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 		ResponseFactory.class,
 		ValidatorsProviderImpl.class,
 		JacksonConfig.class,
-		CheckChangeNowService.class
+		ChangedNowValidationService.class
 })
 class ResponseFactoryTest {
 
