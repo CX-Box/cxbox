@@ -38,6 +38,8 @@ import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.ManagedType;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -269,8 +271,16 @@ public class MetadataUtils {
 								.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
 								.toArray(Predicate[]::new));
 					} else {
-						return cb
-								.or(((List<Object>) value).stream().map(object -> cb.equal(field, object)).toArray(Predicate[]::new));
+						String[] split = criteria.getField().split("\\.");
+						if (split.length < 2  || !isElementCollectionFieldFromPath(root, criteria.getField())) {
+							return cb
+									.or(((List<Object>) value).stream().map(object -> cb.equal(field, object)).toArray(Predicate[]::new));
+						}
+						Join<?, ?> join = root.join(split[0]);
+						for (int i = 1; i < split.length; i++) {
+							join = join.join(split[i]);
+						}
+						return join.in(((List<Object>) value));
 					}
 				case CONTAINS_ONE_OF:
 					return cb.or(((List<Object>) value)
@@ -463,6 +473,37 @@ public class MetadataUtils {
 								)
 						)
 				);
+	}
+
+	private boolean isElementCollectionFieldFromPath(Root<?> root, String fullPath) {
+		String[] split = fullPath.split("\\.");
+		Class<?> current = root.getModel().getJavaType();
+		Field field = null;
+		for (String p : split) {
+			field = CxReflectionUtils.findField(
+					current,
+					p
+			);
+			current = field.getType();
+			if (Collection.class.isAssignableFrom(field.getType())) {
+				Type genericType = field.getGenericType();
+				if (genericType instanceof ParameterizedType genType) {
+					Type elementType = genType.getActualTypeArguments()[0];
+					if (elementType instanceof Class) {
+						current = (Class<?>) elementType;
+					} else if (elementType instanceof ParameterizedType) {
+						current = (Class<?>) ((ParameterizedType) elementType).getRawType();
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			}
+		}
+		return Optional.ofNullable(field)
+				.map(fld -> fld.isAnnotationPresent(ElementCollection.class))
+				.orElse(false);
 	}
 
 }
