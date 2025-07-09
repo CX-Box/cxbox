@@ -17,8 +17,8 @@
 package org.cxbox.core.service;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
-import static org.cxbox.core.controller.param.RequestParameters.DATA;
+import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
+import static org.cxbox.core.controller.param.RequestBodyParameters.DATA;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;

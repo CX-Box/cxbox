@@ -16,10 +16,10 @@
 
 package org.cxbox.core.controller.param;
 
-public class RequestParameters {
+public class RequestBodyParameters {
 
 	public static final String DATA = "data";
 
-	public static final String CHANGED_NOW = "changedNow";
+	public static final String CHANGED_NOW = "changedNow_";
 
 }

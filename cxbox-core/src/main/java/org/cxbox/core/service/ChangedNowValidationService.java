@@ -16,6 +16,8 @@
 
 package org.cxbox.core.service;
 
+import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -43,7 +45,7 @@ public class ChangedNowValidationService {
 	 * @return {@code true} if there are changed fields under the {@code CHANGED_NOW} key; {@code false} otherwise
 	 */
 	public boolean isChangedNowData(Map<String, Object> data) {
-		Map<String, Object> dataChangedFE = (Map<String, Object>) data.get("changedNow");
+		Map<String, Object> dataChangedFE = (Map<String, Object>) data.get(CHANGED_NOW);
 		return dataChangedFE != null && !dataChangedFE.isEmpty();
 	}
 
@@ -70,23 +72,9 @@ public class ChangedNowValidationService {
 				Object newValue = FieldUtils.getFieldValue(changedNowDTO, key);
 				Object oldValue = FieldUtils.getFieldValue(requestDto, key);
 
-				boolean isEqual = false;
-
-				if (Objects.equals(newValue, oldValue)) {
-					isEqual = true;
-				} else if (newValue instanceof MultivalueField && oldValue instanceof MultivalueField) {
-					MultivalueField newMV = (MultivalueField) newValue;
-					MultivalueField oldMV = (MultivalueField) oldValue;
-
-					isEqual = newMV.getValues().stream()
-							.allMatch(newItem -> oldMV.getValues().stream()
-									.anyMatch(oldItem -> Objects.equals(oldItem.getValue(), newItem.getValue())));
-				}
-
-				if (!isEqual) {
-					log.error("Field \"{}\" has different values: {} != {}", key, newValue, oldValue);
-				}
-
+				if (!Objects.equals(newValue, oldValue)) {
+						log.error("Field \"{}\" has different values: {} != {}", key, newValue, oldValue);
+					}
 			} catch (IllegalAccessException e) {
 				log.error("Error accessing field \"{}\": {}", key, e.getMessage(), e);
 			}

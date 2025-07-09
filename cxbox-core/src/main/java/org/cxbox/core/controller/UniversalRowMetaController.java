@@ -18,7 +18,7 @@ package org.cxbox.core.controller;
 
 import static org.cxbox.api.util.i18n.InfoMessageSource.infoMessage;
 import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
-import static org.cxbox.core.controller.param.RequestParameters.DATA;
+import static org.cxbox.core.controller.param.RequestBodyParameters.DATA;
 
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder;
@@ -104,6 +104,8 @@ public class UniversalRowMetaController {
 			@RequestBody Map<String, Object> requestBody) {
 		if (requestBody == null || requestBody.get(DATA) == null || !(requestBody.get(DATA) instanceof Map)) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
+		} else {
+			requestBody = (Map) requestBody.get(DATA);
 		}
 		BusinessComponent bc = bcFactory.getBusinessComponent(request, queryParameters);
 		CrudmaAction crudmaAction = crudmaActionHolder.of(CrudmaActionType.PREVIEW)

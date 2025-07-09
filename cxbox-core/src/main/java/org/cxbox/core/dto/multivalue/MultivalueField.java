@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import lombok.AllArgsConstructor;
@@ -73,6 +74,20 @@ public class MultivalueField implements Iterable<MultivalueFieldSingleValue>, Se
 	@Override
 	public Iterator<MultivalueFieldSingleValue> iterator() {
 		return values.iterator();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		MultivalueField multivalueField = (MultivalueField) o;
+		return multivalueField.getValues().stream()
+				.allMatch(newItem -> this.getValues().stream()
+						.anyMatch(oldItem -> Objects.equals(oldItem.getValue(), newItem.getValue())));
 	}
 
 }

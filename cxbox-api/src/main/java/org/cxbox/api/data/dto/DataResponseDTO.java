@@ -82,7 +82,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	 */
 	@JsonIgnore
 	@DtoMetamodelIgnore
-	private Map<String, Object> changedNow = new HashMap<>();
+	private Map<String, Object> changedNow_ = new HashMap<>();
 
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;

@@ -17,7 +17,7 @@
 package org.cxbox.core.crudma.impl.inner;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
+import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
 
 import java.util.List;
 import java.util.Map;

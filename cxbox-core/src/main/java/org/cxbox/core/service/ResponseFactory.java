@@ -16,15 +16,24 @@
 
 package org.cxbox.core.service;
 
+import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
-import static org.cxbox.core.controller.param.RequestParameters.DATA;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
 import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
@@ -33,16 +42,6 @@ import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.BusinessError.Entity;
 import org.cxbox.core.exception.BusinessException;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Path;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.reflect.TypeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
@@ -86,13 +85,9 @@ public class ResponseFactory {
 	private DataResponseDTO getDTOFromMapDataAndChangeNow(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
 		Map<String, Object> changedNowMap = (Map<String, Object>) map.get(CHANGED_NOW);
-		Map<String, Object> dataMap = (Map<String, Object>) map.get(DATA);
 
-		DataResponseDTO dataResponseDTO;
-		if (changedNowMap == null) {
-			dataResponseDTO = getDTOFromMapInner(dataMap == null ? map : dataMap, clazz, bc, ignoreBusinessErrors);
-		} else {
-			dataResponseDTO = getDTOFromMapInner(dataMap, clazz, bc, ignoreBusinessErrors);
+		DataResponseDTO dataResponseDTO = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
+		if (changedNowMap != null) {
 			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
 			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
 			dataResponseDTO.setChangedNowParam(changedNowParam);

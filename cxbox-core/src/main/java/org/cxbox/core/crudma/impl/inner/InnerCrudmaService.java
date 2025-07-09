@@ -43,8 +43,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
+import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.controller.param.RequestParameters.CHANGED_NOW;
 
 @Service
 public class InnerCrudmaService extends AbstractCrudmaService {

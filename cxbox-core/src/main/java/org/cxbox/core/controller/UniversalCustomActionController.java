@@ -17,7 +17,7 @@
 package org.cxbox.core.controller;
 
 import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
-import static org.cxbox.core.controller.param.RequestParameters.DATA;
+import static org.cxbox.core.controller.param.RequestBodyParameters.DATA;
 
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder;

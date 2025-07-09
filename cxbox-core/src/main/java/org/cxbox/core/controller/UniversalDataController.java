@@ -18,7 +18,7 @@ package org.cxbox.core.controller;
 
 import static org.cxbox.api.util.i18n.InfoMessageSource.infoMessage;
 import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
-import static org.cxbox.core.controller.param.RequestParameters.DATA;
+import static org.cxbox.core.controller.param.RequestBodyParameters.DATA;
 
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.DataResponseDTO;
