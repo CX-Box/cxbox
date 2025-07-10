@@ -42,6 +42,8 @@ import lombok.Setter;
 @JsonFilter("dtoPropertyFilter")
 public abstract class DataResponseDTO implements CheckedDto, IDataContainer<DataResponseDTO>, Serializable {
 
+	public static final String ID = "id";
+
 	@JsonIgnore
 	@DtoMetamodelIgnore
 	protected Set<String> changedFields = new TreeSet<>();
