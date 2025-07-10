@@ -19,6 +19,7 @@ package org.cxbox.core.service.action;
 import java.util.Set;
 import lombok.NonNull;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.MassDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.MassActionResultDTO;
 
@@ -28,7 +29,11 @@ public interface MassActionInvoker<T extends DataResponseDTO> {
 	MassActionResultDTO<T> massInvoke(@NonNull BusinessComponent bc, @NonNull DataResponseDTO data, @NonNull Set<String> ids);
 
 	default ActionInvoker<T> toInvoker() {
-		return (bc, data) -> massInvoke(bc, data, data.getMassIds_().stream().map(String::valueOf).collect(java.util.stream.Collectors.toSet()));
+		return (bc, data) -> massInvoke(bc, data, data.getMassIds_().stream()
+				.map(MassDTO::getId)
+				.map(String::valueOf)
+				.collect(java.util.stream.Collectors.toSet())
+		);
 	}
 
 }

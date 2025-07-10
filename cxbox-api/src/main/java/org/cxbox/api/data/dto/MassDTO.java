@@ -30,7 +30,6 @@ public class MassDTO implements CheckedDto, Serializable {
 	@NonNull
 	private final String id;
 
-	@NonNull
 	private final Boolean success;
 
 	private final String errorMessage;

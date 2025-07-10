@@ -61,7 +61,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	private Set<String> computedFields;
 
 	@DtoMetamodelIgnore
-	private Set<MassDTO> massIds_ = new HashSet<>();
+	private HashSet<MassDTO> massIds_ = new HashSet<>();
 
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;

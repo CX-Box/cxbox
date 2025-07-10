@@ -16,7 +16,8 @@
 
 package org.cxbox.core.dto.rowmeta;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.NonNull;
@@ -26,8 +27,12 @@ import org.cxbox.api.data.dto.MassDTO;
 
 public class MassActionResultDTO<T extends DataResponseDTO> extends ActionResultDTO<T> implements IDataContainer<T> {
 
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private final Set<MassDTO> massIds;
+	private final HashSet<MassDTO> massIds_;
+
+	@JsonProperty("massIds_")
+	public Set<MassDTO> getMassIds_() {
+		return massIds_;
+	}
 
 	@Override
 	public MassActionResultDTO<T> setAction(PostAction postAction) {
@@ -42,7 +47,7 @@ public class MassActionResultDTO<T extends DataResponseDTO> extends ActionResult
 	}
 
 	public MassActionResultDTO(@NonNull Set<MassDTO> massIds) {
-		this.massIds = massIds;
+		this.massIds_ = new HashSet<>(massIds);
 	}
 
 }

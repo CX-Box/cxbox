@@ -59,6 +59,7 @@ import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.AnySourceDTOMapper;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionDescription;
+import org.cxbox.core.service.action.ActionScope;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.action.AssocPreActionEventParameters;
 import org.cxbox.core.service.action.DataResponsePreActionEventParameters;
@@ -284,6 +285,9 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 				// getOne() method may not be invoked
 				record = doGetOne(bc);
 			}
+		}
+		if (ActionScope.MASS.equals(action.getActionScope()) && record != null && data != null) {
+			record.setMassIds_(data.getMassIds_());
 		}
 		return action.invoke(bc, Optional.ofNullable(record).orElse((T) data));
 	}
