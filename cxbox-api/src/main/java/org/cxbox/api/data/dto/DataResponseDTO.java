@@ -18,6 +18,7 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashSet;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -60,6 +61,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@DtoMetamodelIgnore
 	private Set<String> computedFields;
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@DtoMetamodelIgnore
 	private HashSet<MassDTO> massIds_ = new HashSet<>();
 
