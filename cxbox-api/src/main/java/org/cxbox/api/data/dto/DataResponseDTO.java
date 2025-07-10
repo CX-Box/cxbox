@@ -18,7 +18,6 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -65,24 +64,10 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	 *  Field changes received from the frontend.
 	 * <p>
 	 * Transfers data from {@code Map<String, Object> changedNow}
+	 * See set here {@link org.cxbox.core.service.ResponseFactory#getDTOFromMapDataAndChangeNow(Map, Class, org.cxbox.core.crudma.bc.BusinessComponent, boolean)}
 	 */
 	@JsonIgnore
 	private ChangedNowParam changedNowParam;
-
-	/**
-	 * Fields currently being updated by the frontend
-	 *
-	 * <p>Each entry consists of:
-	 * <ul>
-	 *   <li><b>Key</b> - The name of the field being modified</li>
-	 *   <li><b>Value</b> - The new value to be set for the field (Object -> DataResponseDTO) </li>
-	 * </ul>
-	 *
-	 * <p>Note: This map is for transient tracking purposes only and should not be persisted.
-	 */
-	@JsonIgnore
-	@DtoMetamodelIgnore
-	private Map<String, Object> changedNow_ = new HashMap<>();
 
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;
