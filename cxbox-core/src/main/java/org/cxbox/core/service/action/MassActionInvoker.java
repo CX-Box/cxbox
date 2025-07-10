@@ -28,7 +28,7 @@ public interface MassActionInvoker<T extends DataResponseDTO> {
 	MassActionResultDTO<T> massInvoke(@NonNull BusinessComponent bc, @NonNull DataResponseDTO data, @NonNull Set<String> ids);
 
 	default ActionInvoker<T> toInvoker() {
-		return (bc, data) -> massInvoke(bc, data, data.getMassIds().stream().map(String::valueOf).collect(java.util.stream.Collectors.toSet()));
+		return (bc, data) -> massInvoke(bc, data, data.getMassIds_().stream().map(String::valueOf).collect(java.util.stream.Collectors.toSet()));
 	}
 
 }

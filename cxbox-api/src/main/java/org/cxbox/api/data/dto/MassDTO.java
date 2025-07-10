@@ -16,21 +16,34 @@
 
 package org.cxbox.api.data.dto;
 
-import lombok.AllArgsConstructor;
+import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class MassDTO implements CheckedDto {
+public class MassDTO implements CheckedDto, Serializable {
 
 	@NonNull
-	String id;
+	private final String id;
 
 	@NonNull
-	Boolean success;
+	private final Boolean success;
 
-	String errorMessage;
+	private final String errorMessage;
+
+	public static MassDTO success(@NonNull String id) {
+		return new MassDTO(id, true, null);
+	}
+
+	public static MassDTO fail(@NonNull String id) {
+		return new MassDTO(id, false, null);
+	}
+
+	public static MassDTO fail(@NonNull String id, @NonNull String errorMessage) {
+		return new MassDTO(id, false, errorMessage);
+	}
 }

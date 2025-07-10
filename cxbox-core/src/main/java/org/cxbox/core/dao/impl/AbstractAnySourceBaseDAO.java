@@ -53,7 +53,12 @@ public abstract class AbstractAnySourceBaseDAO<E> implements AnySourceBaseDAO<E>
 
 	@Override
 	public E getById(BusinessComponent bc) {
-		return cache.getCache().computeIfAbsent(bc.getName(), bcName -> getByIdIgnoringFirstLevelCache(bc));
+		E cached = cache.getCache().get(bc.getName());
+		if (cached == null) {
+			cached = getByIdIgnoringFirstLevelCache(bc);
+			cache.getCache().put(bc.getName(), cached);
+		}
+		return cached;
 	}
 
 	@Override
