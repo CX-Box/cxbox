@@ -20,7 +20,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M18-CXBOX-626-1-SNAPSHOT</version>
+  <version>4.0.0-M18-CXBOX-626-2-SNAPSHOT</version>
   <name>IO Cxbox</name>
   <description>Java framework designed for creating Enterprise Rich Web Applications</description>
   <inceptionYear>2022</inceptionYear>

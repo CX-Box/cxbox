@@ -26,7 +26,7 @@ import org.cxbox.core.dto.rowmeta.MassActionResultDTO;
 @FunctionalInterface
 public interface MassActionInvoker<T extends DataResponseDTO> {
 
-	MassActionResultDTO<T> massInvoke(@NonNull BusinessComponent bc, @NonNull DataResponseDTO data, @NonNull Set<String> ids);
+	MassActionResultDTO<T> massInvoke(@NonNull BusinessComponent bc, @NonNull T data, @NonNull Set<String> ids);
 
 	default ActionInvoker<T> toInvoker() {
 		return (bc, data) -> massInvoke(bc, data, data.getMassIds_().stream()
