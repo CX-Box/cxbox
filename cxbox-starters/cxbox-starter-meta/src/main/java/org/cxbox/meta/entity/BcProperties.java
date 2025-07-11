@@ -43,6 +43,10 @@ public class BcProperties extends BaseEntity {
 	@Column(name = "PAGE_LIMIT")
 	Long limit;
 
+	@JdbcTypeCode(SqlTypes.NUMERIC)
+	@Column(name = "MASS_PAGE_LIMIT")
+	Long massLimit;
+
 	String sort;
 
 	Long reportPeriod;

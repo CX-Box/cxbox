@@ -20,13 +20,13 @@
 
     <artifactId>cxbox-dictionary-api-internal</artifactId>
     <packaging>jar</packaging>
-    <version>4.0.0-M18-CXBOX-626-2-SNAPSHOT</version>
+    <version>4.0.0-M18-CXBOX-626-4-SNAPSHOT</version>
     <name>IO Cxbox - Dictionary API</name>
 
     <parent>
         <artifactId>cxbox-dictionary</artifactId>
         <groupId>org.cxbox</groupId>
-        <version>4.0.0-M18-CXBOX-626-2-SNAPSHOT</version>
+        <version>4.0.0-M18-CXBOX-626-4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 

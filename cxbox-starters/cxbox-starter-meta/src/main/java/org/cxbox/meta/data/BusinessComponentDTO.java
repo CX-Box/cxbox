@@ -53,6 +53,11 @@ public class BusinessComponentDTO implements Serializable {
 	 */
 	Long limit;
 
+	/**
+	 * default value is limit
+	 */
+	Long massLimit;
+
 	Boolean hasNext;
 
 	String parentName;
