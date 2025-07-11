@@ -18,6 +18,8 @@ package org.cxbox.core.crudma.impl.inner;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
@@ -90,11 +92,11 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
 		if (changedNowValidationService.isChangedNowData(requestDto)) {
-			Map<String, Object> changedNowMap = requestDto.getChangedNow_();
+			HashMap<String, Object> changedNowMap = requestDto.getChangedNow_();
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
 					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
 			changedNowValidationService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
-			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(new HashSet<>(changedNowMap.keySet()),changedNowDTO);
 			responseDto.setChangedNowParam(changedNowParam);
 		}
 		responseDto.setErrors(requestDto.getErrors());

@@ -16,9 +16,9 @@
 
 package org.cxbox.core.service;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -87,7 +87,7 @@ public class ChangedNowValidationService {
 	 * @param changedNowDTO the data transfer object containing detailed information about the changes
 	 * @return a fully constructed {@code CnangedNowParam} instance encapsulating the change data
 	 */
-	public ChangedNowParam buildCnangedNowParam(Set<String> changedNowKeys, DataResponseDTO changedNowDTO) {
+	public ChangedNowParam buildCnangedNowParam(HashSet<String> changedNowKeys, DataResponseDTO changedNowDTO) {
 		return ChangedNowParam.builder()
 				.changedNowDTO(changedNowDTO)
 				.changedNow(changedNowKeys)

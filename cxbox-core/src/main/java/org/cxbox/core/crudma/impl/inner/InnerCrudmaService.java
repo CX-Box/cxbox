@@ -16,6 +16,7 @@
 
 package org.cxbox.core.crudma.impl.inner;
 
+import java.util.HashSet;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
@@ -92,7 +93,7 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
 			changedNowValidationService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
 
-			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(new HashSet<>(changedNowMap.keySet()),changedNowDTO);
 			responseDto.setChangedNowParam(changedNowParam);
 		}
 		responseDto.setErrors(requestDto.getErrors());

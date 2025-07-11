@@ -27,6 +27,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -84,10 +85,10 @@ public class ResponseFactory {
 	private DataResponseDTO getDTOFromMapDataAndChangeNow(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
 		DataResponseDTO dataResponseDTO = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
-		Map<String, Object> changedNowMap = dataResponseDTO.getChangedNow_();
+		HashMap<String, Object> changedNowMap = dataResponseDTO.getChangedNow_();
 		if (changedNowMap != null) {
 			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
-			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(changedNowMap.keySet(),changedNowDTO);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(new HashSet<>(changedNowMap.keySet()),changedNowDTO);
 			dataResponseDTO.setChangedNowParam(changedNowParam);
 		}
 		return dataResponseDTO;

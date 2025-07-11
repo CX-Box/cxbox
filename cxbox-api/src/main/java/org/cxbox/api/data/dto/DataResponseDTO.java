@@ -91,7 +91,8 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	 * <p>Note: This map is for transient tracking purposes only and should not be persisted.
 	 */
 	@DtoMetamodelIgnore
-	private Map<String, Object> changedNow_ = new HashMap<>();
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private HashMap<String, Object> changedNow_ = new HashMap<>();
 
 
 	public boolean hasChangedFields() {
@@ -137,7 +138,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@Getter
 	@Setter
 	@SuperBuilder
-	public static class ChangedNowParam {
+	public static class ChangedNowParam implements Serializable {
 
 		/**
 		 * Set of field names that are currently being modified.
@@ -149,7 +150,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 		 * throughout all iterations of editing the entity, this set ({@code changedNow})
 		 * includes only the fields that were modified during the current operation.
 		 */
-		private Set<String> changedNow;
+		private HashSet<String> changedNow;
 
 		/**
 		 * Containing the actual new values for changed fields.
