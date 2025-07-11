@@ -413,7 +413,7 @@ public class PlatformDrilldownFilterService {
 	 */
 	public <D extends DataResponseDTO> String multiValue(@NonNull DtoField<? super D, MultivalueField> field,
 			@Nullable MultivalueField value) {
-		if (value == null) {
+		if (value == null || value.getValues().isEmpty()) {
 			return null;
 		}
 		return DrillDownFieldFilterFormerUtils.multivalue(
@@ -877,7 +877,7 @@ public class PlatformDrilldownFilterService {
 	 */
 	public <D extends DataResponseDTO, T extends MultivalueField> String multivalueHover(
 			@NotNull DtoField<? super D, T> field, T value) {
-		if (value == null) {
+		if (value == null || value.getValues().isEmpty()) {
 			return null;
 		}
 		return DrillDownFieldFilterFormerUtils.multivalue(
@@ -907,7 +907,7 @@ public class PlatformDrilldownFilterService {
 	 */
 	public <D extends DataResponseDTO, T extends MultivalueField> String multipleSelect(
 			@NotNull DtoField<? super D, T> field, T value) {
-		if (value == null) {
+		if (value == null || value.getValues().isEmpty()) {
 			return null;
 		}
 		return DrillDownFieldFilterFormerUtils.multivalue(
