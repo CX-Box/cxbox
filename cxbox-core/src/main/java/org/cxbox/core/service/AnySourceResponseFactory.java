@@ -17,7 +17,6 @@
 package org.cxbox.core.service;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
-import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
@@ -85,8 +84,8 @@ public class AnySourceResponseFactory {
 
 	private DataResponseDTO getDTOFromMapDataAndChangedNow(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
-		Map<String, Object> changedNowMap = (Map<String, Object>) map.get(CHANGED_NOW);
 		DataResponseDTO	dataResponseDTO = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
+		Map<String, Object> changedNowMap = dataResponseDTO.getChangedNow_();
 		if (changedNowMap != null) {
 			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
 

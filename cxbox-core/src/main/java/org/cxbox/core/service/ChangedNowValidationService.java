@@ -16,8 +16,6 @@
 
 package org.cxbox.core.service;
 
-import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
-
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -44,8 +42,8 @@ public class ChangedNowValidationService {
 	 * @param data the input data from the frontend, which may contain changed fields
 	 * @return {@code true} if there are changed fields under the {@code CHANGED_NOW} key; {@code false} otherwise
 	 */
-	public boolean isChangedNowData(Map<String, Object> data) {
-		Map<String, Object> dataChangedFE = (Map<String, Object>) data.get(CHANGED_NOW);
+	public boolean isChangedNowData(DataResponseDTO data) {
+		Map<String, Object> dataChangedFE =  data.getChangedNow_();
 		return dataChangedFE != null && !dataChangedFE.isEmpty();
 	}
 

@@ -42,8 +42,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.cxbox.core.controller.param.RequestBodyParameters.CHANGED_NOW;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 @Service
@@ -88,8 +86,8 @@ public class InnerCrudmaService extends AbstractCrudmaService {
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-		if (changedNowValidationService.isChangedNowData(data)) {
-			Map<String, Object> changedNowMap = (Map<String, Object>) data.get(CHANGED_NOW);
+		if (changedNowValidationService.isChangedNowData(requestDto)) {
+			Map<String, Object> changedNowMap =   requestDto.getChangedNow_();
 			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
 					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
 			changedNowValidationService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
