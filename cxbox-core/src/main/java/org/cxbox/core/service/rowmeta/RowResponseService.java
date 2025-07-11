@@ -16,10 +16,13 @@
 
 package org.cxbox.core.service.rowmeta;
 
+import static org.cxbox.core.service.rowmeta.RowMetaType.META;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
@@ -112,8 +115,17 @@ public class RowResponseService {
 			Class<? extends FieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
 		if (linkedDictionaryService != null) {
-			linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
+				linkedDictionaryService.fillRowMetaWithLinkedDictionaries(fieldsNode, bc, dataDTO, type == RowMetaType.META_EMPTY);
 		}
+
+		// Add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		// A separate add is used because the getMeta method collects only visible fields,
+		// and changedNowParam is a internal field that is not marked as visible.
+		if (dataDTO.getChangedNowParam() != null) {
+			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
+			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));
+		}
+
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			FieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildIndependentMeta(fieldsNode, bc);
@@ -149,12 +161,16 @@ public class RowResponseService {
 			if (field == null) {
 				continue;
 			}
-			final FieldDTO fieldDTO = getDTOFromField(type, field, dataDto);
+			final FieldDTO fieldDTO = getDTOFromVisibleField(type, field, dataDto);
 			if (fieldDTO != null) {
 				fieldsNode.add(fieldDTO);
 			}
 		}
 		return fieldsNode;
+	}
+
+	public Set<String> getAllFields(BcIdentifier bc, DataResponseDTO dataDTO) {
+		return getFields(bc, dataDTO, false);
 	}
 
 	private Set<String> getFields(BcIdentifier bc, DataResponseDTO dataDTO, boolean visibleOnly) {
@@ -165,11 +181,19 @@ public class RowResponseService {
 				.map(Field::getName).collect(Collectors.toSet());
 	}
 
-	private FieldDTO getDTOFromField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
-		field.setAccessible(true);
+	public FieldDTO getDTOFromVisibleField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
 		if (field.getAnnotation(JsonIgnore.class) != null) {
 			return null;
 		}
+		return getDTOFromFieldCheckVisible(type, field, dataDTO);
+	}
+
+	public FieldDTO getDTOFromAllField(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+		return getDTOFromFieldCheckVisible(type, field, dataDTO);
+	}
+
+	private FieldDTO getDTOFromFieldCheckVisible(RowMetaType type, Field field, DataResponseDTO dataDTO) {
+		field.setAccessible(true);
 		FieldDTO fieldDTO = new FieldDTO(field);
 		fieldDTO.setSortable(properties.isSortEnabledDefault());
 		try {
@@ -187,5 +211,6 @@ public class RowResponseService {
 		}
 		return fieldDTO;
 	}
+
 
 }

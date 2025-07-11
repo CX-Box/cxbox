@@ -27,6 +27,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
@@ -60,6 +62,9 @@ public class AnySourceResponseFactory {
 	@Autowired
 	private ValidatorsProvider validatorsProvider;
 
+	@Autowired
+	private ChangedNowValidationService changedNowValidationService;
+
 	/**
 	 * @param anySourceBcDescription information about BC;
 	 * @return {@link AnySourceResponseService} common interface implemented by all services working with the controller
@@ -69,12 +74,26 @@ public class AnySourceResponseFactory {
 	}
 
 	public DataResponseDTO getDTOFromMap(Map<String, Object> map, Class<?> clazz, BusinessComponent bc) {
-		return getDTOFromMapInner(map, clazz, bc, false);
+		return getDTOFromMapDataAndChangedNow(map, clazz, bc, false);
 	}
 
 	public DataResponseDTO getDTOFromMapIgnoreBusinessErrors(Map<String, Object> map, Class<?> clazz,
 			BusinessComponent bc) {
-		return getDTOFromMapInner(map, clazz, bc, true);
+		return getDTOFromMapDataAndChangedNow(map, clazz, bc, true);
+	}
+
+
+	private DataResponseDTO getDTOFromMapDataAndChangedNow(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
+			boolean ignoreBusinessErrors) {
+		DataResponseDTO	dataResponseDTO = getDTOFromMapInner(map, clazz, bc, ignoreBusinessErrors);
+		HashMap<String, Object> changedNowMap = dataResponseDTO.getChangedNow_();
+		if (changedNowMap != null) {
+			DataResponseDTO changedNowDTO = getDTOFromMapInner(changedNowMap,clazz,bc,ignoreBusinessErrors);
+
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(new HashSet<>(changedNowMap.keySet()),changedNowDTO);
+			dataResponseDTO.setChangedNowParam(changedNowParam);
+		}
+		return dataResponseDTO;
 	}
 
 	private DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,

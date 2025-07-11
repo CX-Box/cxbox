@@ -17,6 +17,9 @@
 package org.cxbox.core.service.rowmeta;
 
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.constgen.DtoField;
+import org.cxbox.core.crudma.CrudmaActionType;
+import org.cxbox.core.crudma.PlatformRequest;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
@@ -24,8 +27,16 @@ import org.cxbox.core.crudma.bc.impl.ExtremeBcDescription;
 import org.cxbox.core.crudma.bc.impl.InnerBcDescription;
 import org.cxbox.core.dto.rowmeta.FieldsMeta;
 import org.cxbox.core.dto.rowmeta.RowDependentFieldsMeta;
+import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AnySourceFieldMetaBuilder<T extends DataResponseDTO> {
+
+	@Autowired
+	private PlatformRequest platformRequest;
+
+	@Autowired
+	private ParentDtoFirstLevelCache parentDtoFirstLevelCache;
 
 	public void buildRowDependentMeta(RowDependentFieldsMeta<T> fields, BusinessComponent bc) {
 		if (bc.getDescription() instanceof InnerBcDescription) {
@@ -49,5 +60,18 @@ public abstract class AnySourceFieldMetaBuilder<T extends DataResponseDTO> {
 	}
 
 	public abstract void buildIndependentMeta(FieldsMeta<T> fields, BcDescription bcDescription, String parentId);
+
+	public <P extends DataResponseDTO, F> F getParentField(DtoField<P, F> dtoField, BusinessComponent bc) {
+		return parentDtoFirstLevelCache.getParentField(dtoField, bc);
+	}
+
+	public CrudmaActionType getActionType() {
+		return platformRequest.getCrudmaActionType();
+	}
+
+	public BusinessComponent getBc() {
+		return platformRequest.getBc();
+	}
+
 
 }

@@ -16,18 +16,22 @@
 
 package org.cxbox.core.service.rowmeta;
 
+import static org.cxbox.core.service.rowmeta.RowMetaType.META;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.cxbox.api.ExtendedDtoFieldLevelSecurityService;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.BcIdentifier;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.core.config.properties.WidgetFieldsIdResolverProperties;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionsDTO;
@@ -75,6 +79,7 @@ public class AnySourceRowResponseService extends RowResponseService {
 			WidgetFieldsIdResolverProperties properties,
 			@Qualifier(CxboxBeanProperties.OBJECT_MAPPER) ObjectMapper objectMapper) {
 		super(ctx, bcDisablers, linkedDictionaryService, extendedDtoFieldLevelSecurityService, dictionaryProvider, properties, objectMapper);
+
 	}
 
 	public MetaDTO getAnySourceResponse(RowMetaType type, DataResponseDTO dataDTO, BusinessComponent bc,
@@ -87,6 +92,13 @@ public class AnySourceRowResponseService extends RowResponseService {
 			ActionsDTO actionDTO,
 			Class<? extends AnySourceFieldMetaBuilder> fieldMetaBuilder) {
 		EngineFieldsMeta fieldsNode = getMeta(bc, type, dataDTO, true);
+		// Add changedNowParam in parameter RowDependentFieldsMeta<T> fields for FieldMetaBuilder
+		// A separate add is used because the getMeta method collects only visible fields,
+		// and changedNowParam is a internal field that is not marked as visible.
+		if (dataDTO.getChangedNowParam() != null) {
+			Field field = FieldUtils.getField(dataDTO.getClass(), DataResponseDTO_.changedNowParam.getName(), true);
+			fieldsNode.add(getDTOFromAllField(META, field, dataDTO));
+		}
 		if (fieldMetaBuilder != null && type != RowMetaType.META_EMPTY) {
 			AnySourceFieldMetaBuilder builder = ctx.getBean(fieldMetaBuilder);
 			builder.buildIndependentMeta(fieldsNode, bc);

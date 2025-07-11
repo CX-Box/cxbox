@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.IDataContainer;
@@ -67,6 +69,32 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@DtoMetamodelIgnore
 	private HashSet<MassDTO> massIds_ = new HashSet<>();
 
+
+	/**
+	 *  Field changes received from the frontend.
+	 * <p>
+	 * Transfers data from {@code Map<String, Object> changedNow}
+	 * See set here {@link org.cxbox.core.service.ResponseFactory#getDTOFromMapDataAndChangeNow(Map, Class, org.cxbox.core.crudma.bc.BusinessComponent, boolean)}
+	 */
+	@JsonIgnore
+	private ChangedNowParam changedNowParam;
+
+	/**
+	 * Fields currently being updated by the frontend
+	 *
+	 * <p>Each entry consists of:
+	 * <ul>
+	 *   <li><b>Key</b> - The name of the field being modified</li>
+	 *   <li><b>Value</b> - The new value to be set for the field (Object -> DataResponseDTO) </li>
+	 * </ul>
+	 *
+	 * <p>Note: This map is for transient tracking purposes only and should not be persisted.
+	 */
+	@DtoMetamodelIgnore
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private HashMap<String, Object> changedNow_ = new HashMap<>();
+
+
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;
 	}
@@ -105,6 +133,32 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@Override
 	public void transformData(Function<DataResponseDTO, DataResponseDTO> function) {
 		function.apply(this);
+	}
+
+	@Getter
+	@Setter
+	@SuperBuilder
+	public static class ChangedNowParam implements Serializable {
+
+		/**
+		 * Set of field names that are currently being modified.
+		 * <p>
+		 * Contains only the names of changed fields.
+		 *
+		 * <p>
+		 * Unlike {@code changedFields}, which contains the names of all fields changed
+		 * throughout all iterations of editing the entity, this set ({@code changedNow})
+		 * includes only the fields that were modified during the current operation.
+		 */
+		private HashSet<String> changedNow;
+
+		/**
+		 * Containing the actual new values for changed fields.
+		 * <p>
+		 * Each field in this DTO corresponds to a field name in {@code changedNow} with  value
+		 */
+		private DataResponseDTO changedNowDTO;
+
 	}
 
 }

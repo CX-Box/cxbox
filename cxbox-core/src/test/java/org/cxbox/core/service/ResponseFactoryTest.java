@@ -40,7 +40,8 @@ import static org.mockito.Mockito.mock;
 @SpringJUnitConfig({
 		ResponseFactory.class,
 		ValidatorsProviderImpl.class,
-		JacksonConfig.class
+		JacksonConfig.class,
+		ChangedNowValidationService.class
 })
 class ResponseFactoryTest {
 

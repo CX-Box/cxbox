@@ -18,12 +18,15 @@ package org.cxbox.core.crudma.impl.inner;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import lombok.SneakyThrows;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
@@ -39,6 +42,7 @@ import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.dao.AnySourceBaseDAO;
 import org.cxbox.core.service.AnySourceResponseFactory;
 import org.cxbox.core.service.AnySourceResponseService;
+import org.cxbox.core.service.ChangedNowValidationService;
 import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.rowmeta.AnySourceRowResponseService;
@@ -56,6 +60,9 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 	@Lazy
 	@Autowired
 	private AnySourceRowResponseService rowMeta;
+
+	@Autowired
+	private ChangedNowValidationService changedNowValidationService;
 
 	@Override
 	public CreateResult create(BusinessComponent bc) {
@@ -84,7 +91,14 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 				data, respFactory.getDTOFromService(bcDescription), bc
 		);
 		final DataResponseDTO responseDto = responseService.preview(bc, requestDto).getRecord();
-
+		if (changedNowValidationService.isChangedNowData(requestDto)) {
+			HashMap<String, Object> changedNowMap = requestDto.getChangedNow_();
+			DataResponseDTO changedNowDTO = respFactory.getDTOFromMap(
+					changedNowMap, respFactory.getDTOFromService(bc.getDescription()), bc);
+			changedNowValidationService.validateChangedNowFields(changedNowMap,changedNowDTO,requestDto);
+			ChangedNowParam changedNowParam = changedNowValidationService.buildCnangedNowParam(new HashSet<>(changedNowMap.keySet()),changedNowDTO);
+			responseDto.setChangedNowParam(changedNowParam);
+		}
 		responseDto.setErrors(requestDto.getErrors());
 		return new PreviewResult(requestDto, responseDto);
 	}
