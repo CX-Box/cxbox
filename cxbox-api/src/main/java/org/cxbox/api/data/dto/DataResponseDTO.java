@@ -18,6 +18,8 @@ package org.cxbox.api.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.NoArgsConstructor;
@@ -42,6 +44,8 @@ import lombok.Setter;
 @JsonFilter("dtoPropertyFilter")
 public abstract class DataResponseDTO implements CheckedDto, IDataContainer<DataResponseDTO>, Serializable {
 
+	public static final String ID = "id";
+
 	@JsonIgnore
 	@DtoMetamodelIgnore
 	protected Set<String> changedFields = new TreeSet<>();
@@ -60,6 +64,11 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	@JsonIgnore
 	@DtoMetamodelIgnore
 	private Set<String> computedFields;
+
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@DtoMetamodelIgnore
+	private HashSet<MassDTO> massIds_ = new HashSet<>();
+
 
 	/**
 	 *  Field changes received from the frontend.
@@ -83,6 +92,7 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 	 */
 	@DtoMetamodelIgnore
 	private Map<String, Object> changedNow_ = new HashMap<>();
+
 
 	public boolean hasChangedFields() {
 		return changedFields.size() > 0;
