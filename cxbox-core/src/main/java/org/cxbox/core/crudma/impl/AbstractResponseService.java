@@ -62,6 +62,7 @@ import org.cxbox.core.service.BcSpecificationBuilder;
 import org.cxbox.core.service.DTOMapper;
 import org.cxbox.core.service.ResponseService;
 import org.cxbox.core.service.action.ActionDescription;
+import org.cxbox.core.service.action.ActionScope;
 import org.cxbox.core.service.action.Actions;
 import org.cxbox.core.service.action.AssocPreActionEventParameters;
 import org.cxbox.core.service.action.DataResponsePreActionEventParameters;
@@ -316,6 +317,9 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				// getOne() method may not be invoked
 				record = doGetOne(bc);
 			}
+		}
+		if (ActionScope.MASS.equals(action.getActionScope()) && record != null && data != null) {
+			record.setMassIds_(data.getMassIds_());
 		}
 		return action.invoke(bc, Optional.ofNullable(record).orElse((T)data));
 	}

@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
@@ -122,6 +123,12 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 
 	public ActionDescriptionBuilder<T> invoker(ActionInvoker<T> actionInvoker) {
 		this.actionInvoker = actionInvoker;
+		return this;
+	}
+
+	public @NonNull ActionDescriptionBuilder<T> massInvoker(@NonNull MassActionInvoker<T> massActionInvoker) {
+		this.scope(ActionScope.MASS);
+		this.actionInvoker = massActionInvoker.toInvoker();
 		return this;
 	}
 

@@ -20,4 +20,5 @@ package org.cxbox.core.service.action;
 public enum ActionScope {
 	BC,
 	RECORD,
+	MASS
 }

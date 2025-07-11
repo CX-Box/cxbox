@@ -37,6 +37,7 @@ import jakarta.persistence.criteria.Subquery;
 import jakarta.persistence.metamodel.Bindable;
 import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.ManagedType;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +56,7 @@ import org.cxbox.api.data.Period;
 import org.cxbox.api.data.dictionary.IDictionaryType;
 import org.cxbox.api.data.dictionary.LOV;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.core.controller.param.FilterParameters;
 import org.cxbox.core.controller.param.SortParameter;
@@ -66,6 +68,7 @@ import org.cxbox.core.util.filter.MultisourceSearchParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.core.util.filter.provider.impl.BooleanValueProvider;
+import org.cxbox.core.util.filter.provider.impl.LongValueProvider;
 import org.cxbox.core.util.filter.provider.impl.MultisourceValueProvider;
 import org.cxbox.model.core.dao.impl.DialectName;
 import org.cxbox.model.core.entity.BaseEntity;
@@ -107,14 +110,15 @@ public class MetadataUtils {
 									);
 						} else {
 							SearchParameter searchParam = Optional.ofNullable(dtoField.getDeclaredAnnotation(SearchParameter.class))
-									.orElseThrow(
-											() -> new IllegalArgumentException(
-													errorMessage(
-															"error.missing_search_parameter_annotation",
-															filterParam.getName()
-													)
-											)
-									);
+									.orElseGet(() -> {
+										if (DataResponseDTO.ID.equals(dtoField.getName())) {
+											return getIdDefaultSearchParam();
+										} else {
+											throw new IllegalArgumentException(
+													errorMessage("error.missing_search_parameter_annotation", filterParam.getName())
+											);
+										}
+									});
 							providers.stream().filter(p -> p.getClass().equals(searchParam.provider()))
 									.findFirst()
 									.ifPresent(
@@ -133,6 +137,40 @@ public class MetadataUtils {
 				}
 		);
 		return result;
+	}
+
+	private static SearchParameter getIdDefaultSearchParam() {
+		return new SearchParameter() {
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return null;
+			}
+
+			@Override
+			public String name() {
+				return DataResponseDTO.ID;
+			}
+
+			@Override
+			public boolean strict() {
+				return false;
+			}
+
+			@Override
+			public boolean suppressProcess() {
+				return false;
+			}
+
+			@Override
+			public Class<? extends ClassifyDataProvider> multiFieldKey() {
+				return null;
+			}
+
+			@Override
+			public Class<? extends ClassifyDataProvider> provider() {
+				return LongValueProvider.class;
+			}
+		};
 	}
 
 	public static boolean mayBeNull(Root<?> root, Path path) {

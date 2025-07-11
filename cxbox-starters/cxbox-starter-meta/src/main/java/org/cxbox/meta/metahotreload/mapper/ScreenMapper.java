@@ -164,6 +164,7 @@ public class ScreenMapper {
 			BcProperties bcProperties = defaultBcPropertiesMap.get(dto.getName());
 			if (bcProperties != null) {
 				Optional.ofNullable(bcProperties.getLimit()).ifPresent(dto::setLimit);
+				Optional.ofNullable(bcProperties.getMassLimit()).ifPresent(dto::setMassLimit);
 				Optional.ofNullable(bcProperties.getReportPeriod()).ifPresent(dto::setReportPeriod);
 				Optional.ofNullable(bcProperties.getSort()).ifPresent(dto::setDefaultSort);
 				Optional.ofNullable(bcProperties.getFilter()).ifPresent(dto::setDefaultFilter);
