@@ -29,7 +29,8 @@ public enum MultivalueOptionType {
 	DRILL_DOWN_TYPE("drillDownType"),
 	DRILL_DOWN_LINK("drillDown"),
 	SNAPSHOT_STATE("snapshotState"),
-	HIDDEN("hidden");
+	HIDDEN("hidden"),
+	PRIMARY("primary");
 
 	private static final Map<String, MultivalueOptionType> TYPES = MapUtils
 			.of(MultivalueOptionType.class, MultivalueOptionType::getValue);
