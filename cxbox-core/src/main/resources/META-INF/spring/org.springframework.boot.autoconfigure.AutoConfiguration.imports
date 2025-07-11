@@ -1,1 +1,2 @@
 org.cxbox.core.autoconfigure.cache.CxboxCacheAutoConfiguration
+org.cxbox.core.service.drilldown.PlatformDrilldownAutoConfiguration
