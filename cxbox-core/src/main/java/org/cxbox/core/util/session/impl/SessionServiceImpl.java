@@ -16,7 +16,9 @@
 
 package org.cxbox.core.util.session.impl;
 
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.Set;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -80,25 +82,24 @@ public class SessionServiceImpl implements SessionService {
 		CxboxUserDetailsInterface userDetails = coreSessionService.getSessionUserDetails(true);
 		Set<String> userRoles = userDetails.getUserRoles();
 		if (userRoles.isEmpty()) {
-			return Set.of(getRequestedRoleOrElseMain(userDetails, null));
+			var res = getRequestedRoleOrElseMain(userDetails, null);
+			return res == null ? new HashSet<>() : new HashSet<>(Set.of(res));
 		}
 		return userRoles;
 	}
 
-	private String calculateUserRole(HttpServletRequest request, CxboxUserDetailsInterface userDetails) {
+	private String calculateUserRole(@NonNull HttpServletRequest request, @NonNull CxboxUserDetailsInterface userDetails) {
 		String requestedRole = request.getHeader("RequestedUserRole");
 		return getRequestedRoleOrElseMain(userDetails, requestedRole);
 	}
 
-	private static String getRequestedRoleOrElseMain(CxboxUserDetailsInterface userDetails, String requestedRole) {
-		String mainRole = userDetails.getUserRoles().stream().findFirst().orElse(null);
-		if (StringUtils.isBlank(requestedRole)) {
+	@Nullable
+	private static String getRequestedRoleOrElseMain(@NonNull CxboxUserDetailsInterface user, @Nullable String requested) {
+		String mainRole = user.getUserRoles().stream().findFirst().orElse(null);
+		if (StringUtils.isBlank(requested) || requested.equals(mainRole)) {
 			return mainRole;
 		}
-		if (mainRole != null && requestedRole.equals(mainRole)) {
-			return mainRole;
-		}
-		return requestedRole;
+		return requested;
 	}
 
 	@Override
