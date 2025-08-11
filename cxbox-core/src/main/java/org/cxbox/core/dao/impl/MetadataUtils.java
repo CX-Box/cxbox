@@ -21,6 +21,7 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.controller.param.SortType.ASC;
 import static org.cxbox.core.controller.param.SortType.DESC;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -39,6 +40,8 @@ import jakarta.persistence.metamodel.Bindable.BindableType;
 import jakarta.persistence.metamodel.ManagedType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -47,7 +50,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -302,14 +304,7 @@ public class MetadataUtils {
 								cb.isNull(field);
 					}
 				case EQUALS_ONE_OF:
-					if (((List<Object>) value).stream().allMatch(((s) -> s instanceof String))) {
-						return cb.or(((List<Object>) value).stream()
-								.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
-								.toArray(Predicate[]::new));
-					} else {
-						return cb
-								.or(((List<Object>) value).stream().map(object -> cb.equal(field, object)).toArray(Predicate[]::new));
-					}
+					return predicateEqualOneOf(root, criteria, cb, (List<Object>) value, field);
 				case CONTAINS_ONE_OF:
 					return cb.or(((List<Object>) value)
 							.stream()
@@ -326,6 +321,119 @@ public class MetadataUtils {
 			);
 			return null;
 		}
+	}
+
+	/**
+	 * Builds a {@link Predicate} that matches the provided {@code value} list against the given field.
+	 * <p>
+	 * Behavior:
+	 * <ul>
+	 *   <li>If <b>all</b> elements in {@code value} are {@link String} instances,
+	 *       this method performs a case-insensitive comparison by converting both the field
+	 *       and the values to upper case using {@link CriteriaBuilder#upper(Expression)}.
+	 *       It returns a disjunction (OR) of {@code cb.equal(...)} predicates:
+	 *       <pre>{@code
+	 *       cb.or(
+	 *           cb.equal(cb.upper(field), "VALUE1"),
+	 *           cb.equal(cb.upper(field), "VALUE2"),
+	 *           ...
+	 *       )
+	 *       }</pre>
+	 *   </li>
+	 *   <li>If any element in {@code value} is not a {@link String},
+	 *       this method delegates predicate creation to
+	 *       {@code predicateEqualsOneOf(root, criteria, cb, value, field)},
+	 *       which handles both regular and {@code @ElementCollection} fields.
+	 *   </li>
+	 * </ul>
+	 *
+	 * @param root     the root entity in the JPA Criteria query
+	 * @param criteria the filtering parameters, including the field path and metadata
+	 * @param cb       the {@link CriteriaBuilder} used to construct the predicates
+	 * @param value    the list of values to compare against the field; may contain strings or other types
+	 * @param field    the Criteria API {@link Path} representing the target field
+	 * @return a {@link Predicate} that matches the provided values according to the above rules
+	 *
+	 * @throws ClassCastException if {@code value} is not a {@link List} of objects
+	 * @see #predicateEqualsOneOfCollection(Root, ClassifyDataParameter, CriteriaBuilder, List, Path)
+	 */
+	private static Predicate predicateEqualOneOf(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
+			List<Object> value, Path field) {
+		if (value.stream().allMatch(((s) -> s instanceof String))) {
+			return cb.or(value.stream()
+					.map(object -> cb.equal(cb.upper(field), requireString(object).toUpperCase()))
+					.toArray(Predicate[]::new));
+		} else {
+			return predicateEqualsOneOfCollection(root, criteria, cb, value, field);
+		}
+	}
+
+	/**
+	 * Builds a {@link Predicate} for a given field path and a set of values,
+	 * handling both regular fields and {@link jakarta.persistence.ElementCollection} fields.
+	 *
+	 * <p>The field path is taken from {@link ClassifyDataParameter#getField()}, which should be
+	 * a dot-separated string representing the navigation path from the root entity
+	 * to the target attribute (e.g., {@code "parentEntity.elementCollectionFields"}).
+	 *
+	 * <p>Behavior:
+	 * <ul>
+	 *   <li>If the field path does <b>not</b> reference an {@code @ElementCollection}
+	 *       or its length is less than 2 (i.e., the field is a direct property of the root class
+	 *       or an {@code @ElementCollection} field is part of the root):
+	 *       this method generates a disjunctive OR predicate:
+	 *       <pre>{@code
+	 *       // Given: criteria.getField() == "elementCollectionFields"
+	 *       cb.or(
+	 *           cb.equal(field, value1),
+	 *           cb.equal(field, value2),
+	 *           cb.equal(field, value3)
+	 *           // ...
+	 *       )
+	 *       }</pre>
+	 *   </li>
+	 *   <li>If the field path references an {@code @ElementCollection}, and is a nested path,
+	 *       the method performs chained joins through the path, producing an {@code IN} predicate
+	 *       on the collection field. See the example below:
+	 *       <pre>{@code
+	 *       // Given: criteria.getField() == "parentEntity.elementCollectionFields"
+	 *       Join<?, ?> join = root.join("parentEntity");            // first segment
+	 *       join = join.join("elementCollectionFields");            // second segment
+	 *       Predicate predicate = join.in(value);             // value is List<Object>
+	 *       }</pre>
+	 *
+	 *   </li>
+	 * </ul>
+	 *
+	 * <p>This method uses {@link #isElementCollectionFieldFromPath(Root, String)}
+	 * to determine whether a field is part of an {@code @ElementCollection}.
+	 *
+	 * @param root    the root entity in the JPA Criteria query
+	 * @param criteria the filtering parameters, including:
+	 *                 <ul>
+	 *                   <li>{@code field} – the dot-separated entity attribute path</li>
+	 *                   <li>{@code operator} – the comparison type (currently not used in this method)</li>
+	 *                   <li>{@code value} – must be a {@link java.util.List} of values to match</li>
+	 *                   <li>{@code provider} – optional metadata for the data provider</li>
+	 *                 </ul>
+	 * @param cb      the {@link CriteriaBuilder} used to create predicates
+	 * @param value   list of values to be compared against the field (should correspond to {@code criteria.value})
+	 * @param field   the Criteria API {@link Path} pointing to the field in the non-collection case
+	 * @return a {@link Predicate} matching the provided values
+	 * @throws IllegalArgumentException if the entity path in {@code criteria.field} is invalid
+	 */
+	private static Predicate predicateEqualsOneOfCollection(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
+			List<Object> value, Path field) {
+		String[] split = criteria.getField().split("\\.");
+		if (split.length < 2 || !isElementCollectionFieldFromPath(root, criteria.getField())) {
+			return cb
+					.or(value.stream().map(object -> cb.equal(field, object)).toArray(Predicate[]::new));
+		}
+		Join<?, ?> join = root.join(split[0]);
+		for (int i = 1; i < split.length; i++) {
+			join = join.join(split[i]);
+		}
+		return join.in(value);
 	}
 
 	@Nullable
@@ -501,6 +609,55 @@ public class MetadataUtils {
 								)
 						)
 				);
+	}
+
+
+	/**
+	 * Determines whether the last field in the given dot-separated path (starting from the entity root)
+	 * is annotated as {@link ElementCollection}.
+	 *
+	 * <p>For example, given a path like "client.fieldOfActivities", this method will traverse the entity
+	 * class tree from {@code root} and determine if the {@code productName} field is annotated with
+	 * {@code @ElementCollection}.
+	 *
+	 * @param root the JPA root entity representation
+	 * @param fullPath dot-separated path referencing nested fields (e.g., "orders.items.productName")
+	 * @return {@code true} if the last field in the resolved path is annotated with {@code @ElementCollection}, else {@code false}
+	 * @throws IllegalArgumentException if a field in the chain does not exist
+	 */
+	private boolean isElementCollectionFieldFromPath(Root<?> root, String fullPath) {
+		String[] split = fullPath.split("\\.");
+		Class<?> current = root.getModel().getJavaType();
+		Field field = null;
+		for (String p : split) {
+			field = CxReflectionUtils.findField(
+					current,
+					p
+			);
+			current = field.getType();
+			if (Collection.class.isAssignableFrom(field.getType())) {
+				Type genericType = field.getGenericType();
+				if (genericType instanceof ParameterizedType genType) {
+					if (genType.getActualTypeArguments().length > 0) {
+						Type elementType = genType.getActualTypeArguments()[0];
+						if (elementType instanceof Class) {
+							current = (Class<?>) elementType;
+						} else if (elementType instanceof ParameterizedType) {
+							current = (Class<?>) ((ParameterizedType) elementType).getRawType();
+						} else {
+							return false;
+						}
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
+			}
+		}
+		return Optional.ofNullable(field)
+				.map(fld -> fld.isAnnotationPresent(ElementCollection.class))
+				.orElse(false);
 	}
 
 }
