@@ -21,6 +21,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.config.properties.APIProperties;
+import org.cxbox.core.controller.filter.ContentRequestCachingFilter;
 import org.cxbox.core.controller.param.resolvers.LocaleParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.PageParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.QueryParametersResolver;
@@ -28,6 +29,7 @@ import org.cxbox.core.controller.param.resolvers.TimeZoneParameterArgumentResolv
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -53,9 +55,34 @@ public class APIConfig implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new PageParameterArgumentResolver());
-		argumentResolvers.add(new QueryParametersResolver());
+		argumentResolvers.add(new QueryParametersResolver(objectMapper));
 		argumentResolvers.add(new TimeZoneParameterArgumentResolver());
 		argumentResolvers.add(new LocaleParameterArgumentResolver());
+	}
+
+	/**
+	 * Registers the {@link ContentRequestCachingFilter} in the servlet filter chain with the highest precedence.
+	 * <p>
+	 * By declaring this {@code @Bean}, Spring Boot will create and register the filter automatically.
+	 * The filter is ordered with {@code setOrder(0)} to ensure it wraps requests before any other filters,
+	 * enabling request body caching for downstream processing.
+	 * </p>
+	 *
+	 * <p><strong>Usage:</strong> Add this method to a {@code @Configuration} class to enable
+	 * {@link ContentRequestCachingFilter} for all incoming HTTP requests (except those excluded by the filter’s
+	 * {@code shouldNotFilter} logic).</p>
+	 *
+	 * @return a {@link FilterRegistrationBean} that registers the {@link ContentRequestCachingFilter}
+	 *         at order {@code 0} in the filter chain
+	 * @see ContentRequestCachingFilter
+	 * @see FilterRegistrationBean
+	 */
+	@Bean
+	public FilterRegistrationBean<ContentRequestCachingFilter> contentCachingFilter() {
+		FilterRegistrationBean<ContentRequestCachingFilter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(new ContentRequestCachingFilter());
+		registrationBean.setOrder(0);
+		return registrationBean;
 	}
 
 	@Override
@@ -76,6 +103,7 @@ public class APIConfig implements WebMvcConfigurer {
 		resolver.setDefaultEncoding(StandardCharsets.UTF_8.name());*/
 		return resolver;
 	}
+
 
 
 
