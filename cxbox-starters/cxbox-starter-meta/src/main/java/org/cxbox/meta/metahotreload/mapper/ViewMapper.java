@@ -58,7 +58,10 @@ public class ViewMapper {
 				.setReadOnly(false) //TODO>>take from responsibilities. temporary dropped in 4.0.0
 				.setGroups(dto.getGroups().stream()
 						.map(e -> new ViewWidgetGroupDTO()
-								.setWidgetNames(e.getWidgetNames()))
+								.setWidgetNames(e.getWidgetNames())
+								.setCollapsedCondition(JsonUtils.serializeOrElseEmptyArr(objectMapper, e.getCollapsedCondition())
+						)
+						)
 						.collect(Collectors.toList()))
 				.setWidgets(dto.getWidgets()
 						.stream()
