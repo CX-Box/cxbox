@@ -21,7 +21,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox-starter-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M19-SNAPSHOT</version>
+  <version>4.0.0-M19-CXBOX-1002-SNAPSHOT</version>
   <name>IO Cxbox - Starter Parent</name>
 
   <url>http://cxbox.org</url>
@@ -73,7 +73,7 @@
   </parent>
 
   <properties>
-    <cxbox.version>4.0.0-M19-SNAPSHOT</cxbox.version>
+    <cxbox.version>4.0.0-M19-CXBOX-1002-SNAPSHOT</cxbox.version>
     <spring-boot.version>3.3.11</spring-boot.version>
   </properties>
 
