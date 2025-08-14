@@ -16,12 +16,15 @@
 
 package org.cxbox.meta.data;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.cxbox.api.util.jackson.deser.convert.Raw2StringDeserializer;
 
 @NoArgsConstructor
 @Getter
@@ -30,5 +33,9 @@ import lombok.experimental.Accessors;
 public class ViewWidgetGroupDTO implements Serializable {
 
 	private List<String> widgetNames;
+
+	@JsonRawValue
+	@JsonDeserialize(using = Raw2StringDeserializer.class)
+	private String collapsedCondition;
 
 }

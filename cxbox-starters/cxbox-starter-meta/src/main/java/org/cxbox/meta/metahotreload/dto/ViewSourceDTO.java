@@ -103,6 +103,8 @@ public class ViewSourceDTO {
 
 		private List<String> widgetNames;
 
+		private JsonNode collapsedCondition;
+
 	}
 
 }

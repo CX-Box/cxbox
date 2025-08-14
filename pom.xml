@@ -52,7 +52,7 @@
     <connection>scm:git:git@github.com:CX-Box/cxbox.git</connection>
     <developerConnection>scm:git:git@github.com:CX-Box/cxbox.git</developerConnection>
     <url>https://github.com/CX-Box/cxbox</url>
-    <tag>4.0.0-M10-SNAPSHOT</tag>
+    <tag>cxbox-4.0.0-M16</tag>
   </scm>
 
   <distributionManagement>
