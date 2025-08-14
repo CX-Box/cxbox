@@ -20,7 +20,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M16</version>
+  <version>4.0.0-M16-QF1-SNAPSHOT</version>
   <name>IO Cxbox</name>
   <description>Java framework designed for creating Enterprise Rich Web Applications</description>
   <inceptionYear>2022</inceptionYear>
@@ -52,7 +52,7 @@
     <connection>scm:git:git@github.com:CX-Box/cxbox.git</connection>
     <developerConnection>scm:git:git@github.com:CX-Box/cxbox.git</developerConnection>
     <url>https://github.com/CX-Box/cxbox</url>
-    <tag>cxbox-4.0.0-M16</tag>
+    <tag>4.0.0-M10-SNAPSHOT</tag>
   </scm>
 
   <distributionManagement>
@@ -95,7 +95,7 @@
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <maven-scm-plugin.version>2.0.1</maven-scm-plugin.version>
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.14</nexus-staging-maven-plugin.version>
       </properties>
       <build>
         <plugins>
@@ -182,6 +182,8 @@
           <configuration>
             <skip>${skip.deploy}</skip>
             <deployAtEnd>true</deployAtEnd>
+            <repositoryId>central-portal</repositoryId>
+            <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
           </configuration>
         </plugin>
         <plugin>
@@ -223,8 +225,8 @@
           <version>${nexus-staging-maven-plugin.version}</version>
           <extensions>true</extensions>
           <configuration>
-            <serverId>ossrh</serverId>
-            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+            <serverId>central-portal</serverId>
+            <nexusUrl>https://ossrh-staging-api.central.sonatype.com</nexusUrl>
             <autoReleaseAfterClose>true</autoReleaseAfterClose>
           </configuration>
         </plugin>
