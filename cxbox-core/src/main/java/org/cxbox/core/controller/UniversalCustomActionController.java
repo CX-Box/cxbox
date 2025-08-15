@@ -19,6 +19,8 @@ package org.cxbox.core.controller;
 import static org.cxbox.core.config.properties.APIProperties.CXBOX_API_PATH_SPEL;
 import static org.cxbox.core.controller.param.RequestBodyParameters.DATA;
 
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
@@ -28,8 +30,6 @@ import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.ResponseDTO;
 import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.ResponseBuilder;
-import java.util.Map;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,9 +52,11 @@ public class UniversalCustomActionController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseDTO invoke(HttpServletRequest request,
 			QueryParameters queryParameters,
-			@RequestBody Map<String, Map<String, Object>> requestBody) {
-		if (requestBody == null || requestBody.get(DATA) == null) {
+			@RequestBody Map<String, Object> requestBody) {
+		if (requestBody == null || requestBody.get(DATA) == null || !(requestBody.get(DATA) instanceof Map)) {
 			throw new ClientException("Request with wrong request body. Expected: {\"data\":{}}");
+		} else {
+			requestBody = (Map) requestBody.get(DATA);
 		}
 		final BusinessComponent bc = bcFactory.getBusinessComponent(request, queryParameters);
 		final String action = queryParameters.getParameter("_action");
@@ -68,7 +70,7 @@ public class UniversalCustomActionController {
 								bc.getParentId()
 						)
 				).getAction();
-		return ResponseBuilder.build(crudmaGateway.invokeAction(crudmaAction, requestBody.get(DATA)));
+		return ResponseBuilder.build(crudmaGateway.invokeAction(crudmaAction, requestBody));
 	}
 
 }
