@@ -20,13 +20,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-dictionary-links-engine</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M19-CXBOX-1002-SNAPSHOT</version>
+  <version>4.0.0-M19-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary Links Engine</name>
 
   <parent>
     <artifactId>cxbox-dictionary-links</artifactId>
     <groupId>org.cxbox</groupId>
-    <version>4.0.0-M19-CXBOX-1002-SNAPSHOT</version>
+    <version>4.0.0-M19-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 

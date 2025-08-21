@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.VirtualAnnotatedMember;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
@@ -52,10 +53,7 @@ class FieldsDTOCurrentValueSerializer extends JsonSerializer<Object> {
 				jgen.getOutputContext().getCurrentValue() instanceof FieldDTO fieldDTO
 				&& fieldDTO.hasSerializerAnnotation()) {
 			Class<? extends JsonSerializer> fieldLevelSerializer = fieldDTO.getFieldLevelSerializer();
-			JsonSerializer<Object> jsonSerializer = null;
-			if (fieldDTO.hasSerializerAnnotation()) {
-				jsonSerializer = getObjectJsonSerializer(toSerialize, provider, fieldDTO);
-			}
+			JsonSerializer<Object> jsonSerializer = getObjectJsonSerializer(toSerialize, provider, fieldDTO);
 			if (jsonSerializer == null) {
 				jsonSerializer = getSerializerFromSerializerAnnotation(fieldLevelSerializer);
 			}
@@ -76,46 +74,22 @@ class FieldsDTOCurrentValueSerializer extends JsonSerializer<Object> {
 	}
 
 	/**
-	 * Creates and returns a {@link JsonSerializer} for the provided object and field definition,
-	 * resolving Jackson serialization context when necessary.
-	 * <p>
-	 * This method performs the following steps:
+	 * Creates a {@link JsonSerializer} for the given object and field definition.
+	 * Steps:
 	 * <ol>
-	 *   <li>Constructs a {@link JavaType} for the given {@code toSerialize} object's runtime class.</li>
-	 *   <li>Creates a virtual annotated member ({@link VirtualAnnotatedMember}) representing
-	 *       the JSON property described by {@link FieldDTO#getKey()} and the target type.</li>
-	 *   <li>Obtains a serializer class for that member using the serializer class (if any)
-	 *       defined in {@link FieldDTO#getFieldLevelSerializer()} via
-	 *       {@link SerializerProvider#serializerInstance(com.fasterxml.jackson.databind.introspect.Annotated, Object)}.</li>
-	 *   <li>If the serializer implements {@link ContextualSerializer}, invokes its
-	 *       {@link ContextualSerializer#createContextual(SerializerProvider, BeanProperty)} method,
-	 *       passing a {@link BeanProperty} built from a {@link SimpleBeanPropertyDefinition}
-	 *       derived from the member, to customize serialization behavior for this specific property context.</li>
+	 *   <li>Constructs a {@link JavaType} for the object's runtime class.</li>
+	 *   <li>Creates a {@link VirtualAnnotatedMember} for the JSON property (using {@link FieldDTO#getKey()}).</li>
+	 *   <li>Resolves a serializer via {@link FieldDTO#getFieldLevelSerializer()} and {@link SerializerProvider#serializerInstance}.</li>
+	 *   <li>If contextual, calls {@link ContextualSerializer#createContextual()} with a {@link BeanProperty} for customization.</li>
 	 * </ol>
+	 * Returns {@code null} on failure (logs warning).
 	 *
-	 * <b>Note:</b> In this implementation, the {@code typeContext} parameter for
-	 * {@link VirtualAnnotatedMember} is passed as {@code null}.
-	 * If precise generic type resolution is required, consider constructing an appropriate
-	 * {@link com.fasterxml.jackson.databind.introspect.TypeResolutionContext}.
-	 *
-	 * <p>If a {@link JsonMappingException} occurs during serializer creation or contextualization,
-	 * it is caught, a warning is logged, and {@code null} is returned.</p>
-	 *
-	 * @param toSerialize the Java object instance for which a serializer should be created
-	 * (must not be {@code null}).
-	 * @param provider the active {@link SerializerProvider} that can construct types and
-	 * resolve serializer instances from Jackson's configuration.
-	 * @param fieldDTO metadata describing the field to be serialized, including its logical
-	 * JSON property name and optional custom serializer class.
-	 * @return a {@link JsonSerializer} instance capable of serializing the given object
-	 * according to the provided {@link FieldDTO}, possibly contextualized;
-	 * or {@code null} if serializer creation fails.
-	 * @see VirtualAnnotatedMember
-	 * @see JsonSerializer
-	 * @see ContextualSerializer
-	 * @see SerializerProvider#serializerInstance(com.fasterxml.jackson.databind.introspect.Annotated, Object)
+	 * @param toSerialize object to serialize (not null)
+	 * @param provider Jackson serializer provider
+	 * @param fieldDTO field metadata and custom serializer info
+	 * @return a suitable {@link JsonSerializer}, or {@code null} if failed
 	 */
-
+	@Nullable
 	private static JsonSerializer<Object> getObjectJsonSerializer(@NonNull Object toSerialize,
 			@NonNull SerializerProvider provider,
 			@NonNull FieldDTO fieldDTO) {
@@ -150,6 +124,7 @@ class FieldsDTOCurrentValueSerializer extends JsonSerializer<Object> {
 		return null;
 	}
 
+	@Nullable
 	private JsonSerializer<Object> getSerializerFromSerializerAnnotation(
 			@NonNull Class<? extends JsonSerializer> fieldLevelSerializer) {
 
