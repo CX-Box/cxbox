@@ -61,7 +61,7 @@
     </snapshotRepository>
     <repository>
       <id>central-portal</id>
-      <url>https://central.sonatype.com/repository/maven2/</url>
+      <url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>
 
