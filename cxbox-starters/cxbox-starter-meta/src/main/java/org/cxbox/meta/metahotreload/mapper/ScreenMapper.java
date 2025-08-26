@@ -81,6 +81,7 @@ public class ScreenMapper {
 				.setTitle(dto.getTitle())
 				.setPrimary(dto.getPrimaryViewName())
 				.setNavigation(new ScreenNavigation()
+						.setType(dto.getType())
 						.setMenu(dto.getNavigation().getMenu()
 								.stream()
 								.map(e -> mapToAndPopulateViewNames(e, currentScreenViewNames))
