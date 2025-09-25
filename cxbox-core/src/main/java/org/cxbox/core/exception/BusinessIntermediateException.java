@@ -21,7 +21,7 @@ import org.cxbox.core.dto.BusinessError.Entity;
 import lombok.Getter;
 
 @Getter
-public class BusinessIntermediateException extends RuntimeException {
+public class BusinessIntermediateException extends RuntimeException implements LoggableBusinessException {
 
 	private Entity entity = null;
 

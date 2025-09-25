@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package org.cxbox.core.exception;
+package org.cxbox.core.config;
 
-import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+import org.cxbox.core.config.properties.LoggingProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-
-public class UnableToLockException extends BusinessException  implements LoggableBusinessException {
-
-
-	public UnableToLockException() {
-		super();
-		addPopup(errorMessage("error.failed_to_lock_entity"));
-	}
+@EnableConfigurationProperties(LoggingProperties.class)
+@Configuration
+public class LoggingConfiguration {
 
 }

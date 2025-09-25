@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 
 @Slf4j
-public class InnerBcException extends BusinessException {
+public class InnerBcException extends BusinessException implements LoggableBusinessException {
 
 	public InnerBcException(final BaseEntity entity, final String logMessage, final String uiMessage) {
 		log.error(logMessage);

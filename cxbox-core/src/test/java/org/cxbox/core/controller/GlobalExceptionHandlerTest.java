@@ -20,6 +20,7 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.mockito.Mockito.when;
 
 import org.cxbox.core.config.properties.APIProperties;
+import org.cxbox.core.config.properties.LoggingProperties;
 import org.cxbox.core.dto.ErrorResponseDTO;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.BusinessIntermediateException;
@@ -33,6 +34,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -40,6 +42,15 @@ class GlobalExceptionHandlerTest {
 
 	@Mock
 	APIProperties apiProperties;
+
+	@Mock
+	LoggingProperties loggingProperties;
+
+	@Mock
+	LoggingProperties.GlobalHandler globalHandler;
+
+	@Mock
+	LoggingProperties.BusinessException businessException;
 
 	@Mock
 	Logger log;
@@ -52,6 +63,9 @@ class GlobalExceptionHandlerTest {
 		MockitoAnnotations.initMocks(this);
 		when(apiProperties.isTrackExceptions()).thenReturn(true);
 		when(apiProperties.isFullStackTraces()).thenReturn(true);
+		when(loggingProperties.getGlobalHandler()).thenReturn(globalHandler);
+		when(globalHandler.getBusinessException()).thenReturn(businessException);
+		when(businessException.getLogLevel()).thenReturn(LogLevel.DEBUG);
 	}
 
 	@Test
