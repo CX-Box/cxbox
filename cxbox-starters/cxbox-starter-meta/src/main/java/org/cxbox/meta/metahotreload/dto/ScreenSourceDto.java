@@ -45,7 +45,7 @@ public class ScreenSourceDto {
 	 */
 	private String title;
 
-	private String type = "standard";
+	private String type;
 
 	private String primaryViewName;
 
