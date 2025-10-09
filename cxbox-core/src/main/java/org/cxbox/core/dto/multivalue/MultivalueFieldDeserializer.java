@@ -43,6 +43,10 @@ class MultivalueFieldDeserializer extends JsonDeserializer<MultivalueField> {
 					.defaultInstance()
 					.constructCollectionType(List.class, MultivalueFieldSingleValue.class);
 
+	public MultivalueFieldDeserializer() {
+		this.mapper = new ObjectMapper();
+	}
+
 	@Override
 	public MultivalueField deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
 			throws IOException {
