@@ -45,8 +45,6 @@ public class ScreenSourceDto {
 	 */
 	private String title;
 
-	private String type;
-
 	private String primaryViewName;
 
 	private JsonNode primaryViews;
@@ -57,6 +55,8 @@ public class ScreenSourceDto {
 	@Setter
 	@Accessors(chain = true)
 	public static class ScreenNavigationSourceDto {
+
+		private String type;
 
 		private List<MenuItemSourceDto> menu;
 
