@@ -56,6 +56,8 @@ public class ScreenSourceDto {
 	@Accessors(chain = true)
 	public static class ScreenNavigationSourceDto {
 
+		private String type;
+
 		private List<MenuItemSourceDto> menu;
 
 		@Getter

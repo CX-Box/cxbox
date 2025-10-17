@@ -35,6 +35,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class ScreenNavigation implements Serializable {
 
+	private String type;
+
 	private List<MenuItem> menu;
 
 	@Getter
