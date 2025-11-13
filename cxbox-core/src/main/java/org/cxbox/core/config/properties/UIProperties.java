@@ -47,6 +47,9 @@ public class UIProperties {
 
 	public static final String APP_INFO_COLOR = "appInfoColor";
 
+	/**
+	 * The duration (in milliseconds) for which a notification message is displayed.
+	 */
 	public static final String TIMEOUT_SHOW_MESSAGE = "timeoutShowMessage";
 
 	/**
