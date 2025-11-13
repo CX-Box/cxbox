@@ -22,18 +22,23 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 
+import java.util.Optional;
+import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.config.properties.APIProperties;
+import org.cxbox.core.config.properties.LoggingProperties;
+import org.cxbox.core.config.properties.LoggingProperties.GlobalHandler;
 import org.cxbox.core.dto.ErrorResponseDTO;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.BusinessIntermediateException;
 import org.cxbox.core.exception.ClientException;
+import org.cxbox.core.exception.LoggableBusinessException;
 import org.cxbox.core.exception.UnconfirmedException;
 import org.cxbox.core.exception.VersionMismatchException;
-import java.util.UUID;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -51,6 +56,9 @@ public class GlobalExceptionHandler {
 
 	@Autowired
 	private APIProperties apiProperties;
+
+	@Autowired
+	private LoggingProperties loggingProperties;
 
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(value = INTERNAL_SERVER_ERROR)
@@ -72,7 +80,22 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(value = I_AM_A_TEAPOT)
 	@ResponseBody
 	public ErrorResponseDTO businessException(BusinessException e) {
-		log.warn(e.getMessage(), e);
+		LogLevel logLevel = Optional.ofNullable(loggingProperties)
+				.map(LoggingProperties::getGlobalHandler)
+				.map(GlobalHandler::getBusinessException)
+				.map(LoggingProperties.BusinessException::getLogLevel)
+				.orElse(LogLevel.WARN);
+		if (e instanceof LoggableBusinessException) {
+			log.warn(e.getMessage(), e);
+		} else {
+			switch (logLevel) {
+				case FATAL, ERROR -> log.error(e.getMessage(), e);
+				case WARN -> log.warn(e.getMessage(), e);
+				case INFO -> log.info(e.getMessage(), e);
+				case DEBUG -> log.debug(e.getMessage(), e);
+				case TRACE -> log.trace(e.getMessage(), e);
+			}
+		}
 		return new ErrorResponseDTO(e);
 	}
 

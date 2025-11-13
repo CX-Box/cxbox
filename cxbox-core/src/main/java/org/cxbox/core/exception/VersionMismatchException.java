@@ -22,7 +22,7 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.model.core.entity.BaseEntity;
 
 
-public class VersionMismatchException extends BusinessException {
+public class VersionMismatchException extends BusinessException implements LoggableBusinessException {
 
 	public VersionMismatchException() {
 		super();

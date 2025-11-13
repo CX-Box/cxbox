@@ -21,7 +21,7 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.core.exception.BusinessException;
 
-public class AnySourceVersionMismatchException extends BusinessException {
+public class AnySourceVersionMismatchException extends BusinessException  implements LoggableBusinessException {
 
 	public AnySourceVersionMismatchException() {
 		super();

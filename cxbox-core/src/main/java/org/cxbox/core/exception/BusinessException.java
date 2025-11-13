@@ -23,6 +23,28 @@ import java.util.List;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
+
+/**
+ * Core business exception for expected application errors.
+ *
+ * <p>This exception represents business logic violations and expected error conditions
+ * that occur during normal application operation
+ *
+ * <p><b>Logging Behavior:</b>
+ * <p>The logging level for this exception is determined as follows:
+ * <ul>
+ *   <li>If this exception implements {@link org.cxbox.core.exception.LoggableBusinessException},
+ *       it will be logged at the standard level ({@code LogLevel.WARN})</li>
+ *   <li>If this exception does not implement {@link org.cxbox.core.exception.LoggableBusinessException},
+ *       it will be logged at the level specified in
+ *       {@link org.cxbox.core.config.properties.LoggingProperties}</li>
+ * </ul>
+ *
+ *
+ * @see org.cxbox.core.exception.LoggableBusinessException
+ * @see org.cxbox.core.config.properties.LoggingProperties
+ * @see org.cxbox.core.controller.GlobalExceptionHandler
+ */
 @Getter
 public class BusinessException extends RuntimeException {
 

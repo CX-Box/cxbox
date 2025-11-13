@@ -19,7 +19,7 @@ package org.cxbox.core.exception;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 
-public class EntityNotFoundException extends BusinessException {
+public class EntityNotFoundException extends BusinessException implements LoggableBusinessException {
 
 	public EntityNotFoundException() {
 		super();
