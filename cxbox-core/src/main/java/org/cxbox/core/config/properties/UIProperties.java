@@ -48,6 +48,11 @@ public class UIProperties {
 	public static final String APP_INFO_COLOR = "appInfoColor";
 
 	/**
+	 * The duration (in milliseconds) for which a notification message is displayed.
+	 */
+	public static final String TIMEOUT_SHOW_MESSAGE = "timeoutShowMessage";
+
+	/**
 	 * useServletContextPath = true is deprecated, and it means you will create 2 servlets
 	 * (for api with context-path = '/api/v1' and for ui with context-path = '/ui').
 	 * This is a very complex and non-common approach for springboot apps.
@@ -124,6 +129,19 @@ public class UIProperties {
 	 * If the value is null, bo background color will be applied
 	 */
 	private String appInfoColor = null;
+
+	/**
+	 * The duration (in milliseconds) for which a notification message is displayed.
+	 * Default value is {@code 0}, meaning the message will remain visible indefinitely
+	 * until the user explicitly closes it.
+	 * <p>
+	 * Example usage:
+	 * <ul>
+	 *   <li>{@code timeoutShowMessage = 3000} → Message auto-hides after 3 seconds.</li>
+	 *   <li>{@code timeoutShowMessage = 0} → Message persists until manually dismissed.</li>
+	 * </ul>
+	 */
+	private Long timeoutShowMessage = 0L;
 
 	/**
 	 * The export limit for Excel tables.
