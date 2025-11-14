@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-bom</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M20-SNAPSHOT</version>
+  <version>4.0.0-M20</version>
   <name>IO Cxbox - Bill of Materials</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox</artifactId>
-    <version>4.0.0-M20-SNAPSHOT</version>
+    <version>4.0.0-M20</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -35,74 +35,74 @@
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-bom</artifactId>
         <type>pom</type>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-constgen</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-api</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-model-core</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
 
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-core</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
 
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-all</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-api-internal</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-api</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-jackson</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-hibernate</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-api-internal</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-api</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-jackson</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-hibernate</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
@@ -112,58 +112,58 @@
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-cache</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-model</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-links-engine</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-links-all</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-links-crudma</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-dictionary-links-model</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-starter-parent</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-starter-sqlbc</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-starter-meta</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-meta-api</artifactId>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
       <dependency>
         <groupId>org.cxbox</groupId>
         <artifactId>cxbox-all</artifactId>
         <type>pom</type>
-        <version>4.0.0-M20-SNAPSHOT</version>
+        <version>4.0.0-M20</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
