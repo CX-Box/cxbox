@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-dictionary-cache</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M20</version>
+  <version>4.0.0-M21-SNAPSHOT</version>
   <name>IO Cxbox - Dictionary Cache</name>
 
   <parent>
     <artifactId>cxbox-dictionary</artifactId>
     <groupId>org.cxbox</groupId>
-    <version>4.0.0-M20</version>
+    <version>4.0.0-M21-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
