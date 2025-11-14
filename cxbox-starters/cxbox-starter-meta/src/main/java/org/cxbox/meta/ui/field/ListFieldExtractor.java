@@ -58,6 +58,8 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		result.add("Column2D");
 		result.add("Line2D");
 		result.add("DualAxes2D");
+		result.add("CalendarList");
+		result.add("CalendarYearList");
 
 		//can be changed in future releases
 		result.add("Funnel");

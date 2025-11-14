@@ -17,7 +17,9 @@ public enum WidgetTypeFamily {
 	FORM_POPUP("FormPopup"),
 	HEADER_WIDGET("HeaderWidget"),
 	LEVEL_MENU("LevelMenu"),
-	STEPS("Steps");
+	STEPS("Steps"),
+	CALENDAR_LIST("CalendarList"),
+	CALENDAR_YEAR_LIST("CalendarYearList");
 
 	private final String value;
 }
