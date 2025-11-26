@@ -23,10 +23,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 @JsonDeserialize(using = MultivalueFieldSingleValueDeserializer.class)
 public class MultivalueFieldSingleValue implements Serializable {
 
@@ -44,6 +42,10 @@ public class MultivalueFieldSingleValue implements Serializable {
 		this.id = id;
 		this.value = value;
 		this.options = options;
+	}
+
+	public MultivalueFieldSingleValue(String id, String value) {
+		this(id, value, new HashMap<>());
 	}
 
 	public MultivalueFieldSingleValue addOption(MultivalueOptionType key, String value) {
