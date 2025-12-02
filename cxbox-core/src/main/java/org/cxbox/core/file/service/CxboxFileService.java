@@ -27,14 +27,14 @@ public interface CxboxFileService {
 
 	/**
 	 * @param file entity to be saved
-	 * @param source (deprecated)
+	 * @param source for upload
 	 * @return unique file id
 	 */
 	<D extends FileDownloadDto> String upload(@NonNull D file, @Nullable String source);
 
 	/**
 	 * @param file entity to be saved
-	 * @param source (deprecated)
+	 * @param source for upload
 	 * @return unique file id
 	 */
 	@SneakyThrows
@@ -50,7 +50,7 @@ public interface CxboxFileService {
 
 	/**
 	 * @param id unique file id, that was returned by upload(...) method
-	 * @param source (deprecated)
+	 * @param source for download
 	 * @return file entity
 	 */
 	FileDownloadDto download(@NonNull String id, @Nullable String source);
@@ -58,7 +58,7 @@ public interface CxboxFileService {
 
 	/**
 	 * @param id unique file id, that was returned by upload(...) method
-	 * @param source (deprecated)
+	 * @param source for remove
 	 */
 	void remove(@NonNull String id, @Nullable String source);
 
