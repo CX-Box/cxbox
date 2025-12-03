@@ -129,6 +129,11 @@ public class PostAction {
 				.add(BasePostActionField.DRILL_DOWN_TYPE, drillDownType.getValue());
 	}
 
+	public static PostAction exportToExcel() {
+		return new PostAction()
+				.add(BasePostActionField.TYPE, BasePostActionType.EXPORT_TO_EXCEL);
+	}
+
 
 	public static PostAction delayedRefreshBC(BcIdentifier bcIdentifier, Number seconds) {
 		return new PostAction()
@@ -372,6 +377,7 @@ public class PostAction {
 
 		public static final String DRILL_DOWN_AND_WAIT_UNTIL = "drillDownAndWaitUntil";
 
+		public static final String EXPORT_TO_EXCEL = "exportToExcel";
 	}
 
 	public static class BasePostActionField {
