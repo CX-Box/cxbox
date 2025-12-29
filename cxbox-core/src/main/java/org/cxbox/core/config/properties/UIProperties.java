@@ -53,6 +53,11 @@ public class UIProperties {
 	public static final String TIMEOUT_SHOW_MESSAGE = "timeoutShowMessage";
 
 	/**
+	 *  Enables a snowfall effect in the menu area
+	 */
+	public static final String SEASONAL_EFFECTS_ENABLED = "seasonalEffectsEnabled";
+
+	/**
 	 * useServletContextPath = true is deprecated, and it means you will create 2 servlets
 	 * (for api with context-path = '/api/v1' and for ui with context-path = '/ui').
 	 * This is a very complex and non-common approach for springboot apps.
@@ -152,4 +157,12 @@ public class UIProperties {
 	 * on their requirements.
 	 */
 	private Long  appExportExcelLimit = 500L;
+
+	/**
+	 * When set to {@code true}, enables a snowfall effect in the menu area
+	 * for the time period configured on the frontend
+	 * (currently from December 15 to January 20).
+  */
+	private boolean seasonalEffectsEnabled = false;
+
 }
