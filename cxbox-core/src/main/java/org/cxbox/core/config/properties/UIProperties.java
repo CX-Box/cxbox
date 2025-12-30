@@ -53,7 +53,7 @@ public class UIProperties {
 	public static final String TIMEOUT_SHOW_MESSAGE = "timeoutShowMessage";
 
 	/**
-	 *  Enables a snowfall effect in the menu area
+	 * Enables a snowfall effect in the menu area
 	 */
 	public static final String SEASONAL_EFFECTS_ENABLED = "seasonalEffectsEnabled";
 
@@ -156,13 +156,13 @@ public class UIProperties {
 	 * limit in the application settings to optimize the export process based
 	 * on their requirements.
 	 */
-	private Long  appExportExcelLimit = 500L;
+	private Long appExportExcelLimit = 500L;
 
 	/**
 	 * When set to {@code true}, enables a snowfall effect in the menu area
 	 * for the time period configured on the frontend
 	 * (currently from December 15 to January 20).
-  */
+	 */
 	private boolean seasonalEffectsEnabled = false;
 
 }
