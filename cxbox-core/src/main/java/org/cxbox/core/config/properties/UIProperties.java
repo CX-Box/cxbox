@@ -56,6 +56,15 @@ public class UIProperties {
 	 * Enables a snowfall effect in the menu area
 	 */
 	public static final String SEASONAL_EFFECTS_ENABLED = "seasonalEffectsEnabled";
+	/**
+	 * Whether WebSocket notifications are enabled.
+	 * @default true
+	 * @remarks
+	 * When false, the frontend guarantees no WebSocket interactions,
+	 * so the backend WebSocket functionality may be safely removed.
+	 */
+	public static final String WEB_SOCKET_NOTIFICATION_ENABLED = "webSocketNotificationEnabled";
+
 
 	/**
 	 * useServletContextPath = true is deprecated, and it means you will create 2 servlets
@@ -164,5 +173,14 @@ public class UIProperties {
 	 * (currently from December 15 to January 20).
 	 */
 	private boolean seasonalEffectsEnabled = false;
+
+	/**
+	 * Whether WebSocket notifications are enabled.
+	 * @default true
+	 * @remarks
+	 * When false, the frontend guarantees no WebSocket interactions,
+	 * so the backend WebSocket functionality may be safely removed.
+	 */
+	private boolean webSocketNotificationEnabled = true;
 
 }
