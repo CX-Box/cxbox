@@ -57,9 +57,13 @@ public class UIProperties {
 	 */
 	public static final String SEASONAL_EFFECTS_ENABLED = "seasonalEffectsEnabled";
 	/**
-	 * Ability to disable sending WebSocket requests
+	 * Whether WebSocket notifications are enabled.
+	 * @default true
+	 * @remarks
+	 * When false, the frontend guarantees no WebSocket interactions,
+	 * so the backend WebSocket functionality may be safely removed.
 	 */
-	public static final String WEB_SOCKET_NOTIFICATION = "webSocketNotification";
+	public static final String WEB_SOCKET_NOTIFICATION_ENABLED = "webSocketNotificationEnabled";
 
 
 	/**
@@ -169,9 +173,14 @@ public class UIProperties {
 	 * (currently from December 15 to January 20).
 	 */
 	private boolean seasonalEffectsEnabled = false;
+
 	/**
-	 * Ability to disable sending WebSocket requests
+	 * Whether WebSocket notifications are enabled.
+	 * @default true
+	 * @remarks
+	 * When false, the frontend guarantees no WebSocket interactions,
+	 * so the backend WebSocket functionality may be safely removed.
 	 */
-	private boolean webSocketNotification = true;
+	private boolean webSocketNotificationEnabled = true;
 
 }
