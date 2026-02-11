@@ -27,8 +27,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.cxbox.core.exception.NotRegisteredWidgetFieldExtractorException;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.FieldExtractor;
+import org.cxbox.meta.ui.field.WidgetTypeFamily;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
@@ -52,7 +54,12 @@ public final class WidgetUtils {
 	}
 
 	public Set<BcField> extractFields(final WidgetDTO widget) {
-		final FieldExtractor fieldExtractor = fieldExtractorMap.get(widget.getType());
+		String widgetType = widget.getType();
+		final FieldExtractor fieldExtractor = fieldExtractorMap.get(widgetType);
+		if (WidgetTypeFamily.fromValue(widgetType).isEmpty() && fieldExtractor == null) {
+			throw new NotRegisteredWidgetFieldExtractorException("Widget type: '" + widgetType + "' not found! Please register widget field extractor")
+					.addPopup("Widget type: '" + widgetType + "' not found! Please register widget field extractor");
+		}
 		if (fieldExtractor == null) {
 			return Collections.emptySet();
 		}
