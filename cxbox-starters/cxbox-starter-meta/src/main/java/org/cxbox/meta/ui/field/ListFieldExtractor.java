@@ -62,6 +62,7 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		result.add("CalendarYearList");
 		result.add("CardList");
 		result.add("CardCarouselList");
+		result.add("RelationGraph");
 
 		//can be changed in future releases
 		result.add("Funnel");

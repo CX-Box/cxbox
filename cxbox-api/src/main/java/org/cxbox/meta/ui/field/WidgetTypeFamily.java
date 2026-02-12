@@ -11,6 +11,7 @@ public enum WidgetTypeFamily {
 	FORM("Form"),
 	LIST("List"),
 	GROUPING_HIERARCHY("GroupingHierarchy"),
+	RELATION_GRAPH("RelationGraph"),
 	STATS_BLOCK("StatsBlock"),
 	ASSOC_LIST_POPUP("AssocListPopup"),
 	PICK_LIST_POPUP("PickListPopup"),
