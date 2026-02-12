@@ -60,6 +60,8 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		result.add("DualAxes2D");
 		result.add("CalendarList");
 		result.add("CalendarYearList");
+		result.add("CardList");
+		result.add("CardCarouselList");
 
 		//can be changed in future releases
 		result.add("Funnel");
