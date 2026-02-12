@@ -19,7 +19,9 @@ public enum WidgetTypeFamily {
 	LEVEL_MENU("LevelMenu"),
 	STEPS("Steps"),
 	CALENDAR_LIST("CalendarList"),
-	CALENDAR_YEAR_LIST("CalendarYearList");
+	CALENDAR_YEAR_LIST("CalendarYearList"),
+	CARD_LIST("CardList"),
+	CARD_CAROUSEL_LIST("CardCarouselList");
 
 	private final String value;
 }
