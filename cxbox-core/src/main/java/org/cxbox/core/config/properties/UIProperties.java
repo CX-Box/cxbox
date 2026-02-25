@@ -65,6 +65,17 @@ public class UIProperties {
 	 */
 	public static final String WEB_SOCKET_NOTIFICATION_ENABLED = "webSocketNotificationEnabled";
 
+	/**
+	 * Controls whether to show a warning dialog before browser navigation.
+	 *
+	 * <p>When <code>true</code>, displays a confirmation warning when the user clicks
+	 * browser action buttons (next/previous). When <code>false</code>, navigation
+	 * occurs immediately without warning.</p>
+	 *
+	 * @default false
+	 */
+	public static final String BROWSER_NAVIGATION_WARN_ENABLED = "browserNavigationWarnEnabled";
+
 
 	/**
 	 * useServletContextPath = true is deprecated, and it means you will create 2 servlets
@@ -182,5 +193,16 @@ public class UIProperties {
 	 * so the backend WebSocket functionality may be safely removed.
 	 */
 	private boolean webSocketNotificationEnabled = true;
+
+	/**
+	 * Controls whether to show a warning dialog before browser navigation.
+	 *
+	 * <p>When <code>true</code>, displays a confirmation warning when the user clicks
+	 * browser action buttons (next/previous). When <code>false</code>, navigation
+	 * occurs immediately without warning.</p>
+	 *
+	 * @default false
+	 */
+	private boolean browserNavigationWarnEnabled = false;
 
 }
