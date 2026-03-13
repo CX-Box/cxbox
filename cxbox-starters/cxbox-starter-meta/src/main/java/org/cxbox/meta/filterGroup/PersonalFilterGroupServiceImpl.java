@@ -19,7 +19,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.exception.BusinessException;
@@ -27,6 +26,8 @@ import org.cxbox.core.util.session.SessionService;
 import org.cxbox.meta.data.FilterGroupDTO;
 import org.cxbox.meta.entity.FilterGroup;
 import org.cxbox.model.core.dao.JpaDao;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,22 +42,30 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 
 	@Override
 	public List<FilterGroupDTO> create(List<FilterGroupDTO> filterGroupDTOList) {
+		try {
 
 		List<FilterGroupDTO> filterGroupsDTO = new ArrayList<>();
 
-		transactionService.invokeInTx(() -> {
-			filterGroupDTOList.forEach(fgDTO -> {
-				if (hasDuplicateName(fgDTO)) {
+			transactionService.invokeInTx(() -> {
+				filterGroupDTOList.forEach(fgDTO -> {
+					Long id = jpaDao.save(filterGroupFromDTO(fgDTO)
+							.setUserId(String.valueOf(service.getSessionUser().getId())));
+					fgDTO.setId(id.toString());
+					filterGroupsDTO.add(fgDTO);
+				});
+				return null;
+			});
+			return filterGroupsDTO;
+
+		} catch (DataIntegrityViolationException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof ConstraintViolationException violation) {
+				if ("bc_filter_groups_unique".equals(violation.getConstraintName())) {
 					throw new BusinessException().addPopup(errorMessage("error.filter_group_duplicate"));
 				}
-				Long id = jpaDao.save(filterGroupFromDTO(fgDTO)
-						.setUserId(String.valueOf(service.getSessionUser().getId())));
-				fgDTO.setId(id.toString());
-				filterGroupsDTO.add(fgDTO);
-			});
-			return null;
-		});
-		return filterGroupsDTO;
+			}
+			throw e;
+		}
 	}
 
 	@Override
@@ -65,6 +74,7 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 			ids.forEach(id -> jpaDao.delete(FilterGroup.class, id));
 			return null;
 		});
+
 	}
 
 	private FilterGroup filterGroupFromDTO(FilterGroupDTO filterGroupDTO) {
@@ -72,15 +82,6 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 				.setFilters(filterGroupDTO.getFilters())
 				.setName(filterGroupDTO.getName())
 				.setBc(filterGroupDTO.getBc());
-	}
-
-	private boolean hasDuplicateName(FilterGroupDTO dto) {
-		String name = dto.getName();
-
-		return jpaDao.getList(FilterGroup.class).stream()
-				.map(FilterGroup::getName)
-				.filter(Objects::nonNull)
-				.anyMatch(n -> n.equals(name));
 	}
 
 }
