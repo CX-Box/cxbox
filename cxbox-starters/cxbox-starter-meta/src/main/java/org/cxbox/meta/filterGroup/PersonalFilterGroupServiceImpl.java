@@ -19,7 +19,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
@@ -76,12 +75,12 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 	}
 
 	private boolean hasDuplicateName(FilterGroupDTO dto) {
-		String name = dto.getName().toLowerCase(Locale.ROOT);
+		String name = dto.getName();
 
 		return jpaDao.getList(FilterGroup.class).stream()
 				.map(FilterGroup::getName)
 				.filter(Objects::nonNull)
-				.anyMatch(n -> n.equalsIgnoreCase(name));
+				.anyMatch(n -> n.equals(name));
 	}
 
 }
