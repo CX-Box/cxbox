@@ -44,7 +44,7 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 	public List<FilterGroupDTO> create(List<FilterGroupDTO> filterGroupDTOList) {
 		try {
 
-		List<FilterGroupDTO> filterGroupsDTO = new ArrayList<>();
+			List<FilterGroupDTO> filterGroupsDTO = new ArrayList<>();
 
 			transactionService.invokeInTx(() -> {
 				filterGroupDTOList.forEach(fgDTO -> {
