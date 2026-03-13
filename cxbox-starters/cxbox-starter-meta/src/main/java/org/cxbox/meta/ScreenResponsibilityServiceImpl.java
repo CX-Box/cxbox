@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
@@ -111,10 +112,11 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 								ObjectNode optionsNode = getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
 								ObjectNode actionsGroups = getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
 								ArrayNode include = getArrayPropOrElseCreate(actionsGroups,  WidgetSourceDTO.INCLUDE_PROP);
-								roleAction.stream()
+								Set<String> actions = roleAction.stream()
 										.filter(ra -> ra.isAvailable(userRole, v.getName(), w.getName()))
 										.map(ResponsibilitiesAction::getAction)
-										.forEach(include::add);
+										.collect(Collectors.toSet());
+
 								w.setOptions(objectMapper.writeValueAsString(optionsNode));
 							} catch (JsonProcessingException e) {
 								throw new IllegalStateException(e);
