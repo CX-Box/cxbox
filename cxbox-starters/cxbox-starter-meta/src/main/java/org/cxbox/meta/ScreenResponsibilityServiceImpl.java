@@ -103,38 +103,21 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	public void widgetActionGroupsOverride(IUser<Long> user, Set<String> userRole, Map<String, ScreenResponsibility> allUserScreens) {
 		var roleAction = jpaDao.getList(ResponsibilitiesAction.class);
 		if (!metaConfigurationProperties.isWidgetActionGroupsEnabled()) {
-			allUserScreens.values().stream()
-					.map(s -> (ScreenDTO) s.getMeta())
-					.forEach(sc -> sc.getViews().forEach(v -> {
-
-						v.setWidgets(v.getWidgets().stream()
-								.map(SerializationUtils::clone)
-								.toList());
-
+			allUserScreens.values().stream().map(s -> ((ScreenDTO) s.getMeta())).forEach(sc -> sc.getViews()
+					.forEach(v -> {
+						v.setWidgets(v.getWidgets().stream().map(SerializationUtils::clone).toList());
 						v.getWidgets().forEach(w -> {
 							try {
-								ObjectNode widgetJson = objectMapper.readValue(
-										objectMapper.writeValueAsString(w),
-										ObjectNode.class);
-
-								ObjectNode optionsNode =
-										getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
-
-								ObjectNode actionsGroups =
-										getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
-
-								ArrayNode include =
-										getArrayPropOrElseCreate(actionsGroups, WidgetSourceDTO.INCLUDE_PROP);
-
+								ObjectNode widgetJson = objectMapper.readValue(objectMapper.writeValueAsString(w), ObjectNode.class);
+								ObjectNode optionsNode = getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
+								ObjectNode actionsGroups = getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
+								ArrayNode include = getArrayPropOrElseCreate(actionsGroups,  WidgetSourceDTO.INCLUDE_PROP);
 								Set<String> actions = new LinkedHashSet<>();
-
 								roleAction.stream()
 										.filter(ra -> ra.isAvailable(userRole, v.getName(), w.getName()))
 										.map(ResponsibilitiesAction::getAction)
 										.forEach(actions::add);
-
 								actions.forEach(include::add);
-
 								w.setOptions(objectMapper.writeValueAsString(optionsNode));
 							} catch (JsonProcessingException e) {
 								throw new IllegalStateException(e);

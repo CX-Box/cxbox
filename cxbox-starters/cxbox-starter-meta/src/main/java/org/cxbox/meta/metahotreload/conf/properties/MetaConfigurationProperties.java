@@ -31,9 +31,25 @@ import org.springframework.validation.annotation.Validated;
 public class MetaConfigurationProperties {
 
 	private boolean devPanelEnabled = false;
-
+	/**
+	 * Determines where the allowed roles for views are loaded from.
+	 * true  – allowed roles for views are taken from JSON configuration files.
+	 * false – allowed roles are loaded from CSV files.
+	 */
 	private boolean viewAllowedRolesEnabled = false;
 
+
+	/**
+	 * Determines where widget action buttons are loaded from.
+	 * true  – widget buttons (action groups) are taken only from JSON configuration files.
+	 * false – widget buttons are taken from both:
+	 * CSV files
+	 * JSON files
+	 * Limitation: when this option is disabled (false), buttons defined in JSON
+	 * will not be included in the final configuration file exported from the UI.
+	 * This flag is typically used during migration from JSON-based configuration
+	 * to CSV-based configuration.
+	 */
 	private boolean widgetActionGroupsEnabled = true;
 
 	private boolean widgetActionGroupsCompact = true;
