@@ -22,11 +22,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
@@ -103,19 +103,37 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 	public void widgetActionGroupsOverride(IUser<Long> user, Set<String> userRole, Map<String, ScreenResponsibility> allUserScreens) {
 		var roleAction = jpaDao.getList(ResponsibilitiesAction.class);
 		if (!metaConfigurationProperties.isWidgetActionGroupsEnabled()) {
-			allUserScreens.values().stream().map(s -> ((ScreenDTO) s.getMeta())).forEach(sc -> sc.getViews()
-					.forEach(v -> {
-						v.setWidgets(v.getWidgets().stream().map(SerializationUtils::clone).toList());
+			allUserScreens.values().stream()
+					.map(s -> (ScreenDTO) s.getMeta())
+					.forEach(sc -> sc.getViews().forEach(v -> {
+
+						v.setWidgets(v.getWidgets().stream()
+								.map(SerializationUtils::clone)
+								.toList());
+
 						v.getWidgets().forEach(w -> {
 							try {
-								ObjectNode widgetJson = objectMapper.readValue(objectMapper.writeValueAsString(w), ObjectNode.class);
-								ObjectNode optionsNode = getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
-								ObjectNode actionsGroups = getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
-								ArrayNode include = getArrayPropOrElseCreate(actionsGroups,  WidgetSourceDTO.INCLUDE_PROP);
-								Set<String> actions = roleAction.stream()
+								ObjectNode widgetJson = objectMapper.readValue(
+										objectMapper.writeValueAsString(w),
+										ObjectNode.class);
+
+								ObjectNode optionsNode =
+										getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
+
+								ObjectNode actionsGroups =
+										getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
+
+								ArrayNode include =
+										getArrayPropOrElseCreate(actionsGroups, WidgetSourceDTO.INCLUDE_PROP);
+
+								Set<String> actions = new LinkedHashSet<>();
+
+								roleAction.stream()
 										.filter(ra -> ra.isAvailable(userRole, v.getName(), w.getName()))
 										.map(ResponsibilitiesAction::getAction)
-										.collect(Collectors.toSet());
+										.forEach(actions::add);
+
+								actions.forEach(include::add);
 
 								w.setOptions(objectMapper.writeValueAsString(optionsNode));
 							} catch (JsonProcessingException e) {
