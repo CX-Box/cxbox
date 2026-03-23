@@ -33,7 +33,7 @@ public class AdditionalFields extends BaseEntity {
 
 	private String userId;
 
-	private String view;
+	private String viewName;
 
 	private String widget;
 
