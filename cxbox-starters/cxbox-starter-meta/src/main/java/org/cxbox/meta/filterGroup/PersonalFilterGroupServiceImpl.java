@@ -60,9 +60,7 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 		} catch (DataIntegrityViolationException e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof ConstraintViolationException violation) {
-				if ("bc_filter_groups_unique".equals(violation.getConstraintName())) {
 					throw new BusinessException().addPopup(errorMessage("error.filter_group_duplicate"));
-				}
 			}
 			throw e;
 		}
