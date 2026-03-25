@@ -31,26 +31,66 @@ import org.springframework.validation.annotation.Validated;
 public class MetaConfigurationProperties {
 
 	private boolean devPanelEnabled = false;
+
 	/**
 	 * Determines where the allowed roles for views are loaded from.
-	 * true  – allowed roles for views are taken from JSON configuration files.
-	 * false – allowed roles are loaded from CSV files.
+	 * View permissions are read,created or updated
+	 *  in table `responsibilities` based on
+	 * `true` : `*.view.json` (`rolesAllowed`)
+	 * `false` (default) : load (CSV file)
+	 *     In this mode, access permissions for views can be managed through the user interface.
+	 *     Use `false` for production view permissions with data migration between environments
+	 * Development mode:
+	 * Enable this mode to configure roles for views in `*.view.json`.
+	 * After setup, export the data using /view/responsibilitiesAdmin (Export button)
+	 * and reuse the generated file for CSV import.
+	 * The export format matches the standard CSV import format.
 	 */
 	private boolean viewAllowedRolesEnabled = false;
 
 
 	/**
-	 * Determines where widget action buttons are loaded from.
-	 * true  – widget buttons (action groups) are taken only from JSON configuration files.
-	 * false – widget buttons are taken from both:
-	 * CSV files
-	 * JSON files
-	 * Limitation: when this option is disabled (false), buttons defined in JSON
-	 * will not be included in the final configuration file exported from the UI.
-	 * This flag is typically used during migration from JSON-based configuration
-	 * to CSV-based configuration.
+	 * Determines where the allowed actions for widgets are loaded from.
+	 * Actions permissions are read, created or updated
+	 * in table `responsibilities_action` based on:
+	 * `true` (default):`*.widget.json` (`actionGroups`)
+	 * `false`:  load (CSV file)
+	 * Development mode:
+	 * Enable this mode to configure actions for widget in `*.widget.json`.
+	 * After setup, export the data using /view/responsibilitiesActionAdmin (Export button)
+	 * and reuse the generated file for CSV import.
+	 * The export format matches the standard CSV import format.
 	 */
 	private boolean widgetActionGroupsEnabled = true;
+
+	/**
+	 * !!! only for development mode , no use on production
+	 * Controls the loading mode for widget action buttons
+	 * and determines the data population strategy for the `responsibility_action` table
+	 * !!! Works when `widget-action-groups-enabled: true`
+	 * <b>Modes:</b>
+	 * `true` (default) – compact fill mode (fewer rows).
+	 *                    Creates entries for each button of each widget,
+	 *                    populating the role field with `*`
+	 *                    and the view field with `*`
+	 *                    (`*` means all roles/all views).
+	 * `false` - full mode, separate row per role and view.
+	 *
+	 * <p><b>Example – ({@code true}):</b>
+	 * <pre>
+	 * id,internal_role_cd,action,view,widget
+	 * 1100581,*,create,*,clientList
+	 * </pre>
+	 *
+	 * <p><b>Example –({@code false}):</b>
+	 * <pre>
+	 * id,internal_role_cd,action,view,widget
+	 * 1100692,ADMIN,create,clientlist,clientList
+	 * 1100693,CXBOX_USER,create,clientlist,clientList
+	 * 1100694,BUSINESS_ADMIN,create,clientlist,clientList
+	 * </pre>
+	 * почему он true по дефолту? кажется надо фолс делать
+	 */
 
 	private boolean widgetActionGroupsCompact = true;
 
