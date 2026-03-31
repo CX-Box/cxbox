@@ -95,7 +95,7 @@ public class AdditionalFieldsImpl implements AdditionalFieldsService {
 		return jpaDao.exists(
 				AdditionalFields.class,
 				(root, cq, cb) -> cb.and(
-						cb.equal(root.get(AdditionalFields_.viewName), additionalFields.getViewName()),
+						cb.equal(root.get(AdditionalFields_.view), additionalFields.getView()),
 						cb.equal(root.get(AdditionalFields_.widget), additionalFields.getWidget()),
 						cb.equal(
 								root.get(AdditionalFields_.userId),
@@ -108,7 +108,7 @@ public class AdditionalFieldsImpl implements AdditionalFieldsService {
 	private void updateAdditionalFields(AdditionalFields additionalFieldsForUpdate) {
 		jpaDao.update(
 				AdditionalFields.class, (root, cq, cb) -> cb.and(
-						cb.equal(root.get(AdditionalFields_.viewName), additionalFieldsForUpdate.getViewName()),
+						cb.equal(root.get(AdditionalFields_.view), additionalFieldsForUpdate.getView()),
 						cb.equal(root.get(AdditionalFields_.widget), additionalFieldsForUpdate.getWidget()),
 						cb.equal(root.get(AdditionalFields_.userId), String.valueOf(service.getSessionUser().getId()))
 				),
@@ -139,7 +139,7 @@ public class AdditionalFieldsImpl implements AdditionalFieldsService {
 				.setOrderFields(objectMapper
 						.writeValueAsString(additionalFieldsDTO.getOrderFields()))
 				.setWidget(additionalFieldsDTO.getWidget())
-				.setViewName(additionalFieldsDTO.getView());
+				.setView(additionalFieldsDTO.getView());
 	}
 
 }

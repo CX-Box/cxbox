@@ -44,7 +44,7 @@ public class AdditionalFieldsDTO extends DataResponseDTO {
 	@Builder
 	public AdditionalFieldsDTO(AdditionalFields additionalFields) {
 		this.id = String.valueOf(additionalFields.getId());
-		this.view = additionalFields.getViewName();
+		this.view = additionalFields.getView();
 		this.widget = additionalFields.getWidget();
 	}
 
