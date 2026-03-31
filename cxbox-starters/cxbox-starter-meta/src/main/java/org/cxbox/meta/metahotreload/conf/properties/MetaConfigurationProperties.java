@@ -33,48 +33,47 @@ public class MetaConfigurationProperties {
 	private boolean devPanelEnabled = false;
 
 	/**
-	 * Determines where the allowed roles for views are loaded from.
-	 * View permissions are read,created or updated
-	 *  in table `responsibilities` based on
-	 * `true` : `*.view.json` (`rolesAllowed`)
-	 * `false` (default) : load (CSV file)
-	 *     In this mode, access permissions for views can be managed through the user interface.
-	 *     Use `false` for production view permissions with data migration between environments
-	 * Development mode:
-	 * Enable this mode to configure roles for views in `*.view.json`.
-	 * After setup, export the data using /view/responsibilitiesAdmin (Export button)
-	 * and reuse the generated file for CSV import.
-	 * The export format matches the standard CSV import format.
+	 * Views visible for user can depend on user roles.
+	 * Allowed View-Role pairs are always taken from table responsibilities(internal_role, responsibilites, ...)
+	 *  But one must always avoid loading this pairs by hand. Instead use one of 2 options:
+	 *  1) viewAllowedRolesEnabled = true : auto load from *view.json->rollesAllowed tags
+	 *  2) viewAllowedRolesEnabled = false (default) :auto load from standartized RESPONSIBILITIES.csv with liquibase
+	 * Recommendations:
+	 *  Always prefer viewAllowedRolesEnabled = true when possible due to better plugin support and faster development speed.
+	 * Use viewAllowedRolesEnabled = false only when responsibilities table edit through admin UI is required in your project.
+	 * During local development still to use viewAllowedRolesEnabled = true,
+	 * then export the RESPONSIBILITIES.csv using /view/responsibilitiesAdmin (Export button)
+	 * and set viewAllowedRolesEnabled = false before commit
 	 */
 	private boolean viewAllowedRolesEnabled = false;
 
 
 	/**
-	 * Determines where the allowed actions for widgets are loaded from.
-	 * Actions permissions are read, created or updated
-	 * in table `responsibilities_action` based on:
-	 * `true` (default):`*.widget.json` (`actionGroups`)
-	 * `false`:  load (CSV file)
-	 * Development mode:
-	 * Enable this mode to configure actions for widget in `*.widget.json`.
-	 * After setup, export the data using /view/responsibilitiesActionAdmin (Export button)
-	 * and reuse the generated file for CSV import.
-	 * The export format matches the standard CSV import format.
+	 * Actions visible for user can depend on user roles.
+	 * Allowed Actions-Role  pairs are always taken from table responsibilities_action(internal_role, action, widget,view...)
+	 *  But one must always avoid loading this pairs by hand. Instead use one of 2 options:
+	 *  1) widgetActionGroupsEnabled (default) = true : auto load from *.widget.json->actionGroups tags
+	 *  2) widgetActionGroupsEnabled= false :auto load from standartized RESPONSIBILITIES_ACTION.csv with liquibase
+	 * Recommendations:
+	 *  Always prefer widgetActionGroupsEnabled= true when possible due to better plugin support and faster development speed.
+	 * Use widgetActionGroupsEnabled= false only when responsibilities_action table edit through admin UI is required in your project.
+	 * During local development still to use widgetActionGroupsEnabled = true,
+	 * then export the RESPONSIBILITIES_ACTION.csv using /view/responsibilitiesActionAdmin (Export button)
+	 * and set widgetActionGroupsEnabled= false before commit
 	 */
 	private boolean widgetActionGroupsEnabled = true;
 
 	/**
-	 * !!! only for development mode , no use on production
+	 * !!! only for local development, no use on production
 	 * Controls the loading mode for widget action buttons
 	 * and determines the data population strategy for the `responsibility_action` table
 	 * !!! Works when `widget-action-groups-enabled: true`
-	 * <b>Modes:</b>
-	 * `true` (default) – compact fill mode (fewer rows).
+	 * 1) widgetActionGroupsCompact =`true` (default) – compact fill mode (fewer rows).
 	 *                    Creates entries for each button of each widget,
 	 *                    populating the role field with `*`
 	 *                    and the view field with `*`
 	 *                    (`*` means all roles/all views).
-	 * `false` - full mode, separate row per role and view.
+	 * 2) widgetActionGroupsCompact= `false` - full mode, separate row per role and view.
 	 *
 	 * <p><b>Example – ({@code true}):</b>
 	 * <pre>
@@ -89,7 +88,11 @@ public class MetaConfigurationProperties {
 	 * 1100693,CXBOX_USER,create,clientlist,clientList
 	 * 1100694,BUSINESS_ADMIN,create,clientlist,clientList
 	 * </pre>
-	 * почему он true по дефолту? кажется надо фолс делать
+	 * Recommendations:
+	 * In the early stages of a project, when the roles  for View and Action are not yet
+	 * clearly defined, we recommend using this mode.
+	 * This will significantly speed up the development of
+	 * screen forms by enabling fast loading of all relationships.
 	 */
 
 	private boolean widgetActionGroupsCompact = true;

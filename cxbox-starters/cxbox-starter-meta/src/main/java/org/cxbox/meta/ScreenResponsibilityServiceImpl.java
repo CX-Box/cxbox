@@ -110,7 +110,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 							try {
 								ObjectNode widgetJson = objectMapper.readValue(objectMapper.writeValueAsString(w), ObjectNode.class);
 								ObjectNode optionsNode = getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
-								ObjectNode actionsGroups = getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
+								ObjectNode actionsGroups = createObjectProp(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
 								ArrayNode include = getArrayPropOrElseCreate(actionsGroups,  WidgetSourceDTO.INCLUDE_PROP);
 								Set<String> actions = new LinkedHashSet<>();
 								roleAction.stream()
@@ -137,7 +137,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 		}
 	}
 
-	private ObjectNode getObjectPropReCreate(ObjectNode parent, String propName) {
+	private ObjectNode createObjectProp(ObjectNode parent, String propName) {
 		parent.set(propName, objectMapper.createObjectNode());
 		return (ObjectNode) parent.get(propName);
 	}
