@@ -32,9 +32,68 @@ public class MetaConfigurationProperties {
 
 	private boolean devPanelEnabled = false;
 
+	/**
+	 * Views visible for user can depend on user roles.
+	 * Allowed View-Role pairs are always taken from table responsibilities(internal_role, responsibilites, ...)
+	 *  But one must always avoid loading this pairs by hand. Instead use one of 2 options:
+	 *  1) viewAllowedRolesEnabled = true : auto load from *view.json->rollesAllowed tags
+	 *  2) viewAllowedRolesEnabled = false (default) :auto load from standartized RESPONSIBILITIES.csv with liquibase
+	 * Recommendations:
+	 *  Always prefer viewAllowedRolesEnabled = true when possible due to better plugin support and faster development speed.
+	 * Use viewAllowedRolesEnabled = false only when responsibilities table edit through admin UI is required in your project.
+	 * During local development still to use viewAllowedRolesEnabled = true,
+	 * then export the RESPONSIBILITIES.csv using /view/responsibilitiesAdmin (Export button)
+	 * and set viewAllowedRolesEnabled = false before commit
+	 */
 	private boolean viewAllowedRolesEnabled = false;
 
+
+	/**
+	 * Actions visible for user can depend on user roles.
+	 * Allowed Actions-Role  pairs are always taken from table responsibilities_action(internal_role, action, widget,view...)
+	 *  But one must always avoid loading this pairs by hand. Instead use one of 2 options:
+	 *  1) widgetActionGroupsEnabled (default) = true : auto load from *.widget.json->actionGroups tags
+	 *  2) widgetActionGroupsEnabled= false :auto load from standartized RESPONSIBILITIES_ACTION.csv with liquibase
+	 * Recommendations:
+	 *  Always prefer widgetActionGroupsEnabled= true when possible due to better plugin support and faster development speed.
+	 * Use widgetActionGroupsEnabled= false only when responsibilities_action table edit through admin UI is required in your project.
+	 * During local development still to use widgetActionGroupsEnabled = true,
+	 * then export the RESPONSIBILITIES_ACTION.csv using /view/responsibilitiesActionAdmin (Export button)
+	 * and set widgetActionGroupsEnabled= false before commit
+	 */
 	private boolean widgetActionGroupsEnabled = true;
+
+	/**
+	 * !!! only for local development, no use on production
+	 * Controls the loading mode for widget action buttons
+	 * and determines the data population strategy for the `responsibility_action` table
+	 * !!! Works when `widget-action-groups-enabled: true`
+	 * 1) widgetActionGroupsCompact =`true` (default) – compact fill mode (fewer rows).
+	 *                    Creates entries for each button of each widget,
+	 *                    populating the role field with `*`
+	 *                    and the view field with `*`
+	 *                    (`*` means all roles/all views).
+	 * 2) widgetActionGroupsCompact= `false` - full mode, separate row per role and view.
+	 *
+	 * <p><b>Example – ({@code true}):</b>
+	 * <pre>
+	 * id,internal_role_cd,action,view,widget
+	 * 1100581,*,create,*,clientList
+	 * </pre>
+	 *
+	 * <p><b>Example –({@code false}):</b>
+	 * <pre>
+	 * id,internal_role_cd,action,view,widget
+	 * 1100692,ADMIN,create,clientlist,clientList
+	 * 1100693,CXBOX_USER,create,clientlist,clientList
+	 * 1100694,BUSINESS_ADMIN,create,clientlist,clientList
+	 * </pre>
+	 * Recommendations:
+	 * In the early stages of a project, when the roles  for View and Action are not yet
+	 * clearly defined, we recommend using this mode.
+	 * This will significantly speed up the development of
+	 * screen forms by enabling fast loading of all relationships.
+	 */
 
 	private boolean widgetActionGroupsCompact = true;
 

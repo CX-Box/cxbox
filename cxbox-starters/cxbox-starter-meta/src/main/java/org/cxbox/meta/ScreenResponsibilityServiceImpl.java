@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -109,12 +110,14 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 							try {
 								ObjectNode widgetJson = objectMapper.readValue(objectMapper.writeValueAsString(w), ObjectNode.class);
 								ObjectNode optionsNode = getObjectPropOrElseCreate(widgetJson, WidgetSourceDTO.OPTIONS_PROP);
-								ObjectNode actionsGroups = getObjectPropReCreate(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
+								ObjectNode actionsGroups = createObjectProp(optionsNode, WidgetSourceDTO.ACTION_GROUPS_PROP);
 								ArrayNode include = getArrayPropOrElseCreate(actionsGroups,  WidgetSourceDTO.INCLUDE_PROP);
+								Set<String> actions = new LinkedHashSet<>();
 								roleAction.stream()
 										.filter(ra -> ra.isAvailable(userRole, v.getName(), w.getName()))
 										.map(ResponsibilitiesAction::getAction)
-										.forEach(include::add);
+										.forEach(actions::add);
+								actions.forEach(include::add);
 								w.setOptions(objectMapper.writeValueAsString(optionsNode));
 							} catch (JsonProcessingException e) {
 								throw new IllegalStateException(e);
@@ -134,7 +137,7 @@ public class ScreenResponsibilityServiceImpl implements ScreenResponsibilityServ
 		}
 	}
 
-	private ObjectNode getObjectPropReCreate(ObjectNode parent, String propName) {
+	private ObjectNode createObjectProp(ObjectNode parent, String propName) {
 		parent.set(propName, objectMapper.createObjectNode());
 		return (ObjectNode) parent.get(propName);
 	}
