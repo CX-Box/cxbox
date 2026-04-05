@@ -27,9 +27,11 @@ public class ErrorMessageSource extends ResourceBundleMessageSource {
 	private ErrorMessageSource() {
 		ResourceBundleMessageSource core = new ResourceBundleMessageSource();
 		core.setDefaultEncoding("UTF-8");
+		core.setFallbackToSystemLocale(false);
 		core.setBasename("error.core.messages");
 		setUseCodeAsDefaultMessage(true);
 		setDefaultEncoding("UTF-8");
+		setFallbackToSystemLocale(false);
 		setBasename("error.messages");
 		setParentMessageSource(core);
 	}
