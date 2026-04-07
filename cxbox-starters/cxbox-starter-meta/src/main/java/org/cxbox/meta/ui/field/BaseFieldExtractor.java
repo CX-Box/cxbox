@@ -86,6 +86,13 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 					.putAttribute(Attribute.PICK_LIST_FIELDS, pickListFields);
 			widgetFields.remove(widgetField);
 			widgetFields.add(widgetField);
+			// --- Добавляем поле id, если его ещё нет ---
+			BcField idField = new BcField(widget.getBcName(), "id")
+					.putAttribute(Attribute.WIDGET_NAME, widget.getName());
+			if (!widgetFields.contains(idField)) {
+				widgetFields.add(idField);
+			}
+
 		}
 		return widgetFields;
 	}
