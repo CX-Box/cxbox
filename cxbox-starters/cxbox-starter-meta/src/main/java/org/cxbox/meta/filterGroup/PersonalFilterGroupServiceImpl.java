@@ -19,7 +19,7 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.exception.BusinessException;
@@ -59,20 +59,20 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 			return filterGroupsDTO;
 
 		} catch (DataIntegrityViolationException e) {
-			Throwable cause = e.getCause();
-			if (cause instanceof ConstraintViolationException violation) {
-				if (violation.getConstraintName() != null &&
-						//postgres
-						(Objects.requireNonNull(violation.getConstraintName()).toUpperCase()
-								.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE$")) ||
-						//oracle
-						Objects.requireNonNull(violation.getConstraintName()).toUpperCase()
-								.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE_INDEX$")) {
-					throw new BusinessException().addPopup(errorMessage("error.filter_group_duplicate_unique"));
-				} else {
-					throw new BusinessException().addPopup(errorMessage("error.filter_group_duplicate"));
-				}
+			if (e.getCause() instanceof ConstraintViolationException v) {
+
+				String upper = Optional.ofNullable(v.getConstraintName())
+						.map(String::toUpperCase)
+						.orElse("");
+
+				String messageKey = upper.endsWith("BC_FILTER_GROUPS_UNIQUE")
+						? "error.filter_group_duplicate_unique"
+						: "error.filter_group_duplicate";
+
+				throw new BusinessException()
+						.addPopup(errorMessage(messageKey));
 			}
+
 			throw e;
 		}
 	}
