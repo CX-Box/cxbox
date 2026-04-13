@@ -19,7 +19,6 @@ import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.exception.BusinessException;
@@ -61,18 +60,19 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 		} catch (DataIntegrityViolationException e) {
 			if (e.getCause() instanceof ConstraintViolationException v) {
 
-				String upper = Optional.ofNullable(v.getConstraintName())
-						.map(String::toUpperCase)
-						.orElse("");
+				String constraint = v.getConstraintName();
+				String upper = constraint != null ? constraint.toUpperCase() : "";
 
-				String messageKey = upper.endsWith("BC_FILTER_GROUPS_UNIQUE")
+				boolean isUnique = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE$"); //postgres
+				boolean isUniqueIndex = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE_INDEX$"); //oracle
+
+				String messageKey = isUnique || isUniqueIndex
 						? "error.filter_group_duplicate_unique"
 						: "error.filter_group_duplicate";
 
 				throw new BusinessException()
 						.addPopup(errorMessage(messageKey));
 			}
-
 			throw e;
 		}
 	}
