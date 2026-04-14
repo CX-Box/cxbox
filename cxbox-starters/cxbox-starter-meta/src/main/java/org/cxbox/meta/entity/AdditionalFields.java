@@ -15,6 +15,7 @@ package org.cxbox.meta.entity;/*
  */
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -33,6 +34,7 @@ public class AdditionalFields extends BaseEntity {
 
 	private String userId;
 
+	@Column(name = "VIEW_NAME")
 	private String view;
 
 	private String widget;

@@ -72,7 +72,7 @@ public class ResponsibilitiesAction extends BaseEntity {
 	/**
 	 * .view.json -> name or *
 	 */
-	@Column(name = "VIEW")
+	@Column(name = "VIEW_NAME")
 	private String view = ANY_VIEW;
 
 	@Column(name = "WIDGET")
