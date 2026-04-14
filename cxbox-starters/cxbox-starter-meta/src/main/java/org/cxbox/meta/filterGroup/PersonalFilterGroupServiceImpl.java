@@ -15,14 +15,19 @@ package org.cxbox.meta.filterGroup;/*
  */
 
 
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.meta.data.FilterGroupDTO;
 import org.cxbox.meta.entity.FilterGroup;
 import org.cxbox.model.core.dao.JpaDao;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,19 +42,39 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 
 	@Override
 	public List<FilterGroupDTO> create(List<FilterGroupDTO> filterGroupDTOList) {
+		try {
 
-		List<FilterGroupDTO> filterGroupsDTO = new ArrayList<>();
+			List<FilterGroupDTO> filterGroupsDTO = new ArrayList<>();
 
-		transactionService.invokeInTx(() -> {
-			filterGroupDTOList.forEach(fgDTO -> {
-				Long id = jpaDao.save(filterGroupFromDTO(fgDTO)
-						.setUserId(String.valueOf(service.getSessionUser().getId())));
-				fgDTO.setId(id.toString());
-				filterGroupsDTO.add(fgDTO);
+			transactionService.invokeInTx(() -> {
+				filterGroupDTOList.forEach(fgDTO -> {
+					Long id = jpaDao.save(filterGroupFromDTO(fgDTO)
+							.setUserId(String.valueOf(service.getSessionUser().getId())));
+					fgDTO.setId(id.toString());
+					filterGroupsDTO.add(fgDTO);
+				});
+				return null;
 			});
-			return null;
-		});
-		return filterGroupsDTO;
+			return filterGroupsDTO;
+
+		} catch (DataIntegrityViolationException e) {
+			if (e.getCause() instanceof ConstraintViolationException v) {
+
+				String constraint = v.getConstraintName();
+				String upper = constraint != null ? constraint.toUpperCase() : "";
+
+				boolean isUnique = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE$"); //postgres
+				boolean isUniqueIndex = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE_INDEX$"); //oracle
+
+				String messageKey = isUnique || isUniqueIndex
+						? "error.filter_group_duplicate_unique"
+						: "error.filter_group_duplicate";
+
+				throw new BusinessException()
+						.addPopup(errorMessage(messageKey));
+			}
+			throw e;
+		}
 	}
 
 	@Override
