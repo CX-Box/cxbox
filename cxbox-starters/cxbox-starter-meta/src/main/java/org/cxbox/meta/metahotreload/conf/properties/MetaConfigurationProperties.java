@@ -98,21 +98,32 @@ public class MetaConfigurationProperties {
 	private boolean widgetActionGroupsCompact = true;
 
 	/**
-	 * Controls whether the {@code id} field is always included in API responses.
+	 * Determines whether the {@code id} field should be automatically added to the API response
+	 * when no fields of the Business Component (BC) are added to widgets on the screen
+	 * during the initial load.
 	 *
-	 * <p>When set to {@code true} (default):
-	 * The {@code id} field is always added to the response, even if it is not
-	 * displayed in the UI for widgets of the corresponding Business Component (BC).
+	 * <p><b>{@code true} (default):</b>
+	 * <ul>
+	 *   <li>If no BC fields are displayed in widgets, the {@code id} field is automatically
+	 *       included in the API response.</li>
+	 *   <li>Recommended when the BC has no visible fields but acts as a parent BC.</li>
+	 * </ul>
 	 *
-	 * <p>When set to {@code false}:
-	 * If a widget is present on the view but has no fields rendered in the UI
-	 * for the corresponding BC, the response will not include any data.
+	 * <p><b>{@code false}:</b>
+	 * <ul>
+	 *   <li>If no BC fields are displayed, the API response will be empty:
+	 *       <ul>
+	 *         <li>{@code data} — empty</li>
+	 *         <li>{@code row-meta} — empty</li>
+	 *       </ul>
+	 *   </li>
+	 * </ul>
 	 *
-	 * <p>This property is used to control backward compatibility of API responses.
+	 * <p>Used to control backward compatibility of API responses.
 	 */
 
 	@Deprecated
-	private boolean alwaysIncludeIdEnabled = true;
+	private boolean includeIdWhenNoFieldsInWidgetsOnBc = true;
 
 	@NotNull(message = "Path to meta files directory. Supports file: or classpath: prefix. "
 			+ "Example of usage is: applicationContext.getResources(directory + widgetPath)")

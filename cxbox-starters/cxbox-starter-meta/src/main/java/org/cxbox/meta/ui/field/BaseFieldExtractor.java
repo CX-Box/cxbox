@@ -147,7 +147,7 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 					.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 			);
 		}
-		if (metaConfigurationProperties.isAlwaysIncludeIdEnabled()) {
+		if (metaConfigurationProperties.isIncludeIdWhenNoFieldsInWidgetsOnBc()) {
 			// Add the id field if it doesn't exist yet
 			BcField idField = new BcField(widget.getBcName(), "id")
 					.putAttribute(Attribute.WIDGET_NAME, widget.getName());
