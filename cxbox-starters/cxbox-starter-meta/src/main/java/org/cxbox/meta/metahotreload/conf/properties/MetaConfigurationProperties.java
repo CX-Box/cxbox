@@ -97,6 +97,34 @@ public class MetaConfigurationProperties {
 
 	private boolean widgetActionGroupsCompact = true;
 
+	/**
+	 * Determines whether the {@code id} field should be automatically added to the API response
+	 * when no fields of the Business Component (BC) are added to widgets on the screen
+	 * during the initial load.
+	 *
+	 * <p><b>{@code true} (default):</b>
+	 * <ul>
+	 *   <li>If no BC fields are displayed in widgets, the {@code id} field is automatically
+	 *       included in the API response.</li>
+	 *   <li>Recommended when the BC has no visible fields but acts as a parent BC.</li>
+	 * </ul>
+	 *
+	 * <p><b>{@code false}:</b>
+	 * <ul>
+	 *   <li>If no BC fields are displayed, the API response will be empty:
+	 *       <ul>
+	 *         <li>{@code data} — empty</li>
+	 *         <li>{@code row-meta} — empty</li>
+	 *       </ul>
+	 *   </li>
+	 * </ul>
+	 *
+	 * <p>Used to control backward compatibility of API responses.
+	 */
+
+	@Deprecated
+	private boolean includeIdWhenNoFieldsInWidgetsOnBc = true;
+
 	@NotNull(message = "Path to meta files directory. Supports file: or classpath: prefix. "
 			+ "Example of usage is: applicationContext.getResources(directory + widgetPath)")
 	private String directory = "classpath*:db/migration/liquibase/data/latest";

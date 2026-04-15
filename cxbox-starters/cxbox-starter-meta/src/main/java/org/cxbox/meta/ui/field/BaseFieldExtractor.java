@@ -16,6 +16,7 @@
 
 package org.cxbox.meta.ui.field;
 
+import jakarta.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.regex.Pattern;
 import lombok.NonNull;
 import org.cxbox.api.util.i18n.LocalizationFormatter;
 import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
@@ -41,9 +43,14 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 
 	private final LinkFieldExtractor linkFieldExtractor;
 
-	protected BaseFieldExtractor(LinkFieldExtractor linkFieldExtractor) {
+	private final MetaConfigurationProperties metaConfigurationProperties;
+
+	protected BaseFieldExtractor(LinkFieldExtractor linkFieldExtractor,
+		@Nullable MetaConfigurationProperties metaConfigurationProperties) {
 		this.linkFieldExtractor = linkFieldExtractor;
+		this.metaConfigurationProperties = metaConfigurationProperties;
 	}
+
 
 	protected Set<BcField> extract(final WidgetDTO widget, final FieldMeta fieldMeta) {
 		final Set<BcField> widgetFields = new HashSet<>();
@@ -139,6 +146,14 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 			fields.add(new BcField(widget.getBcName(), fieldKey)
 					.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 			);
+		}
+		if (metaConfigurationProperties == null || metaConfigurationProperties.isIncludeIdWhenNoFieldsInWidgetsOnBc()) {
+			// Add the id field if it doesn't exist yet
+			BcField idField = new BcField(widget.getBcName(), "id")
+					.putAttribute(Attribute.WIDGET_NAME, widget.getName());
+			if (!fields.contains(idField)) {
+				fields.add(idField);
+			}
 		}
 		return fields;
 	}
