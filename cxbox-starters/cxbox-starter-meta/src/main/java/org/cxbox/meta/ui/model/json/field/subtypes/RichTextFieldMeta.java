@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,18 @@
 
 package org.cxbox.meta.ui.model.json.field.subtypes;
 
-import org.cxbox.meta.ui.field.CxboxWidgetField;
-import org.cxbox.meta.ui.model.json.field.FieldMeta.FieldMetaBase;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.meta.ui.field.CxboxWidgetField;
+import org.cxbox.meta.ui.model.json.field.FieldMeta.FieldMetaBase;
 
 @Getter
 @Setter
-@CxboxWidgetField({
-		"date",
-		"checkbox",
-		"checkboxSql",
-		"monthYear",
-		"dateTimeWithSeconds",
-		"combo-condition",
-		"dateTime",
-		"time",
-		"radio"
-})
-public class EmptyFieldMeta extends FieldMetaBase {
+@CxboxWidgetField({"richText"})
+public class RichTextFieldMeta extends FieldMetaBase {
+
+	private Integer minInputRows;
+
+	private Integer maxInputRows;
 
 }
