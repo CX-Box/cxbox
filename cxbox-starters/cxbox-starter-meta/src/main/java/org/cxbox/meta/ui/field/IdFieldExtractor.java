@@ -26,6 +26,11 @@ import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 
+/**
+ * A wrapper for {@link FieldExtractor} that determines whether to automatically add the {@code id} field
+ * to the API response when no business component (BC) fields are added to the widgets on the screen.
+ */
+
 @RequiredArgsConstructor
 public class IdFieldExtractor implements FieldExtractor {
 
