@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 public class SimpleFieldExtractor extends BaseFieldExtractor {
 
 	public SimpleFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor) {
-		super(linkFieldExtractor, null);
+		super(linkFieldExtractor);
 	}
 
 	@Override

@@ -121,8 +121,6 @@ public class MetaConfigurationProperties {
 	 *
 	 * <p>Used to control backward compatibility of API responses.
 	 */
-
-	@Deprecated
 	private boolean includeIdWhenNoFieldsInWidgetsOnBc = true;
 
 	@NotNull(message = "Path to meta files directory. Supports file: or classpath: prefix. "

@@ -28,7 +28,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.ui.field.FieldExtractor;
+import org.cxbox.meta.ui.field.FieldExtractorWrapperWithId;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
@@ -38,17 +40,29 @@ public final class WidgetUtils {
 
 	private final Map<String, FieldExtractor> fieldExtractorMap;
 
-	public WidgetUtils(List<FieldExtractor> fieldExtractors) {
-		HashMap<String, FieldExtractor> extractors = new HashMap();
+	public WidgetUtils(List<FieldExtractor> fieldExtractors, MetaConfigurationProperties config) {
+		HashMap<String, FieldExtractor> extractors = new HashMap<>();
 		fieldExtractors
 				.forEach(extractor -> extractor.getSupportedTypes().forEach(type ->
-						extractors.compute(type, (key, current) -> Stream.of(current, extractor)
-								.filter(Objects::nonNull)
-								.min(Comparator.comparing(
-										FieldExtractor::getPriority
-								)).orElse(extractor))
+						extractors.compute(
+								type, (key, current) -> Stream.of(current, extractor)
+										.filter(Objects::nonNull)
+										.min(Comparator.comparing(
+												FieldExtractor::getPriority
+										)).orElse(extractor)
+						)
 				));
-		fieldExtractorMap = Collections.unmodifiableMap(extractors);
+
+		if (config.isIncludeIdWhenNoFieldsInWidgetsOnBc()) {
+			fieldExtractorMap = Collections.unmodifiableMap(
+					extractors.entrySet().stream()
+							.collect(Collectors.toMap(
+									Map.Entry::getKey,
+									e -> new FieldExtractorWrapperWithId(e.getValue())
+							)));
+		} else {
+			fieldExtractorMap = Collections.unmodifiableMap(extractors);
+		}
 	}
 
 	public Set<BcField> extractFields(final WidgetDTO widget) {
