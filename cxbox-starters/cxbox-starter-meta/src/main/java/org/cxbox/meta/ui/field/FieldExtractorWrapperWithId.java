@@ -19,10 +19,10 @@ package org.cxbox.meta.ui.field;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.meta.data.WidgetDTO;
-import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 
@@ -30,40 +30,42 @@ import org.cxbox.meta.ui.model.BcField.Attribute;
  * A wrapper for {@link FieldExtractor} that determines whether to automatically add the {@code id} field
  * to the API response when no business component (BC) fields are added to the widgets on the screen.
  */
-
 @RequiredArgsConstructor
-public class IdFieldExtractor implements FieldExtractor {
+public class FieldExtractorWrapperWithId implements FieldExtractor {
 
-	private final MetaConfigurationProperties config;
-
-	private final FieldExtractor fieldExtractor;
+	@NonNull
+	private final FieldExtractor origFieldExtractor;
 
 	@Override
 	public List<String> getSupportedTypes() {
-		return fieldExtractor.getSupportedTypes();
+		return origFieldExtractor.getSupportedTypes();
 	}
 
 	@Override
 	public int getPriority() {
-		return fieldExtractor.getPriority();
+		return origFieldExtractor.getPriority();
 	}
 
 	@Override
-	public Set<BcField> extract(WidgetDTO widget) {
-		Set<BcField> bcFields = fieldExtractor.extract(widget);
+	public Set<BcField> extract(@NonNull WidgetDTO widget) {
+		final Set<BcField> bcFields = origFieldExtractor.extract(widget);
 		bcFields.addAll(idField(widget));
 		return bcFields;
 	}
 
-	private HashSet<BcField> idField(WidgetDTO widget) {
+	private HashSet<BcField> idField(@NonNull WidgetDTO widget) {
 		final HashSet<BcField> fields = new HashSet<>();
-		if (config.isIncludeIdWhenNoFieldsInWidgetsOnBc()
-				&& !StringUtils.isBlank(widget.getBcName())) {
-			BcField idField = new BcField(widget.getBcName(), "id")
+		if (!StringUtils.isBlank(widget.getBcName())) {
+			final BcField idField = new BcField(widget.getBcName(), "id")
 					.putAttribute(Attribute.WIDGET_NAME, widget.getName());
 			fields.add(idField);
 		}
 		return fields;
+	}
+
+	@Override
+	public String toString() {
+		return "FieldExtractorWrapperWithId(wrapping: " + origFieldExtractor.getClass().getSimpleName() + ")";
 	}
 
 }
