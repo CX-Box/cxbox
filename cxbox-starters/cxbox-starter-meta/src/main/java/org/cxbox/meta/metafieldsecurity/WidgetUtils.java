@@ -49,8 +49,9 @@ public final class WidgetUtils {
 				.forEach(extractor -> extractor.getSupportedTypes().forEach(type ->
 						extractors.compute(type, (key, current) -> Stream.of(current, extractor)
 								.filter(Objects::nonNull)
-								.min(Comparator.comparing(FieldExtractor::getPriority))
-								.orElse(extractor))
+								.min(Comparator.comparing(
+										FieldExtractor::getPriority
+								)).orElse(extractor))
 				));
 		fieldExtractorMap = Collections.unmodifiableMap(extractors);
 	}

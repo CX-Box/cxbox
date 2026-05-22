@@ -36,6 +36,7 @@ import org.cxbox.meta.ui.model.json.field.FieldMeta.FieldMetaBase.MultiSourceInf
 import org.cxbox.meta.ui.model.json.field.subtypes.MultivalueFieldMeta;
 import org.cxbox.meta.ui.model.json.field.subtypes.PickListFieldMeta;
 
+
 public abstract class BaseFieldExtractor implements FieldExtractor {
 
 	private final LinkFieldExtractor linkFieldExtractor;
@@ -89,7 +90,6 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 		}
 		return widgetFields;
 	}
-
 
 	private List<BcField> extractFieldsFromMultiValue(WidgetDTO widget, MultivalueField multivalueField) {
 		List<BcField> result = new ArrayList<>();
