@@ -42,6 +42,7 @@ import org.cxbox.core.exception.ClientException;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
 import org.cxbox.model.core.dao.impl.DialectName;
+import org.hibernate.query.criteria.JpaExpression;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -88,7 +89,7 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 			if (dialect.equals(DialectName.ORACLE)) {
 				return builder.function("TO_CHAR", String.class, fieldPath, builder.literal("HH24:MI:SS"));
 			}
-			return fieldPath.as(LocalTime.class);
+			return ((JpaExpression<?>) fieldPath).cast(LocalTime.class);
 		}
 		return null;
 	}
@@ -124,7 +125,7 @@ public class TimeValueProvider extends AbstractClassifyDataProvider implements C
 			return cb.function("TO_CHAR", String.class, field, cb.literal("HH24:MI:SS"));
 
 		}
-		return field.as(LocalTime.class);
+		return ((JpaExpression<?>) field).cast(LocalTime.class);
 	}
 
 }

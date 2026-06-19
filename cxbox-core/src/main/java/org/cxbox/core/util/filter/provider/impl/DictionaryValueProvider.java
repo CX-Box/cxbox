@@ -16,21 +16,28 @@
 
 package org.cxbox.core.util.filter.provider.impl;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.cxbox.core.controller.param.SearchOperation.CONTAINS_ONE_OF;
 import static org.cxbox.core.controller.param.SearchOperation.EQUALS_ONE_OF;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.api.config.CxboxBeanProperties;
+import org.cxbox.api.exception.ServerException;
 import org.cxbox.core.controller.param.FilterParameter;
 import org.cxbox.core.dao.ClassifyDataParameter;
 import org.cxbox.core.util.filter.SearchParameter;
 import org.cxbox.core.util.filter.provider.ClassifyDataProvider;
+import org.cxbox.dictionary.Dictionary;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +66,16 @@ public class DictionaryValueProvider extends AbstractClassifyDataProvider implem
 		return result;
 	}
 
+
+	private Optional<Class<? extends Dictionary>> getType(Field field) {
+		BaseDictionary annotation = field.getAnnotation(BaseDictionary.class);
+		if (annotation != null) {
+			return Optional.of(annotation.value());
+		}
+		return Optional.empty();
+	}
+
+
 	public Object convertDictToTargetType(Object value) {
 		return value;
 	}
@@ -66,8 +83,29 @@ public class DictionaryValueProvider extends AbstractClassifyDataProvider implem
 	private Class<?> getDictType(Field dtoField) {
 		Class<?> dtoFieldType = dtoField.getType();
 		Class<?> type;
-		type = dtoFieldType;
+		if (Dictionary.class.isAssignableFrom(dtoFieldType)) {
+			type = dtoFieldType;
+		} else {
+			type = getType(dtoField).orElseThrow(() -> new ServerException(
+					"DictionaryValueProvider must be used with Dictionary dto field or field annotated with @BaseDictionary"));
+		}
 		return type;
+	}
+
+	/**
+	 * Used when a JPA entity enum field is mapped to
+	 * a {@link org.cxbox.api.data.dto.DataResponseDTO DataResponseDTO} field which type is not dictionary.
+	 * Necessary to define the type of field by which filtering will be performed.
+	 */
+	@Target(FIELD)
+	@Retention(RUNTIME)
+	public @interface BaseDictionary {
+
+		/**
+		 * @return Class of the corresponding dictionary field in JPA entity.
+		 */
+		Class<? extends Dictionary> value();
+
 	}
 }
 

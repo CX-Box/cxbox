@@ -56,6 +56,7 @@ public class HibernateTypesContributor implements TypeContributor {
 			try {
 				var dictClass = provider.getDictionaryType();
 				typeContributions.contributeType(new DictionaryType(dictClass), dictClass.getName());
+				typeContributions.contributeJavaType(new DictionaryJavaType<>(dictClass));
 			} catch (NoClassDefFoundError e) {
 				//
 			}

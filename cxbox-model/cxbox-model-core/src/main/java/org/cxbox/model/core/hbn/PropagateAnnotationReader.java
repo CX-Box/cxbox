@@ -16,13 +16,14 @@
 
 package org.cxbox.model.core.hbn;
 
+import jakarta.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import org.hibernate.annotations.common.reflection.AnnotationReader;
 import org.hibernate.annotations.common.reflection.MetadataProvider;
@@ -43,12 +44,18 @@ public class PropagateAnnotationReader implements AnnotationReader {
 
 	private final AnnotationReader parent;
 
+	private final AnnotatedElement annotatedElement;
+
+	private final Map<Class<? extends Annotation>, AnnotationPropagationGuard> guards;
+
 	public PropagateAnnotationReader(AnnotationReader delegate,
-			MetadataProvider metadataProvider, AnnotatedElement annotatedElement) {
+			MetadataProvider metadataProvider, AnnotatedElement annotatedElement, Map<Class<? extends Annotation>, AnnotationPropagationGuard> guards) {
 		this.delegate = delegate;
 		this.metadataProvider = metadataProvider;
 		propagated = getPropagatedAnnotations(annotatedElement);
 		parent = getParentAnnotationReader(annotatedElement);
+		this.annotatedElement = annotatedElement;
+		this.guards = guards;
 	}
 
 	/**
@@ -79,35 +86,39 @@ public class PropagateAnnotationReader implements AnnotationReader {
 	@Override
 	public <T extends Annotation> T getAnnotation(Class<T> annotationType) {
 		Annotation result = delegate.getAnnotation(annotationType);
-		if (result == null && propagated.contains(annotationType)) {
-			result = Optional.ofNullable(parent)
-					.map(ar -> ar.getAnnotation(annotationType))
-					.orElse(null);
+		if (result == null && propagated.contains(annotationType) && parent != null) {
+			T pAnnotation = parent.getAnnotation(annotationType);
+			if (pAnnotation != null && canPropagate(annotationType)) {
+				result = pAnnotation;
+			}
 		}
 		return (T) result;
 	}
 
 	/**
-	 * returns whether an annotation of the specified type is specified for the element being annotated, considering inheritance
+	 * Returns whether an annotation of the specified type is present on the annotated element,
+	 * considering inheritance via {@link PropagateAnnotations}.
 	 *
-	 * @param annotationType annotation type
-	 * @return true/false
+	 * @param annotationType the annotation type to look up
+	 * @return {@code true} if the annotation is present directly or propagated from a parent
 	 */
 	@Override
 	public <T extends Annotation> boolean isAnnotationPresent(Class<T> annotationType) {
 		boolean result = delegate.isAnnotationPresent(annotationType);
-		if (!result && propagated.contains(annotationType)) {
-			result = Optional.ofNullable(parent)
-					.map(ar -> ar.isAnnotationPresent(annotationType))
-					.orElse(false);
+		if (!result && propagated.contains(annotationType) && parent != null) {
+			result = parent.isAnnotationPresent(annotationType) && canPropagate(annotationType);
 		}
 		return result;
 	}
 
 	/**
-	 * returns an array of all element annotations taking into account inheritance
+	 * Returns annotations from the current element merged with inherited annotations
+	 * declared in {@link PropagateAnnotations#value()}.
 	 *
-	 * @return array of annotations
+	 * <p>An inherited annotation is included only if it is not overridden locally and
+	 * propagation is permitted by the corresponding {@link AnnotationPropagationGuard}.
+	 *
+	 * @return all applicable annotations, including propagated ones
 	 */
 	@Override
 	public Annotation[] getAnnotations() {
@@ -115,12 +126,15 @@ public class PropagateAnnotationReader implements AnnotationReader {
 		Set<Class<? extends Annotation>> propagated = new HashSet<>(this.propagated);
 		for (Annotation annotation : delegate.getAnnotations()) {
 			annotations.add(annotation);
-			propagated.remove(annotation.getClass());
+			propagated.remove(annotation.annotationType());
 		}
-		for (Class<? extends Annotation> cls : propagated) {
-			Optional.ofNullable(parent)
-					.map(ar -> ar.getAnnotation(cls))
-					.ifPresent(annotations::add);
+		if (parent != null) {
+			for (var cls : propagated) {
+				var pAnnotation = parent.getAnnotation(cls);
+				if (pAnnotation != null && canPropagate(cls)) {
+					annotations.add(pAnnotation);
+				}
+			}
 		}
 		return annotations.toArray(new Annotation[0]);
 	}
@@ -136,6 +150,28 @@ public class PropagateAnnotationReader implements AnnotationReader {
 			return null;
 		}
 		return metadataProvider.getAnnotationReader(((Class) annotatedElement).getSuperclass());
+	}
+
+
+	/**
+	 * Returns whether the given annotation type may be propagated from a parent.
+	 *
+	 * <p>Propagation is unconditionally allowed when no {@link AnnotationPropagationGuard}
+	 * is registered. Otherwise requires {@link #annotatedElement} to be a {@link Class}
+	 * and the guard to approve.
+	 *
+	 * @param annotationType the annotation type to check
+	 * @return {@code true} if propagation is permitted
+	 */
+	private boolean canPropagate(@NotNull Class<? extends Annotation> annotationType) {
+		AnnotationPropagationGuard guard = guards.get(annotationType);
+		if (guard == null) {
+			return true;
+		}
+		if (!(annotatedElement instanceof Class<?> cls)) {
+			return false;
+		}
+		return guard.canPropagate(cls, metadataProvider);
 	}
 
 }
