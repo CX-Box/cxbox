@@ -20,8 +20,6 @@ import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
@@ -33,10 +31,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.cxbox.model.core.hbn.ExtSequenceGenerator;
+import org.cxbox.model.core.hbn.ExtSequenceId;
 import org.cxbox.model.core.hbn.PropagateAnnotations;
 import org.cxbox.model.core.listeners.jpa.DelegatingBaseEntityListener;
 import org.hibernate.annotations.DiscriminatorOptions;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.envers.Audited;
@@ -55,18 +54,16 @@ import org.springframework.data.annotation.CreatedDate;
 @PropagateAnnotations({DiscriminatorOptions.class})
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
+@ExtSequenceGenerator(
+		parameters = {
+				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "app_seq"),
+				@Parameter(name = INCREMENT_PARAM, value = "1")
+		}
+)
 public abstract class BaseEntity extends AbstractEntity implements Serializable {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "extSequenceGenerator")
-	@GenericGenerator(
-			name = "extSequenceGenerator",
-			type = org.cxbox.model.core.hbn.ExtSequenceStyleGenerator.class,
-			parameters = {
-					@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "app_seq"),
-					@Parameter(name = INCREMENT_PARAM, value = "1"),
-			}
-	)
+	@ExtSequenceId
 	@JdbcTypeCode(SqlTypes.NUMERIC)
 	@Column()
 	protected Long id;

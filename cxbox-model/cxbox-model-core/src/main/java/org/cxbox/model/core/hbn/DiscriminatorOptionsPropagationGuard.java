@@ -21,8 +21,8 @@ import jakarta.persistence.Inheritance;
 import java.lang.annotation.Annotation;
 import lombok.NonNull;
 import org.hibernate.annotations.DiscriminatorOptions;
-import org.hibernate.annotations.common.reflection.AnnotationReader;
-import org.hibernate.annotations.common.reflection.MetadataProvider;
+import org.hibernate.models.spi.ModelsContext;
+import org.hibernate.models.spi.MutableClassDetails;
 
 /**
  * {@link AnnotationPropagationGuard} for {@link DiscriminatorOptions}.
@@ -33,7 +33,6 @@ import org.hibernate.annotations.common.reflection.MetadataProvider;
  */
 public class DiscriminatorOptionsPropagationGuard implements AnnotationPropagationGuard {
 
-
 	@Override
 	public Class<? extends Annotation> targetAnnotationType() {
 		return DiscriminatorOptions.class;
@@ -41,9 +40,9 @@ public class DiscriminatorOptionsPropagationGuard implements AnnotationPropagati
 
 	/** @return {@code true} if target declares {@link DiscriminatorColumn} or {@link Inheritance} */
 	@Override
-	public boolean canPropagate(@NonNull Class<?> target, @lombok.NonNull MetadataProvider provider) {
-		AnnotationReader reader = provider.getAnnotationReader(target);
-		return reader.isAnnotationPresent(DiscriminatorColumn.class)
-				|| reader.isAnnotationPresent(Inheritance.class);
+	public boolean canPropagate(@NonNull MutableClassDetails target,@NonNull ModelsContext context) {
+		return target.getAnnotationUsage(DiscriminatorColumn.class, context) != null
+				|| target.getAnnotationUsage(Inheritance.class, context) != null;
 	}
+
 }

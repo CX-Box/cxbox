@@ -46,11 +46,7 @@
       <artifactId>hibernate-core</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>${hibernate-commons-annotations.version}</version>
-    </dependency>
+
   </dependencies>
 
 </project>

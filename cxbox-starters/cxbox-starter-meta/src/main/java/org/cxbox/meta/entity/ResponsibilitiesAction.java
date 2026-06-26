@@ -49,7 +49,8 @@ import org.hibernate.id.enhanced.SequenceStyleGenerator;
 				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
 				@Parameter(name = INITIAL_PARAM, value = "1"),
 				@Parameter(name = INCREMENT_PARAM, value = "100"),
-				@Parameter(name = OPT_PARAM, value = "pooled-lo")
+				@Parameter(name = OPT_PARAM, value = "pooled-lo"),
+				@Parameter(name = SequenceStyleGenerator.FORCE_TBL_PARAM, value = "false")
 		}
 )
 @EqualsAndHashCode(callSuper = true)
