@@ -18,7 +18,9 @@ package org.cxbox.model.core.hbn;
 
 import java.lang.annotation.Annotation;
 import lombok.NonNull;
-import org.hibernate.annotations.common.reflection.MetadataProvider;
+
+import org.hibernate.models.spi.ModelsContext;
+import org.hibernate.models.spi.MutableClassDetails;
 
 /**
  * Guards propagation of a specific annotation type declared with {@link PropagateAnnotations#value()}.
@@ -40,14 +42,14 @@ public interface AnnotationPropagationGuard {
 	 */
 	Class<? extends Annotation> targetAnnotationType();
 
-
 	/**
-	 * Decides if the annotation can be inherited by the given target class.
+	 * Decides if the annotation can be propagated to the given target class.
 	 *
-	 * @param target the destination class for annotation propagation;
-	 * @param provider the metadata provider
+	 * @param target the {@link MutableClassDetails} class for annotation propagation
+	 * @param context the {@link ModelsContext}  models and metadata processing context
 	 * @return {@code true} if propagation is permitted; {@code false} otherwise
 	 */
-	boolean canPropagate(@NonNull Class<?> target, @NonNull MetadataProvider provider);
+	boolean canPropagate(@NonNull MutableClassDetails target,@NonNull ModelsContext context);
+
 
 }

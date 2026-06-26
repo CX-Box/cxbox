@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-core</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+  <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
   <name>IO Cxbox - Core</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+    <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
     <relativePath>../cxbox-base/pom.xml</relativePath>
   </parent>
 
@@ -81,6 +81,10 @@
       <artifactId>spring-security-config</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-cache</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
     </dependency>
@@ -99,7 +103,7 @@
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-jpamodelgen</artifactId>
+      <artifactId>hibernate-processor</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
@@ -125,10 +129,7 @@
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
@@ -138,6 +139,16 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

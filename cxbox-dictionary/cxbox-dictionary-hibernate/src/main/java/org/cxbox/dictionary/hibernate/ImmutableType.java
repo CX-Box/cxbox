@@ -24,11 +24,12 @@ import java.util.Locale;
 import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
-import org.hibernate.engine.spi.Mapping;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.internal.util.collections.ArrayHelper;
+import org.hibernate.service.ServiceRegistry;
 import org.hibernate.type.ForeignKeyDirection;
+import org.hibernate.type.MappingContext;
 import org.hibernate.type.Type;
 import org.hibernate.type.descriptor.java.IncomparableComparator;
 import org.hibernate.type.spi.TypeBootstrapContext;
@@ -43,7 +44,17 @@ public abstract class ImmutableType<T> implements UserType<T>, Type, EnhancedUse
 
 	protected ImmutableType(Class<T> clazz) {
 		this.clazz = clazz;
-		this.configuration = Map::of;
+		this.configuration = new TypeBootstrapContext() {
+			@Override
+			public Map<String, Object> getConfigurationSettings() {
+				return Map.of();
+			}
+
+			@Override
+			public ServiceRegistry getServiceRegistry() {
+				throw new UnsupportedOperationException("Cannot get service registry");
+			}
+		};
 	}
 
 	protected ImmutableType(Class<T> clazz, TypeBootstrapContext configuration) {
@@ -143,7 +154,7 @@ public abstract class ImmutableType<T> implements UserType<T>, Type, EnhancedUse
 	}
 
 	@Override
-	public int getColumnSpan(Mapping mapping) throws MappingException {
+	public int getColumnSpan(MappingContext mappingContext) throws MappingException {
 		return 1;
 	}
 
@@ -221,7 +232,7 @@ public abstract class ImmutableType<T> implements UserType<T>, Type, EnhancedUse
 
 	@Override
 	public String getName() {
-		return getClass().getSimpleName();
+		return getClass().getTypeName();
 	}
 
 	@Override
@@ -259,12 +270,12 @@ public abstract class ImmutableType<T> implements UserType<T>, Type, EnhancedUse
 	}
 
 	@Override
-	public boolean[] toColumnNullness(Object value, Mapping mapping) {
+	public boolean[] toColumnNullness(Object value, MappingContext mappingContext) {
 		return value == null ? ArrayHelper.FALSE : ArrayHelper.TRUE;
 	}
 
 	@Override
-	public int[] getSqlTypeCodes(Mapping mapping) throws MappingException {
+	public int[] getSqlTypeCodes(MappingContext mappingContext) throws MappingException {
 		return new int[]{getSqlType()};
 	}
 

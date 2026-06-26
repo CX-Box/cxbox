@@ -16,48 +16,56 @@
 
 package org.cxbox.model.core.hbn;
 
+import java.util.Map;
 import org.cxbox.api.util.proxy.DefaultDecorator;
 import org.cxbox.api.util.proxy.impl.CglibDecorators;
 import org.cxbox.api.util.proxy.impl.JDKDecorators;
-import java.util.Map;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
+import org.hibernate.Locking;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.lock.LockingStrategy;
 import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfoSource;
-import org.hibernate.persister.entity.Lockable;
+import org.hibernate.persister.entity.EntityPersister;
 
 @SuppressWarnings("removal")
 public class EnhancedDialectFactoryImpl extends DialectFactoryImpl {
 
 	@Override
-	public Dialect buildDialect(Map configValues, DialectResolutionInfoSource resolutionInfoSource)
+	public Dialect buildDialect(Map<String, Object> configValues, DialectResolutionInfoSource resolutionInfoSource)
 			throws HibernateException {
 		Dialect dialect = super.buildDialect(configValues, resolutionInfoSource);
 		return CglibDecorators.wrap(new DefaultDecorator<Dialect>(dialect) {
 
 			@SuppressWarnings("unused")
-			public LockingStrategy getLockingStrategy(Lockable lockable, LockMode lockMode) {
-				if (lockMode == LockMode.PESSIMISTIC_READ) {
-					return wrapped.getLockingStrategy(wrap(lockable), lockMode);
-				}
-				return wrapped.getLockingStrategy(lockable, lockMode);
-			}
+			public LockingStrategy getLockingStrategy(
+					EntityPersister lockable,
+					LockMode lockMode,
+					Locking.Scope lockScope) {
 
+				if (lockMode == LockMode.PESSIMISTIC_READ) {
+					return wrapped.getLockingStrategy(
+							wrap(lockable),
+							lockMode,
+							lockScope
+					);
+				}
+				return wrapped.getLockingStrategy(lockable, lockMode, lockScope);
+			}
 		});
 	}
 
 
-	private Lockable wrap(Lockable lockable) {
-		return JDKDecorators.wrap(new DefaultDecorator<Lockable>(lockable) {
+	private EntityPersister wrap(EntityPersister persister) {
+		return JDKDecorators.wrap(
+				new DefaultDecorator<EntityPersister>(persister) {
 
-			@SuppressWarnings("unused")
-			boolean isVersioned() {
-				return false;
-			}
-
-		}, Lockable.class);
+					@SuppressWarnings("unused")
+					public boolean isVersioned() {
+						return false;
+					}
+				}, EntityPersister.class
+		);
 	}
-
 }

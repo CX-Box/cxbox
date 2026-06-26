@@ -16,11 +16,9 @@
 
 package org.cxbox.core.config;
 
+import java.util.Locale;
 import org.cxbox.api.service.LocaleService;
 import org.cxbox.api.service.session.CoreSessionService;
-import java.util.Locale;
-import java.util.TimeZone;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 public class EnhancedLocaleResolver extends CookieLocaleResolver {
@@ -30,11 +28,19 @@ public class EnhancedLocaleResolver extends CookieLocaleResolver {
 	private final LocaleService localeService;
 
 	public EnhancedLocaleResolver(CoreSessionService coreSessionService, LocaleService localeService) {
+		super("locale");
 		this.coreSessionService = coreSessionService;
 		this.localeService = localeService;
 		setRejectInvalidCookies(false);
 		setLanguageTagCompliant(false);
-		setCookieName("locale");
+
+		setDefaultLocaleFunction(req -> {
+			Locale fallback = getDefaultLocale() != null ? getDefaultLocale() : req.getLocale();
+			Locale locale = coreSessionService.getLocale(fallback);
+			return localeService.isLanguageSupported(locale.getLanguage()) ? locale : localeService.getDefaultLocale();
+		});
+
+		setDefaultTimeZoneFunction(req -> coreSessionService.getTimeZone(getDefaultTimeZone()));
 	}
 
 	@Override
@@ -46,18 +52,5 @@ public class EnhancedLocaleResolver extends CookieLocaleResolver {
 		return locale;
 	}
 
-	@Override
-	public Locale determineDefaultLocale(HttpServletRequest request) {
-		Locale locale = coreSessionService.getLocale(super.determineDefaultLocale(request));
-		if (localeService.isLanguageSupported(locale.getLanguage())) {
-			return locale;
-		}
-		return localeService.getDefaultLocale();
-	}
-
-	@Override
-	public TimeZone determineDefaultTimeZone(HttpServletRequest request) {
-		return coreSessionService.getTimeZone(super.determineDefaultTimeZone(request));
-	}
 
 }

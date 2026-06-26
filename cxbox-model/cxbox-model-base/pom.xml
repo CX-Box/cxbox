@@ -19,13 +19,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>cxbox-model-base</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+  <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
   <name>IO Cxbox - Model Base</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-base</artifactId>
-    <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+    <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
     <relativePath>../../cxbox-base/pom.xml</relativePath>
   </parent>
 
@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-jpamodelgen</artifactId>
+      <artifactId>hibernate-processor</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate.orm</groupId>
@@ -84,18 +84,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.hibernate.common</groupId>
-        <artifactId>hibernate-commons-annotations</artifactId>
-        <version>${hibernate-commons-annotations.version}</version>
-        <scope>compile</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

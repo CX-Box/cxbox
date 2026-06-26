@@ -20,7 +20,7 @@
   <groupId>org.cxbox</groupId>
   <artifactId>cxbox</artifactId>
   <packaging>pom</packaging>
-  <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+  <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
   <name>IO Cxbox</name>
   <description>Java framework designed for creating Enterprise Rich Web Applications</description>
   <inceptionYear>2022</inceptionYear>
@@ -69,11 +69,11 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.5.15</version>
+    <version>4.0.7</version>
   </parent>
 
   <properties>
-    <spring-boot.version>3.5.15</spring-boot.version>
+    <spring-boot.version>4.0.7</spring-boot.version>
 
     <!-- miscellaneous settings -->
     <checktyle.config>/cxbox-base/src/main/resources/checkstyle-checker.xml</checktyle.config>

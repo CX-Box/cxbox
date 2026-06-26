@@ -20,21 +20,17 @@
   <artifactId>cxbox-model-core</artifactId>
   <packaging>jar</packaging>
 
-  <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+  <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
   <name>IO Cxbox - Model Core</name>
 
   <parent>
     <groupId>org.cxbox</groupId>
     <artifactId>cxbox-model-base</artifactId>
-    <version>4.0.0-M25-CXBOX-1319-3.5.15-SNAPSHOT</version>
+    <version>4.0.0-M25-CXBOX-1319-1-4.0.7-SNAPSHOT</version>
     <relativePath>../cxbox-model-base/pom.xml</relativePath>
   </parent>
 
   <dependencies>
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-    </dependency>
   </dependencies>
 
   <!--<build>
