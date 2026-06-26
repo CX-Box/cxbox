@@ -20,13 +20,13 @@ import static org.hibernate.id.OptimizableGenerator.INCREMENT_PARAM;
 import static org.hibernate.id.OptimizableGenerator.INITIAL_PARAM;
 import static org.hibernate.id.OptimizableGenerator.OPT_PARAM;
 
-import java.sql.Types;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import java.sql.Types;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -52,7 +52,8 @@ import org.hibernate.type.SqlTypes;
 				@Parameter(name = SequenceStyleGenerator.SEQUENCE_PARAM, value = "META_SEQ"),
 				@Parameter(name = INITIAL_PARAM, value = "1"),
 				@Parameter(name = INCREMENT_PARAM, value = "100"),
-				@Parameter(name = OPT_PARAM, value = "pooled-lo") //StandardOptimizerDescriptor.POOLED_LO
+				@Parameter(name = OPT_PARAM, value = "pooled-lo"), //StandardOptimizerDescriptor.POOLED_LO
+				@Parameter(name = SequenceStyleGenerator.FORCE_TBL_PARAM, value = "false")
 		}
 )
 @EqualsAndHashCode(callSuper = true)
