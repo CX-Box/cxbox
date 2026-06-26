@@ -135,7 +135,7 @@ public class JpaDaoImpl implements JpaDao {
 
 	@Override
 	public <T extends BaseEntity> T findById(Class<T> clazz, Long id) {
-		return getSupportedEntityManager(clazz.getName()).unwrap(Session.class).get(clazz, id);
+		return getSupportedEntityManager(clazz.getName()).unwrap(Session.class).find(clazz, id);
 	}
 
 	@Override
@@ -236,7 +236,8 @@ public class JpaDaoImpl implements JpaDao {
 
 	@Override
 	public <T> T save(Object entity) {
-		return (T) getSupportedEntityManager(Hibernate.getClass(entity).getName()).unwrap(Session.class).save(entity);
+		getSupportedEntityManager(Hibernate.getClass(entity).getName()).unwrap(Session.class).persist(entity);
+		return (T) entity;
 	}
 
 	@Override
@@ -256,14 +257,14 @@ public class JpaDaoImpl implements JpaDao {
 	@Override
 	public void delete(AbstractEntity o) {
 		EntityManager supportedEntityManager = getSupportedEntityManager(Hibernate.getClass(o).getName());
-		supportedEntityManager.unwrap(Session.class).delete(supportedEntityManager.merge(o));
+		supportedEntityManager.unwrap(Session.class).remove(supportedEntityManager.merge(o));
 	}
 
 	@Override
 	public <T extends BaseEntity> T delete(Class<T> clazz, Long id) {
 		T o = findById(clazz, id);
 		if (o != null) {
-			getSupportedEntityManager(clazz.getName()).unwrap(Session.class).delete(o);
+			getSupportedEntityManager(clazz.getName()).unwrap(Session.class).remove(o);
 		} else {
 			throw new EntityNotFoundException();
 		}
@@ -300,12 +301,12 @@ public class JpaDaoImpl implements JpaDao {
 
 	@Override
 	public void saveWithCompositeKey(EmbeddedKeyable o) {
-		getSupportedEntityManager(Hibernate.getClass(o).getName()).unwrap(Session.class).save(o);
+		getSupportedEntityManager(Hibernate.getClass(o).getName()).unwrap(Session.class).persist(o);
 	}
 
 	@Override
 	public void deleteWithCompositeKey(EmbeddedKeyable o) {
-		getSupportedEntityManager(Hibernate.getClass(o).getName()).unwrap(Session.class).delete(o);
+		getSupportedEntityManager(Hibernate.getClass(o).getName()).unwrap(Session.class).remove(o);
 	}
 
 	@Override
