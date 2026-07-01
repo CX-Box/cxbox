@@ -27,6 +27,17 @@ import org.cxbox.core.util.filter.provider.impl.StringValueProvider;
 /**
  * Enables filtration by the annotated field of {@link org.cxbox.api.data.dto.DataResponseDTO DataResponseDTO}.
  * Configures the rules and parameters for filtering by field.
+ * When an {@link Enum} or {@link org.cxbox.dictionary.Dictionary Dictionary} field is used through a
+ * {@link org.cxbox.core.dto.multivalue.MultivalueField MultivalueField}, the DTO field must be annotated so the
+ * target type can be resolved:
+ * <ul>
+ *   <li>entity field is an {@link Enum} ; annotate the DTO field with
+ *       {@link org.cxbox.core.util.filter.provider.impl.EnumValueProvider.BaseEnum @BaseEnum}</li>
+ *       Example of usage: {@link org.cxbox.core.util.filter.provider.impl.EnumValueProvider  EnumValueProvider} </li>
+ *   <li>entity field extends {@link org.cxbox.dictionary.Dictionary Dictionary}; annotate the DTO field with
+ *       {@link org.cxbox.core.util.filter.provider.impl.DictionaryValueProvider.BaseDictionary @BaseDictionary}
+ *       Example of usage: {@link org.cxbox.core.util.filter.provider.impl.DictionaryValueProvider DictionaryValueProvider} </li>
+ * </ul>
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -73,7 +84,6 @@ public @interface SearchParameter {
 	/**
 	 * Get a provider for defining of classify data parameter in sorting or searching cases.
 	 * Necessary to correctly type string representation of filtering parameter.
-	 *
 	 * @return ClassifyDataProvider
 	 */
 	Class<? extends ClassifyDataProvider> provider() default StringValueProvider.class;

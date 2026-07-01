@@ -16,12 +16,17 @@
 
 package org.cxbox.model.core.hbn;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.hibernate.annotations.common.reflection.AnnotationReader;
+import org.hibernate.boot.model.FunctionContributor;
 import org.hibernate.boot.model.internal.JPAXMLOverriddenMetadataProvider;
 import org.hibernate.boot.model.internal.XMLContext;
+import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 import org.hibernate.boot.spi.BootstrapContext;
 
 /**
@@ -34,10 +39,14 @@ public class PropagateMetadataProvider extends JPAXMLOverriddenMetadataProvider 
 
 	private Map<AnnotatedElement, AnnotationReader> cache = new HashMap<>(100);
 
+	private final Map<Class<? extends Annotation>, AnnotationPropagationGuard> guards;
+
 	public PropagateMetadataProvider(BootstrapContext bootstrapContext, JPAXMLOverriddenMetadataProvider delegate) {
 		super(bootstrapContext);
 		this.delegate = delegate;
+		this.guards = loadGuards(bootstrapContext);
 	}
+
 
 	@Override
 	public Map<Object, Object> getDefaults() {
@@ -57,7 +66,8 @@ public class PropagateMetadataProvider extends JPAXMLOverriddenMetadataProvider 
 			reader = new PropagateAnnotationReader(
 					delegate.getAnnotationReader(annotatedElement),
 					this,
-					annotatedElement
+					annotatedElement,
+					guards
 			);
 			cache.put(annotatedElement, reader);
 		}
@@ -67,6 +77,28 @@ public class PropagateMetadataProvider extends JPAXMLOverriddenMetadataProvider 
 	@Override
 	public XMLContext getXMLContext() {
 		return delegate.getXMLContext();
+	}
+
+	/**
+	 * Get registered guard like hibernate {@link org.hibernate.boot.internal.MetadataBuilderImpl#applyFunctions(FunctionContributor)}
+	 */
+	private Map<Class<? extends Annotation>, AnnotationPropagationGuard> loadGuards(BootstrapContext bootstrapContext) {
+		var classLoaderService = bootstrapContext
+				.getServiceRegistry()
+				.requireService(ClassLoaderService.class);
+
+		return classLoaderService
+				.loadJavaServices(AnnotationPropagationGuard.class)
+				.stream()
+				.collect(Collectors.toMap(
+						AnnotationPropagationGuard::targetAnnotationType,
+						Function.identity(),
+						(a, b) -> {
+							throw new IllegalStateException(
+									"Duplicate AnnotationPropagationGuard for: "
+											+ a.targetAnnotationType().getName());
+						}
+				));
 	}
 
 }

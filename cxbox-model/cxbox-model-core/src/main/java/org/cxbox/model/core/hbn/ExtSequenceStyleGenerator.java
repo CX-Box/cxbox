@@ -75,4 +75,13 @@ public class ExtSequenceStyleGenerator extends SequenceStyleGenerator {
 		}
 	}
 
+	/**
+	 *  see
+	 *  https://docs.hibernate.org/orm/6.6/javadocs/org/hibernate/id/Assigned.html
+	 *  https://discourse.hibernate.org/t/optimisticlockexception-when-manually-setting-the-id-for-the-entity/10975/21
+	 */
+	@Override
+	public boolean allowAssignedIdentifiers() {
+		return true;
+	}
 }
