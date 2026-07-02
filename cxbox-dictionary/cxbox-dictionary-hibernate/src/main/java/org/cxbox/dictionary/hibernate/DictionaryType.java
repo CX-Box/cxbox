@@ -25,12 +25,15 @@ import java.util.Properties;
 import lombok.SneakyThrows;
 import org.cxbox.dictionary.Dictionary;
 import org.hibernate.HibernateException;
-import org.hibernate.annotations.common.reflection.XProperty;
-import org.hibernate.annotations.common.reflection.java.JavaXMember;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.spi.TypeBootstrapContext;
 import org.hibernate.usertype.DynamicParameterizedType;
 
+/**
+ * DynamicParameterizedType not planned removal for closest time
+ * <a href="https://discourse.hibernate.org/t/alternative-to-dynamicparameterizedtype-entity-in-setparameters/11985">discource</a>
+ */
+@SuppressWarnings("removal")
 public class DictionaryType extends ImmutableType<Dictionary> implements DynamicParameterizedType {
 
 	private Class<? extends Dictionary> elementType;
@@ -48,19 +51,23 @@ public class DictionaryType extends ImmutableType<Dictionary> implements Dynamic
 		super(Dictionary.class, typeBootstrapContext);
 	}
 
+	@Override
 	public int getSqlType() {
 		return Types.VARCHAR;
 	}
 
+	@Override
 	@SneakyThrows
-	public Dictionary get(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
+	public Dictionary get(ResultSet rs, int position,
+			SharedSessionContractImplementor session, Object owner)
 			throws SQLException {
 		String key = rs.getString(position);
 		return fromStringValue(key);
 	}
 
-	public void set(PreparedStatement st, Dictionary value, int index, SharedSessionContractImplementor session)
-			throws SQLException {
+	@Override
+	public void set(PreparedStatement st, Dictionary value, int index,
+			SharedSessionContractImplementor session) throws SQLException {
 		if (value == null) {
 			st.setNull(index, getSqlType());
 		} else {
@@ -68,6 +75,7 @@ public class DictionaryType extends ImmutableType<Dictionary> implements Dynamic
 		}
 	}
 
+	@Override
 	public Dictionary fromStringValue(CharSequence key) throws HibernateException {
 		if (key == null) {
 			return null;
@@ -76,19 +84,38 @@ public class DictionaryType extends ImmutableType<Dictionary> implements Dynamic
 		if (iDictClass == null) {
 			throw new IllegalStateException("class MUST extend IDict, but was null");
 		}
-		return Dictionary.of(iDictClass, key.toString());
+		return Dictionary.of(elementType, key.toString());
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void setParameterValues(Properties properties) {
-		Type type;
-		final XProperty xProperty = (XProperty) properties.get(DynamicParameterizedType.XPROPERTY);
-		if (xProperty instanceof JavaXMember) {
-			type = ((JavaXMember) xProperty).getJavaType();
+		ParameterType parameterType = (ParameterType) properties.get(PARAMETER_TYPE);
+		if (parameterType != null) {
+			Type returnedJavaType = parameterType.getReturnedJavaType();
+			if (returnedJavaType instanceof Class<?> cls) {
+				elementType = (Class<? extends Dictionary>) cls;
+			} else if (returnedJavaType instanceof java.lang.reflect.ParameterizedType pt) {
+				elementType = (Class<? extends Dictionary>) pt.getRawType();
+			} else {
+				elementType = (Class<? extends Dictionary>) parameterType.getReturnedClass();
+			}
 		} else {
-			type = ((ParameterType) properties.get(PARAMETER_TYPE)).getReturnedClass();
+			String className = properties.getProperty(RETURNED_CLASS);
+			if (className != null) {
+				try {
+					elementType = (Class<? extends Dictionary>)
+							Class.forName(className);
+				} catch (ClassNotFoundException e) {
+					throw new HibernateException(
+							"Cannot load elementType class: " + className, e);
+				}
+			} else {
+				throw new HibernateException(
+						"Cannot determine elementType: neither PARAMETER_TYPE nor RETURNED_CLASS is set"
+				);
+			}
 		}
-		elementType = (Class<? extends Dictionary>) type;
 	}
 
 }

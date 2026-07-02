@@ -23,34 +23,34 @@ import org.hibernate.MappingException;
 import org.hibernate.Session;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
+import org.hibernate.generator.GeneratorCreationContext;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.type.Type;
+
 
 public class ExtSequenceStyleGenerator extends SequenceStyleGenerator {
 
-	@Override
-	public void configure(Type type, Properties params, ServiceRegistry serviceRegistry) throws MappingException {
-		String entityName = params.getProperty(ENTITY_NAME);
-		if (StringUtils.isNotBlank(entityName)) {
-			Class<?> entityClass = getClassOrNull(entityName);
-			if (entityClass != null) {
-				ExtSequenceGeneratorSequenceName sequenceNameAnnotation =
-						entityClass.getAnnotation(ExtSequenceGeneratorSequenceName.class);
-				if (sequenceNameAnnotation != null) {
-					params.setProperty(SEQUENCE_PARAM, sequenceNameAnnotation.value());
-				}
+	public ExtSequenceStyleGenerator() {
+		super();
+	}
 
-				ExtSequenceGenerator extSequenceGeneratorAnnotation
-						= entityClass.getAnnotation(ExtSequenceGenerator.class);
-				if (extSequenceGeneratorAnnotation != null) {
-					for (Parameter param : extSequenceGeneratorAnnotation.parameters()) {
-						params.setProperty(param.name(), param.value());
-					}
-				}
+	@Override
+	public void configure(GeneratorCreationContext creationContext, Properties parameters) throws MappingException {
+		var mappedClass = creationContext.getPersistentClass().getMappedClass();
+		Class<?> entityClass = mappedClass;
+		var entityName = creationContext.getPersistentClass().getEntityName();
+		while (entityClass != null && entityClass != Object.class) {
+			ExtSequenceGenerator gen = entityClass.getAnnotation(ExtSequenceGenerator.class);
+			if (gen != null) {
+				break;
+			}
+			entityClass = entityClass.getSuperclass();
+		}
+		if (StringUtils.isNotBlank(entityName)) {
+			if (entityClass != null && entityClass != Object.class) {
+				parseAnnotation(entityClass, parameters);
 			}
 		}
-		super.configure(type, params, serviceRegistry);
+		super.configure(creationContext, parameters);
 
 	}
 
@@ -67,18 +67,27 @@ public class ExtSequenceStyleGenerator extends SequenceStyleGenerator {
 		}
 	}
 
-	private Class<?> getClassOrNull(String className) {
-		try {
-			return Class.forName(className);
-		}  catch (ClassNotFoundException e) {
-			return null;
+	private void parseAnnotation(Class<?> entityClass, Properties parameters) {
+		if (entityClass != null) {
+			ExtSequenceGeneratorSequenceName sequenceNameAnnotation =
+					entityClass.getAnnotation(ExtSequenceGeneratorSequenceName.class);
+			if (sequenceNameAnnotation != null) {
+				parameters.setProperty(SEQUENCE_PARAM, sequenceNameAnnotation.value());
+			}
+			ExtSequenceGenerator extSequenceGeneratorAnnotation
+					= entityClass.getAnnotation(ExtSequenceGenerator.class);
+			if (extSequenceGeneratorAnnotation != null) {
+				for (Parameter param : extSequenceGeneratorAnnotation.parameters()) {
+					parameters.setProperty(param.name(), param.value());
+				}
+			}
 		}
 	}
 
 	/**
-	 *  see
-	 *  https://docs.hibernate.org/orm/6.6/javadocs/org/hibernate/id/Assigned.html
-	 *  https://discourse.hibernate.org/t/optimisticlockexception-when-manually-setting-the-id-for-the-entity/10975/21
+	 * Allow manually assign for field annotated {@link ExtSequenceId}
+	 * <a href="https://docs.hibernate.org/orm/6.6/javadocs/org/hibernate/id/Assigned.html">offical doc</a>
+	 * <a href="https://discourse.hibernate.org/t/optimisticlockexception-when-manually-setting-the-id-for-the-entity/10975/21">discussion</a>
 	 */
 	@Override
 	public boolean allowAssignedIdentifiers() {

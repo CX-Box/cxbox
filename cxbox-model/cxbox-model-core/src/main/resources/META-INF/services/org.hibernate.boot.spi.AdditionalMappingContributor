@@ -30,4 +30,4 @@
 # limitations under the License.
 #
 
-org.cxbox.model.core.hbn.PropagateMetadataBuilderFactory
+org.cxbox.model.core.hbn.PropagateAnnotationContributor

@@ -31,10 +31,6 @@
   </parent>
 
   <dependencies>
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-    </dependency>
   </dependencies>
 
   <!--<build>

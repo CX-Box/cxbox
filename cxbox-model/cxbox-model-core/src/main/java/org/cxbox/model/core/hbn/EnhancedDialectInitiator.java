@@ -28,7 +28,7 @@ public class EnhancedDialectInitiator implements StandardServiceInitiator<Dialec
 
 	@Override
 	public DialectFactory initiateService(
-			Map configurationValues,
+			Map<String, Object> configurationValues,
 			ServiceRegistryImplementor registry) {
 		return new EnhancedDialectFactoryImpl();
 	}
