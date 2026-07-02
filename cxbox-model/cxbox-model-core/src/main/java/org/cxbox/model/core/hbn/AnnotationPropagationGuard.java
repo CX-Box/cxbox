@@ -32,6 +32,7 @@ import org.hibernate.models.spi.MutableClassDetails;
  * <p></[><b>Example: </b>
  * {@link DiscriminatorOptionsPropagationGuard}
  * </p>
+ *
  * @see PropagateAnnotations
  */
 public interface AnnotationPropagationGuard {
@@ -49,7 +50,7 @@ public interface AnnotationPropagationGuard {
 	 * @param context the {@link ModelsContext}  models and metadata processing context
 	 * @return {@code true} if propagation is permitted; {@code false} otherwise
 	 */
-	boolean canPropagate(@NonNull MutableClassDetails target,@NonNull ModelsContext context);
+	boolean canPropagate(@NonNull MutableClassDetails target, @NonNull ModelsContext context);
 
 
 }

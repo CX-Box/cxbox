@@ -38,9 +38,11 @@ public class DiscriminatorOptionsPropagationGuard implements AnnotationPropagati
 		return DiscriminatorOptions.class;
 	}
 
-	/** @return {@code true} if target declares {@link DiscriminatorColumn} or {@link Inheritance} */
+	/**
+	 * @return {@code true} if target declares {@link DiscriminatorColumn} or {@link Inheritance}
+	 */
 	@Override
-	public boolean canPropagate(@NonNull MutableClassDetails target,@NonNull ModelsContext context) {
+	public boolean canPropagate(@NonNull MutableClassDetails target, @NonNull ModelsContext context) {
 		return target.getAnnotationUsage(DiscriminatorColumn.class, context) != null
 				|| target.getAnnotationUsage(Inheritance.class, context) != null;
 	}
