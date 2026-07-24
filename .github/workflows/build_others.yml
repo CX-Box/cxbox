@@ -33,7 +33,7 @@ jobs:
       - name: Sonar
         if: matrix.java == '21'
         run: >
-          mvn -B sonar:sonar
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.7.0.6970:sonar
           -Dsonar.organization=cx-box
           -Dsonar.projectKey=CX-Box_cxbox-demo
           -Dsonar.host.url=https://sonarcloud.io
