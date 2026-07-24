@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.data.dto.rowmeta.OptionsEnumDictionaryMetadata;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.dictionary.Dictionary;
 import org.cxbox.dictionary.DictionaryProvider;
@@ -78,6 +79,9 @@ public class RowDependentFieldsDictionaryMeta<T extends DataResponseDTO> extends
 				var dict = p.lookupValue(variant);
 				if (dict != null) {
 					if (dict instanceof SimpleDictionary simpleValue) {
+						if (variant instanceof OptionsEnumDictionaryMetadata metadataProvider) {
+							simpleValue.setMeta(metadataProvider.metadata());
+						}
 						dictDTOList.add(simpleValue);
 					} else {
 						dictDTOList.add(new SimpleDictionary(variant.key(), dict.getValue()));
@@ -121,10 +125,18 @@ public class RowDependentFieldsDictionaryMeta<T extends DataResponseDTO> extends
 			@Nullable DtoField<? super T, E> field,
 			@NonNull E... values) {
 		if (field != null) {
-			this.setConcreteValues(field, Arrays
-					.stream(values)
-					.map(en -> new SimpleDictionary(en.name(), serialize(en)))
-					.collect(Collectors.toList())
+			this.setConcreteValues(
+					field, Arrays
+							.stream(values)
+							.map(en -> {
+										SimpleDictionary simpleDictionary = new SimpleDictionary(en.name(), serialize(en));
+										if (en instanceof OptionsEnumDictionaryMetadata metadataProvider) {
+											simpleDictionary.setMeta(metadataProvider.metadata());
+										}
+										return simpleDictionary;
+									}
+							)
+							.collect(Collectors.toList())
 			);
 		}
 	}
