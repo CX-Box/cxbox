@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java }}
-          distribution: 'adopt'
+          distribution: 'temurin'
           cache: "maven"
       - name: Build with Maven
         run: mvn clean install
@@ -33,11 +33,13 @@ jobs:
       - name: Sonar
         if: matrix.java == '21'
         run: >
-          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.10.0.2594:sonar
+          mvn -B sonar:sonar
           -Dsonar.organization=cx-box
           -Dsonar.projectKey=CX-Box_cxbox-demo
           -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=$SONAR_TOKEN
+          -Dsonar.token=$SONAR_TOKEN
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   dependency-review:
     runs-on: ubuntu-latest
