@@ -234,6 +234,9 @@ public class JpaDaoImpl implements JpaDao {
 		}
 	}
 
+	/**
+	 * Saves entity and returns generated identifier.
+	 */
 	@Override
 	public <T> T save(Object entity) {
 		Session session = getSupportedEntityManager(Hibernate.getClass(entity).getName())
