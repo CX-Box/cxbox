@@ -236,8 +236,10 @@ public class JpaDaoImpl implements JpaDao {
 
 	@Override
 	public <T> T save(Object entity) {
-		getSupportedEntityManager(Hibernate.getClass(entity).getName()).unwrap(Session.class).persist(entity);
-		return (T) entity;
+		Session session = getSupportedEntityManager(Hibernate.getClass(entity).getName())
+				.unwrap(Session.class);
+		session.persist(entity);
+		return (T) session.getIdentifier(entity);
 	}
 
 	@Override
