@@ -19,6 +19,7 @@ package org.cxbox.source.service.data.impl;
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.impl.VersionAwareResponseService;
 import org.cxbox.core.dto.DTOUtils;
@@ -26,7 +27,6 @@ import org.cxbox.core.dto.rowmeta.ActionResultDTO;
 import org.cxbox.core.dto.rowmeta.CreateResult;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.service.action.Actions;
-import org.cxbox.api.util.CxReflectionUtils;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService;
 import org.cxbox.model.dictionary.links.entity.CustomizableResponseService_;
 import org.cxbox.model.dictionary.links.entity.DictionaryLnkRule;
@@ -64,8 +64,8 @@ public class DictionaryLnkRuleServiceImpl extends
 	protected CreateResult<DictionaryLnkRuleDto> doCreateEntity(final DictionaryLnkRule entity,
 			final BusinessComponent bc) {
 		entity.setService(baseDAO.findById(CustomizableResponseService.class, bc.getParentIdAsLong()));
-		Long id = baseDAO.save(entity);
-		return new CreateResult<>(entityToDto(bc, baseDAO.findById(DictionaryLnkRule.class, id)));
+		baseDAO.save(entity);
+		return new CreateResult<>(entityToDto(bc, baseDAO.findById(DictionaryLnkRule.class, entity.getId())));
 	}
 
 	@Override
@@ -108,8 +108,9 @@ public class DictionaryLnkRuleServiceImpl extends
 			}
 
 			if (needChildDeletion) {
-				baseDAO.getList(DictionaryLnkRuleCond.class, (root, cq, cb) ->
-						cb.equal(root.get(DictionaryLnkRuleCond_.dictionaryLnkRule), entity)
+				baseDAO.getList(
+						DictionaryLnkRuleCond.class, (root, cq, cb) ->
+								cb.equal(root.get(DictionaryLnkRuleCond_.dictionaryLnkRule), entity)
 				).forEach(baseDAO::delete);
 			}
 		}
@@ -119,11 +120,13 @@ public class DictionaryLnkRuleServiceImpl extends
 	@Override
 	public ActionResultDTO<DictionaryLnkRuleDto> deleteEntity(BusinessComponent bc) {
 		DictionaryLnkRule entity = baseDAO.findById(DictionaryLnkRule.class, bc.getIdAsLong());
-		baseDAO.getList(DictionaryLnkRuleValue.class, (root, cq, cb) ->
-				cb.equal(root.get(DictionaryLnkRuleValue_.dictionaryLnkRule), entity)
+		baseDAO.getList(
+				DictionaryLnkRuleValue.class, (root, cq, cb) ->
+						cb.equal(root.get(DictionaryLnkRuleValue_.dictionaryLnkRule), entity)
 		).forEach(baseDAO::delete);
-		baseDAO.getList(DictionaryLnkRuleCond.class, (root, cq, cb) ->
-				cb.equal(root.get(DictionaryLnkRuleCond_.dictionaryLnkRule), entity)
+		baseDAO.getList(
+				DictionaryLnkRuleCond.class, (root, cq, cb) ->
+						cb.equal(root.get(DictionaryLnkRuleCond_.dictionaryLnkRule), entity)
 		).forEach(baseDAO::delete);
 		baseDAO.delete(entity);
 		return new ActionResultDTO<>();
