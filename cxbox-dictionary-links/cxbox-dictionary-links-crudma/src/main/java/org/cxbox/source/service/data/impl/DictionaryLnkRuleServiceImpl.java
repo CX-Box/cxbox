@@ -64,8 +64,8 @@ public class DictionaryLnkRuleServiceImpl extends
 	protected CreateResult<DictionaryLnkRuleDto> doCreateEntity(final DictionaryLnkRule entity,
 			final BusinessComponent bc) {
 		entity.setService(baseDAO.findById(CustomizableResponseService.class, bc.getParentIdAsLong()));
-		baseDAO.save(entity);
-		return new CreateResult<>(entityToDto(bc, baseDAO.findById(DictionaryLnkRule.class, entity.getId())));
+		Long id = baseDAO.save(entity);
+		return new CreateResult<>(entityToDto(bc, baseDAO.findById(DictionaryLnkRule.class, id)));
 	}
 
 	@Override
