@@ -235,7 +235,7 @@ public class JpaDaoImpl implements JpaDao {
 	}
 
 	/**
-	 * Saves entity and returns generated identifier.
+	 * Return Id.
 	 */
 	@Override
 	public <T> T save(Object entity) {
