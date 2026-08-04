@@ -48,8 +48,9 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 
 			transactionService.invokeInTx(() -> {
 				filterGroupDTOList.forEach(fgDTO -> {
-					jpaDao.save(filterGroupFromDTO(fgDTO)
+					Long id = jpaDao.save(filterGroupFromDTO(fgDTO)
 							.setUserId(String.valueOf(service.getSessionUser().getId())));
+					fgDTO.setId(id.toString());
 					filterGroupsDTO.add(fgDTO);
 				});
 				return null;
