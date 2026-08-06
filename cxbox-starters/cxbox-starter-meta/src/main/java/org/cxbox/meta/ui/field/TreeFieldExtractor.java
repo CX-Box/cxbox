@@ -21,34 +21,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.cxbox.api.util.i18n.LocalizationFormatter;
-import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
-import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.field.FieldMeta;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TreeFieldExtractor extends BaseFieldExtractor {
+public class TreeFieldExtractor implements  FieldExtractor {
 
-	@NonNull
-	private final FieldExtractor origFieldExtractor;
+	private final ListFieldExtractor listFieldExtractor;
 
-	public TreeFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor,
-			@NonNull FieldExtractor origFieldExtractor) {
-		super(linkFieldExtractor);
-		this.origFieldExtractor = origFieldExtractor;
+	public TreeFieldExtractor(ListFieldExtractor listFieldExtractor) {
+		this.listFieldExtractor = listFieldExtractor;
 	}
-
 
 	@Override
 	public Set<BcField> extract(@NonNull WidgetDTO widget) {
-		final Set<BcField> bcFields = origFieldExtractor.extract(widget);
+		final Set<BcField> bcFields = listFieldExtractor.extract(widget);
 		bcFields.addAll(parentIdField(widget));
 		return bcFields;
 	}
