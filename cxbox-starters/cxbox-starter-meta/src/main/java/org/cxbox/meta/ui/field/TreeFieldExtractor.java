@@ -23,24 +23,22 @@ import java.util.Set;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
 
+
 @Component
-public class TreeFieldExtractor implements  FieldExtractor {
+public class TreeFieldExtractor extends ListFieldExtractor {
 
-	private final ListFieldExtractor listFieldExtractor;
-
-	public TreeFieldExtractor(ListFieldExtractor listFieldExtractor) {
-		this.listFieldExtractor = listFieldExtractor;
+	public TreeFieldExtractor(LinkFieldExtractor linkFieldExtractor) {
+		super(linkFieldExtractor);
 	}
 
 	@Override
-	public Set<BcField> extract(@NonNull WidgetDTO widget) {
-		final Set<BcField> bcFields = listFieldExtractor.extract(widget);
-		bcFields.addAll(parentIdField(widget));
-		return bcFields;
+	public void customizeFields(WidgetDTO widget, Set<BcField> fields) {
+		fields.addAll(parentIdField(widget));
 	}
 
 	private HashSet<BcField> parentIdField(@NonNull WidgetDTO widget) {
@@ -60,11 +58,6 @@ public class TreeFieldExtractor implements  FieldExtractor {
 		result.add("PickTreePopup");
 		result.add("Tree");
 		return result;
-	}
-
-	@Override
-	public int getPriority() {
-		return 1;
 	}
 
 }
