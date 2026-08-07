@@ -17,10 +17,8 @@
 package org.cxbox.meta.ui.field;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
@@ -38,17 +36,12 @@ public class TreeFieldExtractor extends ListFieldExtractor {
 
 	@Override
 	public void customizeFields(WidgetDTO widget, Set<BcField> fields) {
-		fields.addAll(parentIdField(widget));
-	}
-
-	private HashSet<BcField> parentIdField(@NonNull WidgetDTO widget) {
-		final HashSet<BcField> fields = new HashSet<>();
 		if (!StringUtils.isBlank(widget.getBcName())) {
-			final BcField parentIdField = new BcField(widget.getBcName(), "parentId")
-					.putAttribute(Attribute.WIDGET_NAME, widget.getName());
-			fields.add(parentIdField);
+			fields.add(new BcField(widget.getBcName(), "parentId")
+					.putAttribute(Attribute.WIDGET_NAME, widget.getName()));
+			fields.add(new BcField(widget.getBcName(), "isLeaf")
+					.putAttribute(Attribute.WIDGET_NAME, widget.getName()));
 		}
-		return fields;
 	}
 
 	@Override

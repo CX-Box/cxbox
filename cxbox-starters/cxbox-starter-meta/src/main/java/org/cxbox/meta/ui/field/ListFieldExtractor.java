@@ -27,8 +27,10 @@ import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+@Primary
 @Component
 public class ListFieldExtractor extends BaseFieldExtractor {
 
@@ -42,7 +44,7 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));
 		}
-	  customizeFields(widget, widgetFields);
+		customizeFields(widget, widgetFields);
 		return widgetFields;
 	}
 
@@ -86,4 +88,5 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 	public void customizeFields(WidgetDTO widget, Set<BcField> fields) {
 		// Extension point for widget families. Default implementation does nothing.
 	}
+
 }
