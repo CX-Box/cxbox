@@ -42,6 +42,7 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));
 		}
+	  customizeFields(widget, widgetFields);
 		return widgetFields;
 	}
 
@@ -82,4 +83,7 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		return 1;
 	}
 
+	public void customizeFields(WidgetDTO widget, Set<BcField> fields) {
+		// Extension point for widget families. Default implementation does nothing.
+	}
 }
