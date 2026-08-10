@@ -45,6 +45,7 @@ public class AssocListFieldExtractor implements FieldExtractor {
 	public List<String> getSupportedTypes() {
 		List<String> result = new ArrayList<>();
 		result.add("AssocListPopup");
+		result.add("AssocTreePopup");
 		return result;
 	}
 

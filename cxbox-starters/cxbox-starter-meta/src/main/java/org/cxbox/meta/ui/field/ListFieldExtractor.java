@@ -27,10 +27,8 @@ import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-@Primary
 @Component
 public class ListFieldExtractor extends BaseFieldExtractor {
 
@@ -66,6 +64,8 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		result.add("CardList");
 		result.add("CardCarouselList");
 		result.add("RelationGraph");
+		result.add("PickTreePopup");
+		result.add("Tree");
 
 		//can be changed in future releases
 		result.add("Funnel");
