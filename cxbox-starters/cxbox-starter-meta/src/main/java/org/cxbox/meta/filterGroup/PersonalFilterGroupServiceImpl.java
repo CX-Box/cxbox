@@ -60,24 +60,25 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 			return filterGroupsDTO;
 
 		} catch (DataIntegrityViolationException e) {
-			if (e.getCause() instanceof ConstraintViolationException v) {
-				SQLException sqlException = v.getSQLException();
-
-				if (sqlException != null) {
-
-					String upper = sqlException.getMessage().toUpperCase(Locale.ROOT);
-
-					boolean isDuplicateUnique = upper.contains("BC_FILTER_GROUPS_UNIQUE"); //postgres oracle
-
-					String messageKey = isDuplicateUnique
-							? "error.filter_group_duplicate_unique"
-							: "error.filter_group_duplicate";
-
-					throw new BusinessException()
-							.addPopup(errorMessage(messageKey));
-				}
+			if (!(e.getCause() instanceof ConstraintViolationException v)) {
+				throw e;
 			}
-			throw e;
+
+			SQLException sqlException = v.getSQLException();
+			if (sqlException == null) {
+				throw e;
+			}
+
+			String message = sqlException.getMessage();
+			boolean isDuplicateUnique = message != null
+					&& message.toUpperCase(Locale.ROOT).contains("BC_FILTER_GROUPS_UNIQUE");
+
+			String messageKey = isDuplicateUnique
+					? "error.filter_group_duplicate_unique"
+					: "error.filter_group_duplicate";
+
+			throw new BusinessException()
+					.addPopup(errorMessage(messageKey));
 		}
 	}
 
