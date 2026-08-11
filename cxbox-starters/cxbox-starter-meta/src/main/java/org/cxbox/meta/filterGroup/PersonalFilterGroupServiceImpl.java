@@ -65,18 +65,17 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 
 				if (sqlException != null) {
 
-						String upper = sqlException.getMessage().toUpperCase(Locale.ROOT);
+					String upper = sqlException.getMessage().toUpperCase(Locale.ROOT);
 
-						boolean isDuplicateUniquePostgres =  upper.contains("BC_FILTER_GROUPS_UNIQUE"); //postgres
-						boolean isDuplicateUniqueOracle =	 upper.contains("BC_FILTER_GROUPS_UNIQUE_INDEX"); //oracle
+					boolean isDuplicateUnique = upper.contains("BC_FILTER_GROUPS_UNIQUE"); //postgres oracle
 
-						String messageKey = isDuplicateUniquePostgres || isDuplicateUniqueOracle
-								? "error.filter_group_duplicate_unique"
-								: "error.filter_group_duplicate";
+					String messageKey = isDuplicateUnique
+							? "error.filter_group_duplicate_unique"
+							: "error.filter_group_duplicate";
 
-						throw new BusinessException()
-								.addPopup(errorMessage(messageKey));
-					}
+					throw new BusinessException()
+							.addPopup(errorMessage(messageKey));
+				}
 			}
 			throw e;
 		}
