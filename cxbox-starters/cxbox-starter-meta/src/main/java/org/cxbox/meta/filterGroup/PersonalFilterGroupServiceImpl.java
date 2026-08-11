@@ -17,8 +17,10 @@ package org.cxbox.meta.filterGroup;/*
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.exception.BusinessException;
@@ -60,13 +62,7 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 		} catch (DataIntegrityViolationException e) {
 			if (e.getCause() instanceof ConstraintViolationException v) {
 
-				String constraint = v.getConstraintName();
-				String upper = constraint != null ? constraint.toUpperCase() : "";
-
-				boolean isUnique = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE$"); //postgres
-				boolean isUniqueIndex = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE_INDEX$"); //oracle
-
-				String messageKey = isUnique || isUniqueIndex
+				String messageKey = isTargetUniqueViolation(v)
 						? "error.filter_group_duplicate_unique"
 						: "error.filter_group_duplicate";
 
@@ -75,6 +71,35 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 			}
 			throw e;
 		}
+	}
+
+	private boolean isTargetUniqueViolation(ConstraintViolationException exception) {
+		SQLException sqlException = exception.getSQLException();
+
+		while (sqlException != null) {
+
+			boolean isUniqueViolation =
+					"23505".equals(sqlException.getSQLState()) // PostgreSQL
+							|| sqlException.getErrorCode() == 1;       // Oracle
+
+			if (isUniqueViolation) {
+				String constraintName = exception.getConstraintName();
+
+				if (constraintName == null) {
+					return false;
+				}
+
+				String upper = constraintName.toUpperCase(Locale.ROOT);
+
+				return upper.matches(
+						"^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE(?:_INDEX)?$"
+				);
+			}
+
+			sqlException = sqlException.getNextException();
+		}
+
+		return false;
 	}
 
 	@Override
