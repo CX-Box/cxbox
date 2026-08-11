@@ -17,8 +17,10 @@ package org.cxbox.meta.filterGroup;/*
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.core.exception.BusinessException;
@@ -58,22 +60,25 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 			return filterGroupsDTO;
 
 		} catch (DataIntegrityViolationException e) {
-			if (e.getCause() instanceof ConstraintViolationException v) {
-
-				String constraint = v.getConstraintName();
-				String upper = constraint != null ? constraint.toUpperCase() : "";
-
-				boolean isUnique = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE$"); //postgres
-				boolean isUniqueIndex = upper.matches("^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE_INDEX$"); //oracle
-
-				String messageKey = isUnique || isUniqueIndex
-						? "error.filter_group_duplicate_unique"
-						: "error.filter_group_duplicate";
-
-				throw new BusinessException()
-						.addPopup(errorMessage(messageKey));
+			if (!(e.getCause() instanceof ConstraintViolationException v)) {
+				throw e;
 			}
-			throw e;
+
+			SQLException sqlException = v.getSQLException();
+			if (sqlException == null) {
+				throw e;
+			}
+
+			String message = sqlException.getMessage();
+			boolean isDuplicateUnique = message != null
+					&& message.toUpperCase(Locale.ROOT).contains("BC_FILTER_GROUPS_UNIQUE");
+
+			String messageKey = isDuplicateUnique
+					? "error.filter_group_duplicate_unique"
+					: "error.filter_group_duplicate";
+
+			throw new BusinessException()
+					.addPopup(errorMessage(messageKey));
 		}
 	}
 
