@@ -61,45 +61,25 @@ public class PersonalFilterGroupServiceImpl implements PersonalFilterGroupServic
 
 		} catch (DataIntegrityViolationException e) {
 			if (e.getCause() instanceof ConstraintViolationException v) {
+				SQLException sqlException = v.getSQLException();
 
-				String messageKey = isTargetUniqueViolation(v)
-						? "error.filter_group_duplicate_unique"
-						: "error.filter_group_duplicate";
+				if (sqlException != null) {
 
-				throw new BusinessException()
-						.addPopup(errorMessage(messageKey));
+						String upper = sqlException.getMessage().toUpperCase(Locale.ROOT);
+
+						boolean isDuplicateUniquePostgres =  upper.contains("BC_FILTER_GROUPS_UNIQUE"); //postgres
+						boolean isDuplicateUniqueOracle =	 upper.contains("BC_FILTER_GROUPS_UNIQUE_INDEX"); //oracle
+
+						String messageKey = isDuplicateUniquePostgres || isDuplicateUniqueOracle
+								? "error.filter_group_duplicate_unique"
+								: "error.filter_group_duplicate";
+
+						throw new BusinessException()
+								.addPopup(errorMessage(messageKey));
+					}
 			}
 			throw e;
 		}
-	}
-
-	private boolean isTargetUniqueViolation(ConstraintViolationException exception) {
-		SQLException sqlException = exception.getSQLException();
-
-		while (sqlException != null) {
-
-			boolean isUniqueViolation =
-					"23505".equals(sqlException.getSQLState()) // PostgreSQL
-							|| sqlException.getErrorCode() == 1;       // Oracle
-
-			if (isUniqueViolation) {
-				String constraintName = exception.getConstraintName();
-
-				if (constraintName == null) {
-					return false;
-				}
-
-				String upper = constraintName.toUpperCase(Locale.ROOT);
-
-				return upper.matches(
-						"^(?:[A-Z0-9_]+\\.)?BC_FILTER_GROUPS_UNIQUE(?:_INDEX)?$"
-				);
-			}
-
-			sqlException = sqlException.getNextException();
-		}
-
-		return false;
 	}
 
 	@Override
