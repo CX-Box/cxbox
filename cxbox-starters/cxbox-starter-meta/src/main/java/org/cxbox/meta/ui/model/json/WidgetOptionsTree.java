@@ -17,18 +17,20 @@
 package org.cxbox.meta.ui.model.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.meta.ui.field.link.LinkToField;
 
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WidgetOptions {
+public class WidgetOptionsTree {
 
-	private List<WidgetBcHierarchy> hierarchy;
+	@LinkToField
+	private String parentFieldKey;
 
-	private WidgetOptionsTree tree;
+	@LinkToField
+	private String isLeafFieldKey;
 
 }

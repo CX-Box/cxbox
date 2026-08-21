@@ -19,15 +19,19 @@ package org.cxbox.meta.ui.field.link;
 import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.util.CxReflectionUtils;
+import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.CustomFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.WidgetOptions;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -70,6 +74,14 @@ public final class LinkFieldExtractor {
 				recursiveExtractLinkToFields(widgetName, bc, field.get(object), fields, depth);
 			}
 		}
+	}
+
+	@SneakyThrows
+	public WidgetOptions extractWidgetOptions(final WidgetDTO widget) {
+		return Optional.ofNullable(widget.getOptions())
+				.filter(StringUtils::isNotBlank)
+				.map(options -> JsonUtils.readValue(WidgetOptions.class, options))
+				.orElse(null);
 	}
 
 }

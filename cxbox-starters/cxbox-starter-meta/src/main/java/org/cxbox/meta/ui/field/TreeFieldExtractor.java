@@ -17,6 +17,7 @@
 package org.cxbox.meta.ui.field;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,55 +26,70 @@ import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.WidgetOptions;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ListFieldExtractor extends BaseFieldExtractor {
 
-	public ListFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor) {
+public class TreeFieldExtractor extends BaseFieldExtractor {
+
+	private final LinkFieldExtractor linkFieldExtractor;
+
+	public TreeFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor, LinkFieldExtractor linkFieldExtractor1) {
 		super(linkFieldExtractor);
+		this.linkFieldExtractor = linkFieldExtractor1;
 	}
 
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
-		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(widget.getTitle())));
+		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(
+				widget,
+				LocalizationFormatter.i18n(widget.getTitle())
+		));
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));
 		}
+
+		widgetFields.addAll(extractFieldsFromOptions(widget));
 		return widgetFields;
+	}
+
+
+	private Set<BcField> extractFieldsFromOptions(final WidgetDTO widget) {
+		WidgetOptions options = linkFieldExtractor.extractWidgetOptions(widget);
+		if (options == null || options.getTree() == null) {
+			return Collections.emptySet();
+		}
+
+		Set<BcField> treeFields = linkFieldExtractor.extract(
+				widget.getName(), widget.getBcName(), options.getTree()
+		);
+
+		Set<BcField> result = new HashSet<>(treeFields);
+
+		if (!treeFields.contains("parentFieldKey")) {
+			result.add(createField(widget, "parentId"));
+		}
+
+		if (!treeFields.contains("isLeafFieldKey")) {
+			result.add(createField(widget, "isLeaf"));
+		}
+
+		return result;
+	}
+
+	private BcField createField(WidgetDTO widget, String fieldName) {
+		return new BcField(widget.getBcName(), fieldName)
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName());
 	}
 
 	@Override
 	public List<String> getSupportedTypes() {
 		List<String> result = new ArrayList<>();
-		result.add("List");
-		result.add("AdditionalList");
-		result.add("StatsBlock");
-		result.add("PickListPopup");
-		result.add("Steps");
-		result.add("GroupingHierarchy");
-		result.add("Pie1D");
-		result.add("Column2D");
-		result.add("Line2D");
-		result.add("DualAxes2D");
-		result.add("CalendarList");
-		result.add("CalendarYearList");
-		result.add("CardList");
-		result.add("CardCarouselList");
-		result.add("RelationGraph");
-		result.add("PickTreePopup");
-		//can be changed in future releases
-		result.add("Funnel");
-		result.add("RingProgress");
-
-		//Deprecated widget types
-		result.add("DashboardList");
-		result.add("DataGrid");
-		result.add("Pivot");
-		result.add("DimFilter");
-
+		result.add("Tree");
 		return result;
 	}
 
