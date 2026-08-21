@@ -63,7 +63,7 @@ public class ListFieldExtractor extends BaseFieldExtractor {
 		result.add("CardList");
 		result.add("CardCarouselList");
 		result.add("RelationGraph");
-
+		result.add("PickTreePopup");
 		//can be changed in future releases
 		result.add("Funnel");
 		result.add("RingProgress");
