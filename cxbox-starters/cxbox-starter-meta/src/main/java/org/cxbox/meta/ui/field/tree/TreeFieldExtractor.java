@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.field;
+package org.cxbox.meta.ui.field.tree;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.cxbox.api.util.i18n.LocalizationFormatter;
 import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.BaseFieldExtractor;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
-import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.WidgetOptions;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,60 +33,34 @@ import org.springframework.stereotype.Component;
 
 public class TreeFieldExtractor extends BaseFieldExtractor {
 
-	private final LinkFieldExtractor linkFieldExtractor;
+	private final TreeDefaultFieldExtractor treeDefaultFieldExtractor;
 
-	public TreeFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor, LinkFieldExtractor linkFieldExtractor1) {
+	public TreeFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor,
+			TreeDefaultFieldExtractor treeDefaultFieldExtractor) {
 		super(linkFieldExtractor);
-		this.linkFieldExtractor = linkFieldExtractor1;
+		this.treeDefaultFieldExtractor = treeDefaultFieldExtractor;
 	}
 
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
-		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(
-				widget,
-				LocalizationFormatter.i18n(widget.getTitle())
-		));
+		// add fields from the title
+		//final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(widget.getTitle())));
+
+		final Set<BcField> widgetFields = new HashSet<>();
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));
 		}
+		// add fields from the option tree or overridden fields
+		widgetFields.addAll(treeDefaultFieldExtractor.extractFieldsFromOptions(widget));
 
-		widgetFields.addAll(extractFieldsFromOptions(widget));
 		return widgetFields;
-	}
-
-
-	private Set<BcField> extractFieldsFromOptions(final WidgetDTO widget) {
-		WidgetOptions options = linkFieldExtractor.extractWidgetOptions(widget);
-		if (options == null || options.getTree() == null) {
-			return Collections.emptySet();
-		}
-
-		Set<BcField> treeFields = linkFieldExtractor.extract(
-				widget.getName(), widget.getBcName(), options.getTree()
-		);
-
-		Set<BcField> result = new HashSet<>(treeFields);
-
-		if (!treeFields.contains("parentFieldKey")) {
-			result.add(createField(widget, "parentId"));
-		}
-
-		if (!treeFields.contains("isLeafFieldKey")) {
-			result.add(createField(widget, "isLeaf"));
-		}
-
-		return result;
-	}
-
-	private BcField createField(WidgetDTO widget, String fieldName) {
-		return new BcField(widget.getBcName(), fieldName)
-				.putAttribute(Attribute.WIDGET_NAME, widget.getName());
 	}
 
 	@Override
 	public List<String> getSupportedTypes() {
 		List<String> result = new ArrayList<>();
 		result.add("Tree");
+		result.add("PickTreePopup");
 		return result;
 	}
 

@@ -84,4 +84,9 @@ public final class LinkFieldExtractor {
 				.orElse(null);
 	}
 
+	public BcField createField(WidgetDTO widget, String fieldName) {
+		return new BcField(widget.getBcName(), fieldName)
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName());
+	}
+
 }

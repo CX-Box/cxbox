@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.field;
+package org.cxbox.meta.ui.field.tree;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,29 +22,38 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.meta.data.WidgetDTO;
+import org.cxbox.meta.ui.field.FieldExtractor;
+import org.cxbox.meta.ui.field.ListFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AssocListFieldExtractor implements FieldExtractor {
+public class AssocTreeFieldExtractor implements FieldExtractor {
 
 	private final ListFieldExtractor listFieldExtractor;
 
+	private final TreeDefaultFieldExtractor treeDefaultFieldExtractor;
+
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
+		//add fields like list widget
 		final Set<BcField> widgetFields = new HashSet<>(listFieldExtractor.extract(widget));
+
 		widgetFields.add(new BcField(widget.getBcName(), BcField.FIELD_ASSOCIATE)
 				.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 		);
+
+		// add fields from the option tree or overridden fields
+		widgetFields.addAll(treeDefaultFieldExtractor.extractFieldsFromOptions(widget));
 		return widgetFields;
 	}
 
 	@Override
 	public List<String> getSupportedTypes() {
 		List<String> result = new ArrayList<>();
-		result.add("AssocListPopup");
+		result.add("AssocTreePopup");
 		return result;
 	}
 
