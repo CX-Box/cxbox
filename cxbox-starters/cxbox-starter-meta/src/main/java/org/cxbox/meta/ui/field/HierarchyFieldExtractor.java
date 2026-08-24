@@ -28,7 +28,7 @@ import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.WidgetOptions;
+import org.cxbox.meta.ui.model.json.options.WidgetOptions;
 import org.springframework.stereotype.Component;
 
 @Component

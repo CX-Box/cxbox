@@ -31,7 +31,7 @@ import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.CustomFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.WidgetOptions;
+import org.cxbox.meta.ui.model.json.options.WidgetOptions;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -66,10 +66,19 @@ public final class LinkFieldExtractor {
 		}
 		for (final Field field : CxReflectionUtils.getAllNonSyntheticFieldsList(object.getClass())) {
 			field.setAccessible(true);
-			if (field.isAnnotationPresent(LinkToField.class) && field.get(object) != null) {
-				fields.add(new BcField(bc, (String) field.get(object))
-						.putAttribute(Attribute.WIDGET_NAME, widgetName)
-				);
+			if (field.isAnnotationPresent(LinkToField.class) &&
+					(field.get(object) != null || !field.getAnnotation(LinkToField.class).defaultValue().isBlank())) {
+				LinkToField linkToField =
+						field.getAnnotation(LinkToField.class);
+
+				if (field.get(object) != null) {
+					fields.add(new BcField(bc, (String) field.get(object))
+							.putAttribute(Attribute.WIDGET_NAME, widgetName)
+					);
+				} else {
+					fields.add(new BcField(bc, (String) linkToField.defaultValue())
+							.putAttribute(Attribute.WIDGET_NAME, widgetName);
+				}
 			} else {
 				recursiveExtractLinkToFields(widgetName, bc, field.get(object), fields, depth);
 			}
