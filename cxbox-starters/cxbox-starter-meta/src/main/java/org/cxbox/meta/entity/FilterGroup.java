@@ -40,4 +40,6 @@ public class FilterGroup extends BaseEntity {
 
 	private String bc;
 
+	private Boolean defaultFilter;
+
 }
