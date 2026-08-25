@@ -150,8 +150,8 @@ public class ScreenMapper {
 		var dto = new FilterGroupDTO()
 				.setName(entity.getName())
 				.setFilters(entity.getFilters())
-				.setBc(entity.getBc())
-				.setDefaultFilter(entity.getDefaultFilter());
+				.setBc(entity.getBc());
+
 		dto.setId(entity.getId().toString());
 		return dto;
 	}
