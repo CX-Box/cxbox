@@ -42,6 +42,6 @@ public class FilterGroupDTO implements Serializable {
 
 	private String bc;
 
-
+	private Boolean defaultFilter;
 
 }
