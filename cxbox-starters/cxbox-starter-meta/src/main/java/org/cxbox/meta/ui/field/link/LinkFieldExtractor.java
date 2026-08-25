@@ -19,19 +19,15 @@ package org.cxbox.meta.ui.field.link;
 import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.cxbox.api.util.CxReflectionUtils;
-import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.CustomFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
-import org.cxbox.meta.ui.model.json.options.WidgetOptions;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -66,19 +62,10 @@ public final class LinkFieldExtractor {
 		}
 		for (final Field field : CxReflectionUtils.getAllNonSyntheticFieldsList(object.getClass())) {
 			field.setAccessible(true);
-			if (field.isAnnotationPresent(LinkToField.class) &&
-					(field.get(object) != null || !field.getAnnotation(LinkToField.class).defaultValue().isBlank())) {
-				LinkToField linkToField =
-						field.getAnnotation(LinkToField.class);
-
-				if (field.get(object) != null) {
-					fields.add(new BcField(bc, (String) field.get(object))
-							.putAttribute(Attribute.WIDGET_NAME, widgetName)
-					);
-				} else {
-					fields.add(new BcField(bc, (String) linkToField.defaultValue())
-							.putAttribute(Attribute.WIDGET_NAME, widgetName);
-				}
+			if (field.isAnnotationPresent(LinkToField.class) && field.get(object) != null) {
+				fields.add(new BcField(bc, (String) field.get(object))
+						.putAttribute(Attribute.WIDGET_NAME, widgetName)
+				);
 			} else {
 				recursiveExtractLinkToFields(widgetName, bc, field.get(object), fields, depth);
 			}
@@ -86,16 +73,34 @@ public final class LinkFieldExtractor {
 	}
 
 	@SneakyThrows
-	public WidgetOptions extractWidgetOptions(final WidgetDTO widget) {
-		return Optional.ofNullable(widget.getOptions())
-				.filter(StringUtils::isNotBlank)
-				.map(options -> JsonUtils.readValue(WidgetOptions.class, options))
-				.orElse(null);
-	}
+	public Set<BcField> extractDefaultFieldsLinkToFields(
+			final WidgetDTO widget,
+			@Nullable final Object options,
+			final Class<?> optionsType) {
 
-	public BcField createField(WidgetDTO widget, String fieldName) {
-		return new BcField(widget.getBcName(), fieldName)
-				.putAttribute(Attribute.WIDGET_NAME, widget.getName());
+		final Set<BcField> fields = new HashSet<>();
+
+		for (final Field field : CxReflectionUtils.getAllNonSyntheticFieldsList(optionsType)) {
+			final LinkToField annotation = field.getAnnotation(LinkToField.class);
+
+			if (annotation == null || annotation.defaultValue().isBlank()) {
+				continue;
+			}
+
+			field.setAccessible(true);
+
+			final String defaultValue = annotation.defaultValue();
+			final Object value = options == null ? null : field.get(options);
+
+			if (!defaultValue.equals(value)) {
+				fields.add(
+						new BcField(widget.getBcName(), defaultValue)
+								.putAttribute(Attribute.WIDGET_NAME, widget.getName())
+				);
+			}
+		}
+
+		return fields;
 	}
 
 }

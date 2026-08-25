@@ -17,32 +17,20 @@
 package org.cxbox.meta.ui.model.json.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.meta.ui.field.link.LinkToField;
 
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WidgetOptions {
+public class WidgetOptionsCard {
 
-	private List<WidgetBcHierarchy> hierarchy;
+	@LinkToField
+	private String titleFieldKey;
 
-	private WidgetOptionsTree tree;
-
-	private WidgetOptionsStats stats;
-
-	private WidgetOptionsSteps stepsOptions;
-
-	private WidgetOptionsPie1D chart1D;
-
-	private WidgetOptionsChart2D chart2D;
-
-	private WidgetOptionsCalendar calendar;
-
-	private List<WidgetOptionsCryptoGenerator> cryptoGenerator;
-
-	private WidgetOptionsCard card;
+	@LinkToField
+	private String valueFieldKey;
 
 }

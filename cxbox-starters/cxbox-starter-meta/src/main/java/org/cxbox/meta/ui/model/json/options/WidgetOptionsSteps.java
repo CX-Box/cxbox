@@ -27,9 +27,7 @@ import org.cxbox.meta.ui.field.link.LinkToField;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WidgetOptionsSteps {
 
-	@LinkToField(defaultValue = "editStep")
+	@LinkToField
 	private String stepsDictionaryKey;
 
-	@LinkToField(defaultValue = "description")
-	private String descriptionFieldKey;
 }

@@ -14,44 +14,48 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.field.tree;
+package org.cxbox.meta.ui.field;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import org.cxbox.api.util.i18n.LocalizationFormatter;
 import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
-import org.cxbox.meta.ui.field.BaseFieldExtractor;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.json.field.FieldMeta;
+import org.cxbox.meta.ui.model.json.options.WidgetOptions;
+import org.cxbox.meta.ui.model.json.options.WidgetOptionsTree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-
 public class TreeFieldExtractor extends BaseFieldExtractor {
 
-	private final TreeDefaultFieldExtractor treeDefaultFieldExtractor;
-
-	public TreeFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor,
-			TreeDefaultFieldExtractor treeDefaultFieldExtractor) {
+	public TreeFieldExtractor(@Autowired LinkFieldExtractor linkFieldExtractor) {
 		super(linkFieldExtractor);
-		this.treeDefaultFieldExtractor = treeDefaultFieldExtractor;
 	}
 
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
-		// add fields from the title
-		//final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(widget.getTitle())));
-
-		final Set<BcField> widgetFields = new HashSet<>();
+		final Set<BcField> widgetFields = new HashSet<>(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(widget.getTitle())));
 		for (final FieldMeta field : JsonUtils.readValue(FieldMeta[].class, widget.getFields())) {
 			widgetFields.addAll(extract(widget, field));
 		}
-		// add fields from the option tree or overridden fields
-		widgetFields.addAll(treeDefaultFieldExtractor.extractFieldsFromOptions(widget));
+
+		// add default fields from the option tree
+		widgetFields.addAll(
+				linkFieldExtractor.extractDefaultFieldsLinkToFields(
+						widget,
+						Optional.ofNullable(extractWidgetOptions(widget))
+								.map(WidgetOptions::getTree)
+								.orElse(null),
+						WidgetOptionsTree.class
+				)
+		);
 
 		return widgetFields;
 	}

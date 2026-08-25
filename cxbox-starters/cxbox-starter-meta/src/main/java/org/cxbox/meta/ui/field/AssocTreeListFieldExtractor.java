@@ -14,39 +14,50 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.field.tree;
+package org.cxbox.meta.ui.field;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.cxbox.meta.data.WidgetDTO;
-import org.cxbox.meta.ui.field.FieldExtractor;
-import org.cxbox.meta.ui.field.ListFieldExtractor;
+import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
+import org.cxbox.meta.ui.model.json.options.WidgetOptions;
+import org.cxbox.meta.ui.model.json.options.WidgetOptionsTree;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AssocTreeFieldExtractor implements FieldExtractor {
+public class AssocTreeListFieldExtractor implements FieldExtractor {
 
 	private final ListFieldExtractor listFieldExtractor;
 
-	private final TreeDefaultFieldExtractor treeDefaultFieldExtractor;
+	private final LinkFieldExtractor linkFieldExtractor;
+
+	private final BaseFieldExtractor baseFieldExtractor;
 
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
-		//add fields like list widget
 		final Set<BcField> widgetFields = new HashSet<>(listFieldExtractor.extract(widget));
-
 		widgetFields.add(new BcField(widget.getBcName(), BcField.FIELD_ASSOCIATE)
 				.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 		);
 
-		// add fields from the option tree or overridden fields
-		widgetFields.addAll(treeDefaultFieldExtractor.extractFieldsFromOptions(widget));
+		// add default fields from the option tree
+		widgetFields.addAll(
+				linkFieldExtractor.extractDefaultFieldsLinkToFields(
+						widget,
+						Optional.ofNullable(baseFieldExtractor.extractWidgetOptions(widget))
+								.map(WidgetOptions::getTree)
+								.orElse(null),
+						WidgetOptionsTree.class
+				)
+		);
+
 		return widgetFields;
 	}
 
