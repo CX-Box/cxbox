@@ -30,11 +30,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AssocListFieldExtractor implements FieldExtractor {
 
-	private final ListFieldExtractor linkFieldExtractor;
+	private final ListFieldExtractor listFieldExtractor;
 
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
-		final Set<BcField> widgetFields = new HashSet<>(linkFieldExtractor.extract(widget));
+		final Set<BcField> widgetFields = new HashSet<>(listFieldExtractor.extract(widget));
 		widgetFields.add(new BcField(widget.getBcName(), BcField.FIELD_ASSOCIATE)
 				.putAttribute(Attribute.WIDGET_NAME, widget.getName())
 		);

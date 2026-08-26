@@ -72,4 +72,35 @@ public final class LinkFieldExtractor {
 		}
 	}
 
+	@SneakyThrows
+	public Set<BcField> extractDefaultFieldsLinkToFields(
+			final WidgetDTO widget,
+			@Nullable final Object options,
+			final Class<?> optionsType) {
+
+		final Set<BcField> fields = new HashSet<>();
+
+		for (final Field field : CxReflectionUtils.getAllNonSyntheticFieldsList(optionsType)) {
+			final LinkToField annotation = field.getAnnotation(LinkToField.class);
+
+			if (annotation == null || annotation.defaultValue().isBlank()) {
+				continue;
+			}
+
+			field.setAccessible(true);
+
+			final String defaultValue = annotation.defaultValue();
+			final Object value = options == null ? null : field.get(options);
+
+			if (!defaultValue.equals(value)) {
+				fields.add(
+						new BcField(widget.getBcName(), defaultValue)
+								.putAttribute(Attribute.WIDGET_NAME, widget.getName())
+				);
+			}
+		}
+
+		return fields;
+	}
+
 }

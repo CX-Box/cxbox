@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.field.link;
+package org.cxbox.meta.ui.model.json.options;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.cxbox.meta.ui.model.json.field.FieldMeta;
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface LinkToField {
-	String defaultValue() default "";
+
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class WidgetBcHierarchy {
+
+	private String bcName;
+
+	private String assocValueKey;
+
+	private List<FieldMeta> fields;
+
 }
