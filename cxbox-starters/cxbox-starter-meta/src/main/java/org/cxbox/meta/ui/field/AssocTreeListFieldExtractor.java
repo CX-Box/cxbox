@@ -38,8 +38,6 @@ public class AssocTreeListFieldExtractor implements FieldExtractor {
 
 	private final LinkFieldExtractor linkFieldExtractor;
 
-	private final BaseFieldExtractor baseFieldExtractor;
-
 	@Override
 	public Set<BcField> extract(final WidgetDTO widget) {
 		final Set<BcField> widgetFields = new HashSet<>(listFieldExtractor.extract(widget));
@@ -51,7 +49,7 @@ public class AssocTreeListFieldExtractor implements FieldExtractor {
 		widgetFields.addAll(
 				linkFieldExtractor.extractDefaultFieldsLinkToFields(
 						widget,
-						Optional.ofNullable(baseFieldExtractor.extractWidgetOptions(widget))
+						Optional.ofNullable(listFieldExtractor.extractWidgetOptions(widget))
 								.map(WidgetOptions::getTree)
 								.orElse(null),
 						WidgetOptionsTree.class
