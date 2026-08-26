@@ -33,4 +33,7 @@ public class WidgetOptionsCard {
 	@LinkToField
 	private String valueFieldKey;
 
+	@LinkToField
+	private String descriptionFieldKey;
+
 }

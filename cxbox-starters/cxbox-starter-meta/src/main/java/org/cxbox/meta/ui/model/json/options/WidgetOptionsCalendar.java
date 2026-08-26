@@ -36,4 +36,6 @@ public class WidgetOptionsCalendar {
 	@LinkToField
 	private String endFieldKey;
 
+	@LinkToField
+	private String descriptionFieldKey;
 }

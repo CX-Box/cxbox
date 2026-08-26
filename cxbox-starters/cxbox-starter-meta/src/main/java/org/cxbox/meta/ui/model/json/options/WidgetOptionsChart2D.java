@@ -36,4 +36,6 @@ public class WidgetOptionsChart2D {
 	@LinkToField
 	private String groupFieldKey;
 
+	@LinkToField
+	private String descriptionFieldKey;
 }
