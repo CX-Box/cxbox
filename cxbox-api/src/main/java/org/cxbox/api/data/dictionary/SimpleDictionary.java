@@ -16,10 +16,12 @@
 
 package org.cxbox.api.data.dictionary;
 
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cxbox.api.data.dto.rowmeta.OptionsEnumDictionaryMetadataImpl;
 import org.cxbox.dictionary.DictionaryProvider.DictionaryValue;
 
 @Getter
@@ -44,14 +46,26 @@ public class SimpleDictionary implements DictionaryValue {
 
 	private String cacheLoaderName;
 
+	@Nullable
+	private OptionsEnumDictionaryMetadataImpl meta;
+
+	public SimpleDictionary(String key, String value, OptionsEnumDictionaryMetadataImpl meta) {
+		this(key, value, true, meta);
+	}
+
 	public SimpleDictionary(String key, String value) {
-		this(key, value, true);
+		this(key, value, true, null);
 	}
 
 	public SimpleDictionary(String key, String value, boolean active) {
+		this(key, value, active, null);
+	}
+
+	public SimpleDictionary(String key, String value, boolean active, OptionsEnumDictionaryMetadataImpl meta) {
 		this.key = key;
 		this.value = value;
 		this.active = active;
+		this.meta = meta;
 	}
 
 }
