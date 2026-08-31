@@ -23,7 +23,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@CxboxWidgetField({"multivalue", "multivalueHover"})
+@CxboxWidgetField({"multivalue", "multivalueHover", "multivalueTree"})
 public class MultivalueFieldMeta extends FieldMetaBase {
 
 	private String popupBcName;
