@@ -27,7 +27,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@CxboxWidgetField({"multifield"})
+@CxboxWidgetField({"multifield", "multifieldTree"})
 public class MultifieldFieldMeta extends FieldMetaBase implements FieldContainer {
 
 	@JsonProperty("fields")
