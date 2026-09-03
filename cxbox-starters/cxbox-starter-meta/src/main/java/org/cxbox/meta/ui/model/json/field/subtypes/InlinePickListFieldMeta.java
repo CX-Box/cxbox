@@ -22,7 +22,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@CxboxWidgetField("inline-pickList")
+@CxboxWidgetField({"inline-pickList"})
 public class InlinePickListFieldMeta extends PickListFieldMeta {
 
 	private String searchSpec;
