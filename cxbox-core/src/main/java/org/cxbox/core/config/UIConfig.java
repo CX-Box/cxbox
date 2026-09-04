@@ -20,15 +20,15 @@ import org.cxbox.core.config.properties.UIProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 @EnableConfigurationProperties(UIProperties.class)
-@EnableWebMvc
+@Configuration//for better springboot and cibseven (camunda replacer) compatibility, we do not use @EnableWebMvc now
 public class UIConfig implements WebMvcConfigurer {
 
 	@Autowired
