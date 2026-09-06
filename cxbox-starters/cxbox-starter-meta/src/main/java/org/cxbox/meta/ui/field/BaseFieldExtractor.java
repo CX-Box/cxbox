@@ -16,15 +16,18 @@
 
 package org.cxbox.meta.ui.field;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.NonNull;
 import org.cxbox.api.util.i18n.LocalizationFormatter;
+import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
@@ -35,11 +38,12 @@ import org.cxbox.meta.ui.model.json.field.FieldMeta;
 import org.cxbox.meta.ui.model.json.field.FieldMeta.FieldMetaBase.MultiSourceInfo;
 import org.cxbox.meta.ui.model.json.field.subtypes.MultivalueFieldMeta;
 import org.cxbox.meta.ui.model.json.field.subtypes.PickListFieldMeta;
+import org.cxbox.meta.ui.model.json.options.WidgetOptions;
 
 
 public abstract class BaseFieldExtractor implements FieldExtractor {
 
-	private final LinkFieldExtractor linkFieldExtractor;
+	protected final LinkFieldExtractor linkFieldExtractor;
 
 	protected BaseFieldExtractor(LinkFieldExtractor linkFieldExtractor) {
 		this.linkFieldExtractor = linkFieldExtractor;
@@ -72,6 +76,10 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 			widgetFields.addAll(extractFieldsFromMultiValue(widget, getMultivalueField(fieldMetaBase)));
 			widgetFields.addAll(extractFieldsFromTitle(widget, LocalizationFormatter.i18n(fieldMetaBase.getTitle())));
 			widgetFields.addAll(linkFieldExtractor.extract(widget, fieldMetaBase));
+
+			// add overridden fields from the option
+			widgetFields.addAll(linkFieldExtractor.extract(widget, extractWidgetOptions(widget)));
+
 			if (fieldMetaBase.getMultisource() != null) {
 				for (final MultiSourceInfo multiSourceInfo : fieldMetaBase.getMultisource()) {
 					widgetFields.add(new BcField(widget.getBcName(), multiSourceInfo.getKey())
@@ -153,6 +161,14 @@ public abstract class BaseFieldExtractor implements FieldExtractor {
 			valueList.add(key);
 		}
 		return valueList;
+	}
+
+	public WidgetOptions extractWidgetOptions(final WidgetDTO widget) {
+		return Optional.ofNullable(widget.getOptions())
+				.map(JsonUtils::readTree)
+				.filter(JsonNode::isObject)
+				.map(options -> JsonUtils.readValue(WidgetOptions.class, options))
+				.orElse(null);
 	}
 
 }

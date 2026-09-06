@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.field.link;
+package org.cxbox.meta.ui.model.json.options;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
+import org.cxbox.meta.ui.field.link.LinkToField;
 
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface LinkToField {
-	String defaultValue() default "";
+
+@Getter
+@Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class WidgetOptionsCard {
+
+	@LinkToField
+	private String titleFieldKey;
+
+	@LinkToField
+	private String valueFieldKey;
+
+	@LinkToField
+	private String descriptionFieldKey;
+
 }

@@ -55,7 +55,7 @@ import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.ScreenSourceDto.ScreenNavigationSourceDto.MenuItemSourceDto;
 import org.cxbox.meta.metahotreload.util.JsonUtils;
-import org.cxbox.meta.ui.model.json.WidgetOptions;
+import org.cxbox.meta.ui.model.json.options.WidgetOptions;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 

@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,54 +16,53 @@
 
 package org.cxbox.meta.ui.field;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.cxbox.core.util.JsonUtils;
 import org.cxbox.meta.data.WidgetDTO;
 import org.cxbox.meta.ui.field.link.LinkFieldExtractor;
 import org.cxbox.meta.ui.model.BcField;
 import org.cxbox.meta.ui.model.BcField.Attribute;
 import org.cxbox.meta.ui.model.json.options.WidgetOptions;
+import org.cxbox.meta.ui.model.json.options.WidgetOptionsTree;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class HierarchyFieldExtractor implements FieldExtractor {
+public class AssocTreeListFieldExtractor implements FieldExtractor {
+
+	private final ListFieldExtractor listFieldExtractor;
 
 	private final LinkFieldExtractor linkFieldExtractor;
 
 	@Override
-	public Set<BcField> extract(WidgetDTO widget) {
-		final HashSet<BcField> fields = new HashSet<>();
-		Optional.ofNullable(widget.getOptions())
-				.map(JsonUtils::readTree)
-				.filter(JsonNode::isObject)
-				.map(options -> JsonUtils.readValue(WidgetOptions.class, options))
-				.map(WidgetOptions::getHierarchy)
-				.ifPresent(list -> list.forEach(item -> {
-					if (item.getAssocValueKey() != null) {
-						fields.add(new BcField(item.getBcName(), item.getAssocValueKey())
-								.putAttribute(Attribute.WIDGET_NAME, widget.getName()));
-					}
-					item.getFields().forEach(field -> {
-								fields.add(new BcField(item.getBcName(), field.getKey())
-										.putAttribute(Attribute.WIDGET_NAME, widget.getName()));
-								fields.addAll(linkFieldExtractor.extract(widget.getName(), item.getBcName(), field));
-							});
-						}
-				));
-		return fields;
+	public Set<BcField> extract(final WidgetDTO widget) {
+		final Set<BcField> widgetFields = new HashSet<>(listFieldExtractor.extract(widget));
+		widgetFields.add(new BcField(widget.getBcName(), BcField.FIELD_ASSOCIATE)
+				.putAttribute(Attribute.WIDGET_NAME, widget.getName())
+		);
+
+		// add default fields from the option tree
+		widgetFields.addAll(
+				linkFieldExtractor.extractDefaultFieldsLinkToFields(
+						widget,
+						Optional.ofNullable(listFieldExtractor.extractWidgetOptions(widget))
+								.map(WidgetOptions::getTree)
+								.orElse(null),
+						WidgetOptionsTree.class
+				)
+		);
+
+		return widgetFields;
 	}
 
 	@Override
 	public List<String> getSupportedTypes() {
 		List<String> result = new ArrayList<>();
-		result.add("HierarchyFields");
+		result.add("AssocTreePopup");
 		return result;
 	}
 

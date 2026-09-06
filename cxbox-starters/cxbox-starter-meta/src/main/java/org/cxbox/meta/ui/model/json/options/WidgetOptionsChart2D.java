@@ -1,5 +1,5 @@
 /*
- * © OOO "SI IKS LAB", 2022-2023
+ * © OOO "SI IKS LAB", 2022-2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-package org.cxbox.meta.ui.model.json;
+package org.cxbox.meta.ui.model.json.options;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.cxbox.meta.ui.model.json.field.FieldMeta;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.meta.ui.field.link.LinkToField;
 
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WidgetBcHierarchy {
+public class WidgetOptionsChart2D {
 
-	private String bcName;
+	@LinkToField
+	private String xValueFieldKey;
 
-	private String assocValueKey;
+	@LinkToField
+	private String yValueFieldKey;
 
-	private List<FieldMeta> fields;
+	@LinkToField
+	private String groupFieldKey;
 
+	@LinkToField
+	private String descriptionFieldKey;
 }
