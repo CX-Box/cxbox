@@ -205,4 +205,10 @@ public class UIProperties {
 	 */
 	private boolean browserNavigationWarnEnabled = false;
 
+	/**
+	 * Enables automatic filtering by parent ID when the DTO contains a parent ID field.
+	 * <p>
+	 * Enabled by default.
+	 */
+	private boolean autoFilterByParentId = true;
 }
