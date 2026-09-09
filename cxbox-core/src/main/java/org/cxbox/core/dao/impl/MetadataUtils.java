@@ -80,6 +80,8 @@ import org.cxbox.model.core.entity.BaseEntity;
 @UtilityClass
 public class MetadataUtils {
 
+	final String PARENT_ID = "parent_id";
+
 	public List<ClassifyDataParameter> mapSearchParamsToPOJO(Class dtoClazz, FilterParameters filterParameters,
 			List<ClassifyDataProvider> providers) {
 
@@ -114,7 +116,9 @@ public class MetadataUtils {
 							SearchParameter searchParam = Optional.ofNullable(dtoField.getDeclaredAnnotation(SearchParameter.class))
 									.orElseGet(() -> {
 										if (DataResponseDTO.ID.equals(dtoField.getName())) {
-											return getIdDefaultSearchParam();
+											return getDefaultSearchParam(DataResponseDTO.ID);
+										} else if (PARENT_ID.equals(dtoField.getName())) {
+											return getDefaultSearchParam(PARENT_ID);
 										} else {
 											throw new IllegalArgumentException(
 													errorMessage("error.missing_search_parameter_annotation", filterParam.getName())
@@ -141,7 +145,7 @@ public class MetadataUtils {
 		return result;
 	}
 
-	private static SearchParameter getIdDefaultSearchParam() {
+	private static SearchParameter getDefaultSearchParam(final String name) {
 		return new SearchParameter() {
 			@Override
 			public Class<? extends Annotation> annotationType() {
@@ -150,7 +154,7 @@ public class MetadataUtils {
 
 			@Override
 			public String name() {
-				return DataResponseDTO.ID;
+				return name;
 			}
 
 			@Override
