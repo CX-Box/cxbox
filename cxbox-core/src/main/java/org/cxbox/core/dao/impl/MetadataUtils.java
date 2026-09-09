@@ -116,7 +116,7 @@ public class MetadataUtils {
 							SearchParameter searchParam = Optional.ofNullable(dtoField.getDeclaredAnnotation(SearchParameter.class))
 									.orElseGet(() -> {
 										if (DataResponseDTO.ID.equals(dtoField.getName())) {
-											return getDefaultSearchParam(DataResponseDTO.ID);
+											return getIdDefaultSearchParam();
 										} else if (PARENT_ID.equals(dtoField.getName())) {
 											return getDefaultSearchParam(PARENT_ID);
 										} else {
@@ -144,6 +144,41 @@ public class MetadataUtils {
 		);
 		return result;
 	}
+
+	private static SearchParameter getIdDefaultSearchParam() {
+		return new SearchParameter() {
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return null;
+			}
+
+			@Override
+			public String name() {
+				return DataResponseDTO.ID;
+			}
+
+			@Override
+			public boolean strict() {
+				return false;
+			}
+
+			@Override
+			public boolean suppressProcess() {
+				return false;
+			}
+
+			@Override
+			public Class<? extends ClassifyDataProvider> multiFieldKey() {
+				return null;
+			}
+
+			@Override
+			public Class<? extends ClassifyDataProvider> provider() {
+				return LongValueProvider.class;
+			}
+		};
+	}
+
 
 	private static SearchParameter getDefaultSearchParam(final String name) {
 		return new SearchParameter() {
@@ -338,11 +373,11 @@ public class MetadataUtils {
 	 *       {@code predicateEqualsOneOf(...)} for handling including {@code @ElementCollection} fields.</li>
 	 * </ul>
 	 *
-	 * @param root     root entity in the JPA Criteria query
+	 * @param root root entity in the JPA Criteria query
 	 * @param criteria filtering parameters including field path and metadata
-	 * @param cb       criteria builder for predicate construction
-	 * @param value    list of values to match; strings or other types
-	 * @param field    Criteria API path for the target field
+	 * @param cb criteria builder for predicate construction
+	 * @param value list of values to match; strings or other types
+	 * @param field Criteria API path for the target field
 	 * @return a Predicate matching the provided values as described
 	 * @throws ClassCastException if {@code value} is not a {@link List}
 	 * @see #predicateEqualsOneOfCollection(Root, ClassifyDataParameter, CriteriaBuilder, List, Path)
@@ -383,15 +418,16 @@ public class MetadataUtils {
 	 * )
 	 * </pre>
 	 *
-	 * @param root    JPA query root
+	 * @param root JPA query root
 	 * @param criteria filter parameters (field, operator, value, provider)
-	 * @param cb      criteria builder
-	 * @param value   list of values to match
-	 * @param field   criteria field path (for direct property case)
+	 * @param cb criteria builder
+	 * @param value list of values to match
+	 * @param field criteria field path (for direct property case)
 	 * @return the constructed {@link Predicate}
 	 * @throws IllegalArgumentException if the field path is invalid
 	 */
-	private static Predicate predicateEqualsOneOfCollection(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
+	private static Predicate predicateEqualsOneOfCollection(Root<?> root, ClassifyDataParameter criteria,
+			CriteriaBuilder cb,
 			List<Object> value, Path field) {
 		String[] split = criteria.getField().split("\\.");
 		if (split.length < 2 || !isElementCollectionFieldFromPath(root, criteria.getField())) {
