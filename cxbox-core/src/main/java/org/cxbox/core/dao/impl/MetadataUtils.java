@@ -373,11 +373,11 @@ public class MetadataUtils {
 	 *       {@code predicateEqualsOneOf(...)} for handling including {@code @ElementCollection} fields.</li>
 	 * </ul>
 	 *
-	 * @param root root entity in the JPA Criteria query
+	 * @param root     root entity in the JPA Criteria query
 	 * @param criteria filtering parameters including field path and metadata
-	 * @param cb criteria builder for predicate construction
-	 * @param value list of values to match; strings or other types
-	 * @param field Criteria API path for the target field
+	 * @param cb       criteria builder for predicate construction
+	 * @param value    list of values to match; strings or other types
+	 * @param field    Criteria API path for the target field
 	 * @return a Predicate matching the provided values as described
 	 * @throws ClassCastException if {@code value} is not a {@link List}
 	 * @see #predicateEqualsOneOfCollection(Root, ClassifyDataParameter, CriteriaBuilder, List, Path)
@@ -418,16 +418,15 @@ public class MetadataUtils {
 	 * )
 	 * </pre>
 	 *
-	 * @param root JPA query root
+	 * @param root    JPA query root
 	 * @param criteria filter parameters (field, operator, value, provider)
-	 * @param cb criteria builder
-	 * @param value list of values to match
-	 * @param field criteria field path (for direct property case)
+	 * @param cb      criteria builder
+	 * @param value   list of values to match
+	 * @param field   criteria field path (for direct property case)
 	 * @return the constructed {@link Predicate}
 	 * @throws IllegalArgumentException if the field path is invalid
 	 */
-	private static Predicate predicateEqualsOneOfCollection(Root<?> root, ClassifyDataParameter criteria,
-			CriteriaBuilder cb,
+	private static Predicate predicateEqualsOneOfCollection(Root<?> root, ClassifyDataParameter criteria, CriteriaBuilder cb,
 			List<Object> value, Path field) {
 		String[] split = criteria.getField().split("\\.");
 		if (split.length < 2 || !isElementCollectionFieldFromPath(root, criteria.getField())) {
