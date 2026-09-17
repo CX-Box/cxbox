@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
@@ -190,7 +191,7 @@ public class FieldDTO {
 
 	public void addValue(final SimpleDictionary SimpleDictionary) {
 		if (SimpleDictionary != null && SimpleDictionary.isActive()) {
-			values.add(new DictValue(SimpleDictionary.getValue()));
+			values.add(new DictValue(SimpleDictionary.getValue(), SimpleDictionary.getMeta()));
 		}
 	}
 
@@ -238,11 +239,11 @@ public class FieldDTO {
 	@Deprecated(since = "4.0.0-M11", forRemoval = true)
 	public void setIconWithValue(String val, IconCode icon, boolean isFilterValue) {
 		Set<DictValue> dictValues = isFilterValue ? filterValues : values;
-		dictValues.add(new DictValue(val, icon.code));
+		dictValues.add(new DictValue(val, icon.code, null));
 	}
 
 	public void setIconWithValue(String val, Icon icon) {
-		allValues.add(new DictValue(val, icon.getIcon()));
+		allValues.add(new DictValue(val, icon.getIcon(), null));
 	}
 
 	public void clearAllValues() {
@@ -274,14 +275,22 @@ public class FieldDTO {
 
 		private final Map<String, String> options = new HashMap<>();
 
+		@Nullable
+		OptionsEnumDictionaryMetadataImpl meta;
+
 		private DictValue(String value) {
-			this(value, null);
+			this(value, null, null);
 		}
 
-		public DictValue(String value, String icon) {
+		private DictValue(String value, OptionsEnumDictionaryMetadataImpl meta) {
+			this(value, null, meta);
+		}
+
+		public DictValue(String value, String icon, OptionsEnumDictionaryMetadataImpl meta) {
 			this.value = value;
 			this.icon = icon;
 			this.hash = value != null ? value.hashCode() : 0;
+			this.meta = meta;
 		}
 
 		public void addOption(String key, String value) {
