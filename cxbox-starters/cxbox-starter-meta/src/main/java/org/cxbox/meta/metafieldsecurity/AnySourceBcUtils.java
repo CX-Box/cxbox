@@ -35,6 +35,7 @@ import org.cxbox.core.service.ResponsibilitiesService;
 import org.cxbox.core.util.session.SessionService;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
+import org.cxbox.meta.validation.MetaValidationService;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +47,10 @@ public class AnySourceBcUtils extends BcUtils {
 
 	public AnySourceBcUtils(InnerBcTypeAware innerBcTypeAware, MetaRepository metaRepository, WidgetUtils widgetUtils,
 			BcRegistry bcRegistry, DTOSecurityUtils dtoSecurityUtils, BcHierarchyAware bcHierarchyAware, ResponsibilitiesService responsibilitiesService,
-			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware, ViewFieldsCache viewFieldsCache) {
+			SessionService sessionService, Optional<List<IRequiredFieldsSupplier>> requiredFieldsSuppliersm, AnySourceBcTypeAware anySourceBcTypeAware, ViewFieldsCache viewFieldsCache,
+			MetaValidationService metaValidationService) {
 		super(innerBcTypeAware, metaRepository, widgetUtils, bcRegistry, dtoSecurityUtils, bcHierarchyAware, responsibilitiesService,
-				sessionService,  requiredFieldsSuppliersm, viewFieldsCache);
+				sessionService,  requiredFieldsSuppliersm, viewFieldsCache, metaValidationService);
 		this.anySourceBcTypeAware = anySourceBcTypeAware;
 	}
 

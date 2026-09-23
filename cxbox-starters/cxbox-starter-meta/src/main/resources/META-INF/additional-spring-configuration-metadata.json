@@ -1,0 +1,29 @@
+{
+  "properties": [
+    {
+      "name": "cxbox.meta.validation",
+      "type": "org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties$Validation",
+      "sourceType": "org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties",
+      "description": "Meta validation: MetaValidator beans check meta (*.screen.json, *.view.json, *.widget.json) and log found problems with warn level. Validation never breaks meta load or request. Checks run on startup and on meta refresh (all meta), and on row-meta request (widgets of requested bc on opened screen)."
+    }
+  ],
+  "hints": [
+    {
+      "name": "cxbox.meta.validation.include",
+      "values": [
+        {
+          "value": "*",
+          "description": "All meta validators."
+        }
+      ],
+      "providers": [
+        {
+          "name": "spring-bean-reference",
+          "parameters": {
+            "target": "org.cxbox.meta.validation.MetaValidator"
+          }
+        }
+      ]
+    }
+  ]
+}
