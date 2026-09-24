@@ -968,7 +968,7 @@ public class PlatformDrilldownFilterService {
 					+ "."
 					+ operation.getOperationName()
 					+ "="
-					+ rawValue;
+					+ URLEncoder.encode(rawValue, StandardCharsets.UTF_8);
 
 			return URLEncoder.encode(expression, StandardCharsets.UTF_8);
 		}
@@ -1012,7 +1012,7 @@ public class PlatformDrilldownFilterService {
 								: String.valueOf(val);
 						return URLEncoder.encode(repr, StandardCharsets.UTF_8);
 					})
-					.collect(Collectors.joining(","));
+					.collect(Collectors.joining("\\\",\\\""));
 
 			String expression = field.getName()
 					+ "."
