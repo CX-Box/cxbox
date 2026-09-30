@@ -23,17 +23,32 @@ import org.cxbox.api.data.dto.MassDTO;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.MassActionResultDTO;
 
+/**
+ * Handler of a mass action.
+ * <p>
+ * {@code ids} and {@code data.getMassIds_()} contain only the rows to process.
+ * Rows that the frontend could not process, for example a file that it could not sign,
+ * are added to the result automatically with the frontend message.
+ * To react to them, read {@code data.getMassErrors_()}.
+ */
 @FunctionalInterface
 public interface MassActionInvoker<T extends DataResponseDTO> {
 
 	MassActionResultDTO<T> massInvoke(@NonNull BusinessComponent bc, @NonNull T data, @NonNull Set<String> ids);
 
 	default ActionInvoker<T> toInvoker() {
-		return (bc, data) -> massInvoke(bc, data, data.getMassIds_().stream()
-				.map(MassDTO::getId)
-				.map(String::valueOf)
-				.collect(java.util.stream.Collectors.toSet())
-		);
+		return (bc, data) -> {
+			MassActionResultDTO<T> result = massInvoke(bc, data, data.getMassIds_().stream()
+					.map(MassDTO::getId)
+					.map(String::valueOf)
+					.collect(java.util.stream.Collectors.toSet())
+			);
+			// rows that failed on the frontend keep the frontend result, unless the invoker returned its own
+			if (result != null) {
+				result.getMassIds_().addAll(data.getMassErrors_());
+			}
+			return result;
+		};
 	}
 
 }

@@ -16,7 +16,14 @@
 
 package org.cxbox.api.data.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -34,6 +41,19 @@ public class MassDTO implements CheckedDto, Serializable {
 
 	private final String errorMessage;
 
+	/**
+	 * Values of the row that the frontend sends with the mass action, for example the files of a mass signing.
+	 * <p>
+	 * Platform keys are in {@link MassOptionType}. A project adds its own keys with an enum
+	 * that implements {@link MassOptionTypeSpecifier}. The core accepts any key and does not check it.
+	 * <p>
+	 * The action result has {@code options} only when a value was added with {@link #addOption}.
+	 */
+	@JsonProperty
+	@JsonSetter(nulls = Nulls.AS_EMPTY)
+	@JsonInclude(Include.NON_EMPTY)
+	private Map<String, String> options = new HashMap<>();
+
 	public static MassDTO success(@NonNull String id) {
 		return new MassDTO(id, true, null);
 	}
@@ -44,5 +64,22 @@ public class MassDTO implements CheckedDto, Serializable {
 
 	public static MassDTO fail(@NonNull String id, @NonNull String errorMessage) {
 		return new MassDTO(id, false, errorMessage);
+	}
+
+	/**
+	 * @return the value that the frontend sent for this row under the key, or {@code null} if there is none
+	 */
+	public String getOption(@NonNull MassOptionTypeSpecifier key) {
+		return options.get(key.getValue());
+	}
+
+	public MassDTO addOption(@NonNull MassOptionTypeSpecifier key, String value) {
+		options.put(key.getValue(), value);
+		return this;
+	}
+
+	public MassDTO deleteOption(@NonNull MassOptionTypeSpecifier key) {
+		options.remove(key.getValue());
+		return this;
 	}
 }
