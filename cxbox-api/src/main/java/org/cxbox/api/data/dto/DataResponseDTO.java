@@ -130,6 +130,38 @@ public abstract class DataResponseDTO implements CheckedDto, IDataContainer<Data
 		computedFields.add(fieldName);
 	}
 
+	/**
+	 * Rows of a mass action that the invoker must process.
+	 * <p>
+	 * Rows that the frontend could not process are not here, see {@link #getMassErrors_()}.
+	 */
+	public HashSet<MassDTO> getMassIds_() {
+		return filterMassIds(false);
+	}
+
+	/**
+	 * Rows of a mass action that the frontend could not process, for example a file that it could not sign.
+	 * <p>
+	 * The frontend sends such a row with its result: {@code success = false} and the reason in {@code errorMessage}.
+	 * The core adds these rows to the action result, so the invoker does not have to handle them.
+	 * Read them only to react, for example to write a log or to update the parent record.
+	 * To show another message for such a row, return your own {@link MassDTO} with its id.
+	 */
+	@JsonIgnore
+	public HashSet<MassDTO> getMassErrors_() {
+		return filterMassIds(true);
+	}
+
+	private HashSet<MassDTO> filterMassIds(boolean failedOnFrontend) {
+		HashSet<MassDTO> result = new HashSet<>();
+		if (massIds_ != null) {
+			massIds_.stream()
+					.filter(mass -> Boolean.FALSE.equals(mass.getSuccess()) == failedOnFrontend)
+					.forEach(result::add);
+		}
+		return result;
+	}
+
 	@Override
 	public void transformData(Function<DataResponseDTO, DataResponseDTO> function) {
 		function.apply(this);
