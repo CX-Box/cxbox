@@ -319,7 +319,10 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 			}
 		}
 		if (ActionScope.MASS.equals(action.getActionScope()) && record != null && data != null) {
-			record.setMassIds_(data.getMassIds_());
+			// rows that failed on the frontend are kept too: MassActionInvoker returns them as results
+			var massIds = data.getMassIds_();
+			massIds.addAll(data.getMassErrors_());
+			record.setMassIds_(massIds);
 		}
 		return action.invoke(bc, Optional.ofNullable(record).orElse((T)data));
 	}
