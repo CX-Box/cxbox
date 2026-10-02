@@ -599,6 +599,32 @@ public class PlatformDrilldownFilterService {
 	}
 
 	/**
+	 * Generates url encoded string a CONTAINS filter for a single string value.
+	 * <p>
+	 * <b>Note:</b> Use only for fields having {@code "type": "hint"} in *.widget.json and {@code String} type in DTO.
+	 * </p>
+	 * <p>
+	 * Example usage:
+	 * <pre>{@code
+	 * platformUrlParametersFilterService.hint(MyDTO_.hint, "searchText");
+	 * }</pre>
+	 * </p>
+	 * @param field DTO field (non-null)
+	 * @param value substring to match (nullable)
+	 * @return URL-encoded fragment or null if value is null
+	 */
+	public <D extends DataResponseDTO> String hint(@NonNull DtoField<? super D, String> field, @Nullable String value) {
+		if (value == null) {
+			return null;
+		}
+		return DrillDownFieldFilterFormerUtils.singleValue(
+				SearchOperation.CONTAINS,
+				field,
+				value
+		);
+	}
+
+	/**
 	 * Generates url encoded string a EQUALS_ONE_OF filter for a multiple enum value.
 	 * <p>
 	 * <b>Note:</b> Use only for fields having {@code "type": "radio"} in *.widget.json and {@code ? extends Enum<?>} type in DTO.

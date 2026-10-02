@@ -440,6 +440,28 @@ public class FB<D extends DataResponseDTO, S extends FB<D, S>> {
 	}
 
 	/**
+	 * Adds a filter for a hint field ("type": "hint").
+	 * <p>
+	 * <b>Note:</b> Use only for fields having {@code "type": "hint"} in *.widget.json and {@code String} type in DTO.
+	 * </p>
+	 * <p>
+	 * Example usage:
+	 * <pre>{@code
+	 * fb.hint(MyDTO_.hint, "searchText");
+	 * }</pre>
+	 * </p>
+	 * @param field DTO field
+	 * @param value substring to match (nullable)
+	 * @return this builder
+	 */
+	public S hint(@NonNull DtoField<? super D, String> field, @Nullable String value) {
+		if (value == null) {
+			return this.self();
+		}
+		return this.add(platformDrilldownFilterService.hint(field, value));
+	}
+
+	/**
 	 * Adds a filter for a radio field ("type": "radio").
 	 * <p>
 	 * <b>Note:</b> Use only for fields having {@code "type": "radio"} in *.widget.json and {@code ? extends Enum<?>} type in DTO.
