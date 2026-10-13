@@ -46,6 +46,7 @@ import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.ui.field.IRequiredFieldsSupplier;
 import org.cxbox.meta.ui.model.BcField;
+import org.cxbox.meta.validation.MetaValidationService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 
 	private final ViewFieldsCache viewFieldsCache;
 
+	private final MetaValidationService metaValidationService;
 
 	/**
 	 * Returns a set of dto fields ({@link DtoField}) for the given business component
@@ -99,8 +101,14 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
 	public Set<String> getBcFieldsForCurrentScreen(final BcIdentifier bc) {
+		final Collection<String> currentScreenViews = getCurrentScreenViews();
+		metaValidationService.validateOnRequest(bcHierarchyAware.getScreenName(), currentScreenViews, bc);
+		return getBcFields(bc, currentScreenViews);
+	}
+
+	private Set<String> getBcFields(final BcIdentifier bc, final Collection<String> views) {
 		final Set<String> viewFields = new HashSet<>();
-		for (final String viewName : getCurrentScreenViews()) {
+		for (final String viewName : views) {
 			final Set<BcField> fields = this.viewFieldsCache.getDtoFieldsAvailableOnCurrentView(viewName)
 					.getOrDefault(bc.getName(), Collections.emptySet());
 			for (final BcField field : fields) {
@@ -125,7 +133,7 @@ public class BcUtils implements ExtendedDtoFieldLevelSecurityService {
 	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER, cacheNames = {
 			CacheConfig.REQUEST_CACHE}, key = "{#root.methodName, #bc.name}")
 	public <D extends DataResponseDTO> Set<DtoField<D, ?>> getDtoFieldsAvailableOnCurrentScreen(final BcIdentifier bc) {
-		final Set<String> viewFields = getBcFieldsForCurrentScreen(bc);
+		final Set<String> viewFields = getBcFields(bc, getCurrentScreenViews());
 		return getDtoFields(bc).stream()
 				.filter(field -> viewFields.contains(field.getName()))
 				.map(field -> (DtoField<D, ?>) field)

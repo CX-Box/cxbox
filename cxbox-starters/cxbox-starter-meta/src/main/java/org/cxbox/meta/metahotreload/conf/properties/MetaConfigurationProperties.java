@@ -19,8 +19,11 @@ package org.cxbox.meta.metahotreload.conf.properties;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.cxbox.meta.validation.MetaValidationService;
+import org.cxbox.meta.validation.MetaValidator;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -141,5 +144,82 @@ public class MetaConfigurationProperties {
 
 	@Positive(message  =  "Number of rows on bc by default (can be override with BC_PROPERTIES.csv)")
 	private Long bcDefaultPageLimit = 5L;
+
+	/**
+	 * Meta validation: {@link MetaValidator} beans check meta ({@code *.screen.json}, {@code *.view.json},
+	 * {@code *.widget.json}) and log found problems with warn level. Validation never breaks meta load or request.
+	 * <p>Checks run:
+	 * <ul>
+	 *   <li>on startup and on meta refresh - all meta</li>
+	 *   <li>on row-meta request (once per screen opening) - widgets of requested bc on opened screen</li>
+	 * </ul>
+	 *
+	 * <p><b>Example:</b>
+	 * <pre>
+	 * cxbox:
+	 *   meta:
+	 *     validation:
+	 *       enabled: true
+	 *       include:
+	 *         - widgetFieldExtractorValidator
+	 * </pre>
+	 * Framework validators: {@link org.cxbox.meta.validation.WidgetFieldExtractorValidator}.
+	 * Own project validator: register Spring bean implementing {@link MetaValidator}.
+	 */
+	private Validation validation = new Validation();
+
+	@Getter
+	@Setter
+	public static class Validation {
+
+		/**
+		 * Turns meta validation on or off for all validators at once, {@link #include} is not changed.
+		 *
+		 * <p><b>{@code false} (default):</b>
+		 * <ul>
+		 *   <li>no validators run, overhead is one check per row-meta request</li>
+		 * </ul>
+		 *
+		 * <p><b>{@code true}:</b>
+		 * <ul>
+		 *   <li>validators from {@link #include} run and log found problems with warn level</li>
+		 * </ul>
+		 * Recommendations:
+		 * Use {@code true} during local development to find meta errors early.
+		 * Use {@code false} on production: meta is not changed there, and messages of each screen opening only fill log.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * Validators to run when {@link #enabled} is {@code true}: bean names of {@link MetaValidator}.
+		 * Bean name by default is class name starting with lowercase letter
+		 * ({@code WidgetFieldExtractorValidator} - {@code widgetFieldExtractorValidator}),
+		 * or name set by {@code @Component("name")}.
+		 *
+		 * <p><b>{@value MetaValidationService#ALL} (default) or empty:</b>
+		 * <ul>
+		 *   <li>all validators run, including project ones</li>
+		 * </ul>
+		 *
+		 * <p><b>List of bean names:</b>
+		 * <ul>
+		 *   <li>only listed validators run</li>
+		 *   <li>unknown name is logged with warn level on startup together with available names</li>
+		 * </ul>
+		 *
+		 * <p><b>Example - framework validator and project validator:</b>
+		 * <pre>
+		 * cxbox:
+		 *   meta:
+		 *     validation:
+		 *       enabled: true
+		 *       include:
+		 *         - widgetFieldExtractorValidator
+		 *         - clientMetaValidator
+		 * </pre>
+		 */
+		private List<String> include = List.of("*");
+
+	}
 
 }
