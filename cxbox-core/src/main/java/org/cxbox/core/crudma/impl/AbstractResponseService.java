@@ -28,7 +28,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -40,6 +42,7 @@ import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.api.util.Invoker;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.controller.param.QueryParameters;
@@ -57,6 +60,7 @@ import org.cxbox.core.dto.rowmeta.PostAction;
 import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.exception.EntityNotFoundException;
 import org.cxbox.core.exception.UnconfirmedException;
+import org.cxbox.core.exception.VersionMismatchException;
 import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.BcSpecificationBuilder;
 import org.cxbox.core.service.DTOMapper;
@@ -294,10 +298,27 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 
 	@Override
 	public ActionResultDTO<T> invokeAction(BusinessComponent bc, String actionName, DataResponseDTO data) {
+		return prepareAction(bc, actionName, data, false).invoke();
+	}
+
+	@Override
+	public Invoker<ActionResultDTO<T>, RuntimeException> prepareActionWithoutTransaction(BusinessComponent bc,
+			String actionName, DataResponseDTO data) {
+		return prepareAction(bc, actionName, data, true);
+	}
+
+	private Invoker<ActionResultDTO<T>, RuntimeException> prepareAction(BusinessComponent bc, String actionName,
+			DataResponseDTO data, boolean withoutTransaction) {
 		ActionDescription<T> action = getActions().getAction(actionName);
-		if (action == null || !action.isAvailable(bc)) {
+		if (action == null || !action.isAvailable(bc)
+				|| (withoutTransaction && !action.isWithoutTransaction())) {
 			throw new BusinessException().addPopup(
 					errorMessage("error.action_unavailable", actionName)
+			);
+		}
+		if (!withoutTransaction && action.isWithoutTransaction()) {
+			throw new BusinessException().addPopup(
+					errorMessage("error.action_without_transaction_wrong_endpoint", action.getText())
 			);
 		}
 		preInvoke(bc, action.withPreActionEvents(bc), data, null);
@@ -306,7 +327,16 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 			// Data is changed and we need to apply these changes
 			// Lock must be set here
 			if (action.isAutoSaveBefore() && nonNull(data) && data.hasChangedFields()) {
+				T current = null;
+				if (withoutTransaction) {
+					current = doGetOne(bc);
+					checkVersion(current, data);
+				}
 				record = updateEntity(bc, data).getRecord();
+				if (withoutTransaction && record != null) {
+					record.setVstamp(current.getVstamp());
+					record.setChangedFields(new TreeSet<>(data.getChangedFields()));
+				}
 			} else {
 				// No changes comes,
 				// but action requires lock
@@ -316,6 +346,9 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 				// WARNING! Don't touch cache here!
 				// getOne() method may not be invoked
 				record = doGetOne(bc);
+				if (withoutTransaction) {
+					checkVersion(record, data);
+				}
 			}
 		}
 		if (ActionScope.MASS.equals(action.getActionScope()) && record != null && data != null) {
@@ -324,9 +357,17 @@ public abstract class AbstractResponseService<T extends DataResponseDTO, E exten
 			massIds.addAll(data.getMassErrors_());
 			record.setMassIds_(massIds);
 		}
-		return action.invoke(bc, Optional.ofNullable(record).orElse((T)data));
+		T actionData = Optional.ofNullable(record).orElse((T) data);
+		return () -> action.invoke(bc, actionData);
 	}
 
+
+	private void checkVersion(T record, DataResponseDTO data) {
+		if (nonNull(data) && !Objects.equals(data.getVstamp(), -1L)
+				&& !Objects.equals(record.getVstamp(), data.getVstamp())) {
+			throw new VersionMismatchException();
+		}
+	}
 
 	private void preInvoke(BusinessComponent bc, List<PreActionEvent> preActionEvents, DataResponseDTO data, AssociateDTO associateDTO) {
 		List<String> preInvokeParameters = bc.getPreInvokeParameters();

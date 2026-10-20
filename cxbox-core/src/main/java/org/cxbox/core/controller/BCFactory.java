@@ -39,7 +39,8 @@ public class BCFactory {
 	private final APIProperties apiProperties;
 
 	private final Set<String> operations = Set.of(
-			"data", "count", "custom-action", "associate", "row-meta-new", "row-meta-empty", "row-meta"
+			"data", "count", "custom-action", "custom-action-without-tx", "associate", "row-meta-new", "row-meta-empty",
+			"row-meta"
 	);
 
 	private final BcRegistry bcRegistry;

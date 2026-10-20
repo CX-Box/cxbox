@@ -16,6 +16,7 @@
 
 package org.cxbox.core.crudma.ext.impl;
 
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 import static org.cxbox.core.crudma.CrudmaActionType.*;
 import static org.cxbox.core.dto.DrillDownType.INNER;
 import static org.cxbox.core.dto.rowmeta.PostAction.BasePostActionType.DRILL_DOWN;
@@ -30,6 +31,7 @@ import org.cxbox.api.data.dto.DataResponseDTO_;
 import org.cxbox.api.data.dto.rowmeta.ActionDTO;
 import org.cxbox.api.data.dto.rowmeta.FieldDTO;
 import org.cxbox.api.util.Invoker;
+import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.controller.param.QueryParameters;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
 import org.cxbox.core.crudma.CrudmaActionType;
@@ -46,6 +48,7 @@ import org.cxbox.core.external.core.ParentDtoFirstLevelCache;
 import org.cxbox.core.service.AnySourceResponseFactory;
 import org.cxbox.core.service.AnySourceResponseService;
 import org.cxbox.core.service.action.ActionAvailableChecker;
+import org.cxbox.core.service.action.ActionDescription;
 import org.cxbox.core.service.action.ActionDescriptionBuilder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -97,6 +100,7 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 				BusinessComponent bc = crudmaAction.getBc();
 				CrudmaActionType action = crudmaAction.getActionType();
 				if (Objects.equals(crudmaAction.getActionType(), CrudmaActionType.INVOKE) &&
+						!crudmaAction.isWithoutTransaction() &&
 						Objects.equals(ActionType.CANCEL_CREATE.getType(), crudmaAction.getName())) {
 					bcStateAware.clear(bc);
 					BcDescription description = bc.getDescription();
@@ -104,6 +108,14 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 						return (T) getResponseService(bc).onCancel(bc);
 					}
 					return (T) new ActionResultDTO().setAction(PostAction.postDelete());
+				}
+				if (crudmaAction.isWithoutTransaction() && !bcStateAware.isPersisted(bc)) {
+					throw new BusinessException().addPopup(
+							errorMessage(
+									"error.action_unavailable_for_unsaved_record",
+									getActionText(bc, crudmaAction.getName())
+							)
+					);
 				}
 				restoreBcState(bc, action, readOnly);
 				T invokeResult = invoker.invoke();
@@ -212,6 +224,13 @@ public class AnySourceBcStateCrudmaGatewayInvokeExtensionProvider implements Cru
 
 	private AnySourceResponseService<?, ?> getResponseService(BusinessComponent bc) {
 		return respFactory.getService(bc.getDescription());
+	}
+
+	private String getActionText(BusinessComponent bc, String actionName) {
+		return Optional.ofNullable(getResponseService(bc).getActions())
+				.map(actions -> actions.getAction(actionName))
+				.map(ActionDescription::getText)
+				.orElse(actionName);
 	}
 
 	private void addActionCancel(BusinessComponent bc, final ActionsDTO actions) {

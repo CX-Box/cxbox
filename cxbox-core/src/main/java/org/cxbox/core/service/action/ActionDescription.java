@@ -28,8 +28,10 @@ import org.cxbox.core.dto.rowmeta.ActionType;
 import org.cxbox.core.dto.rowmeta.PreAction;
 import java.util.List;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @RequiredArgsConstructor
 public final class ActionDescription<T extends DataResponseDTO> {
@@ -64,6 +66,10 @@ public final class ActionDescription<T extends DataResponseDTO> {
 
 	@Getter
 	private final boolean autoSaveBefore;
+
+	@Getter
+	@Setter(AccessLevel.PACKAGE)
+	private boolean withoutTransaction;
 
 	public static <T extends DataResponseDTO> ActionDescriptionBuilder<T> builder() {
 		return new ActionDescriptionBuilder<>();
@@ -112,6 +118,7 @@ public final class ActionDescription<T extends DataResponseDTO> {
 						.build() : null)
 				.scope(this.getActionScope().toString().toLowerCase())
 				.autoSaveBefore(this.isAutoSaveBefore())
+				.withoutTransaction(this.isWithoutTransaction())
 				.build();
 	}
 

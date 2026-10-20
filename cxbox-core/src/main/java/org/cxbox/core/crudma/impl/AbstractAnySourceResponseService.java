@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -36,6 +37,7 @@ import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.api.util.Invoker;
 import org.cxbox.constgen.DtoField;
 import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.config.properties.APIProperties;
@@ -262,10 +264,27 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 
 	@Override
 	public ActionResultDTO<T> invokeAction(BusinessComponent bc, String actionName, DataResponseDTO data) {
+		return prepareAction(bc, actionName, data, false).invoke();
+	}
+
+	@Override
+	public Invoker<ActionResultDTO<T>, RuntimeException> prepareActionWithoutTransaction(BusinessComponent bc,
+			String actionName, DataResponseDTO data) {
+		return prepareAction(bc, actionName, data, true);
+	}
+
+	private Invoker<ActionResultDTO<T>, RuntimeException> prepareAction(BusinessComponent bc, String actionName,
+			DataResponseDTO data, boolean withoutTransaction) {
 		ActionDescription<T> action = getActions().getAction(actionName);
-		if (action == null || !action.isAvailable(bc)) {
+		if (action == null || !action.isAvailable(bc)
+				|| (withoutTransaction && !action.isWithoutTransaction())) {
 			throw new BusinessException().addPopup(
 					errorMessage("error.action_unavailable", actionName)
+			);
+		}
+		if (!withoutTransaction && action.isWithoutTransaction()) {
+			throw new BusinessException().addPopup(
+					errorMessage("error.action_without_transaction_wrong_endpoint", action.getText())
 			);
 		}
 		preInvoke(bc, action.withPreActionEvents(bc), data, null);
@@ -275,6 +294,9 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 			// Lock must be set here
 			if (action.isAutoSaveBefore() && nonNull(data) && data.hasChangedFields()) {
 				record = updateEntity(bc, data).getRecord();
+				if (withoutTransaction && record != null) {
+					record.setChangedFields(new TreeSet<>(data.getChangedFields()));
+				}
 			} else {
 				// No changes comes,
 				// but action requires lock
@@ -285,6 +307,9 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 				// getOne() method may not be invoked
 				record = doGetOne(bc);
 			}
+			if (withoutTransaction && record != null && data != null) {
+				record.setVstamp(data.getVstamp());
+			}
 		}
 		if (ActionScope.MASS.equals(action.getActionScope()) && record != null && data != null) {
 			// rows that failed on the frontend are kept too: MassActionInvoker returns them as results
@@ -292,7 +317,8 @@ public abstract class AbstractAnySourceResponseService<T extends DataResponseDTO
 			massIds.addAll(data.getMassErrors_());
 			record.setMassIds_(massIds);
 		}
-		return action.invoke(bc, Optional.ofNullable(record).orElse((T) data));
+		T actionData = Optional.ofNullable(record).orElse((T) data);
+		return () -> action.invoke(bc, actionData);
 	}
 
 

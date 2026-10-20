@@ -130,6 +130,13 @@ public class CrudmaGateway {
 		BusinessComponent bc = crudmaAction.getBc();
 		boolean readOnly = isReadOnly(crudmaAction);
 		String actionName = crudmaAction.getName();
+		if (crudmaAction.isWithoutTransaction()) {
+			return invoke(
+					crudmaAction,
+					() -> getCrudmaService(bc).prepareActionWithoutTransaction(bc, actionName, data).invoke(),
+					readOnly
+			);
+		}
 		return invoke(crudmaAction, () -> getCrudmaService(bc).invokeAction(bc, actionName, data), readOnly);
 	}
 

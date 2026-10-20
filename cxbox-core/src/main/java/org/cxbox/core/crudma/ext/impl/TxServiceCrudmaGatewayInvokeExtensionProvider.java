@@ -16,14 +16,19 @@
 
 package org.cxbox.core.crudma.ext.impl;
 
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+
+import lombok.RequiredArgsConstructor;
 import org.cxbox.api.service.tx.TransactionService;
 import org.cxbox.api.util.Invoker;
 import org.cxbox.core.crudma.CrudmaActionHolder.CrudmaAction;
 import org.cxbox.core.crudma.ext.CrudmaGatewayInvokeExtensionProvider;
-import lombok.RequiredArgsConstructor;
+import org.cxbox.core.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
+import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Component
 @RequiredArgsConstructor
@@ -36,6 +41,13 @@ public class TxServiceCrudmaGatewayInvokeExtensionProvider implements CrudmaGate
 	@Override
 	public <T> Invoker<T, RuntimeException> extendInvoker(CrudmaAction crudmaAction, Invoker<T, RuntimeException> invoker,
 			boolean readOnly) {
+		if (crudmaAction.isWithoutTransaction()) {
+			refuseWhenResourceBound(crudmaAction);
+			return () -> {
+				refuseWhenResourceBound(crudmaAction);
+				return invoker.invoke();
+			};
+		}
 		return () -> {
 			if (readOnly) {
 				log.debug("Open read-only transaction for crudmaAction: " + crudmaAction);
@@ -44,6 +56,25 @@ public class TxServiceCrudmaGatewayInvokeExtensionProvider implements CrudmaGate
 			log.debug("Open read-write transaction for crudmaAction: " + crudmaAction);
 			return txService.invokeInNewTx(invoker);
 		};
+	}
+
+	private void refuseWhenResourceBound(CrudmaAction crudmaAction) {
+		if (isTransactionResourceBound()) {
+			log.warn(
+					"Action {} is refused: a transaction or an entity manager is already bound to the thread",
+					crudmaAction.getName()
+			);
+			throw new BusinessException().addPopup(
+					errorMessage("error.action_without_transaction_resource_bound", crudmaAction.getName())
+			);
+		}
+	}
+
+	private static boolean isTransactionResourceBound() {
+		return TransactionSynchronizationManager.isActualTransactionActive()
+				|| TransactionSynchronizationManager.isSynchronizationActive()
+				|| TransactionSynchronizationManager.getResourceMap().values().stream()
+				.anyMatch(EntityManagerHolder.class::isInstance);
 	}
 
 }

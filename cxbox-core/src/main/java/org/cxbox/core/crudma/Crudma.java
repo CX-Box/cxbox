@@ -16,10 +16,14 @@
 
 package org.cxbox.core.crudma;
 
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
+import org.cxbox.api.util.Invoker;
+import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
@@ -93,6 +97,11 @@ public interface Crudma {
 	 * @return {@link ActionResultDTO} class with DataResponseDTO and postactions
 	 */
 	ActionResultDTO invokeAction(BusinessComponent bc, String actionName, Map<String, Object> data);
+
+	default Invoker<ActionResultDTO, RuntimeException> prepareActionWithoutTransaction(BusinessComponent bc,
+			String actionName, Map<String, Object> data) {
+		throw new BusinessException().addPopup(errorMessage("error.action_unavailable", actionName));
+	}
 
 	/**
 	 * Creates links between entities

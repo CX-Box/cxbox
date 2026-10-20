@@ -70,6 +70,10 @@ public class ActionDTO {
 	private boolean autoSaveBefore;
 
 	@Getter
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+	private boolean withoutTransaction;
+
+	@Getter
 	@JsonIgnore
 	private boolean available;
 
@@ -97,6 +101,13 @@ public class ActionDTO {
 		this.actions = actions;
 		this.icon = icon;
 		this.showOnlyIcon = showOnlyIcon;
+	}
+
+	public ActionDTO(String type, String text, Integer maxGroupVisualButtonsCount, List<ActionDTO> actions,
+			PreActionDTO preActionDTO, String icon, Map<String, String> customParameters, boolean showOnlyIcon,
+			String scope, boolean autoSaveBefore, boolean available) {
+		this(type, text, maxGroupVisualButtonsCount, actions, preActionDTO, icon, customParameters, showOnlyIcon,
+				scope, autoSaveBefore, false, available);
 	}
 
 }
