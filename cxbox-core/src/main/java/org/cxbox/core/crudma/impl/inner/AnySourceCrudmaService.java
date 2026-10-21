@@ -29,6 +29,8 @@ import org.cxbox.api.data.dto.DataResponseDTO;
 import org.cxbox.api.data.dto.DataResponseDTO.ChangedNowParam;
 import org.cxbox.api.data.dto.rowmeta.PreviewResult;
 import org.cxbox.api.exception.ServerException;
+import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.api.util.Invoker;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.crudma.bc.impl.AnySourceBcDescription;
 import org.cxbox.core.crudma.bc.impl.BcDescription;
@@ -63,6 +65,9 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 
 	@Autowired
 	private ChangedNowValidationService changedNowValidationService;
+
+	@Autowired
+	private TransactionService txService;
 
 	@Override
 	public CreateResult create(BusinessComponent bc) {
@@ -137,6 +142,19 @@ public class AnySourceCrudmaService extends AbstractCrudmaService {
 		AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
 		DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
 		return responseService.invokeAction(bc, actionName, requestDTO);
+	}
+
+	@Override
+	public Invoker<ActionResultDTO, RuntimeException> prepareActionWithoutTransaction(BusinessComponent bc,
+			String actionName, Map<String, Object> data) {
+		return txService.invokeInNewRollbackOnlyTx(() -> {
+			final AnySourceBcDescription bcDescription = bc.getDescription();
+			AnySourceResponseService<?, ?> responseService = respFactory.getService(bcDescription);
+			DataResponseDTO requestDTO = respFactory.getDTOFromMap(data, respFactory.getDTOFromService(bcDescription), bc);
+			Invoker<ActionResultDTO, RuntimeException> action = responseService
+					.prepareActionWithoutTransaction(bc, actionName, requestDTO)::invoke;
+			return action;
+		});
 	}
 
 	@Override

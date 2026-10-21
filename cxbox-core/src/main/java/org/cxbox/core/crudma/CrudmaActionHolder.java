@@ -36,7 +36,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 @RequestScope
 public class CrudmaActionHolder implements PlatformRequest {
 
-	private CrudmaAction crudmaAction;
+	private SimpleCrudmaAction crudmaAction;
 
 	public static CrudmaActionType getActionType() {
 		return Optional.ofNullable(getCrudmaAction())
@@ -102,6 +102,11 @@ public class CrudmaActionHolder implements PlatformRequest {
 		return this;
 	}
 
+	public CrudmaActionHolder setWithoutTransaction(boolean withoutTransaction) {
+		Objects.requireNonNull(crudmaAction).setWithoutTransaction(withoutTransaction);
+		return this;
+	}
+
 	public interface CrudmaAction {
 
 		String toString();
@@ -123,6 +128,10 @@ public class CrudmaActionHolder implements PlatformRequest {
 		CrudmaActionHolder.CrudmaAction setBc(org.cxbox.core.crudma.bc.BusinessComponent bc);
 
 		CrudmaActionHolder.CrudmaAction setOriginalActionType(String originalActionType);
+
+		default boolean isWithoutTransaction() {
+			return false;
+		}
 
 	}
 
@@ -153,6 +162,11 @@ public class CrudmaActionHolder implements PlatformRequest {
 		@Getter
 		@Setter
 		private String originalActionType;
+
+		@Getter
+		@Setter
+		@ToString.Exclude
+		private boolean withoutTransaction;
 
 	}
 

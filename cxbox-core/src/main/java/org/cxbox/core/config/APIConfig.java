@@ -21,24 +21,29 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.core.config.properties.APIProperties;
+import org.cxbox.core.controller.UniversalCustomActionWithoutTxController;
 import org.cxbox.core.controller.param.resolvers.LocaleParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.PageParameterArgumentResolver;
 import org.cxbox.core.controller.param.resolvers.QueryParametersResolver;
 import org.cxbox.core.controller.param.resolvers.TimeZoneParameterArgumentResolver;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBooleanProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.ResourceRegionHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration//for better springboot and cibseven (camunda replacer) compatibility, we do not use @EnableWebMvc now
@@ -77,6 +82,35 @@ public class APIConfig implements WebMvcConfigurer {
 		return resolver;
 	}
 
+	/**
+	 * Replaces the open entity manager in view interceptor of Spring Boot with one that skips
+	 * the {@code custom-action-without-tx} endpoint, so an action without transaction holds no connection
+	 * between its own transactions. With an interceptor or filter of the application the endpoint refuses it.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBooleanProperty(name = "spring.jpa.open-in-view", matchIfMissing = true)
+	public static class OpenEntityManagerInViewConfig {
 
+		@Bean
+		public OpenEntityManagerInViewInterceptor cxboxOpenEntityManagerInViewInterceptor() {
+			return new OpenEntityManagerInViewInterceptor();
+		}
+
+		@Bean
+		public WebMvcConfigurer cxboxOpenEntityManagerInViewInterceptorConfigurer(
+				OpenEntityManagerInViewInterceptor cxboxOpenEntityManagerInViewInterceptor, APIProperties apiProperties) {
+			return new WebMvcConfigurer() {
+
+				@Override
+				public void addInterceptors(InterceptorRegistry registry) {
+					registry.addWebRequestInterceptor(cxboxOpenEntityManagerInViewInterceptor).excludePathPatterns(
+							apiProperties.getPath() + "/" + UniversalCustomActionWithoutTxController.OPERATION + "/**"
+					).order(Ordered.LOWEST_PRECEDENCE);
+				}
+
+			};
+		}
+
+	}
 
 }

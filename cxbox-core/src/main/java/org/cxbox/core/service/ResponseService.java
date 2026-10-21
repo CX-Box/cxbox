@@ -16,10 +16,14 @@
 
 package org.cxbox.core.service;
 
+import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
+
 import java.util.List;
 import org.cxbox.api.data.ResultPage;
 import org.cxbox.api.data.dto.AssociateDTO;
 import org.cxbox.api.data.dto.DataResponseDTO;
+import org.cxbox.api.util.Invoker;
+import org.cxbox.core.exception.BusinessException;
 import org.cxbox.core.crudma.CrudmaActionType;
 import org.cxbox.core.crudma.bc.BusinessComponent;
 import org.cxbox.core.dto.rowmeta.ActionResultDTO;
@@ -109,6 +113,11 @@ public interface ResponseService<T extends DataResponseDTO, E extends BaseEntity
 	 * @return {@link ActionResultDTO} class with DataResponseDTO and postactions
 	 */
 	ActionResultDTO<T> invokeAction(BusinessComponent bc, String actionName, DataResponseDTO data);
+
+	default Invoker<ActionResultDTO<T>, RuntimeException> prepareActionWithoutTransaction(BusinessComponent bc,
+			String actionName, DataResponseDTO data) {
+		throw new BusinessException().addPopup(errorMessage("error.action_unavailable", actionName));
+	}
 
 	/**
 	 * Сreates links between entities

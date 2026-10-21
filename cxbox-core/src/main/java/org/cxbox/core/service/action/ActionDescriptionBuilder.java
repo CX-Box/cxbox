@@ -35,6 +35,10 @@ import org.cxbox.core.dto.rowmeta.PreAction;
 @NoArgsConstructor
 public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 
+	private static final String ACTION_ROLE = "actionRole";
+
+	private static final String FILE_UPLOAD_ROLE = "file-upload";
+
 	private String key;
 
 	private String text;
@@ -64,6 +68,8 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 	private Boolean updateRequired;
 
 	private boolean autoSaveBefore = true;
+
+	private boolean withoutTransaction;
 
 	private static <T extends DataResponseDTO> ActionInvoker<T> withoutUpdate(ActionInvoker<T> wrapped) {
 
@@ -173,6 +179,19 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 		return this;
 	}
 
+	/**
+	 * The action runs without a transaction through the {@code custom-action-without-tx} endpoint,
+	 * the usual {@code custom-action} refuses it; only a mass action so far.
+	 * The checks, pre-invoke events, auto save and record loading run in a transaction that is rolled back:
+	 * the invoker gets the changed record unsaved and saves what it needs in its own transactions.
+	 * Turns the record lock off ({@link #updateRequired(Boolean)} after this method turns it on again).
+	 */
+	public ActionDescriptionBuilder<T> withoutTransaction() {
+		this.withoutTransaction = true;
+		this.updateRequired = false;
+		return this;
+	}
+
 	public ActionDescriptionBuilder<T> withoutIcon() {
 		this.iconCode = WITHOUT_ICON;
 		this.showOnlyIcon = false;
@@ -223,15 +242,29 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 	}
 
 	public ActionDescription<T> build(Boolean updateRequired) {
+		if (withoutTransaction && isStandardActionType(key)) {
+			throw new IllegalStateException("Standard action " + key + " cannot be marked to run without transaction");
+		}
+		if (withoutTransaction && !ActionScope.MASS.equals(actionScope)) {
+			throw new IllegalStateException(
+					"Action " + key + " cannot be marked to run without transaction: only mass actions are supported"
+			);
+		}
+		String actionRole = customParameter == null ? null : customParameter.get(ACTION_ROLE);
+		if (withoutTransaction && (isStandardActionType(actionRole) || FILE_UPLOAD_ROLE.equals(actionRole))) {
+			throw new IllegalStateException(
+					"Action " + key + " with " + ACTION_ROLE + " " + actionRole + " cannot be marked to run without transaction"
+			);
+		}
 		ActionInvoker<T> invoker;
 		if (actionInvoker == null) {
 			invoker = ActionInvoker.UNSUPPORTED_OPERATION;
-		} else if (updateRequired == null) {
+		} else if (updateRequired == null && !withoutTransaction) {
 			invoker = actionInvoker;
 		} else {
-			invoker = updateRequired ? withUpdate(actionInvoker) : withoutUpdate(actionInvoker);
+			invoker = Boolean.TRUE.equals(updateRequired) ? withUpdate(actionInvoker) : withoutUpdate(actionInvoker);
 		}
-		return new ActionDescription<>(
+		ActionDescription<T> actionDescription = new ActionDescription<>(
 				key,
 				text,
 				customParameter,
@@ -248,10 +281,16 @@ public class ActionDescriptionBuilder<T extends DataResponseDTO> {
 				actionScope,
 				autoSaveBefore
 		);
+		actionDescription.setWithoutTransaction(withoutTransaction);
+		return actionDescription;
 	}
 
 	public ActionDescription<T> build() {
 		return build(updateRequired);
+	}
+
+	private static boolean isStandardActionType(String type) {
+		return Arrays.stream(ActionType.values()).anyMatch(actionType -> actionType.getType().equals(type));
 	}
 
 }
