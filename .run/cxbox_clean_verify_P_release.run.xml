@@ -29,7 +29,7 @@
               <option value="clean" />
               <option value="verify" />
               <option value="-P" />
-              <option value="release" />
+              <option value="release,cxbox-release" />
             </list>
           </option>
           <option name="pomFileName" />
