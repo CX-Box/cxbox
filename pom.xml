@@ -192,6 +192,7 @@
           <version>${maven-release-plugin.version}</version>
           <configuration>
             <autoVersionSubmodules>true</autoVersionSubmodules>
+            <releaseProfiles>release,cxbox-release</releaseProfiles>
           </configuration>
         </plugin>
         <plugin>

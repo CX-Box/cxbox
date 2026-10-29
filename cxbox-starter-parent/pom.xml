@@ -75,6 +75,9 @@
   <properties>
     <cxbox.version>5.0.3-SNAPSHOT</cxbox.version>
     <spring-boot.version>4.0.7</spring-boot.version>
+    <gpg.key>0B8F9057DA81FB685DE8A12033EEDECAAC1E9F13</gpg.key>
+    <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+    <nexus-staging-maven-plugin.version>1.6.14</nexus-staging-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -88,5 +91,46 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <!-- parent is spring-boot-starter-parent, so the release profile of the root cxbox pom is not inherited.
+       Unique id: a "release" profile here would be activated by -P release in projects that inherit this pom.
+       Enabled on release:perform via releaseProfiles of maven-release-plugin in the root pom -->
+  <profiles>
+    <profile>
+      <id>cxbox-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven-gpg-plugin.version}</version>
+            <configuration>
+              <keyname>${gpg.key}</keyname>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus-staging-maven-plugin.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>central-portal</serverId>
+              <nexusUrl>https://ossrh-staging-api.central.sonatype.com</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
