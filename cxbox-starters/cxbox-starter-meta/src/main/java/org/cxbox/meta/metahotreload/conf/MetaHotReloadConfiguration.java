@@ -27,6 +27,7 @@ import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.metahotreload.service.MetaHotReloadServiceImpl;
 import org.cxbox.meta.metahotreload.service.MetaResourceReaderService;
+import org.cxbox.meta.validation.MetaValidationService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -52,13 +53,15 @@ public class MetaHotReloadConfiguration {
 			InternalAuthorizationService authzService,
 			TransactionService txService,
 			MetaRepository metaRepository,
-			Optional<DictionaryProvider> dictionaryProvider) {
+			Optional<DictionaryProvider> dictionaryProvider,
+			MetaValidationService metaValidationService) {
 		return new MetaHotReloadServiceImpl(
 				config,
 				metaResourceReaderService,
 				authzService,
 				txService,
 				metaRepository,
-				dictionaryProvider);
+				dictionaryProvider,
+				metaValidationService);
 	}
 }
