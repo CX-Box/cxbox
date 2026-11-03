@@ -113,4 +113,11 @@ public final class WidgetUtils {
 		return fields;
 	}
 
+	/**
+	 * @return true if {@link FieldExtractor} bean supports widget type, otherwise fields of widget are hidden
+	 */
+	public boolean hasFieldExtractor(final String widgetType) {
+		return fieldExtractorMap.containsKey(widgetType);
+	}
+
 }

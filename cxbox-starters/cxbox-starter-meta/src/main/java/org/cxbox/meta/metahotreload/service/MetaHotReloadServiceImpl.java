@@ -28,6 +28,7 @@ import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
+import org.cxbox.meta.validation.MetaValidationService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,6 +45,8 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	protected final MetaRepository metaRepository;
 
 	private final Optional<DictionaryProvider> dictionaryProvider;
+
+	private final MetaValidationService metaValidationService;
 
 	private static Stream<ViewSourceDTO> getViewsByWidget(List<ViewSourceDTO> viewDtos, WidgetSourceDTO widget) {
 		return viewDtos
@@ -81,6 +84,8 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 		List<ViewSourceDTO> viewDtos = metaResourceReaderService.getViews();
 		Map<WidgetSourceDTO, String> widgetDtos = metaResourceReaderService.getWidgets().stream()
 				.collect(Collectors.toMap(w -> w, w -> JsonUtils.writeValue(w.getOptions())));
+
+		metaValidationService.validateOnLoad(screenDtos, viewDtos, widgetDtos);
 
 		authzService.loginAs(authzService.createAuthentication(InternalAuthorizationService.VANILLA));
 
