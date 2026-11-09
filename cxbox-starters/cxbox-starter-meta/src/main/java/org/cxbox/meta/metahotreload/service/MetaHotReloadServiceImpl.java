@@ -16,8 +16,10 @@ import org.cxbox.api.MetaHotReloadService;
 import org.cxbox.api.data.dictionary.InternalRole;
 import org.cxbox.api.service.session.InternalAuthorizationService;
 import org.cxbox.api.service.tx.TransactionService;
+import org.cxbox.core.config.cache.CacheConfig;
 import org.cxbox.core.util.JsonUtils;
 import org.cxbox.dictionary.DictionaryProvider;
+import org.cxbox.dto.MetaValidationResult;
 import org.cxbox.meta.data.ScreenDTO;
 import org.cxbox.meta.data.ViewDTO;
 import org.cxbox.meta.entity.Responsibilities;
@@ -28,6 +30,9 @@ import org.cxbox.meta.metahotreload.dto.ScreenSourceDto;
 import org.cxbox.meta.metahotreload.dto.ViewSourceDTO;
 import org.cxbox.meta.metahotreload.dto.WidgetSourceDTO;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
+import org.cxbox.meta.validation.MetaValidationService;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.cache.annotation.Cacheable;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,6 +49,16 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	protected final MetaRepository metaRepository;
 
 	private final Optional<DictionaryProvider> dictionaryProvider;
+
+	protected final MetaValidationService metaValidationService;
+
+	@Deprecated(since = "5.0.3", forRemoval = true)
+	public MetaHotReloadServiceImpl(MetaConfigurationProperties config,
+			MetaResourceReaderService metaResourceReaderService, InternalAuthorizationService authzService,
+			TransactionService txService, MetaRepository metaRepository, Optional<DictionaryProvider> dictionaryProvider) {
+		this(config, metaResourceReaderService, authzService, txService, metaRepository, dictionaryProvider,
+				new MetaValidationService(Map.of(), txService));
+	}
 
 	private static Stream<ViewSourceDTO> getViewsByWidget(List<ViewSourceDTO> viewDtos, WidgetSourceDTO widget) {
 		return viewDtos
@@ -77,20 +92,31 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 	}
 
 	public void loadMeta() {
-		List<ScreenSourceDto> screenDtos = metaResourceReaderService.getScreens();
-		List<ViewSourceDTO> viewDtos = metaResourceReaderService.getViews();
-		Map<WidgetSourceDTO, String> widgetDtos = metaResourceReaderService.getWidgets().stream()
-				.collect(Collectors.toMap(w -> w, w -> JsonUtils.writeValue(w.getOptions())));
-
 		authzService.loginAs(authzService.createAuthentication(InternalAuthorizationService.VANILLA));
-
+		var screens = metaResourceReaderService.getScreens();
+		var views = metaResourceReaderService.getViews();
+		var widgets = metaResourceReaderService.getWidgets().stream()
+				.collect(Collectors.toMap(widget -> widget, widget -> JsonUtils.writeValue(widget.getOptions())));
+		loadMetaBeforeProcess(screens, views, widgets);
 		txService.invokeInTx(() -> {
 			metaRepository.deleteAllMeta();
-			responsibilitiesActionProcess(widgetDtos, viewDtos);
-			responsibilitiesProcess(screenDtos, viewDtos);
+			responsibilitiesActionProcess(widgets, views);
+			responsibilitiesProcess(screens, views);
 			loadMetaAfterProcess();
 			return null;
 		});
+	}
+
+	@Override
+	@Cacheable(cacheResolver = CacheConfig.CXBOX_CACHE_RESOLVER,
+			cacheNames = CacheConfig.UI_CACHE,
+			key = "{#root.methodName}"
+	)
+	public List<MetaValidationResult> validateMeta() {
+		if (!config.isDevPanelEnabled() || !config.getValidation().isEnabled()) {
+			return List.of();
+		}
+		return metaValidationService.validate(metaResourceReaderService, LogLevel.OFF);
 	}
 
 	public void responsibilitiesProcess(List<ScreenSourceDto> screenDtos, List<ViewSourceDTO> viewDtos) {
@@ -178,6 +204,13 @@ public class MetaHotReloadServiceImpl implements MetaHotReloadService {
 				.map(dp -> dp.getAll(InternalRole.class).stream()
 						.map(InternalRole::key)
 						.toList());
+	}
+
+	protected void loadMetaBeforeProcess(List<ScreenSourceDto> screens, List<ViewSourceDTO> views,
+			Map<WidgetSourceDTO, String> widgets) {
+		if (config.getValidation().isEnabled()) {
+			metaValidationService.validate(screens, views, widgets, config.getValidation().getLogLevel());
+		}
 	}
 
 	protected void loadMetaAfterProcess() {
