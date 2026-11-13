@@ -82,13 +82,8 @@ public class CxboxFileServiceSimple implements CxboxFileService {
 
 	@NonNull
 	private Path getPathFromId(@NonNull String id) {
-		// "/" + id with normalize() drops all leading "..", so id always stays inside fileFolder
-		String relativeId = Paths.get("/" + id).normalize().toString().substring(1);
-		Path path = this.fileFolder.resolve(relativeId).normalize();
-		if (!path.startsWith(this.fileFolder) || path.equals(this.fileFolder)) {
-			throw new IllegalArgumentException("Invalid file id: " + id);
-		}
-		return path;
+		Path fileId = Paths.get("/" + id).normalize();
+		return Paths.get(this.fileFolder + "/" + fileId);
 	}
 
 }
