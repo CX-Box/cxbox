@@ -232,6 +232,9 @@ public class SqlCrudmaService extends AbstractCrudmaService {
 			List<SqlComponentObject> result = page.getResult();
 			result.removeIf(sqlComponent -> {
 				LocalDateTime componentDate = getDate(sqlComponent, fieldName);
+				if (componentDate == null) {
+					return true;
+				}
 				int dayOfMonth = componentDate.getDayOfMonth();
 				Month month = componentDate.getMonth();
 				Month firstMonthOfQuarter = month.firstMonthOfQuarter();

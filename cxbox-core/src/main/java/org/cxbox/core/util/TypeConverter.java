@@ -87,15 +87,18 @@ public final class TypeConverter {
 	}
 
 	public static LocalDateTime toLocalDateTimeTzAware(final String stringValue) {
-		return toLocalDateTime(stringValue).with(DateTimeUtil.fromSession());
+		LocalDateTime dateTime = toLocalDateTime(stringValue);
+		return dateTime == null ? null : dateTime.with(DateTimeUtil.fromSession());
 	}
 
 	public static Timestamp toSqlTimestamp(final String stringValue) {
-		return Timestamp.valueOf(toLocalDateTime(stringValue));
+		LocalDateTime dateTime = toLocalDateTime(stringValue);
+		return dateTime == null ? null : Timestamp.valueOf(dateTime);
 	}
 
 	public static Timestamp toSqlTimestampTzAware(final String stringValue) {
-		return Timestamp.valueOf(toLocalDateTimeTzAware(stringValue));
+		LocalDateTime dateTime = toLocalDateTimeTzAware(stringValue);
+		return dateTime == null ? null : Timestamp.valueOf(dateTime);
 	}
 
 	public <T> T to(final Class<T> clazz, final String stringValue) {

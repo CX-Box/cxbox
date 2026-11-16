@@ -76,35 +76,40 @@ public abstract class AbstractClassifyDataProvider implements ClassifyDataProvid
 
 	protected static void setClassifyDateParameterDateValue(ClassifyDataParameter dataParameter, FilterParameter param, boolean tzAware,
 															SearchParameter parameter, List<ClassifyDataParameter> result) {
+		LocalDateTime dateValue = param.getDateValue();
+		if (dateValue == null) {
+			dataParameter.setValue(null);
+			return;
+		}
 		switch (dataParameter.getOperator()) {
 			case GREATER_OR_EQUAL_THAN:
 			case LESS_THAN:
-				dataParameter.setValue(param.getDateValue()
+				dataParameter.setValue(dateValue
 						.with(DateTimeUtil.asStartOfDay())
 						.with(DateTimeUtil.fromSession(tzAware)));
 				if (parameter.strict() ||
 						(widgetFieldsIdResolverProperties == null ? true
 								: widgetFieldsIdResolverProperties.isFilterByRangeEnabledDefault())) {
-					dataParameter.setValue(param.getDateValue().with(DateTimeUtil.fromSession(tzAware)));
+					dataParameter.setValue(dateValue.with(DateTimeUtil.fromSession(tzAware)));
 				}
 				break;
 			case LESS_OR_EQUAL_THAN:
 			case GREATER_THAN:
-				dataParameter.setValue(param.getDateValue()
+				dataParameter.setValue(dateValue
 						.with(DateTimeUtil.asEndOfDay())
 						.with(DateTimeUtil.fromSession(tzAware)));
 				if (parameter.strict() ||
 						(widgetFieldsIdResolverProperties == null ? true
 								: widgetFieldsIdResolverProperties.isFilterByRangeEnabledDefault())) {
-					dataParameter.setValue(param.getDateValue().with(DateTimeUtil.fromSession(tzAware)));
+					dataParameter.setValue(dateValue.with(DateTimeUtil.fromSession(tzAware)));
 				}
 				break;
 			case EQUALS:
 				LocalDateTime startValue;
 				if (DateValueProvider.class.equals(parameter.provider())) {
-					startValue = param.getDateValue().with(DateTimeUtil.asStartOfDay());
+					startValue = dateValue.with(DateTimeUtil.asStartOfDay());
 				} else {
-					startValue = param.getDateValue().withSecond(0);
+					startValue = dateValue.withSecond(0);
 				}
 				dataParameter.setValue(startValue.with(DateTimeUtil.fromSession(tzAware)));
 				dataParameter.setOperator(SearchOperation.GREATER_OR_EQUAL_THAN);
@@ -128,7 +133,7 @@ public abstract class AbstractClassifyDataProvider implements ClassifyDataProvid
 				result.add(dataParameterAdditional);
 				break;
 			default:
-				dataParameter.setValue(param.getDateValue().with(DateTimeUtil.fromSession(tzAware)));
+				dataParameter.setValue(dateValue.with(DateTimeUtil.fromSession(tzAware)));
 				break;
 		}
 	}
