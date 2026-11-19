@@ -16,10 +16,13 @@
 
 package org.cxbox.core.dto;
 
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 import org.cxbox.api.data.dictionary.SimpleDictionary;
+import org.cxbox.dto.MetaValidationResult;
 import org.cxbox.dto.ScreenResponsibility;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
@@ -68,6 +71,10 @@ public class LoggedUser {
 	private String language;
 
 	private boolean devPanelEnabled;
+
+	@NonNull
+	@Builder.Default
+	private List<MetaValidationResult> metaValidation = List.of();
 
 	public static SimpleDictionary feature(String key, Object value) {
 		return value != null ? new SimpleDictionary(key, String.valueOf(value)) : null;

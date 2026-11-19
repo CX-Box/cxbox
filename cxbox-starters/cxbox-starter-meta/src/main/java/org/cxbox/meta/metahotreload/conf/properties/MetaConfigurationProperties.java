@@ -22,6 +22,7 @@ import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.validation.annotation.Validated;
 
 @Getter
@@ -141,5 +142,35 @@ public class MetaConfigurationProperties {
 
 	@Positive(message  =  "Number of rows on bc by default (can be override with BC_PROPERTIES.csv)")
 	private Long bcDefaultPageLimit = 5L;
+
+	private Validation validation = new Validation();
+
+	@Getter
+	@Setter
+	public static class Validation {
+
+		/**
+		 * Controls metadata validation during startup and metadata refresh.
+		 *
+		 * <p><b>{@code true}:</b> runs validators and logs detected problems.
+		 * When the dev panel is enabled, validation results are also included in login.
+		 *
+		 * <p><b>{@code false} (default):</b> disables metadata validation.
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * Controls the log level for problems detected during startup and metadata refresh.
+		 *
+		 * <p><b>{@code ERROR} (default):</b> reports problems as errors without stopping metadata loading.
+		 *
+		 * <p><b>{@code OFF}:</b> disables problem reports.
+		 *
+		 * <p>Validator failures are always logged at WARN.
+		 */
+		@NotNull
+		private LogLevel logLevel = LogLevel.ERROR;
+
+	}
 
 }

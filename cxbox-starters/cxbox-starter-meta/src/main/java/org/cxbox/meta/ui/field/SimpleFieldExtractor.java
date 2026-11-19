@@ -61,6 +61,7 @@ public class SimpleFieldExtractor extends BaseFieldExtractor {
 		result.add("Form");
 		result.add("FormPopup");
 		result.add("FilePreview");
+		result.add("EmptyWidget");
 
 		//deprecated
 		result.add("InfoFloat");

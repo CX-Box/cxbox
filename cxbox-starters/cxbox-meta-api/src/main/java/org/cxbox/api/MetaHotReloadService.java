@@ -17,8 +17,15 @@
 package org.cxbox.api;
 
 
+import java.util.List;
+import org.cxbox.dto.MetaValidationResult;
+
 public interface MetaHotReloadService {
 
 	void loadMeta();
+
+	default List<MetaValidationResult> validateMeta() {
+		return List.of();
+	}
 
 }

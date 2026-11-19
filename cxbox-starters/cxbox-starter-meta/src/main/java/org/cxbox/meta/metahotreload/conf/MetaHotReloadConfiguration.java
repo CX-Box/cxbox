@@ -17,6 +17,7 @@
 package org.cxbox.meta.metahotreload.conf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import java.util.Optional;
 import org.cxbox.api.config.CxboxBeanProperties;
 import org.cxbox.api.service.session.InternalAuthorizationService;
@@ -27,7 +28,10 @@ import org.cxbox.meta.metahotreload.conf.properties.MetaConfigurationProperties;
 import org.cxbox.meta.metahotreload.repository.MetaRepository;
 import org.cxbox.meta.metahotreload.service.MetaHotReloadServiceImpl;
 import org.cxbox.meta.metahotreload.service.MetaResourceReaderService;
+import org.cxbox.meta.validation.MetaValidationService;
+import org.cxbox.meta.validation.MetaValidator;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -46,19 +50,27 @@ public class MetaHotReloadConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
+	MetaValidationService metaValidationService(Map<String, MetaValidator> validators, TransactionService txService) {
+		return new MetaValidationService(validators, txService);
+	}
+
+	@Bean
 	public MetaHotReloadService refreshMeta(
 			MetaConfigurationProperties config,
 			MetaResourceReaderService metaResourceReaderService,
 			InternalAuthorizationService authzService,
 			TransactionService txService,
 			MetaRepository metaRepository,
-			Optional<DictionaryProvider> dictionaryProvider) {
+			Optional<DictionaryProvider> dictionaryProvider,
+			MetaValidationService metaValidationService) {
 		return new MetaHotReloadServiceImpl(
 				config,
 				metaResourceReaderService,
 				authzService,
 				txService,
 				metaRepository,
-				dictionaryProvider);
+				dictionaryProvider,
+				metaValidationService);
 	}
 }

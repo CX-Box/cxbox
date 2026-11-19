@@ -113,4 +113,8 @@ public final class WidgetUtils {
 		return fields;
 	}
 
+	public boolean hasFieldExtractor(final String widgetType) {
+		return fieldExtractorMap.containsKey(widgetType);
+	}
+
 }
