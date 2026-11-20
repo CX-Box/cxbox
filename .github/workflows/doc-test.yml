@@ -16,8 +16,10 @@ jobs:
     steps:
       - name: Grep commentator
         id: step1
+        env:
+          COMMENTATOR: ${{ github.event.comment.user.login }}
         run: |
-          result=`curl -u $USER:$TOKEN https://api.github.com/orgs/CX-Box/teams/cxbox-team/members | grep -Eo "(\"login\": \"${{ github.event.comment.user.login }}\")" | wc -l`;
+          result=`curl -u $USER:$TOKEN https://api.github.com/orgs/CX-Box/teams/cxbox-team/members | grep -Eo "(\"login\": \"$COMMENTATOR\")" | wc -l`;
           echo "number of entries: $result";
           echo "##[set-output name=member_check;]$result"
 
@@ -40,28 +42,33 @@ jobs:
           echo "##[set-output name=repository;]${{ github.repository }}"
       - name: Get branch
         id: get_branch
+        env:
+          BRANCH_NAME: ${{ fromJson(steps.get_pr.outputs.pr_data).head.ref }}
+          REPOSITORY_NAME: ${{ steps.get_pr.outputs.repository }}
         run: |
-          echo "branch_name=${{ fromJson(steps.get_pr.outputs.pr_data).head.ref }}"
-          echo "repository name = ${{ steps.get_pr.outputs.repository }}"
-          echo "##[set-output name=branch_name;]${{ fromJson(steps.get_pr.outputs.pr_data).head.ref }}"
+          echo "branch_name=$BRANCH_NAME"
+          echo "repository name = $REPOSITORY_NAME"
+          echo "##[set-output name=branch_name;]$BRANCH_NAME"
       - name: Parse info about UI
         if: contains(github.event.comment.body, '/withUiTestDoc')
         id: parse_ui_info
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          repos=`echo "${{ github.event.comment.body }}" | cut -d" " -f2`
-          sha=`echo "${{ github.event.comment.body }}" | cut -d" " -f3`
+          repos=`echo "$COMMENT_BODY" | cut -d" " -f2`
+          sha=`echo "$COMMENT_BODY" | cut -d" " -f3`
           echo "##[set-output name=ui_repos;]$repos"
           echo "##[set-output name=ui_sha;]$sha"
       - name: Repository Dispatch with UI
         if: contains(github.event.comment.body, '/withUiTestDoc')
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@ce5485de42c9b2622d2ed064be479e8ed65e76f4 # v1.1.3
         with:
           token: ${{ secrets.EVENT_DISPATCH_TOKEN }}
           repository: ${{ secrets.TARGET_REPOSITORY }}
           event-type: test_doc
           client-payload: '{"back": {"repository": "${{ steps.get_pr.outputs.repository }}", "branch": "${{ steps.get_branch.outputs.branch_name }}"}, "front": {"repository": "${{ steps.parse_ui_info.outputs.ui_repos }}", "branch": "${{ steps.parse_ui_info.outputs.ui_sha }}"}}'
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@ce5485de42c9b2622d2ed064be479e8ed65e76f4 # v1.1.3
         if: contains(github.event.comment.body, '/testDoc')
         with:
           token: ${{ secrets.EVENT_DISPATCH_TOKEN }}

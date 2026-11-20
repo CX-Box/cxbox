@@ -93,6 +93,9 @@ public final class DateTimeUtil {
 	}
 
 	public static LocalDateTime toLocalDateTime(final Date date) {
+		if (date == null) {
+			return null;
+		}
 		return toLocalDateTime(date.toInstant());
 	}
 

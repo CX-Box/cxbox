@@ -90,4 +90,14 @@ public class MultivalueField implements Iterable<MultivalueFieldSingleValue>, Se
 						.anyMatch(oldItem -> Objects.equals(oldItem.getValue(), newItem.getValue())));
 	}
 
+	/**
+	 * {@link #equals(Object)} checks only that every value of the other field is present in this one
+	 * (ids, order and duplicates are ignored), so no hash built from the values is consistent with it.
+	 * A constant keeps the {@code equals}/{@code hashCode} contract.
+	 */
+	@Override
+	public int hashCode() {
+		return MultivalueField.class.getName().hashCode();
+	}
+
 }
