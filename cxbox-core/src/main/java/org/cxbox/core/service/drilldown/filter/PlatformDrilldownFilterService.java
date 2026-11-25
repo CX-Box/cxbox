@@ -1038,7 +1038,7 @@ public class PlatformDrilldownFilterService {
 								: String.valueOf(val);
 						return URLEncoder.encode(repr, StandardCharsets.UTF_8);
 					})
-					.collect(Collectors.joining(","));
+					.collect(Collectors.joining("\\\",\\\""));
 
 			String expression = field.getName()
 					+ "."
