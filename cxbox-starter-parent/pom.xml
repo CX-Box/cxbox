@@ -75,6 +75,7 @@
   <properties>
     <cxbox.version>5.0.4-SNAPSHOT</cxbox.version>
     <spring-boot.version>4.0.7</spring-boot.version>
+    <jackson-2-bom.version>2.22.1</jackson-2-bom.version> <!-- due to vulnerabilities in jackson-core 2.21.5 -->
   </properties>
 
   <dependencyManagement>
