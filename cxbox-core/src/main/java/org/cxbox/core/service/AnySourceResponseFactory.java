@@ -18,11 +18,7 @@ package org.cxbox.core.service;
 
 import static org.cxbox.api.util.i18n.ErrorMessageSource.errorMessage;
 
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
-import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Path;
 import java.lang.reflect.Type;
@@ -98,11 +94,11 @@ public class AnySourceResponseFactory {
 
 	private DataResponseDTO getDTOFromMapInner(Map<String, Object> map, Class<?> clazz, BusinessComponent bc,
 			boolean ignoreBusinessErrors) {
-		DtoDeserializationHandler handler = new DtoDeserializationHandler();
-		mapper.addHandler(handler);
+		mapper.addHandler(DtoDeserializationHandler.INSTANCE);
+		Set<String> badFields = new HashSet<>();
 		Object objectResult;
 		try {
-			objectResult = mapper.convertValue(map, clazz);
+			objectResult = DtoDeserializationHandler.convert(mapper, map, clazz, badFields);
 		} catch (IllegalArgumentException e) {
 			throw new BusinessException().addPopup(errorMessage("error.dto_deserialization_error"));
 		}
@@ -112,7 +108,6 @@ public class AnySourceResponseFactory {
 		}
 		Entity entity = null;
 		Set<ConstraintViolation<Object>> violations = validatorsProvider.getValidator(clazz).validate(objectResult);
-		Set<String> badFields = handler.getFields();
 		if (!badFields.isEmpty() || !violations.isEmpty()) {
 			entity = new Entity(bc);
 			for (String fieldName : badFields) {
@@ -167,47 +162,6 @@ public class AnySourceResponseFactory {
 		throw new IllegalArgumentException(
 				"can't cast " + anySourceBcDescription.getServiceClass() + " to " + ResponseService.class
 		);
-	}
-
-	class DtoDeserializationHandler extends DeserializationProblemHandler {
-
-		private final Set<String> fields = new HashSet<>();
-
-		@Override
-		public Object handleWeirdStringValue(
-				DeserializationContext ctxt,
-				Class<?> targetType,
-				String valueToConvert,
-				String failureMsg) {
-			fields.add(ctxt.getParser().getParsingContext().getCurrentName());
-			return null;
-		}
-
-		@Override
-		public Object handleWeirdNumberValue(
-				DeserializationContext ctxt,
-				Class<?> targetType,
-				Number valueToConvert,
-				String failureMsg) {
-			fields.add(ctxt.getParser().getParsingContext().getCurrentName());
-			return null;
-		}
-
-		@Override
-		public JavaType handleUnknownTypeId(
-				DeserializationContext ctxt,
-				JavaType baseType,
-				String subTypeId,
-				TypeIdResolver idResolver,
-				String failureMsg) {
-			fields.add(ctxt.getParser().getParsingContext().getCurrentName());
-			return null;
-		}
-
-		public Set<String> getFields() {
-			return fields;
-		}
-
 	}
 
 }
