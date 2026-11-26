@@ -85,6 +85,14 @@ public interface CxboxFileController {
 			@RequestParam("source") String source);
 
 
+	/**
+	 * Takes over {@code content}: the response closes the stream when the body ends, whether the file was sent,
+	 * the client left or reading the storage failed. An error of {@code close()} is ignored.
+	 * Do not read or close {@code content} after the call.
+	 * <p>
+	 * {@code Supplier<InputStream>} is not used: the body runs in another thread, so a stream opened there would lose
+	 * MDC and {@code ThreadLocal}s, and a {@code BusinessException} would not show a popup.
+	 */
 	default HttpEntity<StreamingResponseBody> buildFileHttpEntity(InputStream content, Long length, String fileName,
 			String fileType, boolean preview) {
 		HttpHeaders headers = new HttpHeaders();
@@ -99,7 +107,17 @@ public interface CxboxFileController {
 		headers.setContentLength(length);
 		return ResponseEntity.ok()
 				.headers(headers)
-				.body(outputStream -> copy(content, outputStream, getChunkSize()));
+				.body(outputStream -> {
+					try {
+						copy(content, outputStream, getChunkSize());
+					} finally {
+						try {
+							content.close();
+						} catch (IOException ignored) {
+							// the file is already sent or the response is already broken: nothing to report
+						}
+					}
+				});
 	}
 
 	default int getChunkSize() {
